@@ -31,14 +31,16 @@ export class CreateProductoDto {
   @MaxLength(100)
   nombre!: string;
 
-  @ApiProperty({
-    description: 'Precio de costo del producto',
+  @ApiPropertyOptional({
+    description:
+      'Precio de costo del producto. Opcional: se puede crear el producto sin costo y cargarlo más tarde (requerido antes de habilitar movimientos).',
     example: 150.0,
     minimum: 0.01,
   })
+  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
-  precioCosto!: number;
+  precioCosto?: number;
 
   @ApiProperty({
     description: 'Precio de venta del producto',
