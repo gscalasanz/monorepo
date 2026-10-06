@@ -133,3 +133,20 @@ padding para listas/tablas a sangre. Es el contenedor estándar de las secciones
 `useAsyncData({ key, load, enabled? })` → `{ data, error, isLoading, reload, setData }`. Aborta la
 request anterior al cambiar `key`, ignora respuestas viejas, `isLoading` derivado (sin setState en
 efectos). Patrón de carga de todas las pantallas (no hay react-query).
+
+## Finanzas — `shared/components/finanzas`
+
+Piezas de dinero que comparten campamentos y eventos (port de los componentes compartidos de Angular). Copy exacto en `copy.ts`.
+
+- `MovimientoCard({ movimiento: MovimientoCardData, deletable?, deleting?, onDelete?, onPagarReembolso? })`: tarjeta de un movimiento con badge de estado de pago.
+- `EstadoPagoBadge({ movimiento, onPagarReembolso? })`: muestra "Pagado", "Pendiente de Reembolso" o "A cobrar". El de reembolso es un botón ("Marcar como pagado") solo cuando se pasa `onPagarReembolso`.
+- `MovimientoFilterTabs({ value, onValueChange })`: Todos / Ingresos / Egresos / Gastos. `filterMovimientosBy({ movimientos, filtro, isGasto })` devuelve una lista nueva.
+- `confirmPagarReembolso({ monto, descripcion?, responsableNombre?, action })`: confirmación con carga y error dentro del diálogo.
+- `GastoFormDialog` / `IngresoFormDialog({ open, onOpenChange, personas, onSubmit(values) })`:
+  - `onSubmit` recibe valores ya validados. Si resuelve, el diálogo se cierra; si rechaza, queda abierto con el error inline. El caller solo muestra el toast de éxito.
+  - "Persona a reembolsar" sigue al responsable salvo que se elija a mano.
+- Mappers:
+  - `toGastoDto` (campamentos, con `fecha`);
+  - `toGastoEventoDto` (sin `fecha`: el backend la rechaza con 400);
+  - `toIngresoDto`.
+- Schemas: `gastoFormSchema` e `ingresoFormSchema`, más las listas de opciones de medio y estado de pago.
