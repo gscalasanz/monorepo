@@ -74,7 +74,7 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
 - [ ] Módulo cerrado (DoD §9)
 
 ### dashboard
-- [ ] Paridad expandida
+- [x] Paridad expandida
   - Datos: `GET cajas/consolidado` (vía estado de cajas), `GET eventos`, `GET movimientos/recientes`;
     los errores de eventos/recientes se tragan a lista vacía (paridad: `catchError(() => of([]))`).
   - 6 KPIs (en este orden): Caja de Grupo (`cajaGrupo.saldo`), Fondos de Rama (suma de las 4
@@ -90,7 +90,8 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
     "Ver más" → `/movimientos`; vacío "No hay movimientos recientes".
   - Fondos por rama: una fila por rama presente (Manada, Unidad, Caminantes, Rovers) con saldo;
     vacío "No hay fondos de rama configurados".
-- [ ] Módulo cerrado (DoD §9)
+  - Desvío visual: los 6 KPIs van en una tira de métricas (DESIGN §KPI) en vez de 6 stat-cards.
+- [x] Módulo cerrado (DoD §9)
 
 ### personas
 - [ ] Paridad expandida

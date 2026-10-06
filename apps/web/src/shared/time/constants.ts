@@ -23,6 +23,10 @@ export const DATE_FORMATS = {
   dateLong: "EEEE, d 'de' MMMM 'de' yyyy",
   /** `date:'dd/MM/yyyy HH:mm'` → `13/03/2026 15:30` */
   dateTimeCompact: 'dd/MM/yyyy HH:mm',
+  /** Badge de fecha: mes abreviado → `mar` */
+  monthShort: 'MMM',
+  /** Badge de fecha: día del mes → `13` */
+  dayOfMonth: 'd',
   /** `date:'d MMM'` → `13 mar` */
   dayMonth: 'd MMM',
   /** `date:'d MMM yyyy'` / `mediumDate` → `13 mar 2026` */

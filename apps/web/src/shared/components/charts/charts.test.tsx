@@ -34,7 +34,7 @@ describe('<KpiStrip>', () => {
     render(<KpiStrip items={KPIS} ariaLabel="Resumen del mes" />);
     const strip = screen.getByLabelText('Resumen del mes');
     expect(strip.tagName).toBe('DL');
-    expect(strip).toHaveClass('md:grid-cols-3', 'md:divide-x');
+    expect(strip).toHaveClass('md:grid-cols-3', 'gap-px', 'bg-border');
     expect(screen.getByText('Ingresos del mes')).toBeInTheDocument();
     expect(screen.getByText('$ 727.800')).toBeInTheDocument();
   });

@@ -29,11 +29,12 @@ const COLUMN_CLASSES: Readonly<Record<number, string>> = {
   3: 'md:grid-cols-3',
   4: 'md:grid-cols-4',
   5: 'md:grid-cols-5',
+  6: 'sm:grid-cols-2 md:grid-cols-3',
 };
 
 function KpiCell({ item }: { readonly item: KpiItem }) {
   return (
-    <div className="grid min-w-0 content-start gap-1.5 px-4 py-4 md:px-[18px]">
+    <div className="grid min-w-0 content-start gap-1.5 bg-surface px-4 py-4 md:px-[18px]">
       <dt className="text-[13px] leading-[18px] text-ink-muted">{item.label}</dt>
       <dd className="flex items-end justify-between gap-3">
         <div className="grid min-w-0 gap-1.5">
@@ -57,8 +58,8 @@ export function KpiStrip({ items, ariaLabel, className }: KpiStripProps) {
     <dl
       aria-label={ariaLabel}
       className={cn(
-        'grid grid-cols-1 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface shadow-xs',
-        'md:divide-x md:divide-y-0',
+        // Hairlines entre celdas con `gap-px` sobre fondo `border`: funciona en 1 o N filas.
+        'grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border shadow-xs',
         COLUMN_CLASSES[items.length] ?? 'md:grid-cols-4',
         className,
       )}

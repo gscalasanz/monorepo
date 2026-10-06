@@ -122,3 +122,14 @@ Cableado a11y automático (label↔control, `aria-invalid`, `aria-describedby` a
 - `DaysOfWeekField` — `value: readonly DayOfWeek[]`, toggles con `aria-pressed` + "Todos"/"Ninguno".
 - `FormActions` — `{ onCancel?, onSave?, saveLabel?, cancelLabel?, saving?, saveDisabled?, form?, extra? }`: barra fija abajo en mobile, estática desde `md`. Sin `onSave` el botón es `type="submit"`.
 - Piezas: `InputControl` (input de marca con `prefix`/`suffix`/`size`), `FieldMessage`, `FieldLabelText`, `ControlStatusIcon`, `ChoiceRow`, `RadioCard`, `DayToggle`, `PasswordToggle`, `CONTROL_SURFACE`/`CONTROL_SIZE`.
+
+## `Panel` — `shared/components/ui/panel.tsx`
+
+Panel de contenido con header (título + `meta` + link `action` o `headerExtra`). `flush` quita el
+padding para listas/tablas a sangre. Es el contenedor estándar de las secciones de cada pantalla.
+
+## `useAsyncData` — `shared/hooks/use-async-data.ts`
+
+`useAsyncData({ key, load, enabled? })` → `{ data, error, isLoading, reload, setData }`. Aborta la
+request anterior al cambiar `key`, ignora respuestas viejas, `isLoading` derivado (sin setState en
+efectos). Patrón de carga de todas las pantallas (no hay react-query).
