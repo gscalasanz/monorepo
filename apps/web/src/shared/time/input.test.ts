@@ -26,7 +26,9 @@ describe('toDateInputValue (<input type="date">)', () => {
 
 describe('toDateTimeInputValue (<input type="datetime-local">)', () => {
   it('formatea un instante en hora de BsAs', () => {
-    expect(toDateTimeInputValue('2026-03-13T15:30:00.000Z')).toBe('2026-03-13T12:30');
+    expect(toDateTimeInputValue('2026-03-13T15:30:00.000Z')).toBe(
+      '2026-03-13T12:30',
+    );
   });
 
   it('deja YYYY-MM-DDTHH:mm tal cual', () => {
@@ -41,7 +43,9 @@ describe('toDateTimeInputValue (<input type="datetime-local">)', () => {
 
 describe('dateTimeInputToInstant', () => {
   it('interpreta el valor del input como hora de BsAs', () => {
-    expect(dateTimeInputToInstant('2026-03-13T12:30')).toBe('2026-03-13T15:30:00.000Z');
+    expect(dateTimeInputToInstant('2026-03-13T12:30')).toBe(
+      '2026-03-13T15:30:00.000Z',
+    );
   });
 
   it('vacío o inválido → null', () => {

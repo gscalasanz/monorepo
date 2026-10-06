@@ -18,9 +18,12 @@ export const DESTINO_GANANCIA = {
   CAJA_GRUPO: 'caja_grupo',
 } as const;
 
-export type DestinoGanancia = (typeof DESTINO_GANANCIA)[keyof typeof DESTINO_GANANCIA];
+export type DestinoGanancia =
+  (typeof DESTINO_GANANCIA)[keyof typeof DESTINO_GANANCIA];
 
-export const DESTINO_GANANCIA_LABELS: Readonly<Record<DestinoGanancia, string>> = {
+export const DESTINO_GANANCIA_LABELS: Readonly<
+  Record<DestinoGanancia, string>
+> = {
   cuentas_personales: 'Cuentas Personales',
   caja_grupo: 'Caja de Grupo',
 };
@@ -34,12 +37,14 @@ export const MODALIDAD_VENTA = {
   MIXTA: 'mixta',
 } as const;
 
-export type ModalidadVenta = (typeof MODALIDAD_VENTA)[keyof typeof MODALIDAD_VENTA];
+export type ModalidadVenta =
+  (typeof MODALIDAD_VENTA)[keyof typeof MODALIDAD_VENTA];
 
-export const MODALIDAD_VENTA_LABELS: Readonly<Record<ModalidadVenta, string>> = {
-  unica: 'Un solo destino',
-  mixta: 'Mixta (destino por venta)',
-};
+export const MODALIDAD_VENTA_LABELS: Readonly<Record<ModalidadVenta, string>> =
+  {
+    unica: 'Un solo destino',
+    mixta: 'Mixta (destino por venta)',
+  };
 
 /** Si la plata de la venta ya entró o queda a cobrar. */
 export const ESTADO_COBRO_VENTA = {
@@ -47,9 +52,12 @@ export const ESTADO_COBRO_VENTA = {
   PENDIENTE: 'pendiente',
 } as const;
 
-export type EstadoCobroVenta = (typeof ESTADO_COBRO_VENTA)[keyof typeof ESTADO_COBRO_VENTA];
+export type EstadoCobroVenta =
+  (typeof ESTADO_COBRO_VENTA)[keyof typeof ESTADO_COBRO_VENTA];
 
-export const ESTADO_COBRO_VENTA_LABELS: Readonly<Record<EstadoCobroVenta, string>> = {
+export const ESTADO_COBRO_VENTA_LABELS: Readonly<
+  Record<EstadoCobroVenta, string>
+> = {
   cobrado: 'Cobrado',
   pendiente: 'A cobrar',
 };

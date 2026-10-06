@@ -3,7 +3,10 @@
  * deshabilitado no se ofrece en selectores de alta, pero sigue visible en todo
  * registro histórico, listado y deuda.
  */
-import { ESTADO_PERSONA, type EstadoPersona } from '@/shared/domain/persona/enums';
+import {
+  ESTADO_PERSONA,
+  type EstadoPersona,
+} from '@/shared/domain/persona/enums';
 
 /** Cualquier cosa que exponga el estado de una persona (persona, propietario de caja…). */
 export interface WithEstado {

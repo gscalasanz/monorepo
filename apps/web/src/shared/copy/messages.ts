@@ -17,7 +17,8 @@ export const MESSAGES = {
   },
   CONFIRM: {
     DELETE: '¿Está seguro que desea eliminar este registro?',
-    CANCEL: '¿Está seguro que desea cancelar? Los cambios no guardados se perderán.',
+    CANCEL:
+      '¿Está seguro que desea cancelar? Los cambios no guardados se perderán.',
     DAR_BAJA:
       '¿Está seguro que desea dar de baja a esta persona? El saldo se transferirá a la caja de grupo.',
   },

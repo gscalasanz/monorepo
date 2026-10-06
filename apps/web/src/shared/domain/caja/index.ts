@@ -24,4 +24,8 @@ export {
   type SaldoCaja,
   type SaldoPersonal,
 } from './schemas';
-export { CAJAS_RAMA_EDUCADORES, type CajasQuery, type CreateCajaDto } from './dtos';
+export {
+  CAJAS_RAMA_EDUCADORES,
+  type CajasQuery,
+  type CreateCajaDto,
+} from './dtos';

@@ -14,7 +14,12 @@ export {
   type PersonaType,
   type Rama,
 } from './enums';
-export { RAMA_TAB_KEYS, isRamaTabKey, ramaFromTabKey, type RamaTabKey } from './rama-tabs';
+export {
+  RAMA_TAB_KEYS,
+  isRamaTabKey,
+  ramaFromTabKey,
+  type RamaTabKey,
+} from './rama-tabs';
 export {
   agrupacionSchema,
   cargoEducadorSchema,

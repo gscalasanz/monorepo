@@ -1,5 +1,10 @@
 /** Bodies de los endpoints de personas (`personas/dtos`). */
-import type { CargoEducador, EstadoPersona, PersonaType, Rama } from '@/shared/domain/persona/enums';
+import type {
+  CargoEducador,
+  EstadoPersona,
+  PersonaType,
+  Rama,
+} from '@/shared/domain/persona/enums';
 
 /** `POST /personas/protagonistas` */
 export interface CreateProtagonistaDto {

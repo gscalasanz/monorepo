@@ -6,9 +6,16 @@
 import { fromZonedTime } from 'date-fns-tz';
 
 import { asInstant, type Instant } from '@/shared/time/branded';
-import { BSAS_TIME_ZONE, DATE_TIME_INPUT_PATTERN } from '@/shared/time/constants';
+import {
+  BSAS_TIME_ZONE,
+  DATE_TIME_INPUT_PATTERN,
+} from '@/shared/time/constants';
 import { formatInBsAs } from '@/shared/time/format';
-import { isLocalDateString, localDateOf, resolveBackendDate } from '@/shared/time/parse';
+import {
+  isLocalDateString,
+  localDateOf,
+  resolveBackendDate,
+} from '@/shared/time/parse';
 
 const EMPTY = '';
 const DATE_TIME_INPUT_REGEX = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})$/;
@@ -25,7 +32,11 @@ function isValidDateTimeInput(value: string): boolean {
   const match = DATE_TIME_INPUT_REGEX.exec(value);
   if (!match) return false;
   const [, day = '', hours = '', minutes = ''] = match;
-  return isLocalDateString(day) && Number(hours) <= MAX_HOURS && Number(minutes) <= MAX_MINUTES;
+  return (
+    isLocalDateString(day) &&
+    Number(hours) <= MAX_HOURS &&
+    Number(minutes) <= MAX_MINUTES
+  );
 }
 
 /** Valor para `<input type="datetime-local">` (`YYYY-MM-DDTHH:mm` en BsAs) o `''`. */

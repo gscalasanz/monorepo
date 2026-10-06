@@ -5,12 +5,14 @@ export const TIPO_MOVIMIENTO = {
   EGRESO: 'egreso',
 } as const;
 
-export type TipoMovimiento = (typeof TIPO_MOVIMIENTO)[keyof typeof TIPO_MOVIMIENTO];
+export type TipoMovimiento =
+  (typeof TIPO_MOVIMIENTO)[keyof typeof TIPO_MOVIMIENTO];
 
-export const TIPO_MOVIMIENTO_LABELS: Readonly<Record<TipoMovimiento, string>> = {
-  ingreso: 'Ingreso',
-  egreso: 'Egreso',
-};
+export const TIPO_MOVIMIENTO_LABELS: Readonly<Record<TipoMovimiento, string>> =
+  {
+    ingreso: 'Ingreso',
+    egreso: 'Egreso',
+  };
 
 export const CONCEPTO_MOVIMIENTO = {
   INSCRIPCION_GRUPO: 'inscripcion_grupo',
@@ -38,9 +40,12 @@ export const CONCEPTO_MOVIMIENTO = {
   BONIFICACION_RECIBIDA: 'bonificacion_recibida',
 } as const;
 
-export type ConceptoMovimiento = (typeof CONCEPTO_MOVIMIENTO)[keyof typeof CONCEPTO_MOVIMIENTO];
+export type ConceptoMovimiento =
+  (typeof CONCEPTO_MOVIMIENTO)[keyof typeof CONCEPTO_MOVIMIENTO];
 
-export const CONCEPTO_MOVIMIENTO_LABELS: Readonly<Record<ConceptoMovimiento, string>> = {
+export const CONCEPTO_MOVIMIENTO_LABELS: Readonly<
+  Record<ConceptoMovimiento, string>
+> = {
   inscripcion_grupo: 'Inscripción de Grupo',
   inscripcion_scout_argentina: 'Inscripción Scout Argentina',
   inscripcion_pago_scout_argentina: 'Pago a Scout Argentina',
@@ -114,9 +119,12 @@ export const CATEGORIA_MOVIMIENTO = {
   OTROS: 'otros',
 } as const;
 
-export type CategoriaMovimiento = (typeof CATEGORIA_MOVIMIENTO)[keyof typeof CATEGORIA_MOVIMIENTO];
+export type CategoriaMovimiento =
+  (typeof CATEGORIA_MOVIMIENTO)[keyof typeof CATEGORIA_MOVIMIENTO];
 
-export const CATEGORIA_MOVIMIENTO_LABELS: Readonly<Record<CategoriaMovimiento, string>> = {
+export const CATEGORIA_MOVIMIENTO_LABELS: Readonly<
+  Record<CategoriaMovimiento, string>
+> = {
   insumos: 'Insumos',
   comida: 'Comida',
   transporte: 'Transporte',
@@ -135,9 +143,12 @@ export const FILTRO_MOVIMIENTOS = {
   GASTOS: 'gastos',
 } as const;
 
-export type FiltroMovimientos = (typeof FILTRO_MOVIMIENTOS)[keyof typeof FILTRO_MOVIMIENTOS];
+export type FiltroMovimientos =
+  (typeof FILTRO_MOVIMIENTOS)[keyof typeof FILTRO_MOVIMIENTOS];
 
-export const FILTRO_MOVIMIENTOS_LABELS: Readonly<Record<FiltroMovimientos, string>> = {
+export const FILTRO_MOVIMIENTOS_LABELS: Readonly<
+  Record<FiltroMovimientos, string>
+> = {
   todos: 'Todos',
   ingresos: 'Ingresos',
   egresos: 'Egresos',

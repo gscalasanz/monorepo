@@ -1,7 +1,10 @@
 /** Respuestas de acciones/cálculos de `/campamentos`. */
 import { z } from 'zod';
 
-import { conceptoMovimientoSchema, medioPagoSchema } from '@/shared/domain/movimiento';
+import {
+  conceptoMovimientoSchema,
+  medioPagoSchema,
+} from '@/shared/domain/movimiento';
 import { instantSchema } from '@/shared/time';
 
 /** `POST /campamentos/:id/pagos/:personaId` (201). */
@@ -12,7 +15,9 @@ export const resultadoPagoCampamentoSchema = z.object({
     concepto: conceptoMovimientoSchema,
     medioPago: medioPagoSchema,
   }),
-  movimientoEgresoPersonal: z.object({ id: z.string(), monto: z.number() }).optional(),
+  movimientoEgresoPersonal: z
+    .object({ id: z.string(), monto: z.number() })
+    .optional(),
   desglose: z.object({
     montoSaldoPersonal: z.number(),
     montoFisico: z.number(),
@@ -20,7 +25,9 @@ export const resultadoPagoCampamentoSchema = z.object({
   }),
 });
 
-export type ResultadoPagoCampamento = z.infer<typeof resultadoPagoCampamentoSchema>;
+export type ResultadoPagoCampamento = z.infer<
+  typeof resultadoPagoCampamentoSchema
+>;
 
 /** `DELETE /campamentos/:id/pagos/:movimientoId` */
 export const eliminarPagoCampamentoResultSchema = z.object({
@@ -28,7 +35,9 @@ export const eliminarPagoCampamentoResultSchema = z.object({
   montoRevertido: z.number(),
 });
 
-export type EliminarPagoCampamentoResult = z.infer<typeof eliminarPagoCampamentoResultSchema>;
+export type EliminarPagoCampamentoResult = z.infer<
+  typeof eliminarPagoCampamentoResultSchema
+>;
 
 /** `GET /campamentos/:id/resumen-financiero` */
 export const resumenFinancieroCampamentoSchema = z.object({
@@ -40,7 +49,9 @@ export const resumenFinancieroCampamentoSchema = z.object({
   participantes: z.number(),
 });
 
-export type ResumenFinancieroCampamento = z.infer<typeof resumenFinancieroCampamentoSchema>;
+export type ResumenFinancieroCampamento = z.infer<
+  typeof resumenFinancieroCampamentoSchema
+>;
 
 /** `GET /campamentos/:id/pagos-por-participante` */
 export const pagosPorParticipanteSchema = z.array(
@@ -51,7 +62,13 @@ export const pagosPorParticipanteSchema = z.array(
     montoBonificado: z.number(),
     totalPagado: z.number(),
     saldoPendiente: z.number(),
-    pagos: z.array(z.object({ fecha: instantSchema, monto: z.number(), medioPago: medioPagoSchema })),
+    pagos: z.array(
+      z.object({
+        fecha: instantSchema,
+        monto: z.number(),
+        medioPago: medioPagoSchema,
+      }),
+    ),
   }),
 );
 

@@ -55,7 +55,9 @@ describe('paginatedSchema', () => {
   });
 
   it('rechaza un meta incompleto', () => {
-    expect(schema.safeParse({ data: [], meta: { page: 1 } }).success).toBe(false);
+    expect(schema.safeParse({ data: [], meta: { page: 1 } }).success).toBe(
+      false,
+    );
   });
 });
 

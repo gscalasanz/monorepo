@@ -19,12 +19,15 @@ describe('isLocalDateString', () => {
     expect(isLocalDateString(value)).toBe(true);
   });
 
-  it.each(['2026-3-13', '13/03/2026', '2026-03-13T00:00:00Z', '', '2026-02-30'])(
-    'rechaza %s',
-    (value) => {
-      expect(isLocalDateString(value)).toBe(false);
-    },
-  );
+  it.each([
+    '2026-3-13',
+    '13/03/2026',
+    '2026-03-13T00:00:00Z',
+    '',
+    '2026-02-30',
+  ])('rechaza %s', (value) => {
+    expect(isLocalDateString(value)).toBe(false);
+  });
 });
 
 describe('parseLocalDate', () => {
@@ -48,7 +51,9 @@ describe('parseLocalDate', () => {
 
 describe('parseInstant', () => {
   it('normaliza a ISO UTC', () => {
-    expect(parseInstant('2026-03-13T12:00:00-03:00')).toBe('2026-03-13T15:00:00.000Z');
+    expect(parseInstant('2026-03-13T12:00:00-03:00')).toBe(
+      '2026-03-13T15:00:00.000Z',
+    );
   });
 
   it('lanza ante un valor inválido', () => {
@@ -62,16 +67,22 @@ describe('resolveBackendDate', () => {
   });
 
   it('un ISO "solo fecha" (T00:00:00.000Z) se trata como fecha calendario', () => {
-    expect(resolveBackendDate('2026-03-13T00:00:00.000Z')).toBe('2026-03-13T03:00:00.000Z');
+    expect(resolveBackendDate('2026-03-13T00:00:00.000Z')).toBe(
+      '2026-03-13T03:00:00.000Z',
+    );
   });
 
   it('un timestamp se respeta como instante', () => {
-    expect(resolveBackendDate('2026-03-13T15:30:00.000Z')).toBe('2026-03-13T15:30:00.000Z');
+    expect(resolveBackendDate('2026-03-13T15:30:00.000Z')).toBe(
+      '2026-03-13T15:30:00.000Z',
+    );
   });
 
   it('acepta DD/MM/YYYY y DD/MM/YYYY HH:mm como hora de BsAs (como el pipe de Angular)', () => {
     expect(resolveBackendDate('13/03/2026')).toBe('2026-03-13T03:00:00.000Z');
-    expect(resolveBackendDate('13/03/2026 10:30')).toBe('2026-03-13T13:30:00.000Z');
+    expect(resolveBackendDate('13/03/2026 10:30')).toBe(
+      '2026-03-13T13:30:00.000Z',
+    );
   });
 
   it('acepta milisegundos epoch', () => {
@@ -80,9 +91,12 @@ describe('resolveBackendDate', () => {
     );
   });
 
-  it.each([null, undefined, '', 'nope', Number.NaN, {}])('devuelve null para %s', (value) => {
-    expect(resolveBackendDate(value)).toBeNull();
-  });
+  it.each([null, undefined, '', 'nope', Number.NaN, {}])(
+    'devuelve null para %s',
+    (value) => {
+      expect(resolveBackendDate(value)).toBeNull();
+    },
+  );
 });
 
 describe('localDateOf', () => {
@@ -102,19 +116,33 @@ describe('aritmética de fechas', () => {
   });
 
   it('daysBetween cuenta días calendario (negativo si `to` es anterior)', () => {
-    expect(daysBetween({ from: asLocalDate('2026-03-13'), to: asLocalDate('2026-03-20') })).toBe(7);
-    expect(daysBetween({ from: asLocalDate('2026-03-20'), to: asLocalDate('2026-03-13') })).toBe(
-      -7,
-    );
+    expect(
+      daysBetween({
+        from: asLocalDate('2026-03-13'),
+        to: asLocalDate('2026-03-20'),
+      }),
+    ).toBe(7);
+    expect(
+      daysBetween({
+        from: asLocalDate('2026-03-20'),
+        to: asLocalDate('2026-03-13'),
+      }),
+    ).toBe(-7);
   });
 
   it('isBefore compara instantes reales', () => {
-    expect(isBefore(asInstant('2026-03-13T00:00:00Z'), asInstant('2026-03-13T00:00:01Z'))).toBe(
-      true,
-    );
-    expect(isBefore(asInstant('2026-03-13T00:00:01Z'), asInstant('2026-03-13T00:00:00Z'))).toBe(
-      false,
-    );
+    expect(
+      isBefore(
+        asInstant('2026-03-13T00:00:00Z'),
+        asInstant('2026-03-13T00:00:01Z'),
+      ),
+    ).toBe(true);
+    expect(
+      isBefore(
+        asInstant('2026-03-13T00:00:01Z'),
+        asInstant('2026-03-13T00:00:00Z'),
+      ),
+    ).toBe(false);
   });
 
   it('msFromInstant y msToInstant son inversas', () => {

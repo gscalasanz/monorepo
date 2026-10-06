@@ -8,13 +8,24 @@ import {
   inscripcionesConsolidadoSchema,
   inscripcionesSchema,
 } from '@/shared/domain';
-import { INSCRIPCION_RESPONSE_FIXTURE, omitKeys } from '@/shared/domain/testing/fixtures';
+import {
+  INSCRIPCION_RESPONSE_FIXTURE,
+  omitKeys,
+} from '@/shared/domain/testing/fixtures';
 
 describe('enums de inscripción', () => {
   it('labels de tipo y estado', () => {
-    expect(TIPO_INSCRIPCION_LABELS[TIPO_INSCRIPCION.SCOUT_ARGENTINA]).toBe('Scout Argentina');
-    expect(ESTADO_INSCRIPCION_LABELS[ESTADO_INSCRIPCION.PARCIAL]).toBe('Pago Parcial');
-    expect(Object.values(TIPO_DEUDA)).toEqual(['documentacion', 'dinero', 'ambos']);
+    expect(TIPO_INSCRIPCION_LABELS[TIPO_INSCRIPCION.SCOUT_ARGENTINA]).toBe(
+      'Scout Argentina',
+    );
+    expect(ESTADO_INSCRIPCION_LABELS[ESTADO_INSCRIPCION.PARCIAL]).toBe(
+      'Pago Parcial',
+    );
+    expect(Object.values(TIPO_DEUDA)).toEqual([
+      'documentacion',
+      'dinero',
+      'ambos',
+    ]);
   });
 });
 
@@ -23,7 +34,9 @@ describe('inscripcionSchema (InscripcionResponseDto)', () => {
     const inscripcion = inscripcionSchema.parse(INSCRIPCION_RESPONSE_FIXTURE);
     expect(inscripcion.saldoPendiente).toBe(20000);
     expect(inscripcion.persona?.rama).toBe('Manada');
-    expect(inscripcion.movimientos[0]?.concepto).toBe('inscripcion_scout_argentina');
+    expect(inscripcion.movimientos[0]?.concepto).toBe(
+      'inscripcion_scout_argentina',
+    );
   });
 
   it('persona es opcional (findOne/create/pagar no la traen)', () => {
@@ -34,12 +47,24 @@ describe('inscripcionSchema (InscripcionResponseDto)', () => {
 
 describe('inscripcionesConsolidadoSchema', () => {
   it('parsea el consolidado (filtros con claves omitidas)', () => {
-    const porRama = { total: 1, manada: 1, unidad: 0, caminantes: 0, rovers: 0, educadores: 0 };
+    const porRama = {
+      total: 1,
+      manada: 1,
+      unidad: 0,
+      caminantes: 0,
+      rovers: 0,
+      educadores: 0,
+    };
     const consolidado = inscripcionesConsolidadoSchema.parse({
       filtros: { ano: 2026 },
       total: 1,
       porRama,
-      financiero: { montoEsperado: 1, montoPagado: 0, montoAdeudado: 1, montoBonificado: 0 },
+      financiero: {
+        montoEsperado: 1,
+        montoPagado: 0,
+        montoAdeudado: 1,
+        montoBonificado: 0,
+      },
       deudores: {
         dinero: { total: 1, monto: 1, porRama },
         documentacion: { total: 0, porRama },

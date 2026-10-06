@@ -1,7 +1,16 @@
 import { REPORTE_VARIANTE, reporteEventoSchema } from '@/shared/domain';
-import { omitKeys, REPORTE_VENTA_CAJA_GRUPO_FIXTURE } from '@/shared/domain/testing/fixtures';
+import {
+  omitKeys,
+  REPORTE_VENTA_CAJA_GRUPO_FIXTURE,
+} from '@/shared/domain/testing/fixtures';
 
-const LADO = { recaudado: 1, ganancia: 1, unidades: 1, pendienteCobro: 0, neto: 1 };
+const LADO = {
+  recaudado: 1,
+  ganancia: 1,
+  unidades: 1,
+  pendienteCobro: 0,
+  neto: 1,
+};
 const GANANCIA_POR_PERSONA = [{ personaId: 'p', nombre: 'Juan', ganancia: 10 }];
 
 describe('reporteEventoSchema (unión por variante)', () => {
@@ -26,7 +35,8 @@ describe('reporteEventoSchema (unión por variante)', () => {
       variante: 'venta_cuentas_personales',
       gananciaPorPersona: GANANCIA_POR_PERSONA,
     });
-    if (reporte.variante !== 'venta_cuentas_personales') throw new Error('variante inesperada');
+    if (reporte.variante !== 'venta_cuentas_personales')
+      throw new Error('variante inesperada');
     expect(reporte.gananciaPorPersona[0]?.ganancia).toBe(10);
   });
 
@@ -37,12 +47,16 @@ describe('reporteEventoSchema (unión por variante)', () => {
       gananciaPorPersona: GANANCIA_POR_PERSONA,
       porDestino: { cajaGrupo: LADO, cuentasPersonales: LADO },
     });
-    if (reporte.variante !== 'venta_mixta') throw new Error('variante inesperada');
+    if (reporte.variante !== 'venta_mixta')
+      throw new Error('variante inesperada');
     expect(reporte.porDestino.cajaGrupo.neto).toBe(1);
   });
 
   it('grupo trae ingresos itemizados y no secciones de venta', () => {
-    const base = omitKeys(REPORTE_VENTA_CAJA_GRUPO_FIXTURE, ['productos', 'stock']);
+    const base = omitKeys(REPORTE_VENTA_CAJA_GRUPO_FIXTURE, [
+      'productos',
+      'stock',
+    ]);
     const reporte = reporteEventoSchema.parse({
       ...base,
       variante: 'grupo',
@@ -62,7 +76,10 @@ describe('reporteEventoSchema (unión por variante)', () => {
 
   it('rechaza una variante desconocida', () => {
     expect(
-      reporteEventoSchema.safeParse({ ...REPORTE_VENTA_CAJA_GRUPO_FIXTURE, variante: 'otra' }).success,
+      reporteEventoSchema.safeParse({
+        ...REPORTE_VENTA_CAJA_GRUPO_FIXTURE,
+        variante: 'otra',
+      }).success,
     ).toBe(false);
   });
 });

@@ -6,13 +6,19 @@
 import { z } from 'zod';
 
 import type { Instant, LocalDate } from '@/shared/time/branded';
-import { parseInstant, parseLocalDate, resolveBackendDate } from '@/shared/time/parse';
+import {
+  parseInstant,
+  parseLocalDate,
+  resolveBackendDate,
+} from '@/shared/time/parse';
 
 const INVALID_DATE_MESSAGE = 'Fecha inválida';
 
 const validDateString = z
   .string()
-  .refine((value) => resolveBackendDate(value) !== null, { message: INVALID_DATE_MESSAGE });
+  .refine((value) => resolveBackendDate(value) !== null, {
+    message: INVALID_DATE_MESSAGE,
+  });
 
 export const instantSchema: z.ZodType<Instant, z.ZodTypeDef, string> =
   validDateString.transform(parseInstant);

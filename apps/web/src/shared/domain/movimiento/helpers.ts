@@ -39,12 +39,15 @@ export interface FilterableMovimiento {
   readonly concepto: string;
 }
 
-const MATCHERS: Readonly<Record<FiltroMovimientos, (m: FilterableMovimiento) => boolean>> = {
+const MATCHERS: Readonly<
+  Record<FiltroMovimientos, (m: FilterableMovimiento) => boolean>
+> = {
   todos: () => true,
   ingresos: (m) => m.tipo === TIPO_MOVIMIENTO.INGRESO,
   egresos: (m) => m.tipo === TIPO_MOVIMIENTO.EGRESO,
   gastos: (m) =>
-    m.tipo === TIPO_MOVIMIENTO.EGRESO && m.concepto !== CONCEPTO_MOVIMIENTO.USO_SALDO_PERSONAL,
+    m.tipo === TIPO_MOVIMIENTO.EGRESO &&
+    m.concepto !== CONCEPTO_MOVIMIENTO.USO_SALDO_PERSONAL,
 };
 
 /**

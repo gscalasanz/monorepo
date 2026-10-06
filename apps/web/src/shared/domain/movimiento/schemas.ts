@@ -2,7 +2,12 @@
 import { z } from 'zod';
 
 import { cajaSchema } from '@/shared/domain/caja';
-import { baseEntityShape, decimalSchema, nullableField, paginatedSchema } from '@/shared/domain/common';
+import {
+  baseEntityShape,
+  decimalSchema,
+  nullableField,
+  paginatedSchema,
+} from '@/shared/domain/common';
 import {
   CATEGORIA_MOVIMIENTO,
   CONCEPTO_MOVIMIENTO,

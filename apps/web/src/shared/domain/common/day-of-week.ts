@@ -14,7 +14,8 @@ export const DAY_OF_WEEK = {
 
 export type DayOfWeek = (typeof DAY_OF_WEEK)[keyof typeof DAY_OF_WEEK];
 
-export const DAYS_OF_WEEK_IN_ORDER: readonly DayOfWeek[] = Object.values(DAY_OF_WEEK);
+export const DAYS_OF_WEEK_IN_ORDER: readonly DayOfWeek[] =
+  Object.values(DAY_OF_WEEK);
 
 export const DAY_OF_WEEK_LABELS: Readonly<Record<DayOfWeek, string>> = {
   monday: 'Lunes',

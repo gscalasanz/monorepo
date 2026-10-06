@@ -88,7 +88,12 @@ export const CAJA_RESPONSE_FIXTURE = {
   tipo: 'personal',
   nombre: null,
   propietarioId: 'per-1',
-  propietario: { id: 'per-1', nombre: 'Juan', estado: 'activo', rama: 'Manada' },
+  propietario: {
+    id: 'per-1',
+    nombre: 'Juan',
+    estado: 'activo',
+    rama: 'Manada',
+  },
   saldoActual: 2500,
   createdAt: TIMESTAMP,
   updatedAt: TIMESTAMP,
@@ -111,7 +116,12 @@ export const INSCRIPCION_RESPONSE_FIXTURE = {
   estado: 'parcial',
   montoPagado: 10000,
   saldoPendiente: 20000,
-  persona: { id: 'per-1', nombre: 'Juan', tipo: 'protagonista', rama: 'Manada' },
+  persona: {
+    id: 'per-1',
+    nombre: 'Juan',
+    tipo: 'protagonista',
+    rama: 'Manada',
+  },
   movimientos: [
     {
       id: 'mov-9',
@@ -214,7 +224,12 @@ export const REPORTE_VENTA_CAJA_GRUPO_FIXTURE = {
   porTipoPersona: [],
   porRama: [],
   vendedores: [],
-  stock: { productos: [], totalVendido: 0, totalEntregado: 0, totalPendiente: 0 },
+  stock: {
+    productos: [],
+    totalVendido: 0,
+    totalEntregado: 0,
+    totalPendiente: 0,
+  },
   horariosEntrega: {
     diaPrincipal: '2026-05-25',
     franjas: [],
@@ -225,7 +240,10 @@ export const REPORTE_VENTA_CAJA_GRUPO_FIXTURE = {
 } as const;
 
 /** Copia sin las claves dadas (simula respuestas donde TypeORM omite columnas). */
-export function omitKeys<T extends object>(source: T, keys: readonly string[]): Partial<T> {
+export function omitKeys<T extends object>(
+  source: T,
+  keys: readonly string[],
+): Partial<T> {
   return Object.fromEntries(
     Object.entries(source).filter(([key]) => !keys.includes(key)),
   ) as Partial<T>;

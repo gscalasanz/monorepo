@@ -1,0 +1,91 @@
+/**
+ * Endpoints del backend, relativos a `NEXT_PUBLIC_API_URL` (`.../api/v1`).
+ * Port de `shared/constants/api.constants.ts` + builders de las rutas con id que
+ * hoy arman a mano los services de Angular (verificadas contra los controllers).
+ */
+export const API_ENDPOINTS = {
+  /** `GET /` (público, texto plano): ping de keep-alive. */
+  ROOT: '',
+
+  AUTH_LOGIN: 'auth/login',
+  AUTH_REGISTER: 'auth/register',
+  AUTH_REFRESH: 'auth/refresh',
+  AUTH_LOGOUT: 'auth/logout',
+  AUTH_ME: 'auth/me',
+  AUTH_PASSWORD: 'auth/password',
+  AUTH_EMAIL: 'auth/email',
+
+  PERSONAS: 'personas',
+  PROTAGONISTAS: 'personas/protagonistas',
+  EDUCADORES: 'personas/educadores',
+  PERSONAS_EXTERNAS: 'personas/externas',
+  /** Stub: hoy el backend siempre devuelve `[]`. */
+  PERSONAS_CON_DEUDAS: 'personas/con-deudas',
+  /** Único listado que incluye la agrupación "Grupo Scout". */
+  PERSONAS_VENDEDORES_ELEGIBLES: 'personas/vendedores-elegibles',
+  persona: (id: string): string => `personas/${id}`,
+  personaDashboard: (id: string): string => `personas/${id}/dashboard`,
+  personaTransferirSaldo: (id: string): string =>
+    `personas/${id}/transferir-saldo-a-grupo`,
+
+  CAJAS: 'cajas',
+  CAJAS_GRUPO: 'cajas/grupo',
+  CAJAS_CONSOLIDADO: 'cajas/consolidado',
+  CAJAS_FONDO_SOLIDARIO: 'cajas/fondo-solidario',
+  caja: (id: string): string => `cajas/${id}`,
+  saldoPersonal: (personaId: string): string =>
+    `cajas/personal/${personaId}/saldo`,
+
+  MOVIMIENTOS: 'movimientos',
+  MOVIMIENTOS_RECIENTES: 'movimientos/recientes',
+  MOVIMIENTOS_REEMBOLSOS_PENDIENTES: 'movimientos/reembolsos-pendientes',
+  MOVIMIENTOS_COBROS_PENDIENTES: 'movimientos/cobros-pendientes',
+  MOVIMIENTOS_TRANSFERENCIA: 'movimientos/transferencia',
+  MOVIMIENTOS_GASTO_GENERAL: 'movimientos/gasto-general',
+  movimiento: (id: string): string => `movimientos/${id}`,
+  movimientosSaldo: (cajaId: string): string => `movimientos/saldo/${cajaId}`,
+  movimientosCaja: (cajaId: string): string => `movimientos/caja/${cajaId}`,
+
+  INSCRIPCIONES: 'inscripciones',
+  INSCRIPCIONES_CONSOLIDADO: 'inscripciones/consolidado',
+  inscripcion: (id: string): string => `inscripciones/${id}`,
+
+  CAMPAMENTOS: 'campamentos',
+  campamento: (id: string): string => `campamentos/${id}`,
+  campamentoDetalle: (id: string): string => `campamentos/${id}/detalle`,
+
+  EVENTOS: 'eventos',
+  evento: (id: string): string => `eventos/${id}`,
+  /** Update/delete de producto: sin eventoId en la ruta. */
+  producto: (productoId: string): string => `eventos/productos/${productoId}`,
+  eventoReporte: (id: string): string => `eventos/${id}/reporte`,
+  eventoReportePublico: (id: string): string => `eventos/${id}/reporte/publico`,
+
+  /** Público (sin auth) en el backend. */
+  REPORTES_DEUDAS: 'reportes/deudas',
+  EXPORTS_XLSX: 'exports/xlsx',
+  BACKUPS_DOWNLOAD: 'backups/download',
+} as const;
+
+export const QUERY_PARAMS = {
+  SOLO_ACTIVOS: 'soloActivos',
+} as const;
+
+/** Endpoints que no llevan token ni disparan refresh (públicos o de la propia auth). */
+export const UNAUTHENTICATED_ENDPOINTS: readonly string[] = [
+  API_ENDPOINTS.AUTH_LOGIN,
+  API_ENDPOINTS.AUTH_REGISTER,
+  API_ENDPOINTS.AUTH_REFRESH,
+];
+
+/** Nunca se reintentan (el refresh lo maneja la capa de auth). */
+export const RETRY_EXCLUDED_ENDPOINTS: readonly string[] = [
+  API_ENDPOINTS.AUTH_REFRESH,
+];
+
+/** Port de `HTTP_CONFIG` (backoff 1s · 2^n + jitter, 3 reintentos). */
+export const HTTP_CONFIG = {
+  RETRY_ATTEMPTS: 3,
+  RETRY_DELAY_MS: 1000,
+  RETRY_MAX_JITTER_MS: 300,
+} as const;

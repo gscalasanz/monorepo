@@ -16,7 +16,8 @@ export const APP_ROUTES = {
   REPORTES: '/reportes',
   CONFIGURACION: '/configuracion',
   /** Reporte público: accesible sin sesión. */
-  eventoReportePublico: (eventoId: string): string => `/eventos/${eventoId}/reporte`,
+  eventoReportePublico: (eventoId: string): string =>
+    `/eventos/${eventoId}/reporte`,
 } as const;
 
 /** Ruta base de cada tipo de persona (port de `PERSONA_TYPE_ROUTES`). */

@@ -2,14 +2,22 @@
 import { z } from 'zod';
 
 import { ESTADO_PAGO_CAMPAMENTO } from '@/shared/domain/campamento/enums';
-import { baseEntityShape, decimalSchema, nullableField } from '@/shared/domain/common';
+import {
+  baseEntityShape,
+  decimalSchema,
+  nullableField,
+} from '@/shared/domain/common';
 import {
   conceptoMovimientoSchema,
   estadoPagoSchema,
   medioPagoSchema,
   tipoMovimientoSchema,
 } from '@/shared/domain/movimiento';
-import { personaSchema, personaTypeSchema, ramaSchema } from '@/shared/domain/persona';
+import {
+  personaSchema,
+  personaTypeSchema,
+  ramaSchema,
+} from '@/shared/domain/persona';
 import { instantSchema, localDateSchema } from '@/shared/time';
 
 export const estadoPagoCampamentoSchema = z.nativeEnum(ESTADO_PAGO_CAMPAMENTO);
@@ -25,7 +33,9 @@ export const campamentoParticipanteSchema = z.object({
   persona: personaSchema.optional(),
 });
 
-export type CampamentoParticipante = z.infer<typeof campamentoParticipanteSchema>;
+export type CampamentoParticipante = z.infer<
+  typeof campamentoParticipanteSchema
+>;
 
 /**
  * Entidad cruda (`GET /campamentos`, `/:id`, POST/PATCH). Decimales string en GET,

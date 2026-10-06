@@ -9,13 +9,18 @@ import {
   resultadoPagoCampamentoSchema,
   resumenFinancieroCampamentoSchema,
 } from '@/shared/domain';
-import { CAMPAMENTO_FIXTURE, PROTAGONISTA_FIXTURE } from '@/shared/domain/testing/fixtures';
+import {
+  CAMPAMENTO_FIXTURE,
+  PROTAGONISTA_FIXTURE,
+} from '@/shared/domain/testing/fixtures';
 
 const TIMESTAMP = '2026-03-13T15:00:00.000Z';
 
 describe('enums de campamento', () => {
   it('exento tiene label', () => {
-    expect(ESTADO_PAGO_CAMPAMENTO_LABELS[ESTADO_PAGO_CAMPAMENTO.EXENTO]).toBe('Exento');
+    expect(ESTADO_PAGO_CAMPAMENTO_LABELS[ESTADO_PAGO_CAMPAMENTO.EXENTO]).toBe(
+      'Exento',
+    );
   });
 });
 
@@ -137,7 +142,12 @@ describe('DTOs calculados de campamento', () => {
   it('resultado de pago, resumen financiero, pagos por participante y eliminación', () => {
     expect(
       resultadoPagoCampamentoSchema.parse({
-        movimientoIngreso: { id: 'm', monto: 10, concepto: 'campamento_pago', medioPago: 'mixto' },
+        movimientoIngreso: {
+          id: 'm',
+          monto: 10,
+          concepto: 'campamento_pago',
+          medioPago: 'mixto',
+        },
         desglose: { montoSaldoPersonal: 5, montoFisico: 5, total: 10 },
       }).movimientoEgresoPersonal,
     ).toBeUndefined();
@@ -165,8 +175,10 @@ describe('DTOs calculados de campamento', () => {
       ]),
     ).toHaveLength(1);
     expect(
-      eliminarPagoCampamentoResultSchema.parse({ movimientosEliminados: ['m'], montoRevertido: 10 })
-        .montoRevertido,
+      eliminarPagoCampamentoResultSchema.parse({
+        movimientosEliminados: ['m'],
+        montoRevertido: 10,
+      }).montoRevertido,
     ).toBe(10);
   });
 });

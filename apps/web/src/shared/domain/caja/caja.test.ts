@@ -9,7 +9,10 @@ import {
   saldoCajaSchema,
   saldoPersonalSchema,
 } from '@/shared/domain';
-import { CAJA_RESPONSE_FIXTURE, omitKeys } from '@/shared/domain/testing/fixtures';
+import {
+  CAJA_RESPONSE_FIXTURE,
+  omitKeys,
+} from '@/shared/domain/testing/fixtures';
 
 describe('enums de caja', () => {
   it('toda caja tiene label', () => {
@@ -32,7 +35,10 @@ describe('schemas de caja', () => {
   });
 
   it('propietario null (caja grupo / fondo solidario)', () => {
-    expect(cajaResponseSchema.parse({ ...CAJA_RESPONSE_FIXTURE, propietario: null }).propietario).toBeNull();
+    expect(
+      cajaResponseSchema.parse({ ...CAJA_RESPONSE_FIXTURE, propietario: null })
+        .propietario,
+    ).toBeNull();
   });
 
   it('caja cruda (POST /cajas) sin saldo', () => {
@@ -70,7 +76,9 @@ describe('schemas de caja', () => {
       cajaGrupo: { id: '', saldo: 0 },
       fondosRama: {
         total: 1,
-        detalle: [{ tipo: 'rama_manada', id: 'c', nombre: 'Fondo Manada', saldo: 1 }],
+        detalle: [
+          { tipo: 'rama_manada', id: 'c', nombre: 'Fondo Manada', saldo: 1 },
+        ],
       },
       cuentasPersonales: pair,
       fondoSolidario: { id: null, saldo: 0, bonificacionesOtorgadas: 0 },

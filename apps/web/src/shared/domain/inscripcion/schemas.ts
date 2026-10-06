@@ -92,11 +92,20 @@ export const inscripcionesConsolidadoSchema = z.object({
     montoBonificado: z.number(),
   }),
   deudores: z.object({
-    dinero: z.object({ total: z.number(), monto: z.number(), porRama: distribucionPorRamaSchema }),
-    documentacion: z.object({ total: z.number(), porRama: distribucionPorRamaSchema }),
+    dinero: z.object({
+      total: z.number(),
+      monto: z.number(),
+      porRama: distribucionPorRamaSchema,
+    }),
+    documentacion: z.object({
+      total: z.number(),
+      porRama: distribucionPorRamaSchema,
+    }),
     ambos: distribucionPorRamaSchema,
   }),
   fecha: instantSchema,
 });
 
-export type InscripcionesConsolidado = z.infer<typeof inscripcionesConsolidadoSchema>;
+export type InscripcionesConsolidado = z.infer<
+  typeof inscripcionesConsolidadoSchema
+>;

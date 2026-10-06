@@ -28,7 +28,9 @@ describe('enums de persona', () => {
   });
 
   it('inactivo se muestra como Deshabilitado', () => {
-    expect(ESTADO_PERSONA_LABELS[ESTADO_PERSONA.INACTIVO]).toBe('Deshabilitado');
+    expect(ESTADO_PERSONA_LABELS[ESTADO_PERSONA.INACTIVO]).toBe(
+      'Deshabilitado',
+    );
   });
 
   it('ramas capitalizadas y en orden', () => {
@@ -53,23 +55,35 @@ describe('personaSchema (STI discriminada por tipo)', () => {
       EXTERNO_FIXTURE,
       AGRUPACION_FIXTURE,
     ]);
-    expect(personas.map((p) => p.tipo)).toEqual(['protagonista', 'educador', 'externo', 'agrupacion']);
+    expect(personas.map((p) => p.tipo)).toEqual([
+      'protagonista',
+      'educador',
+      'externo',
+      'agrupacion',
+    ]);
   });
 
   it('estrecha por tipo', () => {
     const persona = personaSchema.parse(PROTAGONISTA_FIXTURE);
-    if (persona.tipo !== PERSONA_TYPE.PROTAGONISTA) throw new Error('tipo inesperado');
+    if (persona.tipo !== PERSONA_TYPE.PROTAGONISTA)
+      throw new Error('tipo inesperado');
     expect(persona.rama).toBe('Manada');
     expect(persona.dniPadres).toBe(false);
   });
 
   it('descarta campos que no son del contrato (p. ej. passwordHash filtrado por el POST)', () => {
-    const persona = personaSchema.parse({ ...EDUCADOR_FIXTURE, passwordHash: 'x' });
+    const persona = personaSchema.parse({
+      ...EDUCADOR_FIXTURE,
+      passwordHash: 'x',
+    });
     expect(persona).not.toHaveProperty('passwordHash');
   });
 
   it('rechaza una rama inválida', () => {
-    expect(personaSchema.safeParse({ ...PROTAGONISTA_FIXTURE, rama: 'manada' }).success).toBe(false);
+    expect(
+      personaSchema.safeParse({ ...PROTAGONISTA_FIXTURE, rama: 'manada' })
+        .success,
+    ).toBe(false);
   });
 });
 

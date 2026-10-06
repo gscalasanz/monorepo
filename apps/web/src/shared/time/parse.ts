@@ -10,13 +10,19 @@
 import { addDays as addDaysToDate, differenceInCalendarDays } from 'date-fns';
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 
-import { asInstant, asLocalDate, type Instant, type LocalDate } from '@/shared/time/branded';
+import {
+  asInstant,
+  asLocalDate,
+  type Instant,
+  type LocalDate,
+} from '@/shared/time/branded';
 import { BSAS_TIME_ZONE, LOCAL_DATE_PATTERN } from '@/shared/time/constants';
 
 const LOCAL_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const DATE_ONLY_ISO_REGEX = /^(\d{4}-\d{2}-\d{2})T00:00:00(?:\.000)?Z$/;
 /** `DD/MM/YYYY` con hora `HH:mm` opcional (formato que aceptaba el pipe de Angular). */
-const DISPLAY_DATE_REGEX = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?: (\d{1,2}):(\d{2}))?$/;
+const DISPLAY_DATE_REGEX =
+  /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?: (\d{1,2}):(\d{2}))?$/;
 const START_OF_DAY = 'T00:00:00';
 const ISO_SUNDAY = 7;
 const ISO_WEEKDAY_PATTERN = 'i';
@@ -46,12 +52,16 @@ function calendarDayOf(value: string): string | null {
 
 /** Instante en que empieza un día calendario en BsAs. */
 function startOfDayBsAs(day: string): Instant {
-  return asInstant(fromZonedTime(`${day}${START_OF_DAY}`, BSAS_TIME_ZONE).toISOString());
+  return asInstant(
+    fromZonedTime(`${day}${START_OF_DAY}`, BSAS_TIME_ZONE).toISOString(),
+  );
 }
 
 /** Día de negocio (BsAs) al que pertenece un instante. */
 export function localDateOf(instant: Instant): LocalDate {
-  return asLocalDate(formatInTimeZone(toValidDate(instant), BSAS_TIME_ZONE, LOCAL_DATE_PATTERN));
+  return asLocalDate(
+    formatInTimeZone(toValidDate(instant), BSAS_TIME_ZONE, LOCAL_DATE_PATTERN),
+  );
 }
 
 /** Valida y normaliza un ISO a `Instant` UTC. Lanza si es inválido. */
@@ -75,7 +85,9 @@ function parseDisplayDate(value: string): Instant | null {
   const isoDay = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   if (!isLocalDateString(isoDay)) return null;
   const time = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`;
-  return asInstant(fromZonedTime(`${isoDay}T${time}`, BSAS_TIME_ZONE).toISOString());
+  return asInstant(
+    fromZonedTime(`${isoDay}T${time}`, BSAS_TIME_ZONE).toISOString(),
+  );
 }
 
 function resolveDateString(value: string): Instant | null {
@@ -94,7 +106,9 @@ function resolveDateString(value: string): Instant | null {
  */
 export function resolveBackendDate(value: unknown): Instant | null {
   if (typeof value === 'number') {
-    return Number.isFinite(value) ? asInstant(new Date(value).toISOString()) : null;
+    return Number.isFinite(value)
+      ? asInstant(new Date(value).toISOString())
+      : null;
   }
   if (typeof value !== 'string' || value === '') return null;
   return resolveDateString(value);
@@ -118,7 +132,9 @@ export function msToInstant(ms: number): Instant {
 /** Suma (o resta) días calendario de BsAs. */
 export function addDays(date: LocalDate, amount: number): LocalDate {
   const shifted = addDaysToDate(toValidDate(startOfDayBsAs(date)), amount);
-  return asLocalDate(formatInTimeZone(shifted, BSAS_TIME_ZONE, LOCAL_DATE_PATTERN));
+  return asLocalDate(
+    formatInTimeZone(shifted, BSAS_TIME_ZONE, LOCAL_DATE_PATTERN),
+  );
 }
 
 export interface LocalDateRange {
@@ -142,7 +158,11 @@ export interface WeekRange {
 /** Lunes y domingo de la semana que contiene `date` (port de `calculateWeekRange`). */
 export function calculateWeekRange(date: LocalDate): WeekRange {
   const isoWeekday = Number(
-    formatInTimeZone(toValidDate(startOfDayBsAs(date)), BSAS_TIME_ZONE, ISO_WEEKDAY_PATTERN),
+    formatInTimeZone(
+      toValidDate(startOfDayBsAs(date)),
+      BSAS_TIME_ZONE,
+      ISO_WEEKDAY_PATTERN,
+    ),
   );
   const startDate = addDays(date, 1 - isoWeekday);
   return { startDate, endDate: addDays(startDate, ISO_SUNDAY - 1) };

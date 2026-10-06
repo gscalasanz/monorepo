@@ -5,9 +5,12 @@ export const TIPO_INSCRIPCION = {
   SCOUT_ARGENTINA: 'scout_argentina',
 } as const;
 
-export type TipoInscripcion = (typeof TIPO_INSCRIPCION)[keyof typeof TIPO_INSCRIPCION];
+export type TipoInscripcion =
+  (typeof TIPO_INSCRIPCION)[keyof typeof TIPO_INSCRIPCION];
 
-export const TIPO_INSCRIPCION_LABELS: Readonly<Record<TipoInscripcion, string>> = {
+export const TIPO_INSCRIPCION_LABELS: Readonly<
+  Record<TipoInscripcion, string>
+> = {
   grupo: 'Grupo',
   scout_argentina: 'Scout Argentina',
 };
@@ -23,9 +26,12 @@ export const ESTADO_INSCRIPCION = {
   BONIFICADO: 'bonificado',
 } as const;
 
-export type EstadoInscripcion = (typeof ESTADO_INSCRIPCION)[keyof typeof ESTADO_INSCRIPCION];
+export type EstadoInscripcion =
+  (typeof ESTADO_INSCRIPCION)[keyof typeof ESTADO_INSCRIPCION];
 
-export const ESTADO_INSCRIPCION_LABELS: Readonly<Record<EstadoInscripcion, string>> = {
+export const ESTADO_INSCRIPCION_LABELS: Readonly<
+  Record<EstadoInscripcion, string>
+> = {
   pendiente: 'Pendiente',
   parcial: 'Pago Parcial',
   pagado: 'Pagado',

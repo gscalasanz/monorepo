@@ -11,7 +11,9 @@ export const ESTADO_PAGO_CAMPAMENTO = {
 export type EstadoPagoCampamento =
   (typeof ESTADO_PAGO_CAMPAMENTO)[keyof typeof ESTADO_PAGO_CAMPAMENTO];
 
-export const ESTADO_PAGO_CAMPAMENTO_LABELS: Readonly<Record<EstadoPagoCampamento, string>> = {
+export const ESTADO_PAGO_CAMPAMENTO_LABELS: Readonly<
+  Record<EstadoPagoCampamento, string>
+> = {
   pendiente: 'Pendiente',
   parcial: 'Pago Parcial',
   pagado: 'Pagado',

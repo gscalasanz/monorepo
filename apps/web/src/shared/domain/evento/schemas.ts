@@ -1,7 +1,11 @@
 /** Respuestas de `/eventos` (eventos, productos, ventas, KPIs). */
 import { z } from 'zod';
 
-import { baseEntityShape, decimalSchema, nullableField } from '@/shared/domain/common';
+import {
+  baseEntityShape,
+  decimalSchema,
+  nullableField,
+} from '@/shared/domain/common';
 import {
   DESTINO_GANANCIA,
   ESTADO_COBRO_VENTA,
@@ -67,7 +71,9 @@ export type Evento = z.infer<typeof eventoSchema>;
 export const eventosSchema = z.array(eventoSchema);
 
 /** `GET /eventos/:id` agrega `resumenFinanciero`. */
-export const eventoDetalleSchema = eventoSchema.extend({ resumenFinanciero: eventoKpisSchema });
+export const eventoDetalleSchema = eventoSchema.extend({
+  resumenFinanciero: eventoKpisSchema,
+});
 export type EventoDetalle = z.infer<typeof eventoDetalleSchema>;
 
 export const ventaSchema = z.object({

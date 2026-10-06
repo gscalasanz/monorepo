@@ -51,7 +51,10 @@ describe('eventoSchema', () => {
   });
 
   it('detalle con resumenFinanciero (incluye totalRecuperado)', () => {
-    const evento = eventoDetalleSchema.parse({ ...EVENTO_FIXTURE, resumenFinanciero: KPIS });
+    const evento = eventoDetalleSchema.parse({
+      ...EVENTO_FIXTURE,
+      resumenFinanciero: KPIS,
+    });
     expect(evento.resumenFinanciero.totalRecuperado).toBe(600);
   });
 
@@ -62,7 +65,9 @@ describe('eventoSchema', () => {
 
 describe('productos y ventas', () => {
   it('productos con cantidadVendida', () => {
-    const [producto] = productosConVentasSchema.parse([{ ...PRODUCTO_FIXTURE, cantidadVendida: 3 }]);
+    const [producto] = productosConVentasSchema.parse([
+      { ...PRODUCTO_FIXTURE, cantidadVendida: 3 },
+    ]);
     expect(producto?.cantidadVendida).toBe(3);
   });
 
@@ -78,25 +83,46 @@ describe('productos y ventas', () => {
 
   it('respuestas de borrar y cobrar venta', () => {
     expect(
-      deleteVentaResultSchema.parse({ ventaId: 'v', movimientoIdEliminado: null, hermanasEliminadas: 2 })
-        .hermanasEliminadas,
+      deleteVentaResultSchema.parse({
+        ventaId: 'v',
+        movimientoIdEliminado: null,
+        hermanasEliminadas: 2,
+      }).hermanasEliminadas,
     ).toBe(2);
     expect(
-      cobrarVentaResultSchema.parse({ ventaId: 'v', hermanasCobradas: 1, movimientosActualizados: ['m'] })
-        .movimientosActualizados,
+      cobrarVentaResultSchema.parse({
+        ventaId: 'v',
+        hermanasCobradas: 1,
+        movimientosActualizados: ['m'],
+      }).movimientosActualizados,
     ).toEqual(['m']);
   });
 
   it('resumen de ventas', () => {
     const resumen = resumenVentasSchema.parse({
-      productos: [{ nombre: 'Pastelitos', precioCosto: 0, precioVenta: 1200, cantidadVendida: 1, ganancia: 1200 }],
+      productos: [
+        {
+          nombre: 'Pastelitos',
+          precioCosto: 0,
+          precioVenta: 1200,
+          cantidadVendida: 1,
+          ganancia: 1200,
+        },
+      ],
       ventasPorVendedor: [
         {
           vendedorId: 'per-1',
           vendedorNombre: 'Juan',
           cantidadTotal: 1,
           gananciaTotal: 1200,
-          desglose: [{ productoId: 'prod-1', nombreProducto: 'Pastelitos', cantidad: 1, ganancia: 1200 }],
+          desglose: [
+            {
+              productoId: 'prod-1',
+              nombreProducto: 'Pastelitos',
+              cantidad: 1,
+              ganancia: 1200,
+            },
+          ],
         },
       ],
       gananciaTotal: 1200,
@@ -115,7 +141,14 @@ describe('entregas', () => {
       fecha: null,
       notas: null,
       createdAt: TIMESTAMP,
-      lineas: [{ id: 'l', productoId: 'prod-1', productoNombre: 'Pastelitos', cantidad: 2 }],
+      lineas: [
+        {
+          id: 'l',
+          productoId: 'prod-1',
+          productoNombre: 'Pastelitos',
+          cantidad: 2,
+        },
+      ],
     });
     expect(entrega.lineas[0]?.cantidad).toBe(2);
     expect(

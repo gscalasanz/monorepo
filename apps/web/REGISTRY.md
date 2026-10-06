@@ -18,3 +18,9 @@
 | `calculateEventProfit` · `calculateProfitBySeller` | domain (evento) | `src/shared/domain/evento/profit.ts` |
 | `APP_ROUTES` · `PERSONA_TYPE_ROUTES` · `UI_CONFIG` · `LOCALE` · `CURRENCY` | constants | `src/shared/constants/` |
 | `MESSAGES` | copy | `src/shared/copy/` |
+| `apiClient` (`get`/`post`/`patch`/`delete`/`getBlob`/`getText`) · `createApiClient` | api | `src/shared/api/api-client.ts` → [api](./REGISTRY-detail/api.md#cliente) |
+| `ApiError` · `isApiError` · `extractErrorMessage` · `nestMessageOf` | api | `src/shared/api/api-error.ts` → [api](./REGISTRY-detail/api.md#errores) |
+| `API_ENDPOINTS` · `QUERY_PARAMS` · `HTTP_CONFIG` · `buildUrl` · `API_BASE_URL` | api | `src/shared/api/` → [api](./REGISTRY-detail/api.md#endpoints) |
+| `publishGlobalError` · `useGlobalErrors` · `dismissGlobalError` · `globalErrorStore` | api | `src/shared/api/global-errors.ts` → [api](./REGISTRY-detail/api.md#errores-globales) |
+| `registerAuthBridge` · `setActivityListener` | api | `src/shared/api/registry.ts` → [api](./REGISTRY-detail/api.md#cliente) |
+| `createFakeFetch` | testing | `src/shared/api/testing/fake-fetch.ts` → [testing](./REGISTRY-detail/testing.md) |

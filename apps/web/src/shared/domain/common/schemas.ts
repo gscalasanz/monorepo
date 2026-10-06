@@ -25,8 +25,14 @@ export const decimalSchema = z.union([
 /** Campo nullable que puede faltar en la respuesta: ausente → `null`. */
 export function nullableField<T extends z.ZodTypeAny>(
   schema: T,
-): z.ZodEffects<z.ZodOptional<z.ZodNullable<T>>, z.output<T> | null, z.input<T> | null | undefined> {
-  return schema.nullish().transform((value): z.output<T> | null => value ?? null);
+): z.ZodEffects<
+  z.ZodOptional<z.ZodNullable<T>>,
+  z.output<T> | null,
+  z.input<T> | null | undefined
+> {
+  return schema
+    .nullish()
+    .transform((value): z.output<T> | null => value ?? null);
 }
 
 /** Columnas de `BaseEntity` (id + auditoría). `deletedAt` siempre es null en lecturas. */
@@ -36,4 +42,3 @@ export const baseEntityShape = {
   updatedAt: instantSchema,
   deletedAt: nullableField(instantSchema),
 };
-

@@ -45,7 +45,10 @@ export type CajaConSaldo = z.infer<typeof cajaResponseSchema>;
 export const cajasResponseSchema = z.array(cajaResponseSchema);
 
 /** `GET /movimientos/saldo/:cajaId` */
-export const saldoCajaSchema = z.object({ cajaId: z.string(), saldo: z.number() });
+export const saldoCajaSchema = z.object({
+  cajaId: z.string(),
+  saldo: z.number(),
+});
 export type SaldoCaja = z.infer<typeof saldoCajaSchema>;
 
 /** `GET /cajas/personal/:personaId/saldo` */
@@ -69,7 +72,10 @@ export const fondoSolidarioSchema = z.object({
 
 export type FondoSolidario = z.infer<typeof fondoSolidarioSchema>;
 
-const totalCantidadSchema = z.object({ total: z.number(), cantidad: z.number() });
+const totalCantidadSchema = z.object({
+  total: z.number(),
+  cantidad: z.number(),
+});
 
 /** `GET /cajas/consolidado` (todo number). */
 export const consolidadoSaldosSchema = z.object({

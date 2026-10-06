@@ -6,7 +6,10 @@
 import { z } from 'zod';
 
 import { nullableField } from '@/shared/domain/common';
-import { destinoGananciaSchema, tipoEventoSchema } from '@/shared/domain/evento';
+import {
+  destinoGananciaSchema,
+  tipoEventoSchema,
+} from '@/shared/domain/evento';
 import { personaTypeSchema } from '@/shared/domain/persona';
 import { instantSchema, localDateSchema } from '@/shared/time';
 
@@ -18,10 +21,16 @@ export const REPORTE_VARIANTE = {
   GRUPO: 'grupo',
 } as const;
 
-export type ReporteVariante = (typeof REPORTE_VARIANTE)[keyof typeof REPORTE_VARIANTE];
+export type ReporteVariante =
+  (typeof REPORTE_VARIANTE)[keyof typeof REPORTE_VARIANTE];
 
-export const REPORTE_SEVERIDAD = { ALTA: 'alta', MEDIA: 'media', OK: 'ok' } as const;
-export type ReporteSeveridad = (typeof REPORTE_SEVERIDAD)[keyof typeof REPORTE_SEVERIDAD];
+export const REPORTE_SEVERIDAD = {
+  ALTA: 'alta',
+  MEDIA: 'media',
+  OK: 'ok',
+} as const;
+export type ReporteSeveridad =
+  (typeof REPORTE_SEVERIDAD)[keyof typeof REPORTE_SEVERIDAD];
 
 const reporteBaseShape = {
   generadoEn: instantSchema,
@@ -54,7 +63,10 @@ const reporteBaseShape = {
     }),
   ),
   integridad: z.array(
-    z.object({ severidad: z.nativeEnum(REPORTE_SEVERIDAD), mensaje: z.string() }),
+    z.object({
+      severidad: z.nativeEnum(REPORTE_SEVERIDAD),
+      mensaje: z.string(),
+    }),
   ),
 };
 
@@ -76,10 +88,20 @@ const ventaBaseShape = {
     }),
   ),
   porTipoPersona: z.array(
-    z.object({ tipo: personaTypeSchema, label: z.string(), vendedores: z.number(), ...metricasShape }),
+    z.object({
+      tipo: personaTypeSchema,
+      label: z.string(),
+      vendedores: z.number(),
+      ...metricasShape,
+    }),
   ),
   porRama: z.array(
-    z.object({ grupo: z.string(), esEducador: z.boolean(), vendedores: z.number(), ...metricasShape }),
+    z.object({
+      grupo: z.string(),
+      esEducador: z.boolean(),
+      vendedores: z.number(),
+      ...metricasShape,
+    }),
   ),
   vendedores: z.array(
     z.object({
@@ -94,7 +116,12 @@ const ventaBaseShape = {
   ),
   stock: z.object({
     productos: z.array(
-      z.object({ nombre: z.string(), vendido: z.number(), entregado: z.number(), pendiente: z.number() }),
+      z.object({
+        nombre: z.string(),
+        vendido: z.number(),
+        entregado: z.number(),
+        pendiente: z.number(),
+      }),
     ),
     totalVendido: z.number(),
     totalEntregado: z.number(),
@@ -103,11 +130,22 @@ const ventaBaseShape = {
   horariosEntrega: z.object({
     diaPrincipal: z.string(),
     franjas: z.array(
-      z.object({ desde: z.string(), hasta: z.string(), entregas: z.number(), porciones: z.number() }),
+      z.object({
+        desde: z.string(),
+        hasta: z.string(),
+        entregas: z.number(),
+        porciones: z.number(),
+      }),
     ),
     totalEntregas: z.number(),
     totalPorciones: z.number(),
-    fueraDeDia: z.array(z.object({ dia: z.string(), entregas: z.number(), porciones: z.number() })),
+    fueraDeDia: z.array(
+      z.object({
+        dia: z.string(),
+        entregas: z.number(),
+        porciones: z.number(),
+      }),
+    ),
   }),
 };
 
@@ -125,7 +163,10 @@ const destinoLadoSchema = z.object({
 });
 
 export const reporteEventoSchema = z.discriminatedUnion('variante', [
-  z.object({ ...ventaBaseShape, variante: z.literal(REPORTE_VARIANTE.VENTA_CAJA_GRUPO) }),
+  z.object({
+    ...ventaBaseShape,
+    variante: z.literal(REPORTE_VARIANTE.VENTA_CAJA_GRUPO),
+  }),
   z.object({
     ...ventaBaseShape,
     variante: z.literal(REPORTE_VARIANTE.VENTA_CUENTAS_PERSONALES),
@@ -135,7 +176,10 @@ export const reporteEventoSchema = z.discriminatedUnion('variante', [
     ...ventaBaseShape,
     variante: z.literal(REPORTE_VARIANTE.VENTA_MIXTA),
     gananciaPorPersona: gananciaPorPersonaSchema,
-    porDestino: z.object({ cajaGrupo: destinoLadoSchema, cuentasPersonales: destinoLadoSchema }),
+    porDestino: z.object({
+      cajaGrupo: destinoLadoSchema,
+      cuentasPersonales: destinoLadoSchema,
+    }),
   }),
   z.object({
     ...reporteBaseShape,

@@ -23,7 +23,8 @@ export const ESTADO_PERSONA = {
   INACTIVO: 'inactivo',
 } as const;
 
-export type EstadoPersona = (typeof ESTADO_PERSONA)[keyof typeof ESTADO_PERSONA];
+export type EstadoPersona =
+  (typeof ESTADO_PERSONA)[keyof typeof ESTADO_PERSONA];
 
 export const ESTADO_PERSONA_LABELS: Readonly<Record<EstadoPersona, string>> = {
   activo: 'Activo',
@@ -55,9 +56,11 @@ export const CARGO_EDUCADOR = {
   JEFE_DE_GRUPO: 'Jefe de Grupo',
 } as const;
 
-export type CargoEducador = (typeof CARGO_EDUCADOR)[keyof typeof CARGO_EDUCADOR];
+export type CargoEducador =
+  (typeof CARGO_EDUCADOR)[keyof typeof CARGO_EDUCADOR];
 
-export const CARGOS_EDUCADOR: readonly CargoEducador[] = Object.values(CARGO_EDUCADOR);
+export const CARGOS_EDUCADOR: readonly CargoEducador[] =
+  Object.values(CARGO_EDUCADOR);
 
 export const CARGO_EDUCADOR_LABELS: Readonly<Record<CargoEducador, string>> = {
   Educador: 'Educador',

@@ -2,7 +2,13 @@
  * `@/shared/time` — único lugar autorizado a leer el reloj y construir fechas
  * (regla ESLint `no-new-date`). Zona canónica: America/Argentina/Buenos_Aires.
  */
-export { asInstant, asLocalDate, type Brand, type Instant, type LocalDate } from './branded';
+export {
+  asInstant,
+  asLocalDate,
+  type Brand,
+  type Instant,
+  type LocalDate,
+} from './branded';
 export {
   BSAS_TIME_ZONE,
   DATE_FORMATS,
@@ -29,6 +35,14 @@ export {
   type WeekRange,
 } from './parse';
 export { formatDate, formatInBsAs } from './format';
-export { dateTimeInputToInstant, toDateInputValue, toDateTimeInputValue } from './input';
-export { calculateDurationInMinutes, formatDuration, type TimeOfDayRange } from './duration';
+export {
+  dateTimeInputToInstant,
+  toDateInputValue,
+  toDateTimeInputValue,
+} from './input';
+export {
+  calculateDurationInMinutes,
+  formatDuration,
+  type TimeOfDayRange,
+} from './duration';
 export { instantSchema, localDateSchema } from './schemas';

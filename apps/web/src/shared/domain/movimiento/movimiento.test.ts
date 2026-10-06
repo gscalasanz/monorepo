@@ -19,10 +19,14 @@ import {
 } from '@/shared/domain';
 import { MOVIMIENTO_FIXTURE, omitKeys } from '@/shared/domain/testing/fixtures';
 
-
 describe('enums de movimiento (port de movimiento.enum.spec.ts)', () => {
   it('MEDIO_PAGO incluye los cuatro medios, mixto incluido', () => {
-    expect(Object.values(MEDIO_PAGO)).toEqual(['efectivo', 'transferencia', 'saldo_personal', 'mixto']);
+    expect(Object.values(MEDIO_PAGO)).toEqual([
+      'efectivo',
+      'transferencia',
+      'saldo_personal',
+      'mixto',
+    ]);
     expect(MEDIO_PAGO_LABELS.mixto).toBe('Mixto');
   });
 
@@ -31,8 +35,12 @@ describe('enums de movimiento (port de movimiento.enum.spec.ts)', () => {
   });
 
   it('incluye los conceptos de bonificación del fondo solidario', () => {
-    expect(CONCEPTO_MOVIMIENTO.BONIFICACION_OTORGADA).toBe('bonificacion_otorgada');
-    expect(CONCEPTO_MOVIMIENTO.BONIFICACION_RECIBIDA).toBe('bonificacion_recibida');
+    expect(CONCEPTO_MOVIMIENTO.BONIFICACION_OTORGADA).toBe(
+      'bonificacion_otorgada',
+    );
+    expect(CONCEPTO_MOVIMIENTO.BONIFICACION_RECIBIDA).toBe(
+      'bonificacion_recibida',
+    );
   });
 
   it('todo concepto tiene label (sin esto la tabla muestra undefined)', () => {
@@ -151,30 +159,66 @@ describe('movimientoSchema', () => {
   });
 
   it('rechaza un concepto desconocido', () => {
-    expect(movimientoSchema.safeParse({ ...MOVIMIENTO_FIXTURE, concepto: 'cuota_grupo' }).success).toBe(
-      false,
-    );
+    expect(
+      movimientoSchema.safeParse({
+        ...MOVIMIENTO_FIXTURE,
+        concepto: 'cuota_grupo',
+      }).success,
+    ).toBe(false);
   });
 
   it('paginado, transferencia y pendientes agrupados', () => {
-    const meta = { page: 1, limit: 20, total: 1, totalPages: 1, hasPreviousPage: false, hasNextPage: false };
-    expect(movimientosPaginatedSchema.parse({ data: [MOVIMIENTO_FIXTURE], meta }).data).toHaveLength(1);
+    const meta = {
+      page: 1,
+      limit: 20,
+      total: 1,
+      totalPages: 1,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    };
     expect(
-      transferenciaResultSchema.parse({ egreso: MOVIMIENTO_FIXTURE, ingreso: MOVIMIENTO_FIXTURE }).egreso
-        .monto,
+      movimientosPaginatedSchema.parse({ data: [MOVIMIENTO_FIXTURE], meta })
+        .data,
+    ).toHaveLength(1);
+    expect(
+      transferenciaResultSchema.parse({
+        egreso: MOVIMIENTO_FIXTURE,
+        ingreso: MOVIMIENTO_FIXTURE,
+      }).egreso.monto,
     ).toBe(1500.5);
     const [grupo] = pendientesPorPersonaSchema.parse([
-      { personaId: 'p', personaNombre: 'Ana', totalPendiente: 10, movimientos: [MOVIMIENTO_FIXTURE] },
+      {
+        personaId: 'p',
+        personaNombre: 'Ana',
+        totalPendiente: 10,
+        movimientos: [MOVIMIENTO_FIXTURE],
+      },
     ]);
     expect(grupo?.totalPendiente).toBe(10);
   });
 });
 
 describe('filterMovimientos (port de movimiento-filter.util.spec.ts)', () => {
-  const ingreso = { id: 'i1', tipo: 'ingreso', concepto: 'evento_venta_ingreso' } as const;
-  const recupero = { id: 'i2', tipo: 'ingreso', concepto: 'evento_venta_recupero_costo' } as const;
-  const gasto = { id: 'e1', tipo: 'egreso', concepto: 'evento_venta_gasto' } as const;
-  const usoSaldo = { id: 'e2', tipo: 'egreso', concepto: 'uso_saldo_personal' } as const;
+  const ingreso = {
+    id: 'i1',
+    tipo: 'ingreso',
+    concepto: 'evento_venta_ingreso',
+  } as const;
+  const recupero = {
+    id: 'i2',
+    tipo: 'ingreso',
+    concepto: 'evento_venta_recupero_costo',
+  } as const;
+  const gasto = {
+    id: 'e1',
+    tipo: 'egreso',
+    concepto: 'evento_venta_gasto',
+  } as const;
+  const usoSaldo = {
+    id: 'e2',
+    tipo: 'egreso',
+    concepto: 'uso_saldo_personal',
+  } as const;
   const todos = [ingreso, recupero, gasto, usoSaldo];
 
   it('TODOS devuelve todos (copia nueva)', () => {
@@ -184,14 +228,22 @@ describe('filterMovimientos (port de movimiento-filter.util.spec.ts)', () => {
   });
 
   it('INGRESOS devuelve solo ingresos', () => {
-    expect(filterMovimientos(todos, FILTRO_MOVIMIENTOS.INGRESOS)).toEqual([ingreso, recupero]);
+    expect(filterMovimientos(todos, FILTRO_MOVIMIENTOS.INGRESOS)).toEqual([
+      ingreso,
+      recupero,
+    ]);
   });
 
   it('EGRESOS incluye uso_saldo_personal', () => {
-    expect(filterMovimientos(todos, FILTRO_MOVIMIENTOS.EGRESOS)).toEqual([gasto, usoSaldo]);
+    expect(filterMovimientos(todos, FILTRO_MOVIMIENTOS.EGRESOS)).toEqual([
+      gasto,
+      usoSaldo,
+    ]);
   });
 
   it('GASTOS excluye uso_saldo_personal', () => {
-    expect(filterMovimientos(todos, FILTRO_MOVIMIENTOS.GASTOS)).toEqual([gasto]);
+    expect(filterMovimientos(todos, FILTRO_MOVIMIENTOS.GASTOS)).toEqual([
+      gasto,
+    ]);
   });
 });

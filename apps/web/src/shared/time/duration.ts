@@ -14,7 +14,10 @@ function minutesOfDay(time: string): number {
 }
 
 /** Minutos entre dos horas; si el fin es anterior, asume que cruza la medianoche. */
-export function calculateDurationInMinutes({ start, end }: TimeOfDayRange): number {
+export function calculateDurationInMinutes({
+  start,
+  end,
+}: TimeOfDayRange): number {
   const diff = minutesOfDay(end) - minutesOfDay(start);
   return diff < 0 ? diff + MINUTES_PER_DAY : diff;
 }
