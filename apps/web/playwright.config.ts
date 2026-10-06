@@ -1,4 +1,9 @@
+import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+
+// Credenciales E2E_EMAIL/E2E_PASSWORD y NEXT_PUBLIC_API_URL viven en .env.local.
+const ENV_FILE = '.env.local';
+if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
 
 /**
  * E2E contra `pnpm dev` (4201, único origin que acepta el CORS del backend) y el

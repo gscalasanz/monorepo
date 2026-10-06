@@ -25,8 +25,8 @@
 - [x] ESLint: `no-explicit-any`, `feature-boundaries`, `no-new-date` (copiados de mi-tienda)
 - [x] Prettier + husky + lint-staged (typecheck + lint en pre-commit) + commitlint
 - [x] Vitest + Testing Library + Playwright configurados (un test trivial de cada uno en verde)
-- [ ] `docs/DESIGN.md` + tokens en `globals.css` (light/dark, ramas) + `reui-bridge.css` — **aprobado por el usuario**
-- [ ] Mockups aprobados de 3 pantallas clave (dashboard, persona-dashboard, evento-detalle)
+- [x] `docs/DESIGN.md` + tokens en `globals.css` (light/dark, ramas) + `reui-bridge.css` — **aprobado por el usuario** (eligió «insignia», commit 625da2d)
+- [x] Mockups aprobados de 3 pantallas clave (dashboard, persona-dashboard, evento-detalle) — `design-directions/insignia/screens/`, aprobados con la elección de la dirección
 - [x] `CLAUDE.md`, `REGISTRY.md`, `REGISTRY-detail/`, `.claude/settings.json` (permisos pnpm + hook de formato)
 
 ## Fase 1 — Plataforma compartida
@@ -38,27 +38,56 @@
 - [x] Keep-alive 14 min
 - [x] Cache en memoria TTL 5 min / LRU 100
 - [x] `shared/auth`: token storage, decode JWT, refresh con cola, logout, `useSession`, guard con `redirectUrl`
-- [ ] Notificaciones (toast) + `ConfirmDialog` (ReUI)
+- [x] Notificaciones (toast) + `ConfirmDialog` (ReUI)
 - [x] Formatos: dinero ARS, humanize, status config (equivalentes de las pipes)
-- [ ] Kit de forms: `useFieldValidation` + campos (texto, número, fecha, fecha-hora, hora, email, teléfono con máscara, password, select, textarea, checkbox, días, time-picker) — ReUI primero
+- [x] Kit de forms: `useFieldValidation` + campos (texto, número, fecha, fecha-hora, hora, email, teléfono con máscara, password, select, textarea, checkbox, días, time-picker) — ReUI primero
 - [x] Validadores portados (bonificación, comprobante, fechas campamento, reembolso, positivo, rama, safe-text, saldo suficiente)
-- [ ] Filtros genéricos (equivalente a `generic-filters` + `chips-filter`) — ReUI primero
-- [ ] DataGrid (ReUI) con paginación, orden, vacío y loading
-- [ ] Gráficos (recharts): barra y donut; KPI/stat cards
-- [ ] Empty state, loading, not-found
+- [x] Filtros genéricos (equivalente a `generic-filters` + `chips-filter`) — ReUI primero
+- [x] DataGrid (ReUI) con paginación, orden, vacío y loading
+- [x] Gráficos (recharts): barra y donut; KPI/stat cards
+- [x] Empty state, loading, not-found
 - [ ] AppShell en `src/app/(app)/layout.tsx` (monta `useSessionBootstrap()` + `useRequireSession()`, ver docs/HALLAZGOS.md): sidebar colapsable, header con título/subtítulo por ruta, menú de identidad, toggle de tema, nav mobile
 
 ## Fase 2 — Módulos (en este orden)
 
-Cada módulo: expandir paridad → implementar → tests → e2e → verificación visual → commit.
+Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar → tests → e2e → verificación visual → commit.
 
 ### auth
 - [ ] Paridad expandida
+  - `/login` (público, sin shell): si ya hay sesión válida → `/dashboard` (`noAuthGuard`).
+  - Form: email (requerido + formato) y password (requerido, mín. 6); submit inválido marca todo.
+  - Éxito → `redirectUrl` de `sessionStorage` (default `/dashboard`) y se consume.
+  - Error → alerta inline: 401 = "Credenciales inválidas. Verifique su email y contraseña."; si no,
+    `message` de NestJS; fallback "Error al iniciar sesión. Por favor, intente nuevamente.". El toast
+    global también aparece (el login no tiene `SKIP_GLOBAL_ERROR` en Angular).
+  - Botón con estado "Ingresando..." deshabilitado mientras carga.
+  - Cambio de email y de password viven en `/configuracion` (card "Mi Perfil"): nombre + tipo de
+    solo lectura; email: nuevo email (requerido + formato, precargado con el actual) + contraseña
+    actual (requerida, mín. 8) → toast "Email actualizado exitosamente" y limpia la contraseña;
+    password: actual (mín. 8), nueva (mín. 8), confirmar (requerida, "Las contraseñas no
+    coinciden") → toast "Contraseña actualizada. Por favor inicia sesión nuevamente." y la sesión
+    se invalida (login forzado). Errores: toast con `message` del backend.
+  - Desvío: el link "¿Olvidaste tu contraseña?" de Angular es `href="#"` sin función → no se migra.
 - [ ] Login · cambio de email · cambio de password (invalida sesiones)
 - [ ] Módulo cerrado (DoD §9)
 
 ### dashboard
 - [ ] Paridad expandida
+  - Datos: `GET cajas/consolidado` (vía estado de cajas), `GET eventos`, `GET movimientos/recientes`;
+    los errores de eventos/recientes se tragan a lista vacía (paridad: `catchError(() => of([]))`).
+  - 6 KPIs (en este orden): Caja de Grupo (`cajaGrupo.saldo`), Fondos de Rama (suma de las 4
+    ramas de `fondosRama.detalle`), Cuentas Personales (`cuentasPersonales.total`), Reembolsos
+    Pendientes (`reembolsosPendientes.total`), Cobros Pendientes (`cobrosPendientes.total`), Fondo
+    Solidario (`fondoSolidario.saldo`). Sin consolidado → 0.
+  - Acciones rápidas: Registrar Inscripción → `/inscripciones/crear`, Crear Evento →
+    `/eventos/crear`, Registrar Gasto → `/movimientos/nuevo`, Deudores → `/reportes/deudas`.
+  - Próximos eventos: fecha ≥ hoy, orden ascendente, máx. 3, con categoría Venta/Grupo; click →
+    `/eventos/:id`; "Ver todos" → `/eventos`; vacío "No hay eventos próximos".
+  - Movimientos recientes: máx. 5; ícono ingreso/egreso; texto `humanize(descripcion ?? concepto)`;
+    detalle "responsable (o 'Sistema') • dd/MM/yyyy"; monto con signo (egreso negativo);
+    "Ver más" → `/movimientos`; vacío "No hay movimientos recientes".
+  - Fondos por rama: una fila por rama presente (Manada, Unidad, Caminantes, Rovers) con saldo;
+    vacío "No hay fondos de rama configurados".
 - [ ] Módulo cerrado (DoD §9)
 
 ### personas

@@ -50,7 +50,13 @@
   --color-muted: var(--color-recessed);
   --color-muted-foreground: var(--color-ink-muted);
   --color-destructive: var(--color-danger);
-  --color-destructive-foreground: var(--color-on-brand);
+  /* ReUI usa `*-foreground` como texto fuerte sobre el tinte del estado (alerts, badges light). */
+  --color-destructive-foreground: var(--color-danger);
+  --color-success-foreground: var(--color-success);
+  --color-warning-foreground: var(--color-warning);
+  --color-info-foreground: var(--color-info);
+  --color-invert: var(--color-ink);
+  --color-invert-foreground: var(--color-surface);
 
   /* — Bordes / foco — */
   --color-input: var(--color-border-strong);

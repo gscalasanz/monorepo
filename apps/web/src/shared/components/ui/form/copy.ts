@@ -1,0 +1,20 @@
+/** Copy del kit de formularios (español rioplatense, sin strings sueltos en JSX). */
+export const FORM_COPY = {
+  requiredMark: '*',
+  requiredHint: '(obligatorio)',
+  disabledHint: 'Campo no editable',
+  validHint: 'Dato válido',
+  showPassword: 'Mostrar contraseña',
+  hidePassword: 'Ocultar contraseña',
+  selectPlaceholder: 'Elegí una opción',
+  comboboxPlaceholder: 'Buscá y elegí',
+  comboboxEmpty: 'No hay resultados',
+  phonePlaceholder: '(11) 1234-5678',
+  moneyPrefix: '$',
+  moneyPlaceholder: '0',
+  cancel: 'Cancelar',
+  save: 'Guardar',
+  selectAllDays: 'Todos',
+  clearAllDays: 'Ninguno',
+  charCount: (count: number, max: number): string => `${count}/${max}`,
+} as const;
