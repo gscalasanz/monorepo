@@ -150,3 +150,8 @@ Piezas de dinero que comparten campamentos y eventos (port de los componentes co
   - `toGastoEventoDto` (sin `fecha`: el backend la rechaza con 400);
   - `toIngresoDto`.
 - Schemas: `gastoFormSchema` e `ingresoFormSchema`, más las listas de opciones de medio y estado de pago.
+- `FormDialogShell({ …, footerExtra?, submitDisabled? })` + `useDialogSubmit`: el armazón de diálogo de formulario que usan los diálogos de gasto e ingreso. Muestra el error inline y no se cierra mientras guarda. Lo reutilizan los diálogos de pago y bonificación de inscripciones y campamentos.
+
+### `RowActionsMenu` — `shared/components/data/row-actions-menu.tsx`
+
+Menú "⋯" de acciones por fila, sobre el DropdownMenu de ReUI: target táctil de 44px y soporte para ítems destructivos. Recibe `actions: RowAction[]` (`{ key, label, icon?, description?, destructive?, onSelect }`) y `ariaLabel`. Lo usa la lista de personas.

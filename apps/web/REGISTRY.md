@@ -29,6 +29,7 @@
 | `appCache` · `createMemoryCache` · `CACHE_CONFIG` · `CacheEntry` | api (cache) | `src/shared/cache/` → [api](./REGISTRY-detail/api.md#cache) |
 | `login` · `logout` · `register` · `changePassword` · `changeEmail` · `initializeSession` · `refreshSession` | api (auth) | `src/shared/auth/session.ts` → [api](./REGISTRY-detail/api.md#auth) |
 | `useSessionBootstrap` · `useSession` · `useRequireSession` · `useRedirectIfAuthenticated` | api (auth) | `src/shared/auth/hooks.ts` → [api](./REGISTRY-detail/api.md#auth) |
+| `useHasTokens` | api (auth) | `src/shared/auth/use-has-tokens.ts` (¿hay tokens? sin guard ni redirect; `null` en SSR) |
 | `evaluateAuthGuard` · `evaluateNoAuthGuard` · `saveRedirectUrl` · `consumeRedirectUrl` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |
 | `decodeJwt` · `isTokenValid` · `getAccessToken` · `setTokens` · `clearTokens` · `sessionStore` · `createSingleFlight` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |
 | `makeJwt` · `tokenExpiringIn` | testing | `src/shared/auth/testing/jwt.ts` |
@@ -42,6 +43,7 @@
 | `notify` · `AppToaster` | ui (feedback) | `src/shared/notifications/` → [ui](./REGISTRY-detail/ui.md#notificaciones--sharednotifications) |
 | `confirmDialog` · `ConfirmDialogHost` · `errorHintFor` | ui (feedback) | `src/shared/confirm/` → [ui](./REGISTRY-detail/ui.md#confirmación--sharedconfirm) |
 | `AppShell` · `SessionGate` · `PageHeader` · `ThemeToggle` · `NAV_GROUPS` · `pageMetaFor` · `isFormRoute` | ui (layout) | `src/shared/layout/` → [ui](./REGISTRY-detail/ui.md#layout--sharedlayout) |
+| `RowActionsMenu` · `RowAction` | ui (datos) | `src/shared/components/data/row-actions-menu.tsx` → [ui](./REGISTRY-detail/ui.md#datos--sharedcomponentsdata) |
 | `AppDataGrid` · `sortableHeader` · `Money` · `StatusBadge` · `RamaChip` · `DirectionTile` · `KeyValueList` · `SegmentedTabs`/`ButtonTabs` · `FilterBar` · `TotalsBar` · `useMediaQuery` | ui (datos) | `src/shared/components/data/` → [ui](./REGISTRY-detail/ui.md#datos--sharedcomponentsdata) |
 | `BarChartCard` · `DonutChart` · `Sparkline` · `KpiStrip` · `StatCard` · `DistributionBar` · `ChartLegend` · `SERIES_COLORS` | ui (gráficos) | `src/shared/components/charts/` → [ui](./REGISTRY-detail/ui.md#gráficos--sharedcomponentscharts) |
 | `EmptyState` · `LoadingState` · `ErrorState` · `NotFoundView` | ui (feedback) | `src/shared/components/feedback/` → [ui](./REGISTRY-detail/ui.md#feedback--sharedcomponentsfeedback) |
@@ -49,5 +51,6 @@
 | `FormField` · `TextField` · `PasswordField` · `PhoneField` · `NumberField` · `MoneyField` · `TextareaField` · `SelectField` · `ComboboxField` · `CheckboxField` · `SwitchField` · `RadioCardsField` · `DateField` · `DateTimeField` · `TimeField` · `DaysOfWeekField` · `FormActions` · `InputControl` · `useFieldChrome` | ui (formularios) | `src/shared/components/ui/form/` → [ui](./REGISTRY-detail/ui.md#formularios--sharedforms--sharedcomponentsuiform) |
 | `Panel` | ui | `src/shared/components/ui/panel.tsx` → [ui](./REGISTRY-detail/ui.md#panel--sharedcomponentsuipaneltsx) |
 | `useAsyncData` | hooks (datos) | `src/shared/hooks/use-async-data.ts` → [ui](./REGISTRY-detail/ui.md#useasyncdata--sharedhooksuse-async-datats) |
+| `FormDialogShell` · `useDialogSubmit` | ui (finanzas) | `src/shared/components/finanzas/` → [ui](./REGISTRY-detail/ui.md#finanzas--sharedcomponentsfinanzas) |
 | `MovimientoCard` · `EstadoPagoBadge` · `MovimientoFilterTabs` · `filterMovimientosBy` · `confirmPagarReembolso` · `GastoFormDialog` · `IngresoFormDialog` · `toGastoDto`/`toGastoEventoDto`/`toIngresoDto` | ui (finanzas) | `src/shared/components/finanzas/` → [ui](./REGISTRY-detail/ui.md#finanzas--sharedcomponentsfinanzas) |
 | `fetchPersonasActivas` · `fetchCajas` · `fetchFondoSolidario` · `fetchSaldoPersonal` · `cajaLabel` · `personaOptions` | api (lecturas) | `src/shared/queries/` → [api](./REGISTRY-detail/api.md#lecturas-transversales--sharedqueries) |

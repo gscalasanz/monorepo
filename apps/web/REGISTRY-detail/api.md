@@ -103,3 +103,12 @@ No toca `window` al importarse.
 `fetchFondoSolidario`, `fetchSaldoFondoSolidario`, `fetchSaldoPersonal(personaId)`. Etiquetas:
 `cajaLabel(caja)` ("Cuenta de X", "Fondo Manada", "Caja {id8}"), `cajaOptions`, `personaOptions`.
 Cada feature mantiene en sus `services/` lo que es solo suyo.
+
+### Builders de endpoints agregados en la migración de módulos
+
+`API_ENDPOINTS` suma builders por id:
+- inscripciones: `inscripcionPagar`, `inscripcionBonificacion`, `inscripcionPago({ id, movimientoId })`;
+- campamentos: `campamentoParticipantes`, `campamentoParticipante`, `campamentoBonificacion`, `campamentoPagos`, `campamentoGastos`;
+- eventos: `eventoKpis`, `eventoProductos`, `eventoVentas`, `eventoEntregas`, `eventoReportePublicoToggle`… (ver `endpoints.ts`).
+
+Usarlos en lugar de concatenar strings.
