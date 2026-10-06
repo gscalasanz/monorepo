@@ -1,0 +1,78 @@
+/**
+ * Puente de tokens ReUI/shadcn → marca Scout (mismo mecanismo que
+ * mi-tienda/packages/config/tailwind/reui-bridge.css).
+ *
+ * Los componentes vendorizados de ReUI pintan con los semánticos de shadcn
+ * (`bg-background`, `text-muted-foreground`, `bg-primary`…). Acá se definen EN
+ * TÉRMINOS del contrato de tokens de marca (`tokens.css`), así cualquier
+ * dirección estética que se aplique con `pnpm design:apply` repinta ReUI sin
+ * tocar un componente. Este archivo NO cambia entre direcciones.
+ *
+ * Invariante: no se redefinen `--color-success/danger/warning/info`: son
+ * tokens de marca (estados de pago/deuda). Si el instalador de shadcn los pisa
+ * en `globals.css`, ese bloque se borra.
+ */
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  html {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: var(--font-features, normal);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@theme inline {
+  /* — Superficies — */
+  --color-background: var(--color-canvas);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-surface-raised);
+  --color-popover-foreground: var(--color-ink);
+
+  /* — Acción — */
+  --color-primary: var(--color-brand);
+  --color-primary-foreground: var(--color-on-brand);
+  --color-secondary: var(--color-recessed);
+  --color-secondary-foreground: var(--color-ink);
+  --color-accent: var(--color-recessed);
+  --color-accent-foreground: var(--color-ink);
+  --color-muted: var(--color-recessed);
+  --color-muted-foreground: var(--color-ink-muted);
+  --color-destructive: var(--color-danger);
+  --color-destructive-foreground: var(--color-on-brand);
+
+  /* — Bordes / foco — */
+  --color-input: var(--color-border-strong);
+  --color-ring: var(--color-focus);
+
+  /* — Gráficos (recharts / ReUI charts) — */
+  --color-chart-1: var(--color-data-1);
+  --color-chart-2: var(--color-data-2);
+  --color-chart-3: var(--color-data-3);
+  --color-chart-4: var(--color-data-4);
+  --color-chart-5: var(--color-data-5);
+
+  /* — Sidebar (bloques de ReUI) — */
+  --color-sidebar: var(--color-sidebar-bg);
+  --color-sidebar-foreground: var(--color-sidebar-ink);
+  --color-sidebar-primary: var(--color-brand);
+  --color-sidebar-primary-foreground: var(--color-on-brand);
+  --color-sidebar-accent: var(--color-sidebar-hover);
+  --color-sidebar-accent-foreground: var(--color-sidebar-ink);
+  --color-sidebar-border: var(--color-border);
+  --color-sidebar-ring: var(--color-focus);
+
+  /* — Radios (shadcn espera `--radius`) — */
+  --radius: var(--radius-md);
+}

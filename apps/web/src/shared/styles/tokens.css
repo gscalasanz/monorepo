@@ -1,0 +1,95 @@
+/*
+ * Dirección "base": la identidad ACTUAL de scout (burgundy #812128 + indigo
+ * #242167, colores de rama del Angular) volcada al contrato de tokens.
+ * Es el placeholder hasta elegir dirección con `pnpm design:apply <nombre>`.
+ */
+@theme {
+  --color-canvas: oklch(98.2% 0.004 17);
+  --color-surface: oklch(100% 0 0);
+  --color-surface-raised: oklch(100% 0 0);
+  --color-recessed: oklch(96% 0.006 17);
+  --color-ink: oklch(22% 0.03 280);
+  --color-ink-muted: oklch(45% 0.025 280);
+  --color-ink-subtle: oklch(58% 0.02 280);
+  --color-border: oklch(91% 0.008 17);
+  --color-border-strong: oklch(62% 0.02 280);
+  --color-focus: oklch(45% 0.13 280);
+  --color-brand: oklch(37% 0.12 22);
+  --color-brand-hover: oklch(43% 0.14 22);
+  --color-on-brand: oklch(100% 0 0);
+  --color-brand-soft: oklch(95% 0.02 17);
+  --color-accent-2: oklch(28% 0.11 280);
+  --color-success: oklch(50% 0.13 150);
+  --color-success-soft: oklch(95% 0.04 150);
+  --color-danger: oklch(52% 0.2 27);
+  --color-danger-soft: oklch(95% 0.03 27);
+  --color-warning: oklch(55% 0.13 65);
+  --color-warning-soft: oklch(95% 0.05 80);
+  --color-info: oklch(50% 0.13 250);
+  --color-info-soft: oklch(95% 0.03 250);
+  --color-money-in: oklch(50% 0.13 150);
+  --color-money-out: oklch(52% 0.2 27);
+  --color-rama-manada: oklch(72% 0.18 70);
+  --color-rama-manada-soft: oklch(92% 0.06 70);
+  --color-rama-unidad: oklch(62% 0.18 145);
+  --color-rama-unidad-soft: oklch(92% 0.05 145);
+  --color-rama-caminantes: oklch(60% 0.15 250);
+  --color-rama-caminantes-soft: oklch(92% 0.04 250);
+  --color-rama-rovers: oklch(55% 0.18 310);
+  --color-rama-rovers-soft: oklch(92% 0.05 310);
+  --color-data-1: oklch(37% 0.12 22);
+  --color-data-2: oklch(40% 0.12 280);
+  --color-data-3: oklch(62% 0.18 145);
+  --color-data-4: oklch(72% 0.18 70);
+  --color-data-5: oklch(60% 0.15 250);
+  --color-sidebar-bg: oklch(100% 0 0);
+  --color-sidebar-ink: oklch(30% 0.03 280);
+  --color-sidebar-hover: oklch(96% 0.006 17);
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --font-features: 'tnum' 1;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+  --shadow-xs: 0 1px 2px oklch(20% 0.02 280 / 0.05);
+  --shadow-sm: 0 1px 3px oklch(20% 0.02 280 / 0.08);
+  --shadow-md: 0 4px 12px oklch(20% 0.02 280 / 0.08);
+  --shadow-lg: 0 12px 32px oklch(20% 0.02 280 / 0.12);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+}
+
+[data-theme='dark'] {
+  --color-canvas: oklch(17% 0.015 280);
+  --color-surface: oklch(21% 0.018 280);
+  --color-surface-raised: oklch(25% 0.02 280);
+  --color-recessed: oklch(19% 0.016 280);
+  --color-ink: oklch(95% 0.008 280);
+  --color-ink-muted: oklch(78% 0.015 280);
+  --color-ink-subtle: oklch(64% 0.015 280);
+  --color-border: oklch(30% 0.02 280);
+  --color-border-strong: oklch(55% 0.02 280);
+  --color-focus: oklch(75% 0.12 280);
+  --color-brand: oklch(70% 0.14 17);
+  --color-brand-hover: oklch(76% 0.12 17);
+  --color-on-brand: oklch(17% 0.015 280);
+  --color-brand-soft: oklch(28% 0.05 17);
+  --color-accent-2: oklch(76% 0.1 280);
+  --color-success: oklch(74% 0.15 150);
+  --color-success-soft: oklch(28% 0.05 150);
+  --color-danger: oklch(70% 0.17 27);
+  --color-danger-soft: oklch(28% 0.06 27);
+  --color-warning: oklch(78% 0.13 75);
+  --color-warning-soft: oklch(30% 0.05 75);
+  --color-info: oklch(74% 0.12 250);
+  --color-info-soft: oklch(28% 0.05 250);
+  --color-money-in: oklch(74% 0.15 150);
+  --color-money-out: oklch(70% 0.17 27);
+  --color-sidebar-bg: oklch(19% 0.016 280);
+  --color-sidebar-ink: oklch(88% 0.01 280);
+  --color-sidebar-hover: oklch(25% 0.02 280);
+}

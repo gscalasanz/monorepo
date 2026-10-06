@@ -1,0 +1,12 @@
+/*
+ * Punto de entrada de estilos. Los tokens de marca viven en
+ * `src/shared/styles/tokens.css` (los genera `pnpm design:apply <dirección>`
+ * a partir de la dirección estética elegida, ver docs/DESIGN.md) y el puente
+ * de semánticos shadcn/ReUI en `reui-bridge.css`.
+ *
+ * ⚠️ El instalador de shadcn inyecta `cssVars` y un `@custom-variant dark` en
+ * este archivo al agregar componentes de ReUI: se BORRAN (pisan la marca).
+ */
+@import 'tailwindcss';
+@import '../shared/styles/tokens.css';
+@import '../shared/styles/reui-bridge.css';
