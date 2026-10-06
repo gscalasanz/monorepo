@@ -44,3 +44,10 @@ fallback?)` para cualquier valor lanzado.
 
 Store zustand vanilla: `publishGlobalError(msg)`, `dismissGlobalError(id)`, `useGlobalErrors()` (hook
 para la futura UI de toasts), `globalErrorStore` (fuera de React / tests).
+
+## keep-alive
+
+`useKeepAlive()` — montarlo una vez en el layout autenticado (sin UI). Mientras está montado, cada
+request real reinicia una cuenta de **14 min** (`KEEP_ALIVE_MS`); al vencer hace `GET /` (público)
+con `isKeepAlive` (no reinicia el timer) y reprograma, haya funcionado o no. Al desmontar cancela.
+`createKeepAlive({ ping, delayMs? })` es el módulo puro (tests/composición).

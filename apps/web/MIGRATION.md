@@ -35,7 +35,7 @@
 - [x] `shared/domain`: enums y tipos portados de `frontend/src/app/shared/{enums,models,constants}` + schemas zod
 - [x] `shared/api`: client fetch (base URL por env), `ApiError` + extracción de `message` NestJS, `PaginatedResponse`
 - [x] Retry con backoff (reglas de `retry.interceptor.ts`) + opt-out de error global
-- [ ] Keep-alive 14 min
+- [x] Keep-alive 14 min
 - [ ] Cache en memoria TTL 5 min / LRU 100
 - [ ] `shared/auth`: token storage, decode JWT, refresh con cola, logout, `useSession`, guard con `redirectUrl`
 - [ ] Notificaciones (toast) + `ConfirmDialog` (ReUI)

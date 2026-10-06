@@ -56,3 +56,10 @@ export {
   type WriteOptions,
   type WriteOptionsWithSchema,
 } from './api-client';
+export {
+  KEEP_ALIVE_MS,
+  createKeepAlive,
+  type KeepAlive,
+  type KeepAliveDeps,
+} from './keep-alive';
+export { useKeepAlive } from './use-keep-alive';
