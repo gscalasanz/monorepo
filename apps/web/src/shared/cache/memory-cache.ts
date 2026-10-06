@@ -28,8 +28,11 @@ export interface CacheStats {
 
 export interface MemoryCache {
   set<T>(key: string, data: T, ttlMs?: number): void;
-  /** El caller declara el tipo guardado bajo esa clave (namespacing: `'user:123'`). */
-  get<T>(key: string): T | undefined;
+  /**
+   * `unknown` a propósito: el cache no puede garantizar el tipo; el caller lo
+   * valida (schema zod o type guard). Claves namespaced: `'user:123'`.
+   */
+  get(key: string): unknown;
   has(key: string): boolean;
   delete(key: string): boolean;
   clear(): void;
@@ -80,7 +83,7 @@ export function createMemoryCache({
 
   return {
     set,
-    get: <T>(key: string) => liveItem(key)?.data as T | undefined,
+    get: (key) => liveItem(key)?.data,
     has: (key) => liveItem(key) !== undefined,
     delete: (key) => items.delete(key),
     clear: () => items.clear(),

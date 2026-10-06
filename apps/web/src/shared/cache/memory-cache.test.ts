@@ -13,7 +13,12 @@ describe('createMemoryCache (port de CacheService)', () => {
   it('guarda y devuelve datos', () => {
     const cache = cacheAt({ now: 0 });
     cache.set('user:1', { nombre: 'Ana' });
-    expect(cache.get<{ nombre: string }>('user:1')).toEqual({ nombre: 'Ana' });
+    // `get` devuelve unknown: el caller lo valida (p. ej. con su schema zod).
+    const cached: unknown = cache.get('user:1');
+    expect(cached).toEqual({ nombre: 'Ana' });
+    expectTypeOf(cache.get('user:1')).toEqualTypeOf<unknown>();
+    // @ts-expect-error: sin genérico, no se puede "afirmar" el tipo cacheado.
+    cache.get<{ nombre: string }>('user:1');
     expect(cache.has('user:1')).toBe(true);
     expect(cache.get('nada')).toBeUndefined();
     expect(cache.has('nada')).toBe(false);

@@ -20,6 +20,8 @@ import {
 } from '@/shared/api/testing/fake-fetch';
 import { z } from 'zod';
 
+import { appCache } from '@/shared/cache';
+
 const USER = {
   id: 'per-2',
   nombre: 'Laura',
@@ -132,6 +134,12 @@ describe('logout', () => {
     await vi.waitFor(() => expect(fake.requests).toHaveLength(1));
     await new Promise((r) => setTimeout(r, 0));
     expect(globalErrorStore.getState().errors).toEqual([]);
+  });
+
+  it('limpia el cache en memoria (no mostrar datos de otro usuario)', () => {
+    appCache.set('movimientos:caja:1', [1, 2]);
+    logout();
+    expect(appCache.getStats().size).toBe(0);
   });
 
   it('sin tokens no llama al backend pero igual limpia y redirige', () => {

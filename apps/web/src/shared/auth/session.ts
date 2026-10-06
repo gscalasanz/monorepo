@@ -23,6 +23,7 @@ import {
   hasTokens,
   setTokens,
 } from '@/shared/auth/token-storage';
+import { appCache } from '@/shared/cache';
 import { APP_ROUTES } from '@/shared/constants';
 import type {
   AuthResponse,
@@ -42,8 +43,10 @@ function applyAuthResponse(response: AuthResponse): AuthUser {
   return response.user;
 }
 
+/** Limpia tokens, usuario y el cache en memoria (no mostrar datos de otro usuario). */
 export function clearSession(): void {
   clearTokens();
+  appCache.clear();
   sessionStore.setState({ user: null });
 }
 

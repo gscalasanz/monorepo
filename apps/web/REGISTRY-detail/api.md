@@ -59,11 +59,12 @@ con `isKeepAlive` (no reinicia el timer) y reprograma, haya funcionado o no. Al 
 
 ## cache
 
-`appCache` (`@/shared/cache`): `set(key, data, ttlMs?)`, `get<T>(key)`, `has`, `delete`, `clear`,
+`appCache` (`@/shared/cache`): `set(key, data, ttlMs?)`, `get(key): unknown` (validar con schema/type guard al leer), `has`, `delete`, `clear`,
 `invalidate(pattern)` (claves que contienen el patrón), `cleanup()`, `getStats()`. TTL 5 min, 100
 entradas. Paridad con `CacheService`: desaloja por orden de inserción (un `get` no refresca) y
 `ttl` 0 = default. Sin timer global: los vencidos se borran al leerlos o con `cleanup()`.
-Claves namespaced (`'movimientos:caja:<id>'`).
+Claves namespaced (`'movimientos:caja:<id>'`). `clearSession`/`logout` lo vacían (no mostrar
+datos de otro usuario).
 
 ## auth
 
