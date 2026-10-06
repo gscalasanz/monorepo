@@ -101,14 +101,14 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
   - La ficha acepta educadores con `cargo` null (hay datos reales así).
 - [x] Dashboard de personas · protagonistas/educadores crear/editar/detalle · externas crear/detalle/editar
 - [x] Persona-dashboard (cuenta, obligaciones, documentación, timeline) · habilitar/deshabilitar
-- [ ] Módulo cerrado (DoD §9) — falta la verificación visual 390/1440 light/dark
+- [x] Módulo cerrado (DoD §9)
 
 ### cajas
 - [x] Paridad expandida (`docs/paridad/personas-cajas.md` §cajas)
   - El movimiento rápido del drawer refresca el saldo del drawer, la StatCard y los últimos
     movimientos (antes quedaban viejos hasta cambiar de tab).
 - [x] Tabs caja grupo · fondos de rama · cuentas personales · fondo solidario · movimiento rápido
-- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
+- [x] Módulo cerrado (DoD §9)
 
 ### movimientos
 - [x] Paridad expandida (`docs/paridad/movimientos-inscripciones.md` §movimientos)
@@ -116,7 +116,7 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
     (`dayFilterBounds`), así que el día final queda incluido. Antes se mandaba la medianoche UTC y
     ese día quedaba afuera; también aplica a fondos de rama.
 - [x] Lista paginada con filtros · nuevo · editar · transferencias · selector de concepto
-- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
+- [x] Módulo cerrado (DoD §9)
 
 ### inscripciones
 - [x] Paridad expandida (`docs/paridad/movimientos-inscripciones.md` §inscripciones)
@@ -125,7 +125,7 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
   - Alta: año mínimo 2020 (`CreateInscripcionDto`). El saldo personal se descarta si la persona no
     tiene saldo, y no puede superar el disponible.
 - [x] Lista · dashboard · crear · detalle · editar · pago · bonificaciones · borrar pagos · config de montos (localStorage)
-- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
+- [x] Módulo cerrado (DoD §9)
 
 ### campamentos
 - [x] Paridad expandida (`docs/paridad/campamentos-reportes-configuracion.md` §campamentos)
@@ -135,17 +135,17 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
     - El filtro "Educadores" filtra en el cliente (ver §Bloqueos).
     - Los errores de los diálogos se muestran adentro del diálogo, sin cerrarlo.
 - [x] Lista · crear · detalle · editar · participantes · pagos · gastos · bonificaciones
-- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
+- [x] Módulo cerrado (DoD §9)
 
 ### eventos
 - [x] Paridad expandida (`docs/paridad/eventos-reporte.md` §eventos)
 - [x] Lista · crear · detalle · editar · productos · ventas en lote · entregas · gastos/ingresos · resumen financiero
-- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
+- [x] Módulo cerrado (DoD §9)
 
 ### event-report (público)
 - [x] Paridad expandida (`docs/paridad/eventos-reporte.md` §reporte)
 - [x] Con sesión / anónimo público / anónimo no público (404 → "no disponible")
-- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
+- [x] Módulo cerrado (DoD §9)
 
 ### reportes
 - [x] Paridad expandida (hoy oculto en el sidebar: mantenerlo oculto)
@@ -170,12 +170,21 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
 
 ## Fase 3 — Cierre
 
-- [ ] Recorrido completo de paridad: cada ruta de `frontend/src/app/app.routes.ts` existe y funciona en React
-- [ ] Suite e2e completa en verde contra backend local
-- [ ] Auditoría visual final (skill `impeccable` audit / `web-design-guidelines`) y fixes
-- [ ] Lighthouse/a11y de dashboard y una pantalla de lista sin errores críticos
-- [ ] `vercel.json`/config de deploy preparada (sin desplegar) + `README.md`
-- [ ] Reporte final en `docs/MIGRATION-REPORT.md` (qué se hizo, desvíos, bloqueos, deuda)
+- [x] Recorrido completo de paridad: cada ruta de `frontend/src/app/app.routes.ts` existe y funciona en React
+  - Las rutas de Angular están todas en React (42 rutas en el build). Las 5 de reportes se resuelven
+    con `/reportes/deudas` + `/reportes/[report]`; las rutas sin hijo de personas redirigen a `/personas`.
+- [x] Suite e2e completa en verde contra backend local — 40/40 (20 flujos × desktop y Pixel 7, 12 specs)
+- [x] Auditoría visual final y fixes
+  - 24 pantallas × 390/1440 × light/dark: sin overflow-x, sin errores ni warnings de consola, sin requests fallidos.
+  - Fixes: alto del select, captions de tabla, recharts con tamaño -1, cards de campamento a 390,
+    tabla de ramas a 1440, sentence case en reportes (b8d3dcf · da95a34 · 2538df4 · 349ff54 · b1357d4).
+- [x] Lighthouse/a11y de dashboard y una pantalla de lista sin errores críticos
+  - axe-core (el motor de la categoría a11y de Lighthouse), wcag2a/aa + best-practice: login, dashboard,
+    movimientos y personas a 390 y 1440, light y dark → 0 violaciones (7f2c110).
+  - El puntaje de performance de Lighthouse no se midió: necesita el build de producción servido, y se
+    deja para el primer deploy.
+- [x] `vercel.json`/config de deploy preparada (sin desplegar) + `README.md`
+- [x] Reporte final en `docs/MIGRATION-REPORT.md` (qué se hizo, desvíos, bloqueos, deuda)
 
 ---
 
@@ -212,3 +221,4 @@ cuenta (scope guard):
 | 2026-10-06 | movimientos · cajas · personas · inscripciones | 3462df8 · fd7c07b · f1ce007 · 3bac143 | Un agente por módulo en worktree; integrados a main |
 | 2026-10-06 | event-report · campamentos · eventos | e96c423 · 1d0e560 · 4cbc5ca | Ídem; eventos se cortó por disco lleno y se retomó |
 | 2026-10-06 | fixes de e2e + reviews | 1ced92d · acff077 · e3911b0 · 443c66c · 0df1f84 | Suite e2e 40/40 contra el backend local; `pnpm build` en verde (42 rutas) |
+| 2026-10-06 | Fase 3 | 2537018 | Verificación visual (96 capturas), axe 0 violaciones, e2e 40/40, build 42 rutas, reporte final |
