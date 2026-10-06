@@ -46,14 +46,14 @@
 - [x] DataGrid (ReUI) con paginación, orden, vacío y loading
 - [x] Gráficos (recharts): barra y donut; KPI/stat cards
 - [x] Empty state, loading, not-found
-- [ ] AppShell en `src/app/(app)/layout.tsx` (monta `useSessionBootstrap()` + `useRequireSession()`, ver docs/HALLAZGOS.md): sidebar colapsable, header con título/subtítulo por ruta, menú de identidad, toggle de tema, nav mobile
+- [x] AppShell en `src/app/(app)/layout.tsx` (monta `useSessionBootstrap()` + `useRequireSession()`, ver docs/HALLAZGOS.md): sidebar colapsable, header con título/subtítulo por ruta, menú de identidad, toggle de tema, nav mobile
 
 ## Fase 2 — Módulos (en este orden)
 
 Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar → tests → e2e → verificación visual → commit.
 
 ### auth
-- [ ] Paridad expandida
+- [x] Paridad expandida
   - `/login` (público, sin shell): si ya hay sesión válida → `/dashboard` (`noAuthGuard`).
   - Form: email (requerido + formato) y password (requerido, mín. 6); submit inválido marca todo.
   - Éxito → `redirectUrl` de `sessionStorage` (default `/dashboard`) y se consume.
@@ -68,7 +68,9 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
     coinciden") → toast "Contraseña actualizada. Por favor inicia sesión nuevamente." y la sesión
     se invalida (login forzado). Errores: toast con `message` del backend.
   - Desvío: el link "¿Olvidaste tu contraseña?" de Angular es `href="#"` sin función → no se migra.
-- [ ] Login · cambio de email · cambio de password (invalida sesiones)
+  - e2e: no se automatiza el cambio real de email/contraseña (rompería las credenciales E2E de la
+    DB compartida); queda cubierto por unit tests con la sesión mockeada.
+- [x] Login · cambio de email · cambio de password (invalida sesiones)
 - [ ] Módulo cerrado (DoD §9)
 
 ### dashboard
@@ -156,3 +158,4 @@ _(vacío)_
 | Fecha | Módulo | Commit | Notas |
 | --- | --- | --- | --- |
 | 2026-10-06 | Fase 0 + Fase 1 (no visual) | 44ae287 | Scaffold, 3 direcciones estéticas, plataforma shared con 420 tests; review aplicada salvo #4/#5 (decisión del usuario) |
+| 2026-10-06 | Fase 1 (visual) | e043800 | ReUI vendorizado (TanStack v9), tema, toasts, confirm, forms, DataGrid, filtros, gráficos, feedback, AppShell; paridad relevada en docs/paridad/ |
