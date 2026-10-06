@@ -46,6 +46,8 @@ const eslintConfig = defineConfig([
     'coverage/**',
     'playwright-report/**',
     'test-results/**',
+    // Salida del MCP de Playwright (capturas y scripts sueltos, gitignored).
+    '.playwright-mcp/**',
     'design-directions/**',
     // Worktrees de agentes (copias del repo).
     '.claude/**',
