@@ -15,7 +15,8 @@ const zip = await apiClient.getBlob(API_ENDPOINTS.BACKUPS_DOWNLOAD);
 - **Lecturas exigen `schema`** (zod en el borde). Respuesta que no cumple → `ApiError` `kind: 'contract'`
   con `issues: { path, message }[]` (p. ej. `{ path: '1.monto', … }`); en dev además se loguea
   `[api] Respuesta fuera de contrato en GET <endpoint>` con los issues en la consola.
-- Mutaciones sin `schema` resuelven `void` (el backend responde body vacío en muchos 200/201/204).
+- Mutaciones sin `schema` resuelven `undefined` aunque el backend mande body (si se necesita la
+  respuesta, pasar `schema`).
 - Params `undefined`/`null`/`''` se descartan (como `HttpService`).
 - Orden de capas = interceptores de Angular: **keep-alive → error global → auth → retry → fetch**.
   - **Error global:** todo error final se publica en el bus (salvo `skipGlobalError` o abort del caller).
@@ -28,6 +29,8 @@ const zip = await apiClient.getBlob(API_ENDPOINTS.BACKUPS_DOWNLOAD);
 - `registerAuthBridge` / `setActivityListener` (`registry.ts`): los usan `auth/register.ts` y el
   keep-alive; no usarlos desde features.
 - `createApiClient(deps)` para tests (inyectar `fetchFn`, `sleep`, `random`, `isOnline`…).
+- `bearerHeaders(token | null)`: único armado del `Authorization: Bearer` (lo reusa `logoutRequest`
+  con `skipAuth`); `{}` sin token.
 
 ## endpoints
 
@@ -59,7 +62,7 @@ con `isKeepAlive` (no reinicia el timer) y reprograma, haya funcionado o no. Al 
 
 ## cache
 
-`appCache` (`@/shared/cache`): `set(key, data, ttlMs?)`, `get(key): unknown` (validar con schema/type guard al leer), `has`, `delete`, `clear`,
+`appCache` (`@/shared/cache`): `set({ key, data, ttlMs? })`, `get(key): unknown` (validar con schema/type guard al leer), `has`, `delete`, `clear`,
 `invalidate(pattern)` (claves que contienen el patrón), `cleanup()`, `getStats()`. TTL 5 min, 100
 entradas. Paridad con `CacheService`: desaloja por orden de inserción (un `get` no refresca) y
 `ttl` 0 = default. Sin timer global: los vencidos se borran al leerlos o con `cleanup()`.

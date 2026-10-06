@@ -3,6 +3,7 @@ export {
   CACHE_CONFIG,
   appCache,
   createMemoryCache,
+  type CacheEntry,
   type CacheStats,
   type MemoryCache,
   type MemoryCacheOptions,

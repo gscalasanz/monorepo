@@ -26,8 +26,15 @@ export interface CacheStats {
   readonly keys: readonly string[];
 }
 
+export interface CacheEntry {
+  readonly key: string;
+  readonly data: unknown;
+  /** 0 u omitido = TTL por defecto (paridad con Angular). */
+  readonly ttlMs?: number;
+}
+
 export interface MemoryCache {
-  set<T>(key: string, data: T, ttlMs?: number): void;
+  set(entry: CacheEntry): void;
   /**
    * `unknown` a propósito: el cache no puede garantizar el tipo; el caller lo
    * valida (schema zod o type guard). Claves namespaced: `'user:123'`.
@@ -73,7 +80,7 @@ export function createMemoryCache({
     return item && !isExpired(item) ? item : undefined;
   };
 
-  const set = (key: string, data: unknown, ttlMs?: number): void => {
+  const set = ({ key, data, ttlMs }: CacheEntry): void => {
     const oldestKey = items.keys().next().value;
     if (items.size >= maxSize && !items.has(key) && oldestKey !== undefined) {
       items.delete(oldestKey);

@@ -1,5 +1,5 @@
 /** Llamadas HTTP de `/auth` (port de `AuthApiService`), sin estado. */
-import { API_ENDPOINTS, apiClient } from '@/shared/api';
+import { API_ENDPOINTS, apiClient, bearerHeaders } from '@/shared/api';
 import {
   authResponseSchema,
   authUserSchema,
@@ -10,8 +10,6 @@ import {
   type LoginDto,
   type RegisterDto,
 } from '@/shared/domain';
-
-const AUTHORIZATION_HEADER = 'Authorization';
 
 export function loginRequest(dto: LoginDto): Promise<AuthResponse> {
   return apiClient.post(API_ENDPOINTS.AUTH_LOGIN, {
@@ -51,9 +49,7 @@ export function logoutRequest({
 }: LogoutRequest): Promise<void> {
   return apiClient.post(API_ENDPOINTS.AUTH_LOGOUT, {
     body: { refreshToken },
-    headers: accessToken
-      ? { [AUTHORIZATION_HEADER]: `Bearer ${accessToken}` }
-      : {},
+    headers: bearerHeaders(accessToken),
     skipAuth: true,
     skipGlobalError: true,
   });

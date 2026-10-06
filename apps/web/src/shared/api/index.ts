@@ -48,6 +48,7 @@ export {
   setActivityListener,
   type AuthBridge,
 } from './registry';
+export { bearerHeaders } from './client';
 export type { ApiClientDeps, RequestOptions, ResponseSchema } from './client';
 export {
   apiClient,

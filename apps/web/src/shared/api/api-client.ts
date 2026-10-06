@@ -9,6 +9,7 @@ import { ApiError } from '@/shared/api/api-error';
 import {
   createRequester,
   type ApiClientDeps,
+  type Requester,
   type RequestConfig,
   type RequestOptions,
   type ResponseSchema,
@@ -20,6 +21,7 @@ import {
   notifyApiActivity,
 } from '@/shared/api/registry';
 import type { HttpMethod } from '@/shared/api/retry';
+import type { ResponseType } from '@/shared/api/transport';
 
 export interface ReadOptions<T> extends RequestOptions {
   readonly schema: ResponseSchema<T>;
@@ -60,56 +62,62 @@ function isBlob(value: unknown): value is Blob {
   );
 }
 
+function createMutation(request: Requester, method: HttpMethod): MutationFn {
+  function mutate(endpoint: string, options?: WriteOptions): Promise<void>;
+  function mutate<T>(
+    endpoint: string,
+    options: WriteOptionsWithSchema<T>,
+  ): Promise<T>;
+  async function mutate<T>(
+    endpoint: string,
+    options: WriteOptions & { readonly schema?: ResponseSchema<T> } = {},
+  ): Promise<T | void> {
+    const config: RequestConfig = {
+      ...options,
+      method,
+      endpoint,
+      responseType: 'json',
+    };
+    if (options.schema) return request.parsed(config, options.schema);
+    await request.raw(config);
+  }
+  return mutate;
+}
+
+async function getBlobWith(
+  request: Requester,
+  config: RequestConfig,
+): Promise<Blob> {
+  const data = await request.raw(config);
+  if (isBlob(data)) return data;
+  throw new ApiError({
+    kind: 'contract',
+    status: SUCCESS_STATUS,
+    method: config.method,
+    url: config.endpoint,
+  });
+}
+
+type GetTarget = Pick<RequestConfig, 'method' | 'endpoint' | 'responseType'>;
+
 export function createApiClient(deps: ApiClientDeps): ApiClient {
   const request = createRequester(deps);
-  const call = <T>(
-    config: RequestConfig,
-    schema?: ResponseSchema<T>,
-  ): Promise<T> => request(config, schema) as Promise<T>;
-
-  const mutation = (method: HttpMethod): MutationFn =>
-    (<T>(
-      endpoint: string,
-      options: WriteOptions & { schema?: ResponseSchema<T> } = {},
-    ) =>
-      call<T>(
-        { ...options, method, endpoint, responseType: 'json' },
-        options.schema,
-      )) as MutationFn;
+  const read = (endpoint: string, responseType: ResponseType): GetTarget => ({
+    method: 'GET',
+    endpoint,
+    responseType,
+  });
 
   return {
     get: (endpoint, options) =>
-      call(
-        { ...options, method: 'GET', endpoint, responseType: 'json' },
-        options.schema,
-      ),
-    post: mutation('POST'),
-    patch: mutation('PATCH'),
-    delete: mutation('DELETE'),
-    getBlob: async (endpoint, options = {}) => {
-      const data = await request({
-        ...options,
-        method: 'GET',
-        endpoint,
-        responseType: 'blob',
-      });
-      if (isBlob(data)) return data;
-      throw new ApiError({
-        kind: 'contract',
-        status: SUCCESS_STATUS,
-        method: 'GET',
-        url: endpoint,
-      });
-    },
+      request.parsed({ ...options, ...read(endpoint, 'json') }, options.schema),
+    post: createMutation(request, 'POST'),
+    patch: createMutation(request, 'PATCH'),
+    delete: createMutation(request, 'DELETE'),
+    getBlob: (endpoint, options = {}) =>
+      getBlobWith(request, { ...options, ...read(endpoint, 'blob') }),
     getText: async (endpoint, options = {}) =>
-      String(
-        await request({
-          ...options,
-          method: 'GET',
-          endpoint,
-          responseType: 'text',
-        }),
-      ),
+      String(await request.raw({ ...options, ...read(endpoint, 'text') })),
   };
 }
 

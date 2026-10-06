@@ -22,11 +22,11 @@
 | `ApiError` · `isApiError` · `extractErrorMessage` · `nestMessageOf` | api | `src/shared/api/api-error.ts` → [api](./REGISTRY-detail/api.md#errores) |
 | `API_ENDPOINTS` · `QUERY_PARAMS` · `HTTP_CONFIG` · `buildUrl` · `API_BASE_URL` | api | `src/shared/api/` → [api](./REGISTRY-detail/api.md#endpoints) |
 | `publishGlobalError` · `useGlobalErrors` · `dismissGlobalError` · `globalErrorStore` | api | `src/shared/api/global-errors.ts` → [api](./REGISTRY-detail/api.md#errores-globales) |
-| `registerAuthBridge` · `setActivityListener` | api | `src/shared/api/registry.ts` → [api](./REGISTRY-detail/api.md#cliente) |
+| `registerAuthBridge` · `setActivityListener` · `bearerHeaders` | api | `src/shared/api/registry.ts` → [api](./REGISTRY-detail/api.md#cliente) |
 | `createFakeFetch` | testing | `src/shared/api/testing/fake-fetch.ts` → [testing](./REGISTRY-detail/testing.md) |
 | `useKeepAlive` · `createKeepAlive` · `KEEP_ALIVE_MS` | api | `src/shared/api/keep-alive.ts`, `use-keep-alive.ts` → [api](./REGISTRY-detail/api.md#keep-alive) |
 | `pathSegment` | api | `src/shared/api/path-segment.ts` → [api](./REGISTRY-detail/api.md#endpoints) |
-| `appCache` · `createMemoryCache` · `CACHE_CONFIG` | api (cache) | `src/shared/cache/` → [api](./REGISTRY-detail/api.md#cache) |
+| `appCache` · `createMemoryCache` · `CACHE_CONFIG` · `CacheEntry` | api (cache) | `src/shared/cache/` → [api](./REGISTRY-detail/api.md#cache) |
 | `login` · `logout` · `register` · `changePassword` · `changeEmail` · `initializeSession` · `refreshSession` | api (auth) | `src/shared/auth/session.ts` → [api](./REGISTRY-detail/api.md#auth) |
 | `useSessionBootstrap` · `useSession` · `useRequireSession` · `useRedirectIfAuthenticated` | api (auth) | `src/shared/auth/hooks.ts` → [api](./REGISTRY-detail/api.md#auth) |
 | `evaluateAuthGuard` · `evaluateNoAuthGuard` · `saveRedirectUrl` · `consumeRedirectUrl` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |

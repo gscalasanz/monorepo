@@ -137,7 +137,7 @@ describe('logout', () => {
   });
 
   it('limpia el cache en memoria (no mostrar datos de otro usuario)', () => {
-    appCache.set('movimientos:caja:1', [1, 2]);
+    appCache.set({ key: 'movimientos:caja:1', data: [1, 2] });
     logout();
     expect(appCache.getStats().size).toBe(0);
   });

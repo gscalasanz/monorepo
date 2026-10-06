@@ -67,12 +67,15 @@ function isUnauthenticated(endpoint: string): boolean {
   );
 }
 
+/** Único lugar donde se arma el `Authorization: Bearer` (también lo usa el logout). */
+export function bearerHeaders(
+  token: string | null,
+): Readonly<Record<string, string>> {
+  return token === null ? {} : { [AUTHORIZATION_HEADER]: `Bearer ${token}` };
+}
+
 function withToken(config: RequestConfig, token: string | null): RequestConfig {
-  if (token === null) return config;
-  return {
-    ...config,
-    headers: { ...config.headers, [AUTHORIZATION_HEADER]: `Bearer ${token}` },
-  };
+  return { ...config, headers: { ...config.headers, ...bearerHeaders(token) } };
 }
 
 function isRefreshable(error: unknown, token: string | null): token is string {
@@ -158,22 +161,33 @@ function parseWith<T>({ schema, data, config }: ParseInput<T>): T {
   });
 }
 
+export interface Requester {
+  /** Respuesta cruda (blob, texto, o JSON que se descarta). */
+  raw(config: RequestConfig): Promise<unknown>;
+  /** Respuesta validada con zod en el borde. */
+  parsed<T>(config: RequestConfig, schema: ResponseSchema<T>): Promise<T>;
+}
+
 /** Núcleo: keep-alive + error global alrededor del pipeline, y validación zod. */
-export function createRequester(deps: ApiClientDeps) {
+export function createRequester(deps: ApiClientDeps): Requester {
   const pipeline = createPipeline(deps);
-  return async function request<T>(
+  const withGlobalError = async <T>(
     config: RequestConfig,
-    schema?: ResponseSchema<T>,
-  ): Promise<T | unknown> {
+    handle: (data: unknown) => T,
+  ): Promise<T> => {
     if (!config.isKeepAlive) deps.onActivity();
     try {
-      const data = await pipeline(config);
-      return schema ? parseWith({ schema, data, config }) : data;
+      return handle(await pipeline(config));
     } catch (error) {
       if (!config.skipGlobalError && !isAbortError(error)) {
         deps.publishError(extractErrorMessage(error));
       }
       throw error;
     }
+  };
+  return {
+    raw: (config) => withGlobalError(config, (data) => data),
+    parsed: (config, schema) =>
+      withGlobalError(config, (data) => parseWith({ schema, data, config })),
   };
 }

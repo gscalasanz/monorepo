@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   ApiError,
   apiClient,
+  bearerHeaders,
   createApiClient,
   globalErrorStore,
   registerAuthBridge,
@@ -83,6 +84,12 @@ describe('createApiClient — transporte', () => {
       body: { monto: 10 },
     });
     expect(fake.requests[0]?.headers['content-type']).toBe('application/json');
+  });
+
+  it('una mutación sin schema resuelve undefined aunque el backend mande body', async () => {
+    const { fake, client } = setup();
+    fake.reply({ status: 200, body: { id: 'x' } });
+    await expect(client.delete('eventos/e1')).resolves.toBeUndefined();
   });
 
   it('PATCH y DELETE con schema', async () => {
@@ -316,6 +323,13 @@ describe('createApiClient — auth (port de app-http-interceptors.spec)', () => 
       'Bearer tok',
       'Bearer tok',
     ]);
+  });
+});
+
+describe('bearerHeaders', () => {
+  it('arma el Authorization Bearer, o nada sin token', () => {
+    expect(bearerHeaders('abc')).toEqual({ Authorization: 'Bearer abc' });
+    expect(bearerHeaders(null)).toEqual({});
   });
 });
 
