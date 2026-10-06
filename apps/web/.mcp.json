@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "reui": {
+      "type": "http",
+      "url": "https://mcp.reui.io"
+    },
+    "codebase-memory-mcp": {
+      "command": "/Users/martinoficialdegui/.local/bin/codebase-memory-mcp",
+      "args": []
+    }
+  }
+}
