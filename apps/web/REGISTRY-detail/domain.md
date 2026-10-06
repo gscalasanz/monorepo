@@ -66,3 +66,25 @@ Los nombres de entidades/enums respetan el vocabulario del backend (`Movimiento`
 | `resolveStatusTone(status)` → `STATUS_TONE` | Datos de `StatusConfigService`: estado (es/en, cualquier caja) → `success`/`info`/`warning`/`danger`/`default`. El color lo pone el design system. |
 
 Fechas: `formatDate` de [`@/shared/time`](#time).
+
+## validators
+
+Validadores puros `valor → mensaje | null` (mensajes en `VALIDATION_MESSAGES`), para zod con
+`refineWith(validador, { path? })`:
+
+```ts
+z.object({ monto: z.coerce.number().superRefine(refineWith(positiveNumber)), descripcion: z.string().superRefine(refineWith(safeText)) })
+  .superRefine(refineWith((v) => dateRange({ start: v.fechaInicio, end: v.fechaFin }), { path: ['fechaFin'] }));
+```
+
+| Validador | Semántica (paridad Angular) |
+| --- | --- |
+| `positiveNumber` | Vacío **y 0** pasan (lo obligatorio es `required`); NaN o ≤0 → error. |
+| `decimalPlaces(n)` · `maxAmount(max)` | Máx. decimales · tope de monto. |
+| `safeText` | Rechaza `< > " ' ; & \| \`` (ojo: también apóstrofes, p. ej. "O'Connor"). |
+| `ramaValida` | Vacío o una de `RAMAS`. |
+| `dateRange({start,end})` | Fin ≥ inicio (el que usa el form de campamentos). |
+| `fechasCampamento` | Fin **>** inicio (estricto; el Angular lo tenía sin usar). |
+| `credencialesCompletas` | Email y password del educador: ambos o ninguno. |
+| `comprobanteEntregado` · `bonificacionDisponible` · `saldoSuficiente` | Reglas de `shared/forms/validators`. |
+| `personaAReembolsarRequerida` · `personaAReembolsarOnEstadoChange` · `personaAReembolsarOnResponsableChange` | `syncPersonaAReembolsarRequerida` como funciones puras: el form llama a las `On*Change` al cambiar estado/responsable. |

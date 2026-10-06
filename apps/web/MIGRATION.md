@@ -41,7 +41,7 @@
 - [ ] Notificaciones (toast) + `ConfirmDialog` (ReUI)
 - [x] Formatos: dinero ARS, humanize, status config (equivalentes de las pipes)
 - [ ] Kit de forms: `useFieldValidation` + campos (texto, número, fecha, fecha-hora, hora, email, teléfono con máscara, password, select, textarea, checkbox, días, time-picker) — ReUI primero
-- [ ] Validadores portados (bonificación, comprobante, fechas campamento, reembolso, positivo, rama, safe-text, saldo suficiente)
+- [x] Validadores portados (bonificación, comprobante, fechas campamento, reembolso, positivo, rama, safe-text, saldo suficiente)
 - [ ] Filtros genéricos (equivalente a `generic-filters` + `chips-filter`) — ReUI primero
 - [ ] DataGrid (ReUI) con paginación, orden, vacío y loading
 - [ ] Gráficos (recharts): barra y donut; KPI/stat cards
