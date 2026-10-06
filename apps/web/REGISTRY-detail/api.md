@@ -54,3 +54,11 @@ para la futura UI de toasts), `globalErrorStore` (fuera de React / tests).
 request real reinicia una cuenta de **14 min** (`KEEP_ALIVE_MS`); al vencer hace `GET /` (público)
 con `isKeepAlive` (no reinicia el timer) y reprograma, haya funcionado o no. Al desmontar cancela.
 `createKeepAlive({ ping, delayMs? })` es el módulo puro (tests/composición).
+
+## cache
+
+`appCache` (`@/shared/cache`): `set(key, data, ttlMs?)`, `get<T>(key)`, `has`, `delete`, `clear`,
+`invalidate(pattern)` (claves que contienen el patrón), `cleanup()`, `getStats()`. TTL 5 min, 100
+entradas. Paridad con `CacheService`: desaloja por orden de inserción (un `get` no refresca) y
+`ttl` 0 = default. Sin timer global: los vencidos se borran al leerlos o con `cleanup()`.
+Claves namespaced (`'movimientos:caja:<id>'`).
