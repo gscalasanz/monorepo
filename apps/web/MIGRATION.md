@@ -46,7 +46,7 @@
 - [ ] DataGrid (ReUI) con paginación, orden, vacío y loading
 - [ ] Gráficos (recharts): barra y donut; KPI/stat cards
 - [ ] Empty state, loading, not-found
-- [ ] AppShell: sidebar colapsable, header con título/subtítulo por ruta, menú de identidad, toggle de tema, nav mobile
+- [ ] AppShell en `src/app/(app)/layout.tsx` (monta `useSessionBootstrap()` + `useRequireSession()`, ver docs/HALLAZGOS.md): sidebar colapsable, header con título/subtítulo por ruta, menú de identidad, toggle de tema, nav mobile
 
 ## Fase 2 — Módulos (en este orden)
 
@@ -126,3 +126,4 @@ _(vacío)_
 
 | Fecha | Módulo | Commit | Notas |
 | --- | --- | --- | --- |
+| 2026-10-06 | Fase 0 + Fase 1 (no visual) | 44ae287 | Scaffold, 3 direcciones estéticas, plataforma shared con 420 tests; review aplicada salvo #4/#5 (decisión del usuario) |
