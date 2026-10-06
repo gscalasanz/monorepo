@@ -62,7 +62,7 @@ test.describe('movimientos', () => {
     await page.getByLabel(/^Monto/).fill('1');
     await page.getByRole('combobox', { name: /^Concepto/ }).click();
     await page.getByRole('option', { name: 'Ajuste Inicial' }).click();
-    await pickComboboxOption(page, 'Caja', /Caja de Grupo/);
+    await pickComboboxOption(page, 'Caja', /^Caja del? Grupo/);
     await pickComboboxOption(page, 'Responsable');
     await page.getByRole('textbox', { name: /^Descripción/ }).fill(descripcion);
     await page.getByRole('button', { name: 'Crear Movimiento' }).click();
