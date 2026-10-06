@@ -9,3 +9,4 @@
 | Símbolo | Categoría | Ubicación |
 | --- | --- | --- |
 | `cn` | ui (lib) | `src/shared/lib/utils.ts` → [ui](./REGISTRY-detail/ui.md) |
+| `@/shared/time` (`nowInstant`, `todayBsAs`, `formatDate`, `DATE_FORMATS`, `toDateInputValue`, `localDateSchema`…) | domain (time) | `src/shared/time/` → [domain](./REGISTRY-detail/domain.md#time) |

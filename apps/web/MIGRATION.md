@@ -31,7 +31,7 @@
 
 ## Fase 1 — Plataforma compartida
 
-- [ ] `shared/time` (now, today BsAs, formatos de fecha que hoy usa `dateFormat`)
+- [x] `shared/time` (now, today BsAs, formatos de fecha que hoy usa `dateFormat`)
 - [ ] `shared/domain`: enums y tipos portados de `frontend/src/app/shared/{enums,models,constants}` + schemas zod
 - [ ] `shared/api`: client fetch (base URL por env), `ApiError` + extracción de `message` NestJS, `PaginatedResponse`
 - [ ] Retry con backoff (reglas de `retry.interceptor.ts`) + opt-out de error global
