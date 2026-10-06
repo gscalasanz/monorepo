@@ -71,7 +71,7 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
   - e2e: no se automatiza el cambio real de email/contraseña (rompería las credenciales E2E de la
     DB compartida); queda cubierto por unit tests con la sesión mockeada.
 - [x] Login · cambio de email · cambio de password (invalida sesiones)
-- [ ] Módulo cerrado (DoD §9)
+- [x] Módulo cerrado (DoD §9) — code review aplicado en `a75c793`
 
 ### dashboard
 - [x] Paridad expandida
@@ -130,9 +130,17 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
 - [ ] Módulo cerrado (DoD §9)
 
 ### reportes
-- [ ] Paridad expandida (hoy oculto en el sidebar: mantenerlo oculto)
-- [ ] Deudas · reembolsos · caja · eventos · comprobantes
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (hoy oculto en el sidebar: mantenerlo oculto)
+  - `/reportes` → `/reportes/deudas`. Filtros rama (+ Educadores) / año (actual→2020) / tipo, cada
+    cambio consulta `GET reportes/deudas`. KPIs: personas, deuda total, con docs faltantes.
+  - Filas expandibles de a una: chips por deuda monetaria (saldo > 0, orden año+etiqueta) + "N docs";
+    detalle con deudas monetarias, autorizaciones de campamento faltantes y documentación
+    (personal + por inscripción). Nombre → ficha según tipo ("Ver ficha de …").
+  - Error inline "Error al cargar el reporte…" + Reintentar (sin toast global); vacío "No hay deudas
+    pendientes con los filtros seleccionados".
+  - Reembolsos / caja / eventos / comprobantes son placeholders en Angular (título + texto): igual.
+- [x] Deudas · reembolsos · caja · eventos · comprobantes
+- [x] Módulo cerrado (DoD §9)
 
 ### configuracion
 - [x] Paridad expandida (`docs/paridad/campamentos-reportes-configuracion.md` §configuracion)
@@ -163,3 +171,7 @@ _(vacío)_
 | --- | --- | --- | --- |
 | 2026-10-06 | Fase 0 + Fase 1 (no visual) | 44ae287 | Scaffold, 3 direcciones estéticas, plataforma shared con 420 tests; review aplicada salvo #4/#5 (decisión del usuario) |
 | 2026-10-06 | Fase 1 (visual) | e043800 | ReUI vendorizado (TanStack v9), tema, toasts, confirm, forms, DataGrid, filtros, gráficos, feedback, AppShell; paridad relevada en docs/paridad/ |
+| 2026-10-06 | auth | 1743cb5 | Login + perfil (email/password); review de plataforma+auth aplicado en a75c793 |
+| 2026-10-06 | dashboard | e21243a | KPIs en tira de métricas, eventos próximos, movimientos recientes, fondos por rama |
+| 2026-10-06 | configuracion | 913c7f3 | Montos de inscripción en localStorage (misma clave), descargas con nombre de fallback |
+| 2026-10-06 | reportes | feat(reportes) | Deudas con filtros/expandibles + 4 placeholders; sigue oculto en el sidebar |
