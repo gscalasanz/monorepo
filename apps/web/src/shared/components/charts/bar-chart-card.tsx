@@ -79,7 +79,8 @@ export function BarChartCard({ title, ariaLabel, data, series, orientation = 've
         {action}
       </header>
       <div role="img" aria-label={ariaLabel} className="px-2 pb-3" style={{ height }}>
-        <ResponsiveContainer width="100%" height="100%">
+        {/* `initialDimension` evita el primer render a -1×-1 (warning de recharts) antes de medir. */}
+        <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height }}>
           <BarChart data={toRows(data)} layout={horizontal ? 'vertical' : 'horizontal'} barGap={BAR_GAP} accessibilityLayer={false}>
             <CartesianGrid stroke={CHART_COLORS.grid} vertical={horizontal} horizontal={!horizontal} />
             {BarAxes({ horizontal, format })}
