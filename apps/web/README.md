@@ -46,8 +46,8 @@ y commitlint valida los mensajes (conventional commits).
 `vercel.json` configura Vercel para Next.js con pnpm y cabeceras de seguridad. Antes de publicar:
 
 1. Definir `NEXT_PUBLIC_API_URL` con la URL del backend productivo en el proyecto de Vercel.
-2. Agregar el dominio del frontend a la lista de origins de CORS del backend (hoy acepta el dominio de
-   Angular y `localhost:4201`). Es un cambio de backend: queda fuera de esta migración.
+2. El backend acepta un único origin CORS (`FRONTEND_URL`, default `http://localhost:4201`): apuntarlo
+   al dominio del frontend React es configuración del deploy del backend, fuera de esta migración.
 3. Las sesiones (tokens en `localStorage`) y la config de inscripción (`scout_inscripcion_config`) usan
    las mismas claves que Angular, pero `localStorage` es por origin: si el dominio cambia, los usuarios
    inician sesión de nuevo y recargan esos montos.
