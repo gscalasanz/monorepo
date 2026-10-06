@@ -29,7 +29,7 @@ export const PERSONA_LIMITS = {
   NOMBRE_MIN: 2,
   NOMBRE_MAX: 100,
   CONTACTO_MAX: 100,
-  PASSWORD_MIN: 6,
+  PASSWORD_MIN: 8,
 } as const;
 
 const CREATE_SEGMENT = 'crear';

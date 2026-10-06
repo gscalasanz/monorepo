@@ -67,7 +67,7 @@ export const personaDashboardSchema = z.object({
     tipo: personaTypeSchema,
     estado: estadoPersonaSchema,
     rama: nullableField(ramaSchema),
-    cargo: cargoEducadorSchema.optional(),
+    cargo: nullableField(cargoEducadorSchema),
   }),
   cuentaPersonal: z.object({ id: z.string(), saldo: decimalSchema }),
   documentacionPersonal: nullableField(documentacionPersonalSchema),

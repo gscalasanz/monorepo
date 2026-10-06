@@ -201,9 +201,15 @@ const DASHBOARD = personaDashboardSchema.parse({
 });
 
 describe('ficha de persona', () => {
-  it('el schema normaliza decimales y cargo ausente', () => {
+  it('el schema normaliza decimales y cargo ausente o null', () => {
     expect(DASHBOARD.cuentaPersonal.saldo).toBe(1500);
-    expect(DASHBOARD.persona.cargo).toBeUndefined();
+    expect(DASHBOARD.persona.cargo).toBeNull();
+    const educadorSinCargo = personaDashboardSchema.safeParse({
+      ...DASHBOARD,
+      cuentaPersonal: { id: 'c1', saldo: '0.00' },
+      persona: { ...DASHBOARD.persona, tipo: 'educador', cargo: null },
+    });
+    expect(educadorSinCargo.success).toBe(true);
   });
 
   it('tono del saldo', () => {
@@ -278,10 +284,13 @@ describe('formularios', () => {
     ).toBe(false);
   });
 
-  it('educador: email válido, password ≥6 y credenciales vinculadas', () => {
+  it('educador: email válido, password ≥8 (MinLength del backend) y credenciales vinculadas', () => {
     expect(educadorFormSchema.shape.email.safeParse('mal').success).toBe(false);
-    expect(educadorFormSchema.shape.password.safeParse('12345').success).toBe(
+    expect(educadorFormSchema.shape.password.safeParse('1234567').success).toBe(
       false,
+    );
+    expect(educadorFormSchema.shape.password.safeParse('12345678').success).toBe(
+      true,
     );
     expect(credencialesErrors({ email: 'a@b.com', password: '' })).toEqual({
       password: 'La contraseña es requerida si ingresás email',
