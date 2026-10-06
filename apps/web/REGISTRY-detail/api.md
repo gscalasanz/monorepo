@@ -96,3 +96,10 @@ No toca `window` al importarse.
   `/login`). `useRedirectIfAuthenticated()` en `/login`. Post-login: `router.replace(consumeRedirectUrl())` (default `/dashboard`,
   solo paths internos).
 - **Estado:** `useSession()` → `{ user, isAuthenticated, isLoading, initialized }`; `sessionStore` fuera de React.
+
+## Lecturas transversales — `shared/queries/`
+
+`fetchPersonasActivas` (`?soloActivos=true`, para selectores), `fetchPersonasTodas`, `fetchCajas`,
+`fetchFondoSolidario`, `fetchSaldoFondoSolidario`, `fetchSaldoPersonal(personaId)`. Etiquetas:
+`cajaLabel(caja)` ("Cuenta de X", "Fondo Manada", "Caja {id8}"), `cajaOptions`, `personaOptions`.
+Cada feature mantiene en sus `services/` lo que es solo suyo.

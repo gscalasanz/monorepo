@@ -49,3 +49,4 @@
 | `FormField` · `TextField` · `PasswordField` · `PhoneField` · `NumberField` · `MoneyField` · `TextareaField` · `SelectField` · `ComboboxField` · `CheckboxField` · `SwitchField` · `RadioCardsField` · `DateField` · `DateTimeField` · `TimeField` · `DaysOfWeekField` · `FormActions` · `InputControl` · `useFieldChrome` | ui (formularios) | `src/shared/components/ui/form/` → [ui](./REGISTRY-detail/ui.md#formularios--sharedforms--sharedcomponentsuiform) |
 | `Panel` | ui | `src/shared/components/ui/panel.tsx` → [ui](./REGISTRY-detail/ui.md#panel--sharedcomponentsuipaneltsx) |
 | `useAsyncData` | hooks (datos) | `src/shared/hooks/use-async-data.ts` → [ui](./REGISTRY-detail/ui.md#useasyncdata--sharedhooksuse-async-datats) |
+| `fetchPersonasActivas` · `fetchCajas` · `fetchFondoSolidario` · `fetchSaldoPersonal` · `cajaLabel` · `personaOptions` | api (lecturas) | `src/shared/queries/` → [api](./REGISTRY-detail/api.md#lecturas-transversales--sharedqueries) |
