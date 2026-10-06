@@ -1,5 +1,5 @@
 /** Rutas de la app (paridad con `frontend/src/app/app.routes.ts`). */
-import { pathSegment } from '@/shared/api';
+import { pathSegment } from '@/shared/api/path-segment';
 import type { PersonaType } from '@/shared/domain';
 
 export const APP_ROUTES = {

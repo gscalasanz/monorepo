@@ -22,3 +22,19 @@ describe('rutas de la app', () => {
     expect(UI_CONFIG.DEBOUNCE_TIME_MS).toBe(300);
   });
 });
+
+describe('carga sin NEXT_PUBLIC_API_URL', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('las constantes de rutas no dependen de la config de la API', async () => {
+    vi.stubEnv('NEXT_PUBLIC_API_URL', '');
+    vi.resetModules();
+    const constants = await import('@/shared/constants');
+    expect(constants.APP_ROUTES.eventoReportePublico('e 1')).toBe(
+      '/eventos/e%201/reporte',
+    );
+  });
+});
