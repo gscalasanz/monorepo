@@ -1,6 +1,6 @@
 /** `redirectUrl` en `sessionStorage` (paridad con `authGuard` + `LoginComponent`). */
 import { REDIRECT_URL_KEY } from '@/shared/auth/constants';
-import { readItem, removeItem, writeItem } from '@/shared/auth/storage';
+import { readItem, removeItem, writeItem } from '@/shared/storage';
 import { APP_ROUTES } from '@/shared/constants';
 
 const NOT_SAVED: readonly string[] = [APP_ROUTES.LOGIN, APP_ROUTES.ROOT];

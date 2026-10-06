@@ -1,6 +1,6 @@
 /** Tokens en `localStorage` (port del storage de `TokenService`). */
 import { TOKEN_KEYS } from '@/shared/auth/constants';
-import { readItem, removeItem, writeItem } from '@/shared/auth/storage';
+import { readItem, removeItem, writeItem } from '@/shared/storage';
 
 export interface TokenPair {
   readonly accessToken: string;

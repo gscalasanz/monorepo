@@ -88,3 +88,11 @@ z.object({ monto: z.coerce.number().superRefine(refineWith(positiveNumber)), des
 | `credencialesCompletas` | Email y password del educador: ambos o ninguno. |
 | `comprobanteEntregado` · `bonificacionDisponible` · `saldoSuficiente` | Reglas de `shared/forms/validators`. |
 | `personaAReembolsarRequerida` · `personaAReembolsarOnEstadoChange` · `personaAReembolsarOnResponsableChange` | `syncPersonaAReembolsarRequerida` como funciones puras: el form llama a las `On*Change` al cambiar estado/responsable. |
+
+## settings
+
+Montos por defecto de inscripción en `localStorage` (`scout_inscripcion_config`, mismo formato
+`{ montoScoutArgentina, montoGrupo }` que Angular): `loadInscripcionConfig()` (campo inválido o
+faltante → 0, JSON corrupto → defaults), `updateInscripcionConfig(partial)` (devuelve config nueva y
+persiste), `saveInscripcionConfig(config)` (`false` si no pudo), `montoByTipo(config, tipo)`.
+Storage vía `@/shared/storage` (`readItem`/`writeItem`/`removeItem`, SSR-safe).

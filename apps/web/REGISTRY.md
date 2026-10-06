@@ -34,3 +34,5 @@
 | `makeJwt` · `tokenExpiringIn` | testing | `src/shared/auth/testing/jwt.ts` |
 | `formatMoney` · `humanize` · `resolveStatusTone` · `STATUS_TONE` | domain (format) | `src/shared/format/` → [domain](./REGISTRY-detail/domain.md#format) |
 | `@/shared/validators` (`positiveNumber`, `decimalPlaces`, `safeText`, `dateRange`, `saldoSuficiente`, `personaAReembolsar*`, `refineWith`, `VALIDATION_MESSAGES`…) | domain (validators) | `src/shared/validators/` → [domain](./REGISTRY-detail/domain.md#validators) |
+| `loadInscripcionConfig` · `updateInscripcionConfig` · `saveInscripcionConfig` · `montoByTipo` | domain (settings) | `src/shared/settings/` → [domain](./REGISTRY-detail/domain.md#settings) |
+| `readItem` · `writeItem` · `removeItem` | storage | `src/shared/storage/` (Web Storage SSR-safe) |

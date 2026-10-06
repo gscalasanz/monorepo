@@ -27,13 +27,15 @@ export interface StorageEntry {
   readonly value: string;
 }
 
-/** Devuelve `false` si no se pudo escribir (storage lleno o bloqueado). */
+/** Devuelve `false` si no se pudo escribir (SSR, storage lleno o bloqueado). */
 export function writeItem(
   kind: StorageKind,
   { key, value }: StorageEntry,
 ): boolean {
+  const storage = resolveStorage(kind);
+  if (!storage) return false;
   try {
-    resolveStorage(kind)?.setItem(key, value);
+    storage.setItem(key, value);
     return true;
   } catch {
     return false;
