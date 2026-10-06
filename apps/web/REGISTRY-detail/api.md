@@ -23,8 +23,8 @@ const zip = await apiClient.getBlob(API_ENDPOINTS.BACKUPS_DOWNLOAD);
   - **Retry:** GET/HEAD/OPTIONS ante 502/503/504/0; mutaciones ante 503/0; nunca `auth/refresh`; nunca
     offline. 3 reintentos, backoff `1s·2^n + jitter(≤300ms)`.
   - **Keep-alive:** cada request (salvo `isKeepAlive`) avisa actividad al listener registrado.
-- `registerAuthBridge` / `setActivityListener` (`registry.ts`) rompen el ciclo api ↔ auth: no usarlos
-  desde features.
+- `registerAuthBridge` / `setActivityListener` (`registry.ts`): los usan `auth/register.ts` y el
+  keep-alive; no usarlos desde features.
 - `createApiClient(deps)` para tests (inyectar `fetchFn`, `sleep`, `random`, `isOnline`…).
 
 ## endpoints
@@ -50,7 +50,7 @@ para la futura UI de toasts), `globalErrorStore` (fuera de React / tests).
 
 ## keep-alive
 
-`useKeepAlive()` — montarlo una vez en el layout autenticado (sin UI). Mientras está montado, cada
+`useKeepAlive()` — ya lo monta `useSessionBootstrap()`; no montarlo aparte. Mientras está montado, cada
 request real reinicia una cuenta de **14 min** (`KEEP_ALIVE_MS`); al vencer hace `GET /` (público)
 con `isKeepAlive` (no reinicia el timer) y reprograma, haya funcionado o no. Al desmontar cancela.
 `createKeepAlive({ ping, delayMs? })` es el módulo puro (tests/composición).
@@ -65,8 +65,12 @@ Claves namespaced (`'movimientos:caja:<id>'`).
 
 ## auth
 
-`@/shared/auth` — sesión JWT propia del backend. **Importar el módulo registra el refresh
-reactivo** en `apiClient` (`registerAuthBridge`); no toca `window` al importarse.
+`@/shared/auth` — sesión JWT propia del backend. El refresh reactivo se cablea solo en `apiClient`
+(`api-client.ts` importa `@/shared/auth/register`): cualquier uso de `apiClient` adjunta el token.
+No toca `window` al importarse.
+
+**Montaje:** en el layout `(app)`, una vez: `useSessionBootstrap()` (initializeSession + keep-alive +
+`router.replace` como navegador de la sesión) y `const { status } = useRequireSession()`.
 
 - **Tokens:** `localStorage` con las claves de Angular (`accessToken`, `refreshToken`). Storage no
   disponible = sin sesión (no rompe). `decodeJwt` valida `{sub,email,tipo,iat,exp}` con zod.
@@ -80,7 +84,6 @@ reactivo** en `apiClient` (`registerAuthBridge`); no toca `window` al importarse
   falla → **un** `logout()` y todas rechazan (en Angular quedaban colgadas).
 - **Guards:** `useRequireSession()` en el layout `(app)` → `{ status: 'checking'|'allowed'|'redirecting' }`
   (pasa con access **o** refresh válido; si no guarda `redirectUrl` en sessionStorage y va a
-  `/login`). `useRedirectIfAuthenticated()` en `/login`. Ambos registran `router.replace` como
-  navegador de la sesión. Post-login: `router.replace(consumeRedirectUrl())` (default `/dashboard`,
+  `/login`). `useRedirectIfAuthenticated()` en `/login`. Post-login: `router.replace(consumeRedirectUrl())` (default `/dashboard`,
   solo paths internos).
 - **Estado:** `useSession()` → `{ user, isAuthenticated, isLoading, initialized }`; `sessionStore` fuera de React.

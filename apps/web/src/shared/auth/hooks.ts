@@ -11,7 +11,6 @@ import {
   type GuardDecision,
 } from '@/shared/auth/guard';
 import { isTokenValid } from '@/shared/auth/jwt';
-import { setAuthNavigator } from '@/shared/auth/navigation';
 import { saveRedirectUrl } from '@/shared/auth/redirect-url';
 import { sessionStore } from '@/shared/auth/session-store';
 import { getAccessToken, getRefreshToken } from '@/shared/auth/token-storage';
@@ -45,14 +44,12 @@ function useGuard(evaluate: () => GuardDecision): GuardState {
     () => null,
   );
   useEffect(() => {
-    setAuthNavigator(router.replace);
     const decision = evaluate();
     if (!decision.allowed) {
       if (decision.redirectUrlToSave)
         saveRedirectUrl(decision.redirectUrlToSave);
       router.replace(decision.redirectTo);
     }
-    return () => setAuthNavigator(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   if (allowed === null) return { status: 'checking' };

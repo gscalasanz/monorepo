@@ -1,12 +1,8 @@
 /**
  * `@/shared/auth` — sesión JWT (port de `modules/auth/services`, `authGuard`,
- * `authInterceptor`). Importar este módulo registra el refresh reactivo en el
- * cliente HTTP (sin efectos de DOM: SSR-safe).
+ * `authInterceptor`). El refresh reactivo se cablea solo en `apiClient`
+ * (`./register`); el layout `(app)` monta `useSessionBootstrap()` una vez.
  */
-import { registerAuthBridge } from '@/shared/api';
-import { sessionAuthBridge } from '@/shared/auth/bridge';
-
-registerAuthBridge(sessionAuthBridge);
 
 export {
   AUTH_COPY,
@@ -62,3 +58,4 @@ export {
   type GuardStatus,
   type SessionView,
 } from './hooks';
+export { useSessionBootstrap } from './use-session-bootstrap';

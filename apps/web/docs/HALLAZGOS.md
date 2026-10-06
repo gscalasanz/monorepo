@@ -39,7 +39,10 @@ del Angular y anotarlo en `MIGRATION.md §Bloqueos` solo si no se puede decidir.
 
 ## Plataforma React (cómo usarla bien)
 
-- El token se adjunta y el refresh funciona solo si el árbol importa `@/shared/auth` (lo hace el
-  layout protegido vía `useRequireSession`). Una página fuera de ese layout que necesite token (por
-  ejemplo el reporte público con sesión) tiene que importar `@/shared/auth`.
+- `apiClient` adjunta el token y refresca ante 401 desde cualquier lado: `api-client.ts` importa
+  `@/shared/auth/register` como side-effect, no hace falta importar `@/shared/auth`.
+- El layout `(app)` monta **una vez** `useSessionBootstrap()` (restaura la sesión con
+  `initializeSession`, registra `router.replace` como navegador de logout/cambio de password y
+  activa el keep-alive) y `useRequireSession()` para el guard. Fuera de ese layout (reporte
+  público) no hace falta montarlo: el token igual se adjunta y un logout cae a `window.location`.
 - Todo read del cliente HTTP exige un schema zod: es el borde de validación.

@@ -3,6 +3,8 @@
  * borde, `getBlob` (backups/exports) y `getText` (ping). `apiClient` es la
  * instancia de la app; `createApiClient` existe para tests y composición.
  */
+// Side-effect: cablea la sesión (token + refresh) en `apiClient`.
+import '@/shared/auth/register';
 import { ApiError } from '@/shared/api/api-error';
 import {
   createRequester,

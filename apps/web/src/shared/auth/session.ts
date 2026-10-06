@@ -126,7 +126,7 @@ async function restoreSession(): Promise<AuthUser | null> {
  * Restaura la sesión al arrancar (port de `initializeFromStorage` + el
  * `APP_INITIALIZER`, que ignora fallos): cualquier error → sesión anónima.
  */
-export async function initializeSession(): Promise<AuthUser | null> {
+async function performInitialize(): Promise<AuthUser | null> {
   try {
     return await restoreSession();
   } catch {
@@ -136,3 +136,7 @@ export async function initializeSession(): Promise<AuthUser | null> {
     sessionStore.setState({ initialized: true });
   }
 }
+
+/** Single-flight: el doble effect de StrictMode no duplica `auth/me`. */
+export const initializeSession: () => Promise<AuthUser | null> =
+  createSingleFlight(performInitialize);
