@@ -32,3 +32,4 @@
 | `evaluateAuthGuard` · `evaluateNoAuthGuard` · `saveRedirectUrl` · `consumeRedirectUrl` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |
 | `decodeJwt` · `isTokenValid` · `getAccessToken` · `setTokens` · `clearTokens` · `sessionStore` · `createSingleFlight` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |
 | `makeJwt` · `tokenExpiringIn` | testing | `src/shared/auth/testing/jwt.ts` |
+| `formatMoney` · `humanize` · `resolveStatusTone` · `STATUS_TONE` | domain (format) | `src/shared/format/` → [domain](./REGISTRY-detail/domain.md#format) |

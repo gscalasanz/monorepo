@@ -56,3 +56,13 @@ Los nombres de entidades/enums respetan el vocabulario del backend (`Movimiento`
 | `baseEntityShape` | `id`, `createdAt`, `updatedAt`, `deletedAt` de `BaseEntity`. |
 | `paginatedSchema(item)` · `PaginatedResponse<T>` · `PaginationMeta` · `PAGINATION_DEFAULTS` | `{ data, meta }` del backend. |
 | `DAY_OF_WEEK` · `DAY_OF_WEEK_LABELS` · `DAYS_OF_WEEK_IN_ORDER` | Días (solo UI). |
+
+## format
+
+| Símbolo | Para qué |
+| --- | --- |
+| `formatMoney(value, { decimals?: 0 \| 2, placeholder? })` | Pipe `money`: `$ 1.234` (es-AR, ARS, U+00A0 tras `$`), 0 decimales por defecto, `-` si null/undefined/NaN; `0` → `$ 0`. |
+| `humanize(value, 'title' \| 'sentence' \| 'none')` | Pipe `humanize`: `scout_argentina` → `Scout Argentina`. |
+| `resolveStatusTone(status)` → `STATUS_TONE` | Datos de `StatusConfigService`: estado (es/en, cualquier caja) → `success`/`info`/`warning`/`danger`/`default`. El color lo pone el design system. |
+
+Fechas: `formatDate` de [`@/shared/time`](#time).
