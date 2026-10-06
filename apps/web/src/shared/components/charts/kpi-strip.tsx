@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { KpiDelta, type KpiDeltaValue } from './kpi-delta';
-import { Sparkline } from './sparkline';
+import { KpiDelta, type KpiDeltaValue } from '@/shared/components/charts/kpi-delta';
+import { Sparkline } from '@/shared/components/charts/sparkline';
 
 export interface KpiItem {
   readonly id: string;

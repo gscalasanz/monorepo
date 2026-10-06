@@ -33,6 +33,17 @@ describe('<SegmentedTabs>', () => {
     await user.keyboard('{ArrowRight}');
     expect(screen.getByRole('tab', { name: 'Manada' })).toHaveAttribute('aria-selected', 'true');
   });
+
+  it('si value no coincide con ningún item, el primer tab habilitado es tabulable', () => {
+    const items = [
+      { value: 'a', label: 'A', disabled: true },
+      { value: 'b', label: 'B' },
+      { value: 'c', label: 'C' },
+    ];
+    render(<SegmentedTabs ariaLabel="X" items={items} value="zzz" onValueChange={() => undefined} />);
+    expect(screen.getByRole('tab', { name: 'B' })).toHaveAttribute('tabindex', '0');
+    expect(screen.getByRole('tab', { name: 'C' })).toHaveAttribute('tabindex', '-1');
+  });
 });
 
 describe('<TotalsBar> / <KeyValueList>', () => {

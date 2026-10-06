@@ -19,6 +19,10 @@ describe('toMoneyParts / formatSignedMoney', () => {
     expect(toMoneyParts(0, { sign: 'auto' })).toMatchObject({ sign: '', direction: 'neutral' });
   });
 
+  it("sign 'in' con monto negativo: manda el monto (−, dirección out)", () => {
+    expect(toMoneyParts(-500, { sign: 'in' })).toMatchObject({ sign: MINUS_SIGN, direction: 'out' });
+  });
+
   it('sin sign: negativo igual lleva U+2212, sin color', () => {
     expect(toMoneyParts(-1500)).toMatchObject({ sign: MINUS_SIGN, digits: '1.500', direction: 'neutral' });
   });

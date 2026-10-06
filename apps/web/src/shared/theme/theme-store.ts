@@ -47,3 +47,16 @@ export function initializeTheme(): void {
   themeStore.setState({ mode });
   applyToDom(mode);
 }
+
+/** Flag de módulo: la inicialización desde storage corre una vez por carga de página. */
+let themeInitialized = false;
+
+/**
+ * Como `initializeTheme`, pero solo la primera vez: los mounts posteriores de
+ * `useTheme` no pisan el modo en memoria (p. ej. si storage no pudo persistir).
+ */
+export function initializeThemeOnce(): void {
+  if (themeInitialized) return;
+  themeInitialized = true;
+  initializeTheme();
+}

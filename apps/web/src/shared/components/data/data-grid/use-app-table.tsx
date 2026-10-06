@@ -13,7 +13,7 @@ import { Skeleton } from '@/shared/components/reui/skeleton';
 import { dataGridFeatures } from '@/shared/components/reui/data-grid/data-grid';
 import { UI_CONFIG } from '@/shared/constants';
 
-import type { AppColumnDef, AppDataGridProps, ServerPagination } from './types';
+import type { AppColumnDef, AppDataGridProps, ServerPagination } from '@/shared/components/data/data-grid/types';
 
 const DEFAULT_SKELETON = <Skeleton aria-hidden className="h-4 w-3/4 rounded-sm bg-recessed" />;
 

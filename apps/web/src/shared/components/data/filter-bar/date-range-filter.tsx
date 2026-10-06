@@ -6,9 +6,9 @@ import { useId, useState } from 'react';
 import { Popover, PopoverContent } from '@/shared/components/reui/popover';
 import { DATE_FORMATS, formatDate } from '@/shared/time';
 
-import { DATA_COPY } from '../copy';
-import { FilterChipTrigger } from './filter-chip';
-import type { DateRangeFilterField, DateRangeValue } from './types';
+import { DATA_COPY } from '@/shared/components/data/copy';
+import { FilterChipTrigger } from '@/shared/components/data/filter-bar/filter-chip';
+import type { DateRangeFilterField, DateRangeValue } from '@/shared/components/data/filter-bar/types';
 
 export interface DateRangeFilterProps {
   readonly field: DateRangeFilterField;

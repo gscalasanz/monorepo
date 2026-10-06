@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { APP_ROUTES } from '@/shared/constants';
 import { cn } from '@/shared/lib/utils';
 
-import { FEEDBACK_COPY } from './copy';
+import { FEEDBACK_COPY } from '@/shared/components/feedback/copy';
 
 export interface NotFoundViewProps {
   readonly homeHref?: string;

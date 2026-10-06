@@ -2,7 +2,7 @@ import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { CHARTS_COPY } from './copy';
+import { CHARTS_COPY } from '@/shared/components/charts/copy';
 
 export interface KpiDeltaValue {
   readonly direction: 'up' | 'down' | 'flat';

@@ -45,6 +45,15 @@ function nextEnabledIndex<TValue extends string>(params: {
   return from;
 }
 
+/** Tab que recibe `tabIndex=0`: el seleccionado o, si no hay match, el primero habilitado. */
+function resolveTabStop<TValue extends string>(
+  items: readonly SegmentedTabItem<TValue>[],
+  value: TValue,
+): TValue | undefined {
+  const selected = items.find((item) => item.value === value && !item.disabled);
+  return (selected ?? items.find((item) => !item.disabled))?.value;
+}
+
 /**
  * Control segmentado (equivale a `button-tabs` de Angular y al `.seg` del mockup).
  * Navegación con flechas + activación automática; foco roving.
@@ -60,6 +69,7 @@ export function SegmentedTabs<TValue extends string = string>({
 }: SegmentedTabsProps<TValue>) {
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
   const isTabs = semantics === 'tabs';
+  const tabStopValue = resolveTabStop(items, value);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const step = NEXT_KEYS[event.key];
@@ -83,6 +93,7 @@ export function SegmentedTabs<TValue extends string = string>({
           key={item.value}
           item={item}
           selected={item.value === value}
+          tabStop={item.value === tabStopValue}
           isTabs={isTabs}
           panelId={getPanelId?.(item.value)}
           buttonRef={(node) => { refs.current[index] = node; }}
@@ -97,6 +108,8 @@ export function SegmentedTabs<TValue extends string = string>({
 interface SegmentButtonProps<TValue extends string> {
   readonly item: SegmentedTabItem<TValue>;
   readonly selected: boolean;
+  /** Único tab con `tabIndex=0` en el roving focus. */
+  readonly tabStop: boolean;
   readonly isTabs: boolean;
   readonly panelId?: string;
   readonly buttonRef: (node: HTMLButtonElement | null) => void;
@@ -107,6 +120,7 @@ interface SegmentButtonProps<TValue extends string> {
 function SegmentButton<TValue extends string>({
   item,
   selected,
+  tabStop,
   isTabs,
   panelId,
   buttonRef,
@@ -121,7 +135,7 @@ function SegmentButton<TValue extends string>({
       aria-selected={isTabs ? selected : undefined}
       aria-pressed={isTabs ? undefined : selected}
       aria-controls={panelId}
-      tabIndex={isTabs && !selected ? -1 : 0}
+      tabIndex={isTabs && !tabStop ? -1 : 0}
       disabled={item.disabled}
       onClick={onSelect}
       onKeyDown={onKeyDown}

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { FEEDBACK_COPY } from './copy';
+import { FEEDBACK_COPY } from '@/shared/components/feedback/copy';
 
 export interface EmptyStateProps {
   /** Qué pasa ("Nada para devolverle a Valentina"). */

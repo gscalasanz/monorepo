@@ -2,7 +2,7 @@ import type { MoneyDecimals } from '@/shared/format';
 import { formatMoney } from '@/shared/format';
 import { cn } from '@/shared/lib/utils';
 
-import { toMoneyParts, type MoneyDirection, type MoneySign } from './money-parts';
+import { toMoneyParts, type MoneyDirection, type MoneySign } from '@/shared/components/data/money-parts';
 
 const SIZE_CLASSES = {
   inline: 'font-medium',

@@ -21,6 +21,10 @@ describe('parseMoneyInput', () => {
     ['$ 1.500', 1500],
     ['1,2,3', null],
     [',', null],
+    ['500,', 500],
+    ['500.', 500],
+    ['1.234,', 1234],
+    ['1.234,5', 1234.5],
   ])('%j → %j', (input, expected) => {
     expect(parseMoneyInput(input)).toBe(expected);
   });

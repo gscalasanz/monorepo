@@ -38,14 +38,23 @@ export interface ActiveConfirm extends ConfirmOptions {
 
 interface ConfirmState {
   readonly active: ActiveConfirm | null;
+  /** `true` mientras la acción del diálogo activo está corriendo. */
+  readonly busy: boolean;
 }
 
-export const confirmStore = createStore<ConfirmState>(() => ({ active: null }));
+export const confirmStore = createStore<ConfirmState>(() => ({ active: null, busy: false }));
+
+/** Lo setea el flujo del diálogo mientras ejecuta la acción. */
+export function setConfirmBusy(busy: boolean): void {
+  confirmStore.setState({ busy });
+}
 
 let sequence = 0;
 
 function open(options: ConfirmOptions, action?: () => Promise<unknown>): Promise<ConfirmResult> {
-  // Si había uno abierto, se cancela (no puede haber dos).
+  // Con una acción en curso no se pisa el diálogo activo: se rechaza el nuevo pedido.
+  if (confirmStore.getState().busy) return Promise.resolve({ confirmed: false });
+  // Si había uno abierto (sin acción en curso), se cancela (no puede haber dos).
   confirmStore.getState().active?.resolve({ confirmed: false });
   sequence += 1;
   return new Promise<ConfirmResult>((resolve) => {
@@ -57,7 +66,7 @@ function open(options: ConfirmOptions, action?: () => Promise<unknown>): Promise
 export function settleConfirm(result: ConfirmResult): void {
   const { active } = confirmStore.getState();
   if (!active) return;
-  confirmStore.setState({ active: null });
+  confirmStore.setState({ active: null, busy: false });
   active.resolve(result);
 }
 

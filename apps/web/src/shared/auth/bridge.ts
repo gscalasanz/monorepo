@@ -14,7 +14,8 @@ const refreshOrLogout = createSingleFlight(async (): Promise<string> => {
   try {
     return (await refreshSession()).accessToken;
   } catch (error) {
-    logout();
+    // Si la sesión ya se cerró mientras se renovaba, no repetir logout/navegación.
+    if (getRefreshToken()) logout();
     throw error;
   }
 });

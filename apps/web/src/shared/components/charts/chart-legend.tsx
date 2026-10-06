@@ -16,9 +16,9 @@ export interface ChartLegendProps {
 export function ChartLegend({ items, className }: ChartLegendProps) {
   return (
     <ul className={cn('grid gap-2', className)}>
-      {items.map((item) => (
+      {items.map((item, index) => (
         <li
-          key={item.label}
+          key={`${item.label}-${index}`}
           className="grid grid-cols-[10px_minmax(0,1fr)_auto] items-center gap-2 text-[13px] text-ink"
         >
           <span aria-hidden className="size-2 rounded-[2px]" style={{ background: item.color }} />

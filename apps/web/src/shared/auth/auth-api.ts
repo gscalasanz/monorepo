@@ -59,10 +59,18 @@ export function meRequest(): Promise<AuthUser> {
   return apiClient.get(API_ENDPOINTS.AUTH_ME, { schema: authUserSchema });
 }
 
+/** Sin error global: el form de cuenta muestra su propio toast (evita el doble aviso). */
 export function changePasswordRequest(dto: ChangePasswordDto): Promise<void> {
-  return apiClient.patch(API_ENDPOINTS.AUTH_PASSWORD, { body: dto });
+  return apiClient.patch(API_ENDPOINTS.AUTH_PASSWORD, {
+    body: dto,
+    skipGlobalError: true,
+  });
 }
 
+/** Sin error global: el form de cuenta muestra su propio toast (evita el doble aviso). */
 export function changeEmailRequest(dto: ChangeEmailDto): Promise<void> {
-  return apiClient.patch(API_ENDPOINTS.AUTH_EMAIL, { body: dto });
+  return apiClient.patch(API_ENDPOINTS.AUTH_EMAIL, {
+    body: dto,
+    skipGlobalError: true,
+  });
 }

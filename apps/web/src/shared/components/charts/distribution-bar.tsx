@@ -1,9 +1,9 @@
 import { formatMoney } from '@/shared/format';
 import { cn } from '@/shared/lib/utils';
 
-import { ChartLegend } from './chart-legend';
-import { seriesColor } from './chart-theme';
-import { CHARTS_COPY } from './copy';
+import { ChartLegend } from '@/shared/components/charts/chart-legend';
+import { seriesColor } from '@/shared/components/charts/chart-theme';
+import { CHARTS_COPY } from '@/shared/components/charts/copy';
 
 export interface DistributionSegment {
   readonly label: string;

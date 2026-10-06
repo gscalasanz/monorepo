@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/shared/components/reui/skeleton';
 import { cn } from '@/shared/lib/utils';
 
-import { FEEDBACK_COPY } from './copy';
+import { FEEDBACK_COPY } from '@/shared/components/feedback/copy';
 
 const DEFAULT_SKELETON_ROWS = 3;
 

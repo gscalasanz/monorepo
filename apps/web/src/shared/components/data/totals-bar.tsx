@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { DATA_COPY } from './copy';
-import { Money } from './money';
+import { DATA_COPY } from '@/shared/components/data/copy';
+import { Money } from '@/shared/components/data/money';
 
 export interface TotalsBarProps {
   readonly count: number;

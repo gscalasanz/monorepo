@@ -11,6 +11,8 @@ const COMMA = ',';
 const THOUSANDS_GROUP_LENGTH = 3;
 const PLAIN_NUMBER = /^-?\d+(\.\d+)?$/;
 const MAX_FRACTION_DIGITS = 2;
+/** Un separador final (`'500,'`, `'1.234,'`) es un decimal a medio tipear: se ignora. */
+const TRAILING_SEPARATOR = /[.,]$/;
 
 const MONEY_FORMATTER = new Intl.NumberFormat(LOCALE, {
   maximumFractionDigits: MAX_FRACTION_DIGITS,
@@ -47,7 +49,7 @@ export function parseNumberInput(input: string): number | null {
 
 /** Convierte un monto tipeado (`'1.234,56'`, `'1234.5'`, `'$ 500'`) a número o `null`. */
 export function parseMoneyInput(input: string): number | null {
-  const text = sanitizeMoneyInput(input);
+  const text = sanitizeMoneyInput(input).replace(TRAILING_SEPARATOR, '');
   if (!text) return null;
   return parseNumberInput(normalizeSeparators(text));
 }

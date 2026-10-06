@@ -7,12 +7,12 @@ import { EmptyState } from '@/shared/components/feedback';
 import { UI_CONFIG } from '@/shared/constants';
 import { cn } from '@/shared/lib/utils';
 
-import { DATA_COPY } from '../copy';
-import { MOBILE_LIST_QUERY, useMediaQuery } from '../use-media-query';
-import { DATA_GRID_I18N_ES, DENSE_TABLE_CLASSES } from './grid-config';
-import { MobileList } from './mobile-list';
-import type { AppDataGridProps, AppGridLayout } from './types';
-import { recordCountOf, showsPagination, useAppTable } from './use-app-table';
+import { DATA_COPY } from '@/shared/components/data/copy';
+import { MOBILE_LIST_QUERY, useMediaQuery } from '@/shared/components/data/use-media-query';
+import { DATA_GRID_I18N_ES, DENSE_TABLE_CLASSES } from '@/shared/components/data/data-grid/grid-config';
+import { MobileList } from '@/shared/components/data/data-grid/mobile-list';
+import type { AppDataGridProps, AppGridLayout } from '@/shared/components/data/data-grid/types';
+import { recordCountOf, showsPagination, useAppTable } from '@/shared/components/data/data-grid/use-app-table';
 
 function useIsList(layout: AppGridLayout): boolean {
   const isMobile = useMediaQuery(MOBILE_LIST_QUERY);

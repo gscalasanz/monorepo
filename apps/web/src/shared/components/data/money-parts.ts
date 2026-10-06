@@ -16,7 +16,13 @@ export interface MoneyParts {
 
 const SYMBOL_PATTERN = /^(\$)\s*(.*)$/u;
 
+/**
+ * `sign` forzado: `out` con monto positivo es el caso normal (los egresos llegan
+ * en positivo). `in` con monto negativo es una contradicción: manda el monto
+ * (se muestra `−` y dirección `out`) para no ocultar un valor negativo.
+ */
 function resolveDirection(amount: number, sign?: MoneySign): MoneyDirection {
+  if (sign === 'in' && amount < 0) return 'out';
   if (sign === 'in' || sign === 'out') return sign;
   if (sign === 'auto' && amount !== 0) return amount > 0 ? 'in' : 'out';
   return 'neutral';

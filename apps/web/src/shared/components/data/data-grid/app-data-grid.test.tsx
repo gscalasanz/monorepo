@@ -94,6 +94,36 @@ describe('<AppDataGrid>', () => {
       expect(onRowClick).toHaveBeenCalledWith(expect.objectContaining({ id: 'm2' }));
     });
 
+    it('con onRowClick no anida interactivos: el botón de fila es un overlay hermano', async () => {
+      const user = userEvent.setup();
+      const onRowClick = vi.fn();
+      const onInner = vi.fn();
+      render(
+        <AppDataGrid
+          columns={COLUMNS}
+          data={makeRows(1)}
+          layout="list"
+          ariaLabel="Movimientos"
+          onRowClick={onRowClick}
+          mobileRow={(row) => (
+            <span>
+              {row.concepto}
+              <button type="button" onClick={onInner}>
+                Acción
+              </button>
+            </span>
+          )}
+        />,
+      );
+      const inner = screen.getByRole('button', { name: 'Acción' });
+      expect(inner.parentElement?.closest('button')).toBeNull();
+      await user.click(inner);
+      expect(onInner).toHaveBeenCalledTimes(1);
+      expect(onRowClick).not.toHaveBeenCalled();
+      await user.click(screen.getByRole('button', { name: /Concepto 1/ }));
+      expect(onRowClick).toHaveBeenCalledWith(expect.objectContaining({ id: 'm1' }));
+    });
+
     it('layout="auto" pasa a lista cuando matchMedia matchea (<860px)', () => {
       const spy = vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
         matches: true,

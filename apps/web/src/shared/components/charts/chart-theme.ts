@@ -30,6 +30,10 @@ export const BAR_RADIUS = {
 
 export const CHART_DEFAULT_HEIGHT = 240;
 
+/** Ancho máximo de cada barra (px) y separación entre barras pareadas. */
+export const BAR_MAX_SIZE = 28;
+export const BAR_GAP = 2;
+
 /** Color de la serie `index` (las de más de 5 deben agruparse en "Otros"). */
 export function seriesColor(index: number): string {
   return SERIES_COLORS[index % SERIES_COLORS.length] ?? SERIES_COLORS[0];

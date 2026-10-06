@@ -13,6 +13,8 @@ const replace = vi.fn();
 const loginMock = vi.fn();
 const changePasswordMock = vi.fn();
 const changeEmailMock = vi.fn();
+const SESSION_USER = { id: '1', nombre: 'Ana Admin', email: 'ana@scout.com', tipo: 'educador' };
+let sessionUser: typeof SESSION_USER | null = SESSION_USER;
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace, push: vi.fn() }),
@@ -28,7 +30,7 @@ vi.mock('@/shared/auth', async (importOriginal) => {
     changeEmail: (dto: unknown) => changeEmailMock(dto),
     useRedirectIfAuthenticated: () => ({ status: 'allowed' }),
     useSession: () => ({
-      user: { id: '1', nombre: 'Ana Admin', email: 'ana@scout.com', tipo: 'educador' },
+      user: sessionUser,
       isAuthenticated: true,
       isLoading: false,
       initialized: true,
@@ -109,6 +111,20 @@ describe('LoginView', () => {
 });
 
 describe('AccountProfileCard', () => {
+  afterEach(() => {
+    sessionUser = SESSION_USER;
+  });
+
+  it('no pisa el email que el usuario ya empezó a escribir', async () => {
+    sessionUser = null;
+    const { rerender } = render(<AccountProfileCard />);
+    const input = screen.getByLabelText(/Nuevo email/);
+    await userEvent.type(input, 'otro@scout.com');
+    sessionUser = SESSION_USER;
+    rerender(<AccountProfileCard />);
+    expect(screen.getByLabelText(/Nuevo email/)).toHaveValue('otro@scout.com');
+  });
+
   it('muestra nombre y tipo, y precarga el email actual', async () => {
     render(<AccountProfileCard />);
     expect(screen.getByText('Ana Admin')).toBeInTheDocument();

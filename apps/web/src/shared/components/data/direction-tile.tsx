@@ -2,7 +2,7 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { DATA_COPY } from './copy';
+import { DATA_COPY } from '@/shared/components/data/copy';
 
 export interface DirectionTileProps {
   readonly direction: 'in' | 'out';

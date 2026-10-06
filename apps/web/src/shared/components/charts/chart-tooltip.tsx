@@ -18,8 +18,8 @@ export function ChartTooltip({ active, label, entries, format }: ChartTooltipPro
   return (
     <div className="min-w-39 rounded-lg border border-border bg-surface-raised px-2.5 py-2 text-xs leading-4 shadow-md">
       {label === undefined ? null : <p className="mb-1 text-ink-muted">{label}</p>}
-      {entries.map((entry) => (
-        <p key={String(entry.name)} className="flex items-center justify-between gap-3.5">
+      {entries.map((entry, index) => (
+        <p key={`${String(entry.name)}-${index}`} className="flex items-center justify-between gap-3.5">
           <span className="inline-flex items-center gap-1.5 text-ink-muted">
             <i aria-hidden className="inline-block h-0.5 w-2 rounded-[1px]" style={{ background: entry.color ?? entry.fill }} />
             {entry.name}

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   maskPhone,
+  phoneDigits,
   phoneDisplayFromValue,
   phoneValueFromInput,
 } from '@/shared/forms/phone';
@@ -20,6 +21,20 @@ describe('maskPhone (formato AR de Angular)', () => {
     ['01112345678', '(11) 1234-5678'],
   ])('%s → %s', (input, expected) => {
     expect(maskPhone(input)).toBe(expected);
+  });
+});
+
+describe('phoneDigits: pegar números con prefijo de país', () => {
+  it.each([
+    ['+54 11 1234-5678', '1112345678'],
+    ['5491112345678', '1112345678'],
+    ['+54 9 11 1234-5678', '1112345678'],
+    ['011 1234-5678', '1112345678'],
+    ['541112345678', '1112345678'],
+    ['5411', '5411'],
+    ['1112345678', '1112345678'],
+  ])('%s → %s', (input, expected) => {
+    expect(phoneDigits(input)).toBe(expected);
   });
 });
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 
 import { extractErrorMessage } from '@/shared/api';
 import { changeEmail, useSession } from '@/shared/auth';
@@ -12,7 +12,10 @@ import {
   type ChangeEmailFormValues,
 } from '@/features/auth/models/schemas';
 
-/** Cambio de email: precarga el actual y limpia la contraseña al guardar. */
+/**
+ * Cambio de email: precarga el actual (solo si el campo sigue intacto, para no
+ * pisar lo que el usuario ya escribió) y limpia la contraseña al guardar.
+ */
 export function useChangeEmail() {
   const { user } = useSession();
   const form = useFormState<ChangeEmailFormValues>({ newEmail: '', currentPassword: '' });
@@ -20,12 +23,14 @@ export function useChangeEmail() {
   const [saving, setSaving] = useState(false);
   const currentEmail = user?.email ?? '';
   const { setField } = form;
+  const emailTouched = useRef(false);
 
   useEffect(() => {
-    if (currentEmail) setField('newEmail', currentEmail);
+    if (currentEmail && !emailTouched.current) setField('newEmail', currentEmail);
   }, [currentEmail, setField]);
 
   function update<K extends keyof ChangeEmailFormValues>(name: K, value: string): void {
+    if (name === 'newEmail') emailTouched.current = true;
     form.setField(name, value);
     validation.onChange(name, value);
   }

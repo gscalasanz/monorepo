@@ -5,10 +5,10 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { formatMoney } from '@/shared/format';
 import { cn } from '@/shared/lib/utils';
 
-import { ChartLegend } from './chart-legend';
-import { CHART_COLORS, seriesColor } from './chart-theme';
-import { ChartTooltip } from './chart-tooltip';
-import { CHARTS_COPY } from './copy';
+import { ChartLegend } from '@/shared/components/charts/chart-legend';
+import { CHART_COLORS, seriesColor } from '@/shared/components/charts/chart-theme';
+import { ChartTooltip } from '@/shared/components/charts/chart-tooltip';
+import { CHARTS_COPY } from '@/shared/components/charts/copy';
 
 export interface DonutSlice {
   readonly label: string;

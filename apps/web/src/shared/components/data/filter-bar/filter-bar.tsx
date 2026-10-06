@@ -4,13 +4,13 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { DATA_COPY } from '../copy';
-import { SegmentedTabs } from '../segmented-tabs';
-import { DateRangeFilter } from './date-range-filter';
-import { hasActiveFilters, rangeValue, setFilterValue, stringValue } from './filter-values';
-import { SearchFilter } from './search-filter';
-import { SelectFilter } from './select-filter';
-import type { ChipsFilterField, FilterField, FilterValue, FilterValues } from './types';
+import { DATA_COPY } from '@/shared/components/data/copy';
+import { SegmentedTabs } from '@/shared/components/data/segmented-tabs';
+import { DateRangeFilter } from '@/shared/components/data/filter-bar/date-range-filter';
+import { hasActiveFilters, rangeValue, setFilterValue, stringValue } from '@/shared/components/data/filter-bar/filter-values';
+import { SearchFilter } from '@/shared/components/data/filter-bar/search-filter';
+import { SelectFilter } from '@/shared/components/data/filter-bar/select-filter';
+import type { ChipsFilterField, FilterField, FilterValue, FilterValues } from '@/shared/components/data/filter-bar/types';
 
 export interface FilterBarProps {
   readonly fields: readonly FilterField[];

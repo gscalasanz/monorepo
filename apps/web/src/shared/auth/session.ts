@@ -43,8 +43,15 @@ function applyAuthResponse(response: AuthResponse): AuthUser {
   return response.user;
 }
 
+/**
+ * "Época" de la sesión: cada `clearSession` la incrementa. Un refresh en vuelo
+ * que vuelve en otra época (hubo logout en el medio) no reescribe tokens/usuario.
+ */
+let sessionEpoch = 0;
+
 /** Limpia tokens, usuario y el cache en memoria (no mostrar datos de otro usuario). */
 export function clearSession(): void {
+  sessionEpoch += 1;
   clearTokens();
   appCache.clear();
   sessionStore.setState({ user: null });
@@ -105,7 +112,9 @@ export function changeEmail(dto: ChangeEmailDto): Promise<void> {
 async function performRefresh(): Promise<AuthResponse> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) throw new Error(AUTH_COPY.NO_REFRESH_TOKEN);
+  const epoch = sessionEpoch;
   const response = await refreshRequest(refreshToken);
+  if (epoch !== sessionEpoch) throw new Error(AUTH_COPY.SESSION_CLOSED);
   applyAuthResponse(response);
   return response;
 }

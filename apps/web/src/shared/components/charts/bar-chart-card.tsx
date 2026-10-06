@@ -5,9 +5,17 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 
 import { cn } from '@/shared/lib/utils';
 
-import { ChartLegend } from './chart-legend';
-import { AXIS_TICK, BAR_RADIUS, CHART_COLORS, CHART_DEFAULT_HEIGHT, seriesColor } from './chart-theme';
-import { ChartTooltip } from './chart-tooltip';
+import { ChartLegend } from '@/shared/components/charts/chart-legend';
+import {
+  AXIS_TICK,
+  BAR_GAP,
+  BAR_MAX_SIZE,
+  BAR_RADIUS,
+  CHART_COLORS,
+  CHART_DEFAULT_HEIGHT,
+  seriesColor,
+} from '@/shared/components/charts/chart-theme';
+import { ChartTooltip } from '@/shared/components/charts/chart-tooltip';
 
 export interface BarSeries {
   readonly key: string;
@@ -72,12 +80,12 @@ export function BarChartCard({ title, ariaLabel, data, series, orientation = 've
       </header>
       <div role="img" aria-label={ariaLabel} className="px-2 pb-3" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={toRows(data)} layout={horizontal ? 'vertical' : 'horizontal'} barGap={2} accessibilityLayer={false}>
+          <BarChart data={toRows(data)} layout={horizontal ? 'vertical' : 'horizontal'} barGap={BAR_GAP} accessibilityLayer={false}>
             <CartesianGrid stroke={CHART_COLORS.grid} vertical={horizontal} horizontal={!horizontal} />
             {BarAxes({ horizontal, format })}
             <Tooltip cursor={{ fill: CHART_COLORS.cursor }} content={(props) => <ChartTooltip active={props.active} label={props.label} entries={props.payload} format={format} />} />
             {colored.map((item) => (
-              <Bar key={item.key} dataKey={item.key} name={item.label} fill={item.color} radius={horizontal ? BAR_RADIUS.horizontal : BAR_RADIUS.vertical} maxBarSize={28} />
+              <Bar key={item.key} dataKey={item.key} name={item.label} fill={item.color} radius={horizontal ? BAR_RADIUS.horizontal : BAR_RADIUS.vertical} maxBarSize={BAR_MAX_SIZE} />
             ))}
           </BarChart>
         </ResponsiveContainer>

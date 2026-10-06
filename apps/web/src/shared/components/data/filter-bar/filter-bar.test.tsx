@@ -104,4 +104,26 @@ describe('<FilterBar>', () => {
     await waitFor(() => expect(onChange).toHaveBeenLastCalledWith({ fecha: { from: '2026-09-01' } }));
     expect(screen.getByRole('button', { name: 'Quitar filtro Fecha' })).toBeInTheDocument();
   });
+
+  it('el trigger es el mismo nodo activo/inactivo: el popover sigue abierto al elegir fecha', async () => {
+    const user = userEvent.setup();
+    function RangeHarness() {
+      const [value, setValue] = useState<FilterValues>({});
+      return (
+        <FilterBar
+          fields={[{ type: 'date-range', key: 'fecha', label: 'Fecha' }]}
+          value={value}
+          onChange={setValue}
+        />
+      );
+    }
+    render(<RangeHarness />);
+    const trigger = screen.getByRole('button', { name: 'Fecha' });
+    await user.click(trigger);
+    fireEvent.change(await screen.findByLabelText('Desde'), { target: { value: '2026-09-01' } });
+    await screen.findByRole('button', { name: 'Quitar filtro Fecha' });
+    expect(trigger).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByLabelText('Desde')).toBeInTheDocument();
+  });
 });

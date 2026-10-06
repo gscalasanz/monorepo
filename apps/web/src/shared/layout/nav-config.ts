@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import { APP_ROUTES } from '@/shared/constants';
+import { NAV_COPY } from '@/shared/layout/copy';
 
 export interface NavItem {
   readonly label: string;
@@ -28,38 +29,41 @@ export interface NavGroup {
   readonly items: readonly NavItem[];
 }
 
+const L = NAV_COPY.LABELS;
+const PAGES = NAV_COPY.PAGES;
+
 export const NAV_GROUPS: readonly NavGroup[] = [
   {
     title: null,
     items: [
-      { label: 'Dashboard', href: APP_ROUTES.DASHBOARD, icon: LayoutGrid },
-      { label: 'Movimientos', href: APP_ROUTES.MOVIMIENTOS, icon: ArrowLeftRight },
-      { label: 'Gestión Financiera', href: APP_ROUTES.CAJAS, icon: Wallet },
-      { label: 'Gestión de Personas', href: APP_ROUTES.PERSONAS, icon: Users },
+      { label: L.DASHBOARD, href: APP_ROUTES.DASHBOARD, icon: LayoutGrid },
+      { label: L.MOVIMIENTOS, href: APP_ROUTES.MOVIMIENTOS, icon: ArrowLeftRight },
+      { label: L.CAJAS, href: APP_ROUTES.CAJAS, icon: Wallet },
+      { label: L.PERSONAS, href: APP_ROUTES.PERSONAS, icon: Users },
     ],
   },
   {
-    title: 'Actividades',
+    title: NAV_COPY.GROUP_ACTIVIDADES,
     items: [
-      { label: 'Inscripciones', href: APP_ROUTES.INSCRIPCIONES, icon: ClipboardCheck },
-      { label: 'Campamentos', href: APP_ROUTES.CAMPAMENTOS, icon: Tent },
-      { label: 'Eventos', href: APP_ROUTES.EVENTOS, icon: CalendarDays },
+      { label: L.INSCRIPCIONES, href: APP_ROUTES.INSCRIPCIONES, icon: ClipboardCheck },
+      { label: L.CAMPAMENTOS, href: APP_ROUTES.CAMPAMENTOS, icon: Tent },
+      { label: L.EVENTOS, href: APP_ROUTES.EVENTOS, icon: CalendarDays },
     ],
   },
 ];
 
 export const NAV_FOOTER_ITEM: NavItem = {
-  label: 'Configuración',
+  label: L.CONFIGURACION,
   href: APP_ROUTES.CONFIGURACION,
   icon: Settings,
 };
 
 /** Destinos del bottom-nav mobile (el "+" central va a nuevo movimiento). */
 export const MOBILE_NAV_ITEMS: readonly NavItem[] = [
-  { label: 'Inicio', href: APP_ROUTES.DASHBOARD, icon: LayoutGrid },
-  { label: 'Movimientos', href: APP_ROUTES.MOVIMIENTOS, icon: ArrowLeftRight },
-  { label: 'Personas', href: APP_ROUTES.PERSONAS, icon: Users },
-  { label: 'Eventos', href: APP_ROUTES.EVENTOS, icon: CalendarDays },
+  { label: NAV_COPY.MOBILE_LABELS.HOME, href: APP_ROUTES.DASHBOARD, icon: LayoutGrid },
+  { label: L.MOVIMIENTOS, href: APP_ROUTES.MOVIMIENTOS, icon: ArrowLeftRight },
+  { label: NAV_COPY.MOBILE_LABELS.PERSONAS, href: APP_ROUTES.PERSONAS, icon: Users },
+  { label: L.EVENTOS, href: APP_ROUTES.EVENTOS, icon: CalendarDays },
 ];
 
 export const NEW_MOVIMIENTO_HREF = `${APP_ROUTES.MOVIMIENTOS}/nuevo`;
@@ -71,36 +75,15 @@ export interface PageMeta {
 
 /** Título/subtítulo por sección (prefijo de ruta), igual que Angular. */
 export const PAGE_META: Readonly<Record<string, PageMeta>> = {
-  [APP_ROUTES.DASHBOARD]: {
-    title: 'Dashboard',
-    subtitle: 'Bienvenido al Sistema de Gestión Financiera Scout',
-  },
-  [APP_ROUTES.PERSONAS]: {
-    title: 'Gestión de Personas',
-    subtitle: 'Administra protagonistas, educadores y personas externas',
-  },
-  [APP_ROUTES.CAJAS]: {
-    title: 'Gestión Financiera',
-    subtitle: 'Administra cajas, fondos de rama y cuentas personales',
-  },
-  [APP_ROUTES.MOVIMIENTOS]: {
-    title: 'Movimientos',
-    subtitle: 'Visualiza y gestiona los movimientos financieros',
-  },
-  [APP_ROUTES.INSCRIPCIONES]: {
-    title: 'Inscripciones',
-    subtitle: 'Gestión de inscripciones Scout Argentina y de grupo',
-  },
-  [APP_ROUTES.EVENTOS]: { title: 'Eventos', subtitle: 'Organiza los eventos del grupo' },
-  [APP_ROUTES.CAMPAMENTOS]: {
-    title: 'Campamentos',
-    subtitle: 'Planifica y gestiona los campamentos del grupo',
-  },
-  [APP_ROUTES.REPORTES]: { title: 'Reportes', subtitle: 'Genera y visualiza reportes del grupo' },
-  [APP_ROUTES.CONFIGURACION]: {
-    title: 'Configuración',
-    subtitle: 'Configura los parámetros del sistema',
-  },
+  [APP_ROUTES.DASHBOARD]: PAGES.DASHBOARD,
+  [APP_ROUTES.PERSONAS]: PAGES.PERSONAS,
+  [APP_ROUTES.CAJAS]: PAGES.CAJAS,
+  [APP_ROUTES.MOVIMIENTOS]: PAGES.MOVIMIENTOS,
+  [APP_ROUTES.INSCRIPCIONES]: PAGES.INSCRIPCIONES,
+  [APP_ROUTES.EVENTOS]: PAGES.EVENTOS,
+  [APP_ROUTES.CAMPAMENTOS]: PAGES.CAMPAMENTOS,
+  [APP_ROUTES.REPORTES]: PAGES.REPORTES,
+  [APP_ROUTES.CONFIGURACION]: PAGES.CONFIGURACION,
 };
 
 /** ¿`pathname` está dentro de la sección `href`? */

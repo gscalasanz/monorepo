@@ -3,7 +3,7 @@ import { AlertTriangle, RotateCcw } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 
-import { FEEDBACK_COPY } from './copy';
+import { FEEDBACK_COPY } from '@/shared/components/feedback/copy';
 
 export interface ErrorStateProps {
   /** Mensaje humano (ej. el de `extractErrorMessage`). */

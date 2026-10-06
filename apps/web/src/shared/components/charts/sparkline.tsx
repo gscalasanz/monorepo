@@ -2,7 +2,7 @@ import { useId } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { SERIES_COLORS } from './chart-theme';
+import { SERIES_COLORS } from '@/shared/components/charts/chart-theme';
 
 const WIDTH = 96;
 const HEIGHT = 32;

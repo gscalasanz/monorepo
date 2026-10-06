@@ -9,7 +9,7 @@ import {
   resolveBadgeIcon,
   resolveBadgeTone,
   type BadgeTone,
-} from './status-badge-config';
+} from '@/shared/components/data/status-badge-config';
 
 /** Ícono de lucide resuelto por estado (createElement: el componente viene de un mapa estático). */
 const ICON_PROPS = { 'aria-hidden': true, className: 'size-[13px] shrink-0', strokeWidth: 2 } as const;

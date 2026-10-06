@@ -2,9 +2,9 @@
 
 import { Search } from 'lucide-react';
 
-import { DATA_COPY } from '../copy';
-import type { SearchFilterField } from './types';
-import { useDebouncedCommit } from './use-debounced-commit';
+import { DATA_COPY } from '@/shared/components/data/copy';
+import type { SearchFilterField } from '@/shared/components/data/filter-bar/types';
+import { useDebouncedCommit } from '@/shared/components/data/filter-bar/use-debounced-commit';
 
 export interface SearchFilterProps {
   readonly field: SearchFilterField;

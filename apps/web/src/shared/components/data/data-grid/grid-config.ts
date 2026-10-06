@@ -1,6 +1,6 @@
 import type { DataGridI18nOverrides } from '@/shared/components/reui/data-grid/data-grid-i18n';
 
-import { DATA_COPY } from '../copy';
+import { DATA_COPY } from '@/shared/components/data/copy';
 
 const { grid } = DATA_COPY;
 

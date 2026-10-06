@@ -10,6 +10,7 @@ export {
 } from './constants';
 export {
   initializeTheme,
+  initializeThemeOnce,
   readStoredTheme,
   setThemeMode,
   themeStore,

@@ -3,11 +3,13 @@ import {
   AUTH_COPY,
   changeEmail,
   changePassword,
+  clearSession,
   getAccessToken,
   getRefreshToken,
   initializeSession,
   login,
   logout,
+  refreshSession,
   register,
   sessionStore,
   setAuthNavigator,
@@ -186,6 +188,33 @@ describe('cambio de password y email', () => {
     ).rejects.toThrow('Contraseña actual incorrecta');
     expect(getRefreshToken()).toBe('ref');
     expect(sessionStore.getState().isLoading).toBe(false);
+  });
+
+  it('los errores no se publican al bus global (el form muestra su propio toast)', async () => {
+    fake.reply(
+      { status: 400, body: { message: 'Contraseña actual incorrecta' } },
+      { status: 400, body: { message: 'Email en uso' } },
+    );
+    await expect(
+      changePassword({ currentPassword: 'x', newPassword: 'y' }),
+    ).rejects.toThrow();
+    await expect(
+      changeEmail({ newEmail: 'a@b.ar', currentPassword: 'x' }),
+    ).rejects.toThrow();
+    expect(globalErrorStore.getState().errors).toEqual([]);
+  });
+});
+
+describe('refresh vs. logout (epoch de sesión)', () => {
+  it('una respuesta de refresh que llega después de clearSession se descarta', async () => {
+    setTokens({ accessToken: tokenExpiringIn(-10), refreshToken: 'ref' });
+    fake.reply(authResponse(tokenExpiringIn(3600), 'ref2'));
+    const pending = refreshSession();
+    clearSession();
+    await expect(pending).rejects.toThrow(AUTH_COPY.SESSION_CLOSED);
+    expect(getAccessToken()).toBeNull();
+    expect(getRefreshToken()).toBeNull();
+    expect(sessionStore.getState().user).toBeNull();
   });
 });
 

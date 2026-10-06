@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { DATA_COPY } from './copy';
+import { DATA_COPY } from '@/shared/components/data/copy';
 
 export interface KeyValueItem {
   readonly label: string;

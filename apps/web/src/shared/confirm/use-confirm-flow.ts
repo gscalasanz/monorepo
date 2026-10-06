@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { extractErrorMessage } from '@/shared/api';
 import { CONFIRM_COPY, CONFIRM_SUCCESS_CLOSE_MS } from '@/shared/confirm/copy';
-import { settleConfirm, type ActiveConfirm } from '@/shared/confirm/confirm-store';
+import { setConfirmBusy, settleConfirm, type ActiveConfirm } from '@/shared/confirm/confirm-store';
 import { errorHintFor } from '@/shared/confirm/error-hint';
 
 export type ConfirmPhase = 'confirm' | 'loading' | 'error' | 'success';
@@ -34,17 +34,25 @@ export function useConfirmFlow(active: ActiveConfirm): ConfirmFlow {
       return;
     }
     setPhase('loading');
+    setConfirmBusy(true);
     try {
       await active.action();
       setPhase('success');
     } catch (cause) {
       setError(extractErrorMessage(cause, CONFIRM_COPY.UNEXPECTED));
       setPhase('error');
+    } finally {
+      setConfirmBusy(false);
     }
   }
 
   function onCancel(): void {
     if (phase === 'loading') return;
+    // La acción ya corrió: cerrar durante el éxito no es una cancelación.
+    if (phase === 'success') {
+      settleConfirm({ confirmed: true });
+      return;
+    }
     settleConfirm(phase === 'error' ? { confirmed: false, error } : { confirmed: false });
   }
 

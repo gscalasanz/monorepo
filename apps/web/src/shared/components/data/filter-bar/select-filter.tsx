@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { Popover, PopoverContent } from '@/shared/components/reui/popover';
 import { cn } from '@/shared/lib/utils';
 
-import { FilterChipTrigger } from './filter-chip';
-import type { SelectFilterField } from './types';
+import { FilterChipTrigger } from '@/shared/components/data/filter-bar/filter-chip';
+import type { SelectFilterField } from '@/shared/components/data/filter-bar/types';
 
 export interface SelectFilterProps {
   readonly field: SelectFilterField;

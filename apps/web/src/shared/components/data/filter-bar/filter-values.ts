@@ -1,4 +1,4 @@
-import type { DateRangeValue, FilterValue, FilterValues } from './types';
+import type { DateRangeValue, FilterValue, FilterValues } from '@/shared/components/data/filter-bar/types';
 
 export function isDateRangeValue(value: FilterValue): value is DateRangeValue {
   return typeof value === 'object' && value !== null;
