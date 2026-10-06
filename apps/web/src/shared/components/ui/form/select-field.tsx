@@ -34,6 +34,9 @@ export interface SelectFieldProps<T extends string>
 const TRIGGER_CLASSES = cn(
   CONTROL_SURFACE,
   CONTROL_SIZE.md,
+  // El trigger de ReUI fija `data-[size=default]:h-8`, que por especificidad le
+  // gana a `h-[46px]`: se pisa con la misma variante para respetar el contrato.
+  'data-[size=default]:h-[46px] md:data-[size=default]:h-[38px]',
   'w-full pr-2.5 data-placeholder:text-ink-subtle',
   'data-disabled:cursor-not-allowed data-disabled:border-border data-disabled:bg-recessed data-disabled:text-ink-muted data-disabled:opacity-100',
 );
