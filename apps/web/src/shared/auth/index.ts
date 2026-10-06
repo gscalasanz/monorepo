@@ -59,3 +59,4 @@ export {
   type SessionView,
 } from './hooks';
 export { useSessionBootstrap } from './use-session-bootstrap';
+export { useHasTokens } from './use-has-tokens';
