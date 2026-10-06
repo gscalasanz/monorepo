@@ -15,6 +15,7 @@ export {
   type MoneySign,
 } from './money-parts';
 export { RamaChip, type RamaChipProps } from './rama-chip';
+export { RowActionsMenu, type RowAction, type RowActionsMenuProps } from './row-actions-menu';
 export {
   ButtonTabs,
   SegmentedTabs,
