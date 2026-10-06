@@ -1,7 +1,14 @@
 /** Lógica pura del reporte de deudas (paridad exacta con `ReporteDeudasComponent`). */
 import type { FilterValues } from '@/shared/components/data';
+import { DEBT_LABELS as L, DOC_LABELS as D } from '@/features/reportes/constants/copy';
 import { FILTER_KEYS } from '@/features/reportes/constants/filters';
-import type { DeudaFilters, DocInscripcion, PersonaDeuda } from '@/features/reportes/models/deudas';
+import {
+  isDeudaRamaFilter,
+  isTipoDeudaFilter,
+  type DeudaFilters,
+  type DocInscripcion,
+  type PersonaDeuda,
+} from '@/features/reportes/models/deudas';
 
 export interface DebtCard {
   readonly label: string;
@@ -18,9 +25,9 @@ export interface DocItem {
 /** Deudas monetarias con saldo > 0, ordenadas por año y luego por etiqueta. */
 export function debtCards(p: PersonaDeuda): readonly DebtCard[] {
   return [
-    ...p.campamentos.map((c) => ({ label: 'Camp.', name: c.nombre, ano: c.ano, saldo: c.saldo })),
-    ...p.inscripcionesScout.map((i) => ({ label: 'Scout AR', name: 'Inscripción', ano: i.ano, saldo: i.saldo })),
-    ...p.inscripcionesGrupo.map((i) => ({ label: 'Grupo', name: 'Inscripción', ano: i.ano, saldo: i.saldo })),
+    ...p.campamentos.map((c) => ({ label: L.CAMPAMENTO, name: c.nombre, ano: c.ano, saldo: c.saldo })),
+    ...p.inscripcionesScout.map((i) => ({ label: L.SCOUT, name: L.INSCRIPCION, ano: i.ano, saldo: i.saldo })),
+    ...p.inscripcionesGrupo.map((i) => ({ label: L.GRUPO, name: L.INSCRIPCION, ano: i.ano, saldo: i.saldo })),
   ]
     .filter((d) => d.saldo > 0)
     .sort((a, b) => a.ano - b.ano || a.label.localeCompare(b.label));
@@ -30,23 +37,23 @@ export function debtCards(p: PersonaDeuda): readonly DebtCard[] {
 export function personalDocItems(p: PersonaDeuda): readonly DocItem[] {
   const doc = p.documentacionPersonal;
   if (!doc) return [];
-  const dniPadres = p.esMayorDeEdad ? [] : [{ ok: doc.dniPadres, label: 'DNI padres' }];
+  const dniPadres = p.esMayorDeEdad ? [] : [{ ok: doc.dniPadres, label: D.DNI_PADRES }];
   return [
-    { ok: doc.dni, label: 'DNI' },
-    { ok: doc.partidaNacimiento, label: 'Partida nac.' },
+    { ok: doc.dni, label: D.DNI },
+    { ok: doc.partidaNacimiento, label: D.PARTIDA },
     ...dniPadres,
-    { ok: doc.carnetObraSocial, label: 'Obra social' },
+    { ok: doc.carnetObraSocial, label: D.OBRA_SOCIAL },
   ];
 }
 
 /** Documentos de una inscripción Scout AR. */
 export function inscripcionDocItems(doc: DocInscripcion): readonly DocItem[] {
   return [
-    { ok: doc.declaracionDeSalud, label: `Decl. salud ${doc.ano}` },
-    { ok: doc.autorizacionDeImagen, label: `Aut. imagen ${doc.ano}` },
-    { ok: doc.salidasCercanas, label: `Salidas ${doc.ano}` },
-    { ok: doc.autorizacionIngreso, label: `Aut. ingreso ${doc.ano}` },
-    { ok: doc.certificadoAptitudFisica, label: `Apt. física ${doc.ano}` },
+    { ok: doc.declaracionDeSalud, label: `${D.SALUD} ${doc.ano}` },
+    { ok: doc.autorizacionDeImagen, label: `${D.IMAGEN} ${doc.ano}` },
+    { ok: doc.salidasCercanas, label: `${D.SALIDAS} ${doc.ano}` },
+    { ok: doc.autorizacionIngreso, label: `${D.INGRESO} ${doc.ano}` },
+    { ok: doc.certificadoAptitudFisica, label: `${D.APTITUD} ${doc.ano}` },
   ];
 }
 
@@ -93,8 +100,8 @@ export function toDeudaFilters(values: FilterValues): DeudaFilters {
   const ano = asText(values[FILTER_KEYS.ANO]);
   const tipo = asText(values[FILTER_KEYS.TIPO]);
   return {
-    ...(rama ? { rama } : {}),
+    ...(isDeudaRamaFilter(rama) ? { rama } : {}),
     ...(ano ? { ano: Number(ano) } : {}),
-    ...(tipo ? { tipo } : {}),
+    ...(isTipoDeudaFilter(tipo) ? { tipo } : {}),
   };
 }

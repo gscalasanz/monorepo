@@ -57,6 +57,7 @@ export function DeudaDetail({ persona }: { readonly persona: PersonaDeuda }) {
               tone="warning"
               icon={TriangleAlert}
               label={C.AUT_CAMPAMENTO(camp.nombre, camp.ano)}
+              className="h-auto max-w-full whitespace-normal"
             />
           ))}
         </Section>

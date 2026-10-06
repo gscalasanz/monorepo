@@ -20,13 +20,43 @@ export const REPORTES_COPY = {
   SECTION_AUTORIZACIONES: 'Autorizaciones faltantes',
   SECTION_DOCUMENTACION: 'Documentación',
   AUT_CAMPAMENTO: (nombre: string, ano: number): string => `Aut. ${nombre} ${ano}`,
-  EXPAND: 'Ver detalle',
-  COLLAPSE: 'Ocultar detalle',
+  EXPAND: (nombre: string): string => `Ver detalle de ${nombre}`,
+  COLLAPSE: (nombre: string): string => `Ocultar detalle de ${nombre}`,
+  EXPAND_SHORT: 'Ver detalle',
+  COLLAPSE_SHORT: 'Ocultar detalle',
   DOC_OK: 'Entregado',
   DOC_FALTA: 'Falta',
   FILTER_RAMA: 'Rama',
   FILTER_ANO: 'Año',
   FILTER_TIPO: 'Tipo de deuda',
+} as const;
+
+/** Etiquetas de deudas y documentos (exactas a Angular). */
+export const DEBT_LABELS = {
+  CAMPAMENTO: 'Camp.',
+  SCOUT: 'Scout AR',
+  GRUPO: 'Grupo',
+  INSCRIPCION: 'Inscripción',
+} as const;
+
+export const DOC_LABELS = {
+  DNI: 'DNI',
+  PARTIDA: 'Partida nac.',
+  DNI_PADRES: 'DNI padres',
+  OBRA_SOCIAL: 'Obra social',
+  SALUD: 'Decl. salud',
+  IMAGEN: 'Aut. imagen',
+  SALIDAS: 'Salidas',
+  INGRESO: 'Aut. ingreso',
+  APTITUD: 'Apt. física',
+} as const;
+
+export const TIPO_DEUDA_LABELS = {
+  dinero: 'Dinero (todas)',
+  campamentos: 'Campamentos',
+  inscripcionesScout: 'Inscripciones Scout AR',
+  inscripcionesGrupo: 'Inscripciones Grupo',
+  documentacion: 'Documentación',
 } as const;
 
 /** Placeholders de Angular (sin API): se mantienen igual. */

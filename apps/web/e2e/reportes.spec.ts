@@ -38,7 +38,7 @@ test.describe('reportes', () => {
 
     const row = page.getByRole('listitem').filter({ hasText: nombre });
     await expect(row).toBeVisible();
-    await row.getByRole('button', { name: /Ver detalle/ }).click();
+    await row.getByRole('button', { name: /^Ver detalle de / }).click();
     await expect(row.getByText('Documentación', { exact: true })).toBeVisible();
     await expect(row.getByText('Partida nac.')).toBeVisible();
     await expect(row.getByRole('link', { name: `Ver ficha de ${nombre}` })).toHaveAttribute(

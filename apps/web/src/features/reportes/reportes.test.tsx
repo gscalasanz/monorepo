@@ -79,6 +79,7 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
     const list = [persona({ deudaTotal: 300 }), persona({ personaId: 'p2', deudaTotal: 200, documentacionInscripcion: [docInsc] })];
     expect(summarize(list)).toEqual({ personas: 2, totalDeuda: 500, docsFaltantes: 1 });
     expect(toDeudaFilters({ rama: 'Manada', ano: '2025', tipo: '' })).toEqual({ rama: 'Manada', ano: 2025 });
+    expect(toDeudaFilters({ rama: 'Otra', tipo: 'documentacion' })).toEqual({ tipo: 'documentacion' });
     expect(toDeudaFilters({})).toEqual({});
   });
 
@@ -101,10 +102,9 @@ describe('<DeudasView>', () => {
     expect(await screen.findByLabelText('Resumen de deudas')).toHaveTextContent('Personas con deuda2');
     expect(screen.getByRole('link', { name: 'Ver ficha de Ana Pérez' })).toHaveAttribute('href', '/personas/protagonistas/p1');
     expect(screen.getByText('2 docs')).toBeInTheDocument();
-    const [first, second] = screen.getAllByRole('button', { name: /Ver detalle/ });
-    await userEvent.click(first!);
+    await userEvent.click(screen.getByRole('button', { name: 'Ver detalle de Ana Pérez' }));
     expect(screen.getByText('Aut. Camp 2026 2026')).toBeInTheDocument();
-    await userEvent.click(second!);
+    await userEvent.click(screen.getByRole('button', { name: 'Ver detalle de Beto Gómez' }));
     expect(screen.queryByText('Aut. Camp 2026 2026')).not.toBeInTheDocument();
     expect(screen.getByText('Decl. salud 2026')).toBeInTheDocument();
   });

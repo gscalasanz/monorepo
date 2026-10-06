@@ -38,21 +38,20 @@ export function DeudaRow({ persona, expanded, onToggle }: DeudaRowProps) {
           type="button"
           aria-expanded={expanded}
           aria-controls={detailId}
+          aria-label={expanded ? C.COLLAPSE(persona.nombre) : C.EXPAND(persona.nombre)}
           onClick={() => onToggle(persona.personaId)}
           className="flex min-h-11 items-center justify-between gap-2 rounded-md text-sm text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-focus md:justify-end"
         >
-          <span className="md:sr-only">{expanded ? C.COLLAPSE : C.EXPAND}</span>
+          <span className="md:sr-only">{expanded ? C.COLLAPSE_SHORT : C.EXPAND_SHORT}</span>
           <span className="flex items-center gap-1">
             {persona.deudaTotal > 0 ? <Money amount={persona.deudaTotal} tone="debt" className="font-semibold" /> : null}
             <ChevronDown aria-hidden className={cn('size-4 transition-transform', expanded && 'rotate-180')} />
           </span>
         </button>
       </div>
-      {expanded ? (
-        <div id={detailId}>
-          <DeudaDetail persona={persona} />
-        </div>
-      ) : null}
+      <div id={detailId} hidden={!expanded}>
+        {expanded ? <DeudaDetail persona={persona} /> : null}
+      </div>
     </li>
   );
 }
