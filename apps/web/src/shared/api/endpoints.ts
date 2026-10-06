@@ -66,6 +66,17 @@ export const API_ENDPOINTS = {
   campamento: (id: string): string => `campamentos/${pathSegment(id)}`,
   campamentoDetalle: (id: string): string =>
     `campamentos/${pathSegment(id)}/detalle`,
+  campamentoParticipantes: (id: string): string =>
+    `campamentos/${pathSegment(id)}/participantes`,
+  campamentoParticipante: (id: string, personaId: string): string =>
+    `campamentos/${pathSegment(id)}/participantes/${pathSegment(personaId)}`,
+  campamentoBonificacion: (id: string, personaId: string): string =>
+    `campamentos/${pathSegment(id)}/participantes/${pathSegment(personaId)}/bonificacion`,
+  /** POST con `personaId`; DELETE con `movimientoId` (mismo prefijo en el backend). */
+  campamentoPagos: (id: string, personaOrMovimientoId: string): string =>
+    `campamentos/${pathSegment(id)}/pagos/${pathSegment(personaOrMovimientoId)}`,
+  campamentoGastos: (id: string): string =>
+    `campamentos/${pathSegment(id)}/gastos`,
 
   EVENTOS: 'eventos',
   evento: (id: string): string => `eventos/${pathSegment(id)}`,
