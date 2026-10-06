@@ -27,19 +27,31 @@ export function createKeepAlive({
   delayMs = KEEP_ALIVE_MS,
 }: KeepAliveDeps): KeepAlive {
   let timerId: ReturnType<typeof setTimeout> | null = null;
+  /** Tras `stop()`, un ping que estaba en vuelo no debe re-armar el timer. */
+  let stopped = true;
 
-  const stop = (): void => {
+  const clearTimer = (): void => {
     if (timerId !== null) clearTimeout(timerId);
     timerId = null;
   };
 
-  const schedule = (): void => {
-    stop();
+  const stop = (): void => {
+    stopped = true;
+    clearTimer();
+  };
+
+  const rescheduleAfterPing = (): void => {
+    if (!stopped) schedule();
+  };
+
+  function schedule(): void {
+    stopped = false;
+    clearTimer();
     timerId = setTimeout(() => {
       // El error del ping ya lo reporta el cliente; acá solo se reprograma.
-      ping().then(schedule, schedule);
+      ping().then(rescheduleAfterPing, rescheduleAfterPing);
     }, delayMs);
-  };
+  }
 
   return { notifyActivity: schedule, stop };
 }

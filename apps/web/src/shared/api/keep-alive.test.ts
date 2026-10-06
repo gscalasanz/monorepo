@@ -56,6 +56,30 @@ describe('createKeepAlive (port de KeepAliveService)', () => {
     keepAlive.stop();
   });
 
+  it('un ping en vuelo al hacer stop() no re-arma el timer (sin zombie)', async () => {
+    let resolvePing: () => void = () => undefined;
+    const ping = vi.fn(
+      () => new Promise<void>((resolve) => (resolvePing = resolve)),
+    );
+    const keepAlive = createKeepAlive({ ping });
+    keepAlive.notifyActivity();
+    await vi.advanceTimersByTimeAsync(KEEP_ALIVE_MS);
+    keepAlive.stop();
+    resolvePing();
+    await vi.advanceTimersByTimeAsync(KEEP_ALIVE_MS * 2);
+    expect(ping).toHaveBeenCalledTimes(1);
+  });
+
+  it('notifyActivity después de stop() vuelve a activarlo', async () => {
+    const ping = vi.fn(async () => undefined);
+    const keepAlive = createKeepAlive({ ping });
+    keepAlive.stop();
+    keepAlive.notifyActivity();
+    await vi.advanceTimersByTimeAsync(KEEP_ALIVE_MS);
+    expect(ping).toHaveBeenCalledTimes(1);
+    keepAlive.stop();
+  });
+
   it('stop cancela el ping pendiente', async () => {
     const ping = vi.fn(async () => undefined);
     const keepAlive = createKeepAlive({ ping });
