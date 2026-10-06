@@ -125,8 +125,8 @@ describe('fondos de rama', () => {
       tipoCaja: 'rama_manada',
       tipo: 'egreso',
       concepto: undefined,
-      fechaInicio: '2026-01-01',
-      fechaFin: '2026-02-01',
+      fechaInicio: '2026-01-01T03:00:00.000Z',
+      fechaFin: '2026-02-02T02:59:59.999Z',
     });
   });
 

@@ -8,6 +8,7 @@ import {
   type FondoRamaType,
 } from '@/shared/domain';
 import { MOVIMIENTOS_RAMAS_QUERY } from '@/features/cajas/constants/cajas';
+import { dayFilterBounds } from '@/shared/time';
 
 /** Selección de chips: `null` = "Todas". */
 export type RamaChipValue = FondoRamaType | null;
@@ -51,7 +52,7 @@ export function movimientosRamasParams(
   filters: FilterValues,
   selected: readonly RamaChipValue[],
 ): QueryParams {
-  const fecha = rangeFilter(filters.fecha);
+  const fecha = dayFilterBounds(rangeFilter(filters.fecha));
   return {
     ...MOVIMIENTOS_RAMAS_QUERY,
     tipoCaja: tipoCajaParam(selected),

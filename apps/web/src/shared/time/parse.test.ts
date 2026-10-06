@@ -3,6 +3,7 @@ import {
   asInstant,
   asLocalDate,
   calculateWeekRange,
+  dayFilterBounds,
   daysBetween,
   isBefore,
   isLocalDateString,
@@ -170,6 +171,23 @@ describe('calculateWeekRange', () => {
     expect(calculateWeekRange(asLocalDate('2026-03-09'))).toEqual({
       startDate: '2026-03-09',
       endDate: '2026-03-15',
+    });
+  });
+});
+
+describe('dayFilterBounds', () => {
+  it('incluye el día final completo en hora de BsAs', () => {
+    expect(dayFilterBounds({ from: '2026-10-01', to: '2026-10-06' })).toEqual({
+      from: '2026-10-01T03:00:00.000Z',
+      to: '2026-10-07T02:59:59.999Z',
+    });
+  });
+
+  it('omite límites vacíos o inválidos', () => {
+    expect(dayFilterBounds({})).toEqual({});
+    expect(dayFilterBounds({ from: '', to: 'x' })).toEqual({});
+    expect(dayFilterBounds({ to: '2026-12-31' })).toEqual({
+      to: '2027-01-01T02:59:59.999Z',
     });
   });
 });

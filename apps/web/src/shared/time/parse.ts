@@ -137,6 +137,33 @@ export function addDays(date: LocalDate, amount: number): LocalDate {
   );
 }
 
+export interface DayFilterBounds {
+  readonly from?: Instant;
+  readonly to?: Instant;
+}
+
+/**
+ * Filtro "desde/hasta" por días calendario → instantes BsAs para el backend:
+ * `from` = 00:00 del primer día, `to` = último ms del último día. Mandar
+ * `YYYY-MM-DD` crudo lo convierte en medianoche UTC y deja afuera el día final.
+ */
+export function dayFilterBounds(range: {
+  readonly from?: string;
+  readonly to?: string;
+}): DayFilterBounds {
+  const { from, to } = range;
+  return {
+    ...(from && isLocalDateString(from) ? { from: startOfDayBsAs(from) } : {}),
+    ...(to && isLocalDateString(to)
+      ? {
+          to: msToInstant(
+            msFromInstant(startOfDayBsAs(addDays(asLocalDate(to), 1))) - 1,
+          ),
+        }
+      : {}),
+  };
+}
+
 export interface LocalDateRange {
   readonly from: LocalDate;
   readonly to: LocalDate;

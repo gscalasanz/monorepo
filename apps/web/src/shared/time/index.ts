@@ -22,6 +22,7 @@ export { currentYearBsAs, nowInstant, nowMs, todayBsAs } from './clock';
 export {
   addDays,
   calculateWeekRange,
+  dayFilterBounds,
   daysBetween,
   isBefore,
   isLocalDateString,
@@ -31,6 +32,7 @@ export {
   parseInstant,
   parseLocalDate,
   resolveBackendDate,
+  type DayFilterBounds,
   type LocalDateRange,
   type WeekRange,
 } from './parse';

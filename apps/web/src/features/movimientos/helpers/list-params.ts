@@ -11,7 +11,7 @@ import {
   type ConceptoMovimiento,
   type EstadoPago,
 } from '@/shared/domain';
-import { isLocalDateString } from '@/shared/time';
+import { dayFilterBounds, isLocalDateString } from '@/shared/time';
 import {
   FILTER_KEYS,
   LIST_URL_PARAMS as P,
@@ -110,7 +110,7 @@ function rangeFilter(filters: FilterValues, key: string): DateRangeValue {
 
 /** Query de `GET /movimientos` (página 1-based del backend). */
 export function listQuery(state: MovimientosListState): QueryParams {
-  const fecha = rangeFilter(state.filters, FILTER_KEYS.FECHA);
+  const fecha = dayFilterBounds(rangeFilter(state.filters, FILTER_KEYS.FECHA));
   return {
     page: state.pageIndex + 1,
     limit: state.pageSize,
@@ -119,8 +119,8 @@ export function listQuery(state: MovimientosListState): QueryParams {
     tipo: state.tab || undefined,
     concepto: stringFilter(state.filters, FILTER_KEYS.CONCEPTO),
     estadoPago: stringFilter(state.filters, FILTER_KEYS.ESTADO_PAGO),
-    fechaInicio: fecha.from || undefined,
-    fechaFin: fecha.to || undefined,
+    fechaInicio: fecha.from,
+    fechaFin: fecha.to,
   };
 }
 

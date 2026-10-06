@@ -80,8 +80,9 @@ describe('list-params', () => {
       tipo: 'egreso',
       concepto: 'gasto_general',
       estadoPago: undefined,
-      fechaInicio: '2026-01-01',
-      fechaFin: '2026-01-31',
+      // Días BsAs completos: la URL guarda fechas, el backend recibe instantes.
+      fechaInicio: '2026-01-01T03:00:00.000Z',
+      fechaFin: '2026-02-01T02:59:59.999Z',
     });
   });
 
