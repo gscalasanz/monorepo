@@ -115,6 +115,7 @@ export const FORM_COPY = {
   CUENTA_PERSONAL: 'Cuenta Personal',
   CONSULTANDO_SALDO: 'Consultando saldo...',
   SALDO_DISPONIBLE: 'Saldo disponible',
+  SALDO_PERSONAL_EXCEDIDO: 'El monto supera el saldo disponible de la cuenta personal',
   USAR_TODO: 'Usar todo →',
   USAR_CUENTA: 'Usar de cuenta personal',
   MONTOS_EXCEDEN:
@@ -130,7 +131,7 @@ export const FORM_COPY = {
   UPDATED: 'Inscripción actualizada exitosamente',
   CREATE_ERROR: 'Error al crear inscripción',
   UPDATE_ERROR: 'Error al actualizar inscripción',
-  ANO_RANGE: 'Ingresá un año entre 2000 y 2100',
+  ANO_RANGE: 'Ingresá un año entre 2020 y 2100',
   fondoSaldo: (saldo: number): string =>
     `Fondo Solidario: ${formatMoney(saldo)}`,
 } as const;

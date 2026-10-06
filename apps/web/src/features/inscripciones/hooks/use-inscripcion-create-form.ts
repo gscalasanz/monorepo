@@ -17,7 +17,9 @@ import {
   fondoInsuficiente,
   initialCreateValues,
   montosExcedenTotal,
+  saldoPersonalExcedido,
   validateCreate,
+  withSaldoPersonalVisible,
   type CreateFormValues,
   type MontoForTipo,
 } from '@/features/inscripciones/helpers/create-form';
@@ -79,11 +81,13 @@ export function useInscripcionCreateForm(initialTipo: TipoInscripcion) {
   );
   const { values } = form;
   const data = useCreateFormData(values.personaId);
-  const exceden = montosExcedenTotal(values);
-  const fondoBajo = fondoInsuficiente(values, data.saldoFondo);
+  const effective = withSaldoPersonalVisible(values, data.saldoPersonal);
+  const exceden = montosExcedenTotal(effective);
+  const fondoBajo = fondoInsuficiente(effective, data.saldoFondo);
+  const saldoExcedido = saldoPersonalExcedido(effective, data.saldoPersonal);
   const { submit, saving, errors } = useCreateSubmit({
-    values,
-    blocked: exceden || fondoBajo,
+    values: effective,
+    blocked: exceden || fondoBajo || saldoExcedido,
   });
 
   return {
@@ -92,6 +96,7 @@ export function useInscripcionCreateForm(initialTipo: TipoInscripcion) {
     errors,
     exceden,
     fondoBajo,
+    saldoExcedido,
     saving,
     submit,
     setField: form.setField,

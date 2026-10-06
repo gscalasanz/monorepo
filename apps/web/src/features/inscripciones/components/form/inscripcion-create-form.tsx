@@ -42,6 +42,7 @@ export function InscripcionCreateForm({
         saldoLoading={data.saldoLoading}
         fondoBajo={form.fondoBajo}
         exceden={form.exceden}
+        saldoExcedido={form.saldoExcedido}
         onChange={form.setField}
         onPersonaNuevaChange={form.setPersonaNueva}
       />
@@ -52,7 +53,7 @@ export function InscripcionCreateForm({
         cancelLabel={C.CANCEL}
         saveLabel={C.CREATE}
         saving={form.saving}
-        saveDisabled={form.fondoBajo || form.exceden}
+        saveDisabled={form.fondoBajo || form.exceden || form.saldoExcedido}
         onCancel={() => router.push(inscripcionRoutes.list)}
       />
     </form>

@@ -18,6 +18,8 @@ import {
   initialCreateValues,
   montoAPagarCreate,
   montosExcedenTotal,
+  saldoPersonalExcedido,
+  withSaldoPersonalVisible,
   usarTodoSaldo,
   validateCreate,
 } from '@/features/inscripciones/helpers/create-form';
@@ -242,6 +244,14 @@ describe('form de alta', () => {
     ).toBe(1000);
   });
 
+  it('saldo personal: se descarta si la persona no tiene saldo y no puede superarlo', () => {
+    const values = { ...base, montoConSaldoPersonal: 300 };
+    expect(withSaldoPersonalVisible(values, 0).montoConSaldoPersonal).toBeNull();
+    expect(withSaldoPersonalVisible(values, 500)).toBe(values);
+    expect(saldoPersonalExcedido(values, 200)).toBe(true);
+    expect(saldoPersonalExcedido(values, 300)).toBe(false);
+  });
+
   it('valida suma de importes, fondo y requeridos', () => {
     const values = {
       ...base,
@@ -254,9 +264,9 @@ describe('form de alta', () => {
     expect(fondoInsuficiente(values, 100)).toBe(true);
     expect(montoAPagarCreate(values)).toBe(500);
     expect(usarTodoSaldo(5000, 1000)).toBe(1000);
-    expect(validateCreate({ ...base, ano: 1999 })).toEqual({
+    expect(validateCreate({ ...base, ano: 2019 })).toEqual({
       personaId: 'Selecciona una persona',
-      ano: 'Ingresá un año entre 2000 y 2100',
+      ano: 'Ingresá un año entre 2020 y 2100',
     });
   });
 

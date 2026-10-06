@@ -22,6 +22,7 @@ import {
   bonificarInscripcion,
   deleteInscripcion,
   deletePago,
+  fetchInscripcion,
   fetchInscripcionOrNull,
   pagarInscripcion,
   quitarBonificacion,
@@ -35,18 +36,23 @@ export type DetailDialog =
   | { readonly kind: 'editar-pago'; readonly movimiento: MovimientoInscripcion }
   | null;
 
-/** Mutaciones del detalle: aplican la inscripción devuelta y avisan con toast. */
+/**
+ * Mutaciones del detalle: avisan con toast y vuelven a pedir la inscripción
+ * (como `reloadDetail` en Angular). No se usa la respuesta de la mutación:
+ * `POST /pagar` devuelve el `montoPagado` previo al pago.
+ */
 function useDetailMutations(params: {
   readonly id: string;
   readonly apply: (next: Inscripcion) => void;
 }) {
   const { id, apply } = params;
   const run = useCallback(
-    async (action: () => Promise<Inscripcion>, message: string) => {
-      apply(await action());
+    async (action: () => Promise<unknown>, message: string) => {
+      await action();
       notify.success(message);
+      apply(await fetchInscripcion(id));
     },
-    [apply],
+    [apply, id],
   );
   return {
     bonificar: (monto: number) =>

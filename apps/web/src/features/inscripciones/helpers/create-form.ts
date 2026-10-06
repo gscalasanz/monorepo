@@ -105,6 +105,24 @@ export function fondoInsuficiente(
   return amount(values.montoBonificado) > saldoFondo;
 }
 
+/**
+ * El monto de saldo personal solo cuenta si la persona tiene saldo: si no, el
+ * campo no se muestra y un valor que quedó de otra persona no debe enviarse.
+ */
+export function withSaldoPersonalVisible(
+  values: CreateFormValues,
+  saldoPersonal: number,
+): CreateFormValues {
+  return saldoPersonal > 0 ? values : { ...values, montoConSaldoPersonal: null };
+}
+
+export function saldoPersonalExcedido(
+  values: CreateFormValues,
+  saldoPersonal: number,
+): boolean {
+  return amount(values.montoConSaldoPersonal) > saldoPersonal;
+}
+
 /** Total − saldo personal − bonificación. */
 export function montoAPagarCreate(values: CreateFormValues): number {
   return (

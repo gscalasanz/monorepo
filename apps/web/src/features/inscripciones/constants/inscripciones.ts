@@ -110,7 +110,7 @@ export const URL_PARAMS = {
 } as const;
 
 /** Rango válido del año en el form (Angular: min 2000, max 2100). */
-export const ANO_MIN = 2000;
+export const ANO_MIN = 2020;
 export const ANO_MAX = 2100;
 
 /** Monto mínimo de un pago editado (Angular: `Validators.min(1)`). */

@@ -9,6 +9,8 @@ interface CuentaPersonalPanelProps {
   readonly saldo: number;
   readonly loading: boolean;
   readonly value: number | null;
+  /** El monto supera el saldo disponible. */
+  readonly excedido: boolean;
   /** Persona nueva: sin uso de caja personal. */
   readonly locked: boolean;
   readonly onChange: (value: number | null) => void;
@@ -20,6 +22,7 @@ export function CuentaPersonalPanel({
   saldo,
   loading,
   value,
+  excedido,
   locked,
   onChange,
   onUsarTodo,
@@ -56,6 +59,7 @@ export function CuentaPersonalPanel({
           size="md"
           disabled={locked}
           value={value}
+          error={excedido ? C.SALDO_PERSONAL_EXCEDIDO : undefined}
           onChange={onChange}
         />
       ) : null}

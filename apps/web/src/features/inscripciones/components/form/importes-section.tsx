@@ -19,6 +19,7 @@ interface ImportesSectionProps {
   readonly saldoLoading: boolean;
   readonly fondoBajo: boolean;
   readonly exceden: boolean;
+  readonly saldoExcedido: boolean;
   readonly onChange: <K extends keyof CreateFormValues>(
     name: K,
     value: CreateFormValues[K],
@@ -50,6 +51,7 @@ export function ImportesSection(props: ImportesSectionProps) {
           saldo={props.saldoPersonal}
           loading={props.saldoLoading}
           value={values.montoConSaldoPersonal}
+          excedido={props.saldoExcedido}
           locked={values.personaNueva}
           onChange={(value) => onChange('montoConSaldoPersonal', value)}
           onUsarTodo={() =>
