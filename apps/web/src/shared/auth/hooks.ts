@@ -1,7 +1,7 @@
 'use client';
 
 /** Hooks de sesión para React (sin UI). */
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useSyncExternalStore } from 'react';
 import { useStore } from 'zustand';
 
@@ -9,6 +9,7 @@ import {
   evaluateAuthGuard,
   evaluateNoAuthGuard,
   type GuardDecision,
+  type TokenValidity,
 } from '@/shared/auth/guard';
 import { isTokenValid } from '@/shared/auth/jwt';
 import { saveRedirectUrl } from '@/shared/auth/redirect-url';
@@ -22,22 +23,34 @@ export interface GuardState {
   readonly status: GuardStatus;
 }
 
-function currentTokenValidity() {
+function currentTokenValidity(): TokenValidity {
   return {
     accessValid: isTokenValid(getAccessToken()),
     refreshValid: isTokenValid(getRefreshToken()),
   };
 }
 
+/** `pathname + search` actual (solo en el cliente). */
+function currentUrl(): string {
+  return `${window.location.pathname}${window.location.search}`;
+}
+
+const requireSession = (): GuardDecision =>
+  evaluateAuthGuard({ ...currentTokenValidity(), currentUrl: currentUrl() });
+
+const redirectIfAuthenticated = (): GuardDecision =>
+  evaluateNoAuthGuard(currentTokenValidity());
+
 const subscribeNothing = (): (() => void) => () => undefined;
 
 /**
  * Evalúa un guard en el cliente (los tokens viven en localStorage: en SSR el
- * estado es `checking`). La redirección se hace una vez por montaje, como
- * `canActivate` por navegación.
+ * estado es `checking`). Se re-evalúa en cada navegación (cambio de
+ * `pathname`), como `canActivate` en Angular.
  */
 function useGuard(evaluate: () => GuardDecision): GuardState {
   const router = useRouter();
+  const pathname = usePathname();
   const allowed = useSyncExternalStore(
     subscribeNothing,
     () => evaluate().allowed,
@@ -45,30 +58,22 @@ function useGuard(evaluate: () => GuardDecision): GuardState {
   );
   useEffect(() => {
     const decision = evaluate();
-    if (!decision.allowed) {
-      if (decision.redirectUrlToSave)
-        saveRedirectUrl(decision.redirectUrlToSave);
-      router.replace(decision.redirectTo);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (decision.allowed) return;
+    if (decision.redirectUrlToSave) saveRedirectUrl(decision.redirectUrlToSave);
+    router.replace(decision.redirectTo);
+  }, [evaluate, pathname, router]);
   if (allowed === null) return { status: 'checking' };
   return { status: allowed ? 'allowed' : 'redirecting' };
 }
 
 /** Layout autenticado: deja pasar con access o refresh válido; si no, a /login guardando la URL. */
 export function useRequireSession(): GuardState {
-  return useGuard(() =>
-    evaluateAuthGuard({
-      ...currentTokenValidity(),
-      currentUrl: `${window.location.pathname}${window.location.search}`,
-    }),
-  );
+  return useGuard(requireSession);
 }
 
 /** Página de login: si ya hay sesión, al dashboard. */
 export function useRedirectIfAuthenticated(): GuardState {
-  return useGuard(() => evaluateNoAuthGuard(currentTokenValidity()));
+  return useGuard(redirectIfAuthenticated);
 }
 
 export interface SessionView {

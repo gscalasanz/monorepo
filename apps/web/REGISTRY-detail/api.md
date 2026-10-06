@@ -87,8 +87,8 @@ No toca `window` al importarse.
   cerrada (sin refresh token) un 401 rechaza con `AUTH_COPY.NO_REFRESH_TOKEN` sin repetir logout.
 - `setTokens` devuelve `boolean`; si no se pueden guardar, login/register/refresh fallan con
   `AUTH_COPY.STORAGE_UNAVAILABLE`.
-- **Guards:** `useRequireSession()` en el layout `(app)` → `{ status: 'checking'|'allowed'|'redirecting' }`
-  (pasa con access **o** refresh válido; si no guarda `redirectUrl` en sessionStorage y va a
+- **Guards:** `useRequireSession()` en el layout `(app)` → `{ status: 'checking'|'allowed'|'redirecting' }`,
+  re-evaluado en cada navegación (`usePathname`) como `canActivate` (pasa con access **o** refresh válido; si no guarda `redirectUrl` en sessionStorage y va a
   `/login`). `useRedirectIfAuthenticated()` en `/login`. Post-login: `router.replace(consumeRedirectUrl())` (default `/dashboard`,
   solo paths internos).
 - **Estado:** `useSession()` → `{ user, isAuthenticated, isLoading, initialized }`; `sessionStore` fuera de React.

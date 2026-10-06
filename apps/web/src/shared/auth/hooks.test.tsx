@@ -10,7 +10,11 @@ import {
 import { tokenExpiringIn } from '@/shared/auth/testing/jwt';
 
 const replace = vi.fn();
-vi.mock('next/navigation', () => ({ useRouter: () => ({ replace }) }));
+let pathname = '/cajas';
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace }),
+  usePathname: () => pathname,
+}));
 
 const USER = {
   id: 'per-2',
@@ -23,6 +27,7 @@ beforeEach(() => {
   localStorage.clear();
   sessionStorage.clear();
   replace.mockClear();
+  pathname = '/cajas';
   sessionStore.setState({ user: null, isLoading: false, initialized: false });
   window.history.pushState({}, '', '/cajas?tab=grupo');
 });
@@ -43,6 +48,23 @@ describe('useRequireSession', () => {
     await waitFor(() => expect(result.current.status).toBe('redirecting'));
     expect(sessionStorage.getItem('redirectUrl')).toBe('/cajas?tab=grupo');
     expect(replace).toHaveBeenCalledWith('/login');
+  });
+});
+
+describe('useRequireSession en cada navegación', () => {
+  it('re-evalúa al cambiar de ruta: si la sesión se perdió, redirige', async () => {
+    setTokens({
+      accessToken: tokenExpiringIn(3600),
+      refreshToken: tokenExpiringIn(7200),
+    });
+    const { result, rerender } = renderHook(() => useRequireSession());
+    await waitFor(() => expect(result.current.status).toBe('allowed'));
+    localStorage.clear();
+    pathname = '/movimientos';
+    window.history.pushState({}, '', '/movimientos');
+    rerender();
+    await waitFor(() => expect(replace).toHaveBeenCalledWith('/login'));
+    expect(sessionStorage.getItem('redirectUrl')).toBe('/movimientos');
   });
 });
 
