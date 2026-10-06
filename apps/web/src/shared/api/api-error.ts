@@ -8,12 +8,20 @@ import { API_ERROR_COPY, HTTP_STATUS_MESSAGES } from '@/shared/api/copy';
 /** `http`: el server respondió ≥400 · `network`: no hubo respuesta (status 0) · `contract`: respuesta con forma inesperada. */
 export type ApiErrorKind = 'http' | 'network' | 'contract';
 
+/** Un problema de forma en la respuesta (`kind: 'contract'`), sacado de zod. */
+export interface ContractIssue {
+  /** Ruta con puntos (`'1.id'`), `''` si es la raíz. */
+  readonly path: string;
+  readonly message: string;
+}
+
 export interface ApiErrorInit {
   readonly kind: ApiErrorKind;
   readonly status: number;
   readonly method: string;
   readonly url: string;
   readonly body?: unknown;
+  readonly issues?: readonly ContractIssue[];
 }
 
 const MESSAGE_SEPARATOR = '. ';
@@ -48,6 +56,8 @@ export class ApiError extends Error {
   readonly method: string;
   readonly url: string;
   readonly body: unknown;
+  /** Solo en `kind: 'contract'` por schema: qué campos no cumplieron. */
+  readonly issues: readonly ContractIssue[];
 
   constructor(init: ApiErrorInit) {
     super(userMessageOf(init));
@@ -57,6 +67,7 @@ export class ApiError extends Error {
     this.method = init.method;
     this.url = init.url;
     this.body = init.body;
+    this.issues = init.issues ?? [];
   }
 }
 

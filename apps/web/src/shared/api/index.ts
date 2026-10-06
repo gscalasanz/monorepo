@@ -23,6 +23,7 @@ export {
   isApiError,
   nestMessageOf,
   type ApiErrorInit,
+  type ContractIssue,
   type ApiErrorKind,
 } from './api-error';
 export { API_ERROR_COPY, HTTP_STATUS_MESSAGES } from './copy';

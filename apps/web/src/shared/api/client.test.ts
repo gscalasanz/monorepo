@@ -119,6 +119,23 @@ describe('createApiClient — transporte', () => {
     expect(published).toHaveLength(1);
   });
 
+  it('el error de contrato trae los issues de zod (path + message) y se loguea en dev', async () => {
+    const { fake, client } = setup();
+    const log = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    fake.reply({ status: 200, body: [{ id: 'a' }, { id: 7 }] });
+    const error = await client
+      .get('cajas', { schema: z.array(itemSchema) })
+      .catch((e: unknown) => e);
+    expect(error).toMatchObject({
+      kind: 'contract',
+      issues: [{ path: '1.id', message: expect.any(String) }],
+    });
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('GET cajas'), [
+      { path: '1.id', message: expect.any(String) },
+    ]);
+    log.mockRestore();
+  });
+
   it('JSON inválido también es error de contrato', async () => {
     const { fake, client } = setup();
     fake.reply({ status: 200, raw: '<html>' });

@@ -11,7 +11,9 @@ import {
   ApiError,
   extractErrorMessage,
   isApiError,
+  type ContractIssue,
 } from '@/shared/api/api-error';
+import { logContractViolation } from '@/shared/api/dev-log';
 import { buildUrl, type QueryParams } from '@/shared/api/build-url';
 import { UNAUTHENTICATED_ENDPOINTS } from '@/shared/api/endpoints';
 import type { AuthBridge } from '@/shared/api/registry';
@@ -23,6 +25,8 @@ import {
 } from '@/shared/api/transport';
 
 const UNAUTHORIZED_STATUS = 401;
+/** La respuesta llegó OK (2xx) pero con forma inesperada. */
+const CONTRACT_STATUS = 200;
 const AUTHORIZATION_HEADER = 'Authorization';
 
 export interface RequestOptions {
@@ -122,19 +126,35 @@ function createPipeline(
   };
 }
 
-function parseWith<T>(
-  schema: ResponseSchema<T>,
-  data: unknown,
-  config: RequestConfig,
-): T {
+interface ParseInput<T> {
+  readonly schema: ResponseSchema<T>;
+  readonly data: unknown;
+  readonly config: RequestConfig;
+}
+
+function toContractIssues(error: z.ZodError): ContractIssue[] {
+  return error.issues.map((issue) => ({
+    path: issue.path.join('.'),
+    message: issue.message,
+  }));
+}
+
+function parseWith<T>({ schema, data, config }: ParseInput<T>): T {
   const result = schema.safeParse(data);
   if (result.success) return result.data;
+  const issues = toContractIssues(result.error);
+  logContractViolation({
+    method: config.method,
+    endpoint: config.endpoint,
+    issues,
+  });
   throw new ApiError({
     kind: 'contract',
-    status: 200,
+    status: CONTRACT_STATUS,
     method: config.method,
     url: config.endpoint,
     body: data,
+    issues,
   });
 }
 
@@ -148,7 +168,7 @@ export function createRequester(deps: ApiClientDeps) {
     if (!config.isKeepAlive) deps.onActivity();
     try {
       const data = await pipeline(config);
-      return schema ? parseWith(schema, data, config) : data;
+      return schema ? parseWith({ schema, data, config }) : data;
     } catch (error) {
       if (!config.skipGlobalError && !isAbortError(error)) {
         deps.publishError(extractErrorMessage(error));

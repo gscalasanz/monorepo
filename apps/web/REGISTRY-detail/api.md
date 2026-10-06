@@ -12,7 +12,9 @@ const reporte = await apiClient.get(API_ENDPOINTS.eventoReportePublico(id), { sc
 const zip = await apiClient.getBlob(API_ENDPOINTS.BACKUPS_DOWNLOAD);
 ```
 
-- **Lecturas exigen `schema`** (zod en el borde). Respuesta que no cumple → `ApiError` `kind: 'contract'`.
+- **Lecturas exigen `schema`** (zod en el borde). Respuesta que no cumple → `ApiError` `kind: 'contract'`
+  con `issues: { path, message }[]` (p. ej. `{ path: '1.monto', … }`); en dev además se loguea
+  `[api] Respuesta fuera de contrato en GET <endpoint>` con los issues en la consola.
 - Mutaciones sin `schema` resuelven `void` (el backend responde body vacío en muchos 200/201/204).
 - Params `undefined`/`null`/`''` se descartan (como `HttpService`).
 - Orden de capas = interceptores de Angular: **keep-alive → error global → auth → retry → fetch**.
