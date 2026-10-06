@@ -78,8 +78,6 @@ export const participantePagoSchema = z.object({
   totalPagado: z.number(),
   saldoPendiente: z.number(),
   estadoPago: estadoPagoCampamentoSchema,
-  /** Saldo disponible en la cuenta personal para pagos mixtos. */
-  saldoCuentaPersonal: z.number(),
   autorizacionEntregada: z.boolean(),
   fechaInscripcion: instantSchema,
   pagos: z.array(pagoParticipanteSchema),

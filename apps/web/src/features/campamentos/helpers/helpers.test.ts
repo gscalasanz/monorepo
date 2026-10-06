@@ -66,7 +66,6 @@ const PARTICIPANTE: ParticipantePago =
     totalPagado: 15000,
     saldoPendiente: 30000,
     estadoPago: 'parcial',
-    saldoCuentaPersonal: 0,
     autorizacionEntregada: false,
     fechaInscripcion: TS,
     pagos: [],

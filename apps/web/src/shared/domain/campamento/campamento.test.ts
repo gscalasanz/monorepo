@@ -91,7 +91,6 @@ describe('DTOs calculados de campamento', () => {
           totalPagado: 15000,
           saldoPendiente: 30000,
           estadoPago: 'parcial',
-          saldoCuentaPersonal: 0,
           autorizacionEntregada: true,
           fechaInscripcion: TIMESTAMP,
           pagos: [

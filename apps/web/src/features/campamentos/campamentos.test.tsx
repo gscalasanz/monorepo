@@ -96,7 +96,6 @@ const DETALLE: CampamentoDetalle = campamentoDetalleSchema.parse({
       totalPagado: 15000,
       saldoPendiente: 30000,
       estadoPago: 'parcial',
-      saldoCuentaPersonal: 0,
       autorizacionEntregada: false,
       fechaInscripcion: TS,
       pagos: [
@@ -120,7 +119,6 @@ const DETALLE: CampamentoDetalle = campamentoDetalleSchema.parse({
       totalPagado: 0,
       saldoPendiente: 0,
       estadoPago: 'exento',
-      saldoCuentaPersonal: 0,
       autorizacionEntregada: true,
       fechaInscripcion: TS,
       pagos: [],
