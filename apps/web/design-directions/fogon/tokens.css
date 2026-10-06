@@ -1,0 +1,155 @@
+/*
+ * Dirección "FOGÓN" — brasa sobre noche.
+ * Base neutra limpia (blanco con un susurro de brasa, nunca crema), una brasa
+ * burdeos como único color de acción, noche índigo para la navegación, y los
+ * cuatro colores de rama como sistema de identidad (chips, avatares, gráficos).
+ * Ratios de contraste verificados: ver DESIGN.md → Accesibilidad.
+ *
+ * Fuentes (cargar con next/font/google):
+ *   Bricolage Grotesque  — opsz 12..96, wght 600..800 (títulos y montos protagonistas)
+ *   Geist                — wght 400, 500, 600, 700 (UI, tablas, cifras tabulares)
+ *   Geist Mono           — wght 400, 500 (códigos, CBU/alias, IDs)
+ */
+@theme {
+  /* Superficies */
+  --color-canvas: oklch(98.4% 0.004 25);
+  --color-surface: oklch(100% 0 0);
+  --color-surface-raised: oklch(100% 0 0);
+  --color-recessed: oklch(96.4% 0.007 25);
+
+  /* Texto (tinta índigo, no gris) */
+  --color-ink: oklch(23% 0.035 280);
+  --color-ink-muted: oklch(43% 0.03 280);
+  --color-ink-subtle: oklch(52% 0.025 280);
+
+  /* Bordes / foco */
+  --color-border: oklch(91.5% 0.009 25);
+  --color-border-strong: oklch(58% 0.025 280);
+  --color-focus: oklch(50% 0.19 272);
+
+  /* Marca / acción — brasa burdeos (heredera de #812128, más viva) */
+  --color-brand: oklch(45% 0.165 22);
+  --color-brand-hover: oklch(39.5% 0.15 22);
+  --color-on-brand: oklch(100% 0 0);
+  --color-brand-soft: oklch(95.6% 0.022 22);
+  --color-accent-2: oklch(30% 0.12 280);
+
+  /* Estados */
+  --color-success: oklch(49% 0.13 155);
+  --color-success-soft: oklch(95.6% 0.04 155);
+  --color-danger: oklch(52% 0.2 30);
+  --color-danger-soft: oklch(95.6% 0.03 30);
+  --color-warning: oklch(51% 0.12 62);
+  --color-warning-soft: oklch(95.8% 0.045 80);
+  --color-info: oklch(49% 0.14 250);
+  --color-info-soft: oklch(95.6% 0.03 250);
+
+  /* Dinero (siempre con signo + ícono, nunca solo color) */
+  --color-money-in: oklch(49% 0.13 155);
+  --color-money-out: oklch(52% 0.2 30);
+
+  /* Ramas — tono pleno (gráficos, bordes, dots, avatares) + soft (fondos) */
+  --color-rama-manada: oklch(66% 0.16 58);
+  --color-rama-manada-soft: oklch(95.5% 0.05 80);
+  --color-rama-unidad: oklch(58% 0.15 150);
+  --color-rama-unidad-soft: oklch(95.5% 0.045 150);
+  --color-rama-caminantes: oklch(56% 0.15 252);
+  --color-rama-caminantes-soft: oklch(95.5% 0.03 252);
+  --color-rama-rovers: oklch(50% 0.18 335);
+  --color-rama-rovers-soft: oklch(95.5% 0.03 335);
+
+  /* Datos (series no-rama) */
+  --color-data-1: oklch(45% 0.165 22);
+  --color-data-2: oklch(38% 0.13 280);
+  --color-data-3: oklch(62% 0.11 190);
+  --color-data-4: oklch(72% 0.15 75);
+  --color-data-5: oklch(64% 0.04 280);
+
+  /* Sidebar — noche índigo */
+  --color-sidebar-bg: oklch(26% 0.085 280);
+  --color-sidebar-ink: oklch(91% 0.025 280);
+  --color-sidebar-hover: oklch(32% 0.09 280);
+
+  /* Tipografía */
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-features: 'tnum' 1, 'cv11' 1, 'ss01' 1;
+
+  /* Radios — generosos, jerárquicos */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+  --radius-pill: 999px;
+
+  /* Elevación — sombras tintadas de índigo, cortas */
+  --shadow-xs: 0 1px 2px oklch(23% 0.04 280 / 0.06);
+  --shadow-sm: 0 1px 2px oklch(23% 0.04 280 / 0.05), 0 2px 6px oklch(23% 0.04 280 / 0.05);
+  --shadow-md: 0 2px 4px oklch(23% 0.04 280 / 0.05), 0 8px 20px oklch(23% 0.04 280 / 0.08);
+  --shadow-lg: 0 4px 8px oklch(23% 0.04 280 / 0.06), 0 20px 44px oklch(23% 0.04 280 / 0.14);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+}
+
+[data-theme='dark'] {
+  /* Noche de campamento: índigo profundo, nunca negro puro */
+  --color-canvas: oklch(18.5% 0.024 280);
+  --color-surface: oklch(22% 0.028 280);
+  --color-surface-raised: oklch(25.5% 0.032 280);
+  --color-recessed: oklch(16.5% 0.022 280);
+
+  --color-ink: oklch(95.5% 0.01 280);
+  --color-ink-muted: oklch(79% 0.022 280);
+  --color-ink-subtle: oklch(68% 0.022 280);
+
+  --color-border: oklch(31% 0.032 280);
+  --color-border-strong: oklch(58% 0.03 280);
+  --color-focus: oklch(75% 0.14 275);
+
+  /* La brasa se aviva de noche */
+  --color-brand: oklch(72% 0.15 25);
+  --color-brand-hover: oklch(77% 0.13 25);
+  --color-on-brand: oklch(18% 0.03 25);
+  --color-brand-soft: oklch(29% 0.07 22);
+  --color-accent-2: oklch(80% 0.09 280);
+
+  --color-success: oklch(76% 0.15 155);
+  --color-success-soft: oklch(28.5% 0.05 155);
+  --color-danger: oklch(72% 0.16 28);
+  --color-danger-soft: oklch(29% 0.07 28);
+  --color-warning: oklch(81% 0.13 78);
+  --color-warning-soft: oklch(29.5% 0.055 70);
+  --color-info: oklch(76% 0.11 250);
+  --color-info-soft: oklch(29% 0.05 250);
+
+  --color-money-in: oklch(76% 0.15 155);
+  --color-money-out: oklch(72% 0.16 28);
+
+  --color-rama-manada: oklch(80% 0.15 72);
+  --color-rama-manada-soft: oklch(30% 0.06 65);
+  --color-rama-unidad: oklch(75% 0.16 150);
+  --color-rama-unidad-soft: oklch(29% 0.055 150);
+  --color-rama-caminantes: oklch(73% 0.13 250);
+  --color-rama-caminantes-soft: oklch(29% 0.055 252);
+  --color-rama-rovers: oklch(72% 0.15 335);
+  --color-rama-rovers-soft: oklch(29.5% 0.065 335);
+
+  --color-data-1: oklch(72% 0.15 25);
+  --color-data-2: oklch(72% 0.1 280);
+  --color-data-3: oklch(76% 0.1 190);
+  --color-data-4: oklch(82% 0.13 78);
+  --color-data-5: oklch(58% 0.03 280);
+
+  --color-sidebar-bg: oklch(15.5% 0.026 280);
+  --color-sidebar-ink: oklch(88% 0.02 280);
+  --color-sidebar-hover: oklch(22% 0.032 280);
+
+  --shadow-xs: 0 1px 2px oklch(5% 0.02 280 / 0.4);
+  --shadow-sm: 0 1px 2px oklch(5% 0.02 280 / 0.35), 0 2px 6px oklch(5% 0.02 280 / 0.3);
+  --shadow-md: 0 2px 4px oklch(5% 0.02 280 / 0.35), 0 8px 20px oklch(5% 0.02 280 / 0.4);
+  --shadow-lg: 0 4px 8px oklch(5% 0.02 280 / 0.4), 0 20px 44px oklch(5% 0.02 280 / 0.5);
+}

@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="es-AR" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scout · Fogón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ===== tokens.css (generado: @theme → :root) ===== */
+/*
+ * Dirección "FOGÓN" — brasa sobre noche.
+ * Base neutra limpia (blanco con un susurro de brasa, nunca crema), una brasa
+ * burdeos como único color de acción, noche índigo para la navegación, y los
+ * cuatro colores de rama como sistema de identidad (chips, avatares, gráficos).
+ * Ratios de contraste verificados: ver DESIGN.md → Accesibilidad.
+ *
+ * Fuentes (cargar con next/font/google):
+ *   Bricolage Grotesque  — opsz 12..96, wght 600..800 (títulos y montos protagonistas)
+ *   Geist                — wght 400, 500, 600, 700 (UI, tablas, cifras tabulares)
+ *   Geist Mono           — wght 400, 500 (códigos, CBU/alias, IDs)
+ */
+:root {
+  /* Superficies */
+  --color-canvas: oklch(98.4% 0.004 25);
+  --color-surface: oklch(100% 0 0);
+  --color-surface-raised: oklch(100% 0 0);
+  --color-recessed: oklch(96.4% 0.007 25);
+
+  /* Texto (tinta índigo, no gris) */
+  --color-ink: oklch(23% 0.035 280);
+  --color-ink-muted: oklch(43% 0.03 280);
+  --color-ink-subtle: oklch(52% 0.025 280);
+
+  /* Bordes / foco */
+  --color-border: oklch(91.5% 0.009 25);
+  --color-border-strong: oklch(58% 0.025 280);
+  --color-focus: oklch(50% 0.19 272);
+
+  /* Marca / acción — brasa burdeos (heredera de #812128, más viva) */
+  --color-brand: oklch(45% 0.165 22);
+  --color-brand-hover: oklch(39.5% 0.15 22);
+  --color-on-brand: oklch(100% 0 0);
+  --color-brand-soft: oklch(95.6% 0.022 22);
+  --color-accent-2: oklch(30% 0.12 280);
+
+  /* Estados */
+  --color-success: oklch(49% 0.13 155);
+  --color-success-soft: oklch(95.6% 0.04 155);
+  --color-danger: oklch(52% 0.2 30);
+  --color-danger-soft: oklch(95.6% 0.03 30);
+  --color-warning: oklch(51% 0.12 62);
+  --color-warning-soft: oklch(95.8% 0.045 80);
+  --color-info: oklch(49% 0.14 250);
+  --color-info-soft: oklch(95.6% 0.03 250);
+
+  /* Dinero (siempre con signo + ícono, nunca solo color) */
+  --color-money-in: oklch(49% 0.13 155);
+  --color-money-out: oklch(52% 0.2 30);
+
+  /* Ramas — tono pleno (gráficos, bordes, dots, avatares) + soft (fondos) */
+  --color-rama-manada: oklch(66% 0.16 58);
+  --color-rama-manada-soft: oklch(95.5% 0.05 80);
+  --color-rama-unidad: oklch(58% 0.15 150);
+  --color-rama-unidad-soft: oklch(95.5% 0.045 150);
+  --color-rama-caminantes: oklch(56% 0.15 252);
+  --color-rama-caminantes-soft: oklch(95.5% 0.03 252);
+  --color-rama-rovers: oklch(50% 0.18 335);
+  --color-rama-rovers-soft: oklch(95.5% 0.03 335);
+
+  /* Datos (series no-rama) */
+  --color-data-1: oklch(45% 0.165 22);
+  --color-data-2: oklch(38% 0.13 280);
+  --color-data-3: oklch(62% 0.11 190);
+  --color-data-4: oklch(72% 0.15 75);
+  --color-data-5: oklch(64% 0.04 280);
+
+  /* Sidebar — noche índigo */
+  --color-sidebar-bg: oklch(26% 0.085 280);
+  --color-sidebar-ink: oklch(91% 0.025 280);
+  --color-sidebar-hover: oklch(32% 0.09 280);
+
+  /* Tipografía */
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-features: 'tnum' 1, 'cv11' 1, 'ss01' 1;
+
+  /* Radios — generosos, jerárquicos */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+  --radius-pill: 999px;
+
+  /* Elevación — sombras tintadas de índigo, cortas */
+  --shadow-xs: 0 1px 2px oklch(23% 0.04 280 / 0.06);
+  --shadow-sm: 0 1px 2px oklch(23% 0.04 280 / 0.05), 0 2px 6px oklch(23% 0.04 280 / 0.05);
+  --shadow-md: 0 2px 4px oklch(23% 0.04 280 / 0.05), 0 8px 20px oklch(23% 0.04 280 / 0.08);
+  --shadow-lg: 0 4px 8px oklch(23% 0.04 280 / 0.06), 0 20px 44px oklch(23% 0.04 280 / 0.14);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+}
+
+[data-theme='dark'] {
+  /* Noche de campamento: índigo profundo, nunca negro puro */
+  --color-canvas: oklch(18.5% 0.024 280);
+  --color-surface: oklch(22% 0.028 280);
+  --color-surface-raised: oklch(25.5% 0.032 280);
+  --color-recessed: oklch(16.5% 0.022 280);
+
+  --color-ink: oklch(95.5% 0.01 280);
+  --color-ink-muted: oklch(79% 0.022 280);
+  --color-ink-subtle: oklch(68% 0.022 280);
+
+  --color-border: oklch(31% 0.032 280);
+  --color-border-strong: oklch(58% 0.03 280);
+  --color-focus: oklch(75% 0.14 275);
+
+  /* La brasa se aviva de noche */
+  --color-brand: oklch(72% 0.15 25);
+  --color-brand-hover: oklch(77% 0.13 25);
+  --color-on-brand: oklch(18% 0.03 25);
+  --color-brand-soft: oklch(29% 0.07 22);
+  --color-accent-2: oklch(80% 0.09 280);
+
+  --color-success: oklch(76% 0.15 155);
+  --color-success-soft: oklch(28.5% 0.05 155);
+  --color-danger: oklch(72% 0.16 28);
+  --color-danger-soft: oklch(29% 0.07 28);
+  --color-warning: oklch(81% 0.13 78);
+  --color-warning-soft: oklch(29.5% 0.055 70);
+  --color-info: oklch(76% 0.11 250);
+  --color-info-soft: oklch(29% 0.05 250);
+
+  --color-money-in: oklch(76% 0.15 155);
+  --color-money-out: oklch(72% 0.16 28);
+
+  --color-rama-manada: oklch(80% 0.15 72);
+  --color-rama-manada-soft: oklch(30% 0.06 65);
+  --color-rama-unidad: oklch(75% 0.16 150);
+  --color-rama-unidad-soft: oklch(29% 0.055 150);
+  --color-rama-caminantes: oklch(73% 0.13 250);
+  --color-rama-caminantes-soft: oklch(29% 0.055 252);
+  --color-rama-rovers: oklch(72% 0.15 335);
+  --color-rama-rovers-soft: oklch(29.5% 0.065 335);
+
+  --color-data-1: oklch(72% 0.15 25);
+  --color-data-2: oklch(72% 0.1 280);
+  --color-data-3: oklch(76% 0.1 190);
+  --color-data-4: oklch(82% 0.13 78);
+  --color-data-5: oklch(58% 0.03 280);
+
+  --color-sidebar-bg: oklch(15.5% 0.026 280);
+  --color-sidebar-ink: oklch(88% 0.02 280);
+  --color-sidebar-hover: oklch(22% 0.032 280);
+
+  --shadow-xs: 0 1px 2px oklch(5% 0.02 280 / 0.4);
+  --shadow-sm: 0 1px 2px oklch(5% 0.02 280 / 0.35), 0 2px 6px oklch(5% 0.02 280 / 0.3);
+  --shadow-md: 0 2px 4px oklch(5% 0.02 280 / 0.35), 0 8px 20px oklch(5% 0.02 280 / 0.4);
+  --shadow-lg: 0 4px 8px oklch(5% 0.02 280 / 0.4), 0 20px 44px oklch(5% 0.02 280 / 0.5);
+}
+
+/* ===== mockup ===== */
+/* ───────── Base ───────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; color-scheme: light; }
+html[data-theme='dark'] { color-scheme: dark; }
+body {
+  margin: 0; background: var(--color-canvas); color: var(--color-ink);
+  font-family: var(--font-sans); font-size: 15px; line-height: 1.5;
+  font-feature-settings: var(--font-features); -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+svg.lucide { width: 18px; height: 18px; stroke-width: 1.9; flex: none; }
+.num { font-variant-numeric: tabular-nums; font-feature-settings: var(--font-features); white-space: nowrap; }
+.display { font-family: var(--font-display); font-optical-sizing: auto; letter-spacing: -0.02em; }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* rama palette helper */
+.r-manada { --r: var(--color-rama-manada); --r-soft: var(--color-rama-manada-soft); }
+.r-unidad { --r: var(--color-rama-unidad); --r-soft: var(--color-rama-unidad-soft); }
+.r-caminantes { --r: var(--color-rama-caminantes); --r-soft: var(--color-rama-caminantes-soft); }
+.r-rovers { --r: var(--color-rama-rovers); --r-soft: var(--color-rama-rovers-soft); }
+.r-grupo { --r: var(--color-data-2); --r-soft: color-mix(in oklab, var(--color-data-2) 11%, var(--color-surface)); }
+.r-solidario { --r: var(--color-data-3); --r-soft: var(--color-info-soft); }
+.r-personal { --r: var(--color-ink-subtle); --r-soft: var(--color-recessed); }
+[class*='r-'] { --r-ink: color-mix(in oklab, var(--r) 60%, var(--color-ink)); }
+
+/* ───────── Prototype bar (fuera del producto) ───────── */
+.proto {
+  position: sticky; top: 0; z-index: 40; height: 40px; display: flex; align-items: center; gap: 16px;
+  padding: 0 16px; background: var(--color-surface); border-bottom: 1px solid var(--color-border); font-size: 13px;
+}
+.proto__name { font-weight: 600; color: var(--color-ink-muted); white-space: nowrap; }
+.proto__name b { font-family: var(--font-display); color: var(--color-ink); font-weight: 700; letter-spacing: -0.01em; }
+.proto__tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.proto__tabs a { padding: 5px 10px; border-radius: var(--radius-pill); color: var(--color-ink-muted); white-space: nowrap; font-weight: 500; transition: background var(--duration-fast) var(--ease-out); }
+.proto__tabs a:hover { background: var(--color-recessed); color: var(--color-ink); }
+.proto__tabs a[aria-current='page'] { background: var(--color-ink); color: var(--color-canvas); }
+
+/* ───────── Shell ───────── */
+.shell { background: linear-gradient(to right, var(--color-sidebar-bg) 268px, var(--color-canvas) 268px); display: grid; grid-template-columns: 268px minmax(0, 1fr); min-height: calc(100vh - 40px); }
+.sidebar {
+  position: sticky; top: 40px; height: calc(100vh - 40px); overflow-y: auto; display: flex; flex-direction: column;
+  background: var(--color-sidebar-bg); color: var(--color-sidebar-ink); padding: 20px 14px 14px;
+}
+.brandmark { display: flex; align-items: center; gap: 12px; padding: 4px 8px 22px; }
+.logs { display: flex; align-items: flex-end; gap: 3px; height: 30px; padding: 0 7px 5px; width: 40px; border-radius: 11px; background: oklch(100% 0 0 / 0.08); justify-content: center; }
+.logs i { display: block; width: 4px; border-radius: 3px; }
+.logs i:nth-child(1) { height: 11px; background: var(--color-rama-manada); }
+.logs i:nth-child(2) { height: 18px; background: var(--color-rama-unidad); }
+.logs i:nth-child(3) { height: 15px; background: var(--color-rama-caminantes); }
+.logs i:nth-child(4) { height: 9px; background: var(--color-rama-rovers); }
+.brandmark__name { font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1.15; letter-spacing: -0.01em; color: oklch(100% 0 0); }
+[data-theme='dark'] .brandmark__name { color: var(--color-ink); }
+.brandmark__sub { font-size: 12.5px; opacity: 0.78; }
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav__label { font-size: 12px; font-weight: 600; opacity: 0.66; padding: 16px 10px 6px; }
+.nav a {
+  display: flex; align-items: center; gap: 11px; padding: 6px 10px 6px 6px; border-radius: var(--radius-md);
+  font-weight: 500; font-size: 14.5px; transition: background var(--duration-fast) var(--ease-out);
+}
+.nav a:hover { background: var(--color-sidebar-hover); }
+.nav__tile { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: oklch(100% 0 0 / 0.07); transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast); }
+.nav__tile svg.lucide { width: 16px; height: 16px; }
+.nav a[aria-current='page'] { background: oklch(100% 0 0 / 0.11); color: oklch(100% 0 0); }
+[data-theme='dark'] .nav a[aria-current='page'] { background: var(--color-sidebar-hover); color: var(--color-ink); }
+.nav a[aria-current='page'] .nav__tile { background: var(--color-brand); color: var(--color-on-brand); }
+.nav__count { margin-left: auto; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: var(--radius-pill); background: oklch(100% 0 0 / 0.1); }
+.nav-ramas a { padding: 7px 10px; font-size: 14px; }
+.nav-ramas .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--r); box-shadow: 0 0 0 3px color-mix(in oklab, var(--r) 28%, transparent); margin: 0 4px 0 2px; }
+.nav-ramas .num { margin-left: auto; font-size: 13px; opacity: 0.8; }
+.sidebar__user { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 12px 8px 4px; border-top: 1px solid oklch(100% 0 0 / 0.1); }
+.sidebar__user small { display: block; opacity: 0.7; font-size: 12.5px; }
+
+.main { min-width: 0; padding: 28px 36px 64px; }
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.page-head h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.12; letter-spacing: -0.025em; text-wrap: balance; }
+.page-head p { margin: 4px 0 0; color: var(--color-ink-muted); }
+.page-head__actions { display: flex; align-items: center; gap: 8px; flex: none; }
+
+/* mobile chrome */
+.topbar, .bottomnav { display: none; }
+
+/* ───────── Primitives ───────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px;
+  border-radius: var(--radius-md); border: 1px solid transparent; font-weight: 600; font-size: 14.5px; white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast);
+}
+.btn:active { transform: scale(0.97); }
+.btn--primary { background: var(--color-brand); color: var(--color-on-brand); box-shadow: var(--shadow-xs), inset 0 1px 0 oklch(100% 0 0 / 0.14); }
+.btn--primary:hover { background: var(--color-brand-hover); }
+.btn--secondary { background: var(--color-surface); border-color: var(--color-border); color: var(--color-ink); box-shadow: var(--shadow-xs); }
+.btn--secondary:hover { background: var(--color-recessed); }
+.btn--ghost { background: transparent; color: var(--color-ink-muted); }
+.btn--ghost:hover { background: var(--color-recessed); color: var(--color-ink); }
+.btn--icon { width: 40px; padding: 0; }
+.btn--sm { height: 34px; padding: 0 12px; font-size: 13.5px; border-radius: 10px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.panel { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); }
+.panel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px 0; }
+.panel__title { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 15.5px; font-weight: 600; letter-spacing: -0.005em; }
+.panel__body { padding: 16px 20px 20px; }
+.link { font-size: 13.5px; font-weight: 600; color: var(--color-brand); display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; }
+.link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.muted { color: var(--color-ink-muted); }
+.subtle { color: var(--color-ink-subtle); }
+
+.tile { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; flex: none; background: var(--r-soft, var(--color-recessed)); color: var(--r-ink, var(--color-ink-muted)); }
+.tile--sm { width: 30px; height: 30px; border-radius: 9px; }
+.tile--sm svg.lucide { width: 16px; height: 16px; }
+.tile--in { background: var(--color-success-soft); color: var(--color-success); }
+.tile--out { background: var(--color-danger-soft); color: var(--color-danger); }
+.tile--solid { background: var(--r); color: oklch(100% 0 0); }
+[data-theme='dark'] .tile--solid { color: var(--color-canvas); }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px 0 8px; border-radius: var(--radius-pill);
+  background: var(--r-soft); color: var(--r-ink); font-size: 12.5px; font-weight: 600; white-space: nowrap;
+}
+.chip::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--r); }
+.chip--plain { background: var(--color-recessed); color: var(--color-ink-muted); padding: 0 10px; }
+.chip--plain::before { display: none; }
+
+.badge { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px 0 6px; border-radius: 7px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.badge svg.lucide { width: 14px; height: 14px; stroke-width: 2.2; }
+.badge--ok { background: var(--color-success-soft); color: var(--color-success); }
+.badge--warn { background: var(--color-warning-soft); color: var(--color-warning); }
+.badge--bad { background: var(--color-danger-soft); color: var(--color-danger); }
+.badge--info { background: var(--color-info-soft); color: var(--color-info); }
+.badge--neutral { background: var(--color-recessed); color: var(--color-ink-muted); }
+
+.avatar {
+  --size: 34px; position: relative; display: grid; place-items: center; width: var(--size); height: var(--size); flex: none;
+  border-radius: 50%; background: var(--r-soft, var(--color-recessed)); color: var(--r-ink, var(--color-ink-muted));
+  font-weight: 700; font-size: calc(var(--size) * 0.36); letter-spacing: 0.01em;
+  box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--r, var(--color-border));
+}
+.avatar--plain { box-shadow: none; }
+.avatar--lg { --size: 76px; box-shadow: 0 0 0 3px var(--color-surface), 0 0 0 6px var(--r); font-family: var(--font-display); }
+
+.amount { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.amount--in { color: var(--color-money-in); }
+.amount--out { color: var(--color-money-out); }
+
+.progress { height: 6px; border-radius: var(--radius-pill); background: var(--color-recessed); overflow: hidden; }
+.progress > i { display: block; height: 100%; border-radius: inherit; background: var(--r, var(--color-brand)); }
+
+.view { display: none; }
+.view.is-active { display: block; animation: viewIn var(--duration-base) var(--ease-out); }
+@keyframes viewIn { from { opacity: 0.4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px; }
+.s-12 { grid-column: span 12; } .s-8 { grid-column: span 8; } .s-7 { grid-column: span 7; } .s-5 { grid-column: span 5; } .s-4 { grid-column: span 4; }
+.stack { display: flex; flex-direction: column; gap: 20px; }
+
+/* ───────── Dashboard ───────── */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.kpi { padding: 18px 22px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.kpi + .kpi { border-left: 1px solid var(--color-border); }
+.kpi__label { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--color-ink-muted); font-weight: 500; }
+.kpi__value { font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1.1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.kpi__foot { font-size: 13px; color: var(--color-ink-muted); display: flex; align-items: center; gap: 6px; }
+.trend { display: inline-flex; align-items: center; gap: 2px; font-weight: 600; }
+.trend svg.lucide { width: 14px; height: 14px; }
+.trend--up { color: var(--color-money-in); } .trend--down { color: var(--color-money-out); }
+
+.caja { padding: 22px 24px 20px; }
+.caja__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+.caja__label { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; }
+.caja__value { font-family: var(--font-display); font-size: 48px; line-height: 1; font-weight: 700; letter-spacing: -0.035em; margin: 14px 0 8px; font-variant-numeric: tabular-nums; }
+.caja__value span { font-size: 0.55em; color: var(--color-ink-subtle); margin-right: 4px; letter-spacing: 0; vertical-align: 0.42em; font-weight: 600; }
+.flows { display: flex; gap: 8px; flex-wrap: wrap; }
+.flow { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 8px; border-radius: var(--radius-pill); font-size: 13.5px; font-weight: 600; }
+.flow--in { background: var(--color-success-soft); color: var(--color-success); }
+.flow--out { background: var(--color-danger-soft); color: var(--color-danger); }
+.flow svg.lucide { width: 16px; height: 16px; }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--color-ink-muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.chart { margin-top: 18px; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--font-sans); font-size: 12px; fill: var(--color-ink-subtle); font-variant-numeric: tabular-nums; }
+.chart .grid-line { stroke: var(--color-border); stroke-dasharray: 3 4; }
+.chart .bar-in { fill: var(--color-data-2); }
+.chart .bar-out { fill: var(--color-data-1); }
+.chart .bar-current { opacity: 1; }
+.chart .now { fill: var(--color-ink); font-weight: 600; }
+
+.cobrar__value { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -0.03em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.split { display: flex; height: 10px; border-radius: var(--radius-pill); overflow: hidden; gap: 3px; margin: 16px 0 12px; }
+.split i { display: block; height: 100%; border-radius: 3px; }
+.split-legend { display: grid; gap: 8px; font-size: 14px; }
+.split-legend div { display: flex; align-items: center; gap: 8px; }
+.split-legend .amount { margin-left: auto; }
+.split-legend b { width: 10px; height: 10px; border-radius: 3px; }
+.solidario { display: flex; align-items: center; gap: 14px; padding: 16px 20px; }
+.solidario p { margin: 2px 0 0; font-size: 13px; color: var(--color-ink-muted); }
+
+.ramas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.rama-card {
+  position: relative; padding: 18px; border-radius: var(--radius-lg); background: var(--r-soft);
+  border: 1px solid color-mix(in oklab, var(--r) 22%, transparent); overflow: hidden;
+  transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
+}
+.rama-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.rama-card__head { display: flex; align-items: center; justify-content: space-between; }
+.rama-card__name { font-weight: 700; font-size: 15px; color: var(--r-ink); }
+.rama-card__value { font-family: var(--font-display); font-weight: 700; font-size: 26px; letter-spacing: -0.025em; margin: 16px 0 2px; color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.rama-card__meta { font-size: 13px; color: var(--r-ink); display: flex; flex-direction: column; gap: 1px; }
+.rama-card__meta span:last-child { opacity: 0.85; }
+.spark { margin-top: 12px; display: block; width: 100%; height: 30px; }
+.spark path { fill: none; stroke: var(--r); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.spark .area { fill: color-mix(in oklab, var(--r) 16%, transparent); stroke: none; }
+
+.list { list-style: none; margin: 0; padding: 0; }
+.row { display: flex; align-items: center; gap: 12px; padding: 11px 20px; border-top: 1px solid var(--color-border); transition: background var(--duration-fast); }
+.row:first-child { border-top: 0; }
+.row:hover { background: color-mix(in oklab, var(--color-recessed) 70%, transparent); }
+.row__main { min-width: 0; flex: 1; }
+.row__title { font-weight: 600; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row__sub { font-size: 13px; color: var(--color-ink-muted); display: flex; gap: 8px; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row__end { text-align: right; flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.row__end small { font-size: 12.5px; color: var(--color-ink-subtle); }
+
+/* ───────── Persona ───────── */
+.back { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--color-ink-muted); margin-bottom: 14px; }
+.back:hover { color: var(--color-ink); }
+.person { padding: 26px 26px 0; overflow: hidden; }
+.person__top { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.person__name { margin: 0; font-family: var(--font-display); font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+.person__chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+.person__meta { margin-top: 8px; font-size: 13.5px; color: var(--color-ink-muted); display: flex; gap: 14px; flex-wrap: wrap; }
+.person__meta span { display: inline-flex; align-items: center; gap: 5px; }
+.person__meta svg.lucide { width: 15px; height: 15px; }
+.person__actions { margin-left: auto; display: flex; gap: 8px; }
+.person__stats { display: grid; grid-template-columns: 1.15fr 1fr 1fr 1fr; margin: 24px -26px 0; border-top: 1px solid var(--color-border); background: color-mix(in oklab, var(--color-recessed) 55%, var(--color-surface)); }
+.pstat { padding: 16px 26px 18px; }
+.pstat + .pstat { border-left: 1px solid var(--color-border); }
+.pstat__label { font-size: 13px; color: var(--color-ink-muted); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.pstat__value { font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.oblig { display: grid; grid-template-columns: auto minmax(0, 1fr) 150px auto auto; align-items: center; gap: 14px; padding: 14px 20px; border-top: 1px solid var(--color-border); }
+.oblig:first-child { border-top: 0; }
+.oblig__prog { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--color-ink-muted); }
+.oblig .amount { min-width: 92px; text-align: right; }
+.docs { display: grid; gap: 2px; }
+.doc { display: flex; align-items: center; gap: 10px; padding: 9px 0; font-size: 14.5px; border-top: 1px dashed var(--color-border); }
+.doc:first-child { border-top: 0; }
+.doc .badge { margin-left: auto; }
+.timeline { list-style: none; margin: 0; padding: 4px 20px 16px; }
+.tl-month { font-size: 13px; font-weight: 600; color: var(--color-ink-subtle); padding: 14px 0 6px 44px; }
+.tl { position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 14px; padding: 8px 0; align-items: start; }
+.tl::before { content: ''; position: absolute; left: 14.5px; top: 40px; bottom: -10px; width: 1px; background: var(--color-border); }
+.tl:last-child::before { display: none; }
+.tl__title { font-weight: 600; font-size: 14.5px; }
+.tl__sub { font-size: 13px; color: var(--color-ink-muted); }
+
+/* ───────── Movimientos ───────── */
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--color-border); }
+.seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 12px; background: var(--color-recessed); }
+.seg button { border: 0; background: transparent; height: 32px; padding: 0 14px; border-radius: 9px; font-weight: 600; font-size: 13.5px; color: var(--color-ink-muted); display: inline-flex; align-items: center; gap: 6px; transition: background var(--duration-fast), color var(--duration-fast); }
+.seg button svg.lucide { width: 15px; height: 15px; }
+.seg button[aria-pressed='true'] { background: var(--color-surface); color: var(--color-ink); box-shadow: var(--shadow-sm); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px solid var(--color-border); align-items: center; }
+.fchip {
+  display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border); background: var(--color-surface); font-size: 13.5px; font-weight: 500; color: var(--color-ink-muted);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.fchip:hover { border-color: var(--color-border-strong); color: var(--color-ink); }
+.fchip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--r); }
+.fchip[aria-pressed='true'] { background: var(--r-soft, var(--color-ink)); color: var(--r-ink, var(--color-canvas)); border-color: color-mix(in oklab, var(--r, var(--color-ink)) 45%, transparent); font-weight: 600; }
+.fchip[aria-pressed='true'] svg.lucide { width: 15px; height: 15px; }
+.filters__sep { width: 1px; height: 20px; background: var(--color-border); margin: 0 6px; }
+.input {
+  display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong); background: var(--color-surface); color: var(--color-ink-subtle); min-width: 0;
+}
+.input input { border: 0; outline: 0; background: transparent; color: var(--color-ink); width: 100%; min-width: 0; }
+.input input::placeholder { color: var(--color-ink-subtle); }
+.input--sm { height: 36px; }
+.summary-line { display: flex; gap: 22px; flex-wrap: wrap; padding: 12px 20px; font-size: 13.5px; color: var(--color-ink-muted); background: color-mix(in oklab, var(--color-recessed) 50%, var(--color-surface)); border-bottom: 1px solid var(--color-border); }
+.summary-line b { color: var(--color-ink); font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+table.dense { width: 100%; border-collapse: collapse; font-size: 14px; }
+.dense th { text-align: left; font-weight: 600; font-size: 12.5px; color: var(--color-ink-muted); padding: 10px 14px; border-bottom: 1px solid var(--color-border); white-space: nowrap; }
+.dense th:first-child, .dense td:first-child { padding-left: 20px; }
+.dense th:last-child, .dense td:last-child { padding-right: 20px; }
+.dense td { padding: 10px 14px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+.dense tbody tr { transition: background var(--duration-fast); }
+.dense tbody tr:hover { background: color-mix(in oklab, var(--color-recessed) 70%, transparent); }
+.dense .r { text-align: right; }
+.cell-concept { display: flex; align-items: center; gap: 11px; min-width: 240px; }
+.cell-concept b { display: block; font-weight: 600; font-size: 14px; }
+.cell-concept small { display: block; font-size: 12.5px; color: var(--color-ink-muted); max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell-person { display: flex; align-items: center; gap: 9px; white-space: nowrap; }
+.cell-person .avatar { --size: 26px; box-shadow: 0 0 0 1.5px var(--color-surface), 0 0 0 3px var(--r, var(--color-border)); }
+.cell-date { white-space: nowrap; color: var(--color-ink-muted); }
+.cell-date b { display: block; color: var(--color-ink); font-weight: 600; }
+.medio { display: flex; justify-content: flex-end; align-items: center; gap: 5px; color: var(--color-ink-subtle); white-space: nowrap; font-size: 12.5px; margin-top: 2px; }
+.medio svg.lucide { width: 14px; height: 14px; }
+.c-amount .amount { display: block; }
+.pager { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 20px; font-size: 13.5px; color: var(--color-ink-muted); flex-wrap: wrap; }
+.pager__pages { display: flex; gap: 4px; }
+.pager__pages button { min-width: 34px; height: 34px; border-radius: 9px; border: 1px solid transparent; background: transparent; font-weight: 600; color: var(--color-ink-muted); display: grid; place-items: center; }
+.pager__pages button:hover { background: var(--color-recessed); }
+.pager__pages button[aria-current='page'] { background: var(--color-ink); color: var(--color-canvas); }
+.pager__pages button.edge { border-color: var(--color-border); }
+
+/* ───────── Evento ───────── */
+.equation { display: grid; grid-template-columns: 1fr auto 1fr auto 1.2fr; align-items: stretch; gap: 0; }
+.eq { padding: 20px 22px; }
+.eq__label { font-size: 13.5px; color: var(--color-ink-muted); font-weight: 500; display: flex; gap: 8px; align-items: center; }
+.eq__value { font-family: var(--font-display); font-weight: 700; font-size: 30px; letter-spacing: -0.03em; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.eq__foot { font-size: 13px; color: var(--color-ink-muted); margin-top: 4px; }
+.eq__op { display: grid; place-items: center; width: 36px; color: var(--color-ink-subtle); font-family: var(--font-display); font-size: 26px; font-weight: 600; }
+.eq--net { background: var(--color-brand-soft); border-radius: 0 calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px) 0; }
+.eq--net .eq__value { color: var(--color-brand); }
+.eq--net .eq__label { color: color-mix(in oklab, var(--color-brand) 65%, var(--color-ink)); }
+.eq__bar { display: flex; height: 8px; gap: 3px; margin-top: 14px; border-radius: 6px; overflow: hidden; }
+.eq__bar i { display: block; border-radius: 3px; }
+.seller { display: grid; grid-template-columns: 26px 150px minmax(0, 1fr) 96px; align-items: center; gap: 12px; padding: 11px 0; font-size: 14px; }
+.seller .avatar { --size: 26px; box-shadow: none; font-size: 10px; }
+.seller__name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.seller__bar { height: 22px; border-radius: 7px; background: var(--color-recessed); position: relative; overflow: hidden; }
+.seller__bar i { position: absolute; inset: 0 auto 0 0; border-radius: 7px; background: var(--r); }
+.seller .amount { text-align: right; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+
+/* ───────── Form ───────── */
+.form-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+.form { padding: 24px 26px 8px; }
+.form-section { padding: 6px 0 22px; }
+.form-section + .form-section { border-top: 1px solid var(--color-border); padding-top: 22px; }
+.form-section h3 { margin: 0 0 14px; font-size: 15px; font-weight: 600; }
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 16px; }
+.field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.field--full { grid-column: 1 / -1; }
+.field label, .field .label { font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
+.field label small, .field .label small { font-weight: 400; color: var(--color-ink-subtle); font-size: 13px; }
+.control {
+  display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong); background: var(--color-surface); font-size: 16px; color: var(--color-ink);
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+.control > span.grow { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.control .ph { color: var(--color-ink-subtle); }
+.control--focus { border-color: var(--color-focus); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-focus) 22%, transparent); }
+.control--valid { border-color: var(--color-success); }
+.control--error { border-color: var(--color-danger); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger) 14%, transparent); }
+.control--area { height: auto; min-height: 88px; align-items: flex-start; padding: 12px 14px; }
+.control__prefix { color: var(--color-ink-subtle); font-weight: 600; }
+.control--money { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; height: 54px; }
+.hint { font-size: 13px; color: var(--color-ink-muted); display: flex; gap: 6px; align-items: flex-start; }
+.hint svg.lucide { width: 15px; height: 15px; margin-top: 2px; }
+.hint--error { color: var(--color-danger); font-weight: 500; }
+.hint--ok { color: var(--color-success); }
+.typeswitch { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.typeswitch button {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--radius-md); border: 1.5px solid var(--color-border);
+  background: var(--color-surface); text-align: left; transition: all var(--duration-fast) var(--ease-out);
+}
+.typeswitch button b { display: block; font-size: 15px; }
+.typeswitch button small { color: var(--color-ink-muted); font-size: 13px; }
+.typeswitch button[aria-pressed='true'].is-out { border-color: var(--color-danger); background: var(--color-danger-soft); }
+.typeswitch button[aria-pressed='true'].is-out b { color: var(--color-danger); }
+.radio-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.rcard {
+  position: relative; display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border); background: var(--color-surface); text-align: left; font-size: 14px; font-weight: 600; min-height: 84px;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.rcard small { font-weight: 400; font-size: 12.5px; color: var(--color-ink-muted); }
+.rcard[aria-checked='true'] { border-color: var(--color-brand); background: var(--color-brand-soft); box-shadow: 0 0 0 1px var(--color-brand); }
+.rcard[aria-checked='true']::after { content: ''; position: absolute; top: 12px; right: 12px; width: 16px; height: 16px; border-radius: 50%; background: var(--color-brand); box-shadow: inset 0 0 0 4px var(--color-brand), inset 0 0 0 8px var(--color-on-brand); }
+.rcard[aria-disabled='true'] { opacity: 0.55; cursor: not-allowed; }
+.caja-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+.alert { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-danger-soft); color: var(--color-ink); font-size: 14px; margin-bottom: 20px; }
+.alert svg.lucide { color: var(--color-danger); margin-top: 2px; }
+.alert b { color: var(--color-danger); }
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 26px; border-top: 1px solid var(--color-border); background: color-mix(in oklab, var(--color-recessed) 50%, var(--color-surface)); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.preview { position: sticky; top: 64px; }
+.preview__amount { font-family: var(--font-display); font-size: 38px; font-weight: 700; letter-spacing: -0.03em; color: var(--color-money-out); font-variant-numeric: tabular-nums; }
+.impact { margin-top: 16px; border-radius: var(--radius-md); background: var(--color-recessed); padding: 14px; display: grid; gap: 10px; font-size: 14px; }
+.impact div { display: flex; justify-content: space-between; gap: 10px; }
+.impact .after { font-weight: 700; }
+.checklist { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+.checklist li { display: flex; gap: 8px; align-items: center; }
+.checklist .ok { color: var(--color-success); }
+.checklist .bad { color: var(--color-danger); }
+
+/* empty state */
+.empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 28px 20px; }
+.empty__art { display: flex; align-items: flex-end; gap: 4px; height: 34px; }
+.empty__art i { width: 6px; border-radius: 4px; opacity: 0.85; }
+.empty p { margin: 0; color: var(--color-ink-muted); font-size: 14px; max-width: 34ch; }
+.empty b { font-size: 15px; }
+
+/* ───────── Responsive ───────── */
+@media (max-width: 1180px) {
+  .ramas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s-8, .s-7, .s-5, .s-4 { grid-column: span 12; }
+  .form-layout { grid-template-columns: 1fr; }
+  .preview { position: static; }
+}
+@media (max-width: 1023px) {
+  .shell { grid-template-columns: 1fr; background: var(--color-canvas); }
+  .sidebar { display: none; }
+  .proto { position: static; }
+  .topbar {
+    display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 30; height: 60px; padding: 0 16px;
+    background: color-mix(in oklab, var(--color-canvas) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--color-border);
+  }
+  .topbar .logs { background: var(--color-sidebar-bg); }
+  .topbar__title { font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: -0.01em; flex: 1; min-width: 0; }
+  .topbar__title small { display: block; font-family: var(--font-sans); font-weight: 500; font-size: 12.5px; color: var(--color-ink-muted); letter-spacing: 0; }
+  .bottomnav {
+    display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; inset: auto 0 0 0; z-index: 30; height: 72px; padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background: var(--color-surface); border-top: 1px solid var(--color-border); box-shadow: 0 -6px 20px oklch(23% 0.04 280 / 0.06);
+  }
+  .bottomnav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11.5px; font-weight: 600; color: var(--color-ink-muted); border-radius: 12px; }
+  .bottomnav a svg.lucide { width: 22px; height: 22px; }
+  .bottomnav a[aria-current='page'] { color: var(--color-brand); }
+  .bottomnav a[aria-current='page'] .bn-ico { background: var(--color-brand-soft); }
+  .bn-ico { display: grid; place-items: center; width: 52px; height: 30px; border-radius: var(--radius-pill); transition: background var(--duration-fast); }
+  .bottomnav .fab { display: grid; place-items: center; }
+  .bottomnav .fab span { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 18px; background: var(--color-brand); color: var(--color-on-brand); box-shadow: var(--shadow-md); margin-top: -18px; }
+  .bottomnav .fab svg.lucide { width: 24px; height: 24px; }
+  .main { padding: 20px 16px 104px; }
+  .page-head { flex-direction: column; align-items: stretch; margin-bottom: 18px; }
+  .page-head h1 { font-size: 26px; }
+  .page-head__actions .btn--primary.hide-m { display: none; }
+}
+@media (max-width: 720px) {
+  .grid, .stack { gap: 16px; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi { padding: 14px 16px; }
+  .kpi + .kpi { border-left: 0; }
+  .kpi:nth-child(even) { border-left: 1px solid var(--color-border); }
+  .kpi:nth-child(n+3) { border-top: 1px solid var(--color-border); }
+  .kpi__value { font-size: 22px; }
+  .kpi__value[style] { font-size: 17px !important; }
+  .caja { padding: 18px 16px; }
+  .caja__value { font-size: 40px; }
+  .ramas { gap: 12px; }
+  .rama-card { padding: 14px; }
+  .rama-card__value { font-size: 21px; margin-top: 12px; }
+  .rama-card__meta { flex-direction: column; gap: 0; }
+  .panel__head { padding: 16px 16px 0; }
+  .panel__body { padding: 14px 16px 16px; }
+  .row { padding: 11px 16px; }
+  .hide-s { display: none !important; }
+  .person { padding: 20px 16px 0; }
+  .person__actions { margin-left: 0; width: 100%; }
+  .person__actions .btn { flex: 1; }
+  .person__stats { grid-template-columns: 1fr 1fr; margin: 20px -16px 0; }
+  .pstat { padding: 14px 16px; }
+  .pstat:nth-child(3) { border-left: 0; }
+  .pstat:nth-child(n+3) { border-top: 1px solid var(--color-border); }
+  .oblig { grid-template-columns: auto minmax(0, 1fr) auto; padding: 14px 16px; }
+  .oblig__prog { grid-column: 2 / -1; grid-row: 2; }
+  .oblig .btn { display: none; }
+  .equation { grid-template-columns: 1fr; }
+  .eq__op { display: none; }
+  .eq + .eq { border-top: 1px solid var(--color-border); }
+  .eq--net { border-radius: 0 0 calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px); }
+  .seller { grid-template-columns: 26px 110px minmax(0, 1fr) 84px; gap: 8px; }
+  .form { padding: 18px 16px 4px; }
+  .fields { grid-template-columns: 1fr; }
+  .radio-cards { grid-template-columns: 1fr 1fr; }
+  .form-actions {
+    position: sticky; bottom: 72px; border-radius: 0; margin: 0 -1px -1px; padding: 12px 16px;
+    background: var(--color-surface); box-shadow: 0 -6px 16px oklch(23% 0.04 280 / 0.06);
+  }
+  .form-actions .btn { flex: 1; height: 48px; }
+  .toolbar, .filters, .summary-line, .pager { padding-left: 16px; padding-right: 16px; }
+  .filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .fchip { flex: none; }
+  /* table → stacked rows */
+  table.dense thead { display: none; }
+  table.dense, .dense tbody, .dense tr, .dense td { display: block; }
+  .dense tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 12px 16px; border-bottom: 1px solid var(--color-border); }
+  .dense td { border: 0; padding: 0 !important; }
+  .dense td.c-concept { grid-column: 1; grid-row: 1; }
+  .dense td.c-amount { grid-column: 2; grid-row: 1; align-self: center; }
+  .dense td.c-hide { display: none; }
+  .cell-concept { min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+  .rama-card:hover { transform: none; }
+}
+
+.due { margin-top: auto; display: flex; gap: 10px; align-items: flex-start; padding: 14px 20px; border-top: 1px solid var(--color-border); font-size: 13.5px; color: var(--color-ink-muted); background: color-mix(in oklab, var(--color-warning-soft) 60%, var(--color-surface)); border-radius: 0 0 calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px); }
+.due svg.lucide { color: var(--color-warning); width: 17px; height: 17px; margin-top: 1px; }
+.due b { color: var(--color-ink); }
+
+.sellers-foot { margin-top: auto; display: flex; gap: 24px; padding: 14px 20px; border-top: 1px solid var(--color-border); font-size: 13.5px; color: var(--color-ink-muted); }
+.sellers-foot span:last-child { margin-left: auto; }
+.sellers-foot b { color: var(--color-ink); font-weight: 600; }
+.eq__op { font-size: 30px; font-family: var(--font-sans); font-weight: 400; }
+
+</style>
+</head>
+<body>
+<nav class="proto" aria-label="Pantallas del mockup">
+  <span class="proto__name"><b>Fogón</b> <span class="hide-s">· dirección visual</span></span>
+  <div class="proto__tabs" id="protoTabs">
+    <a href="#dashboard">Dashboard</a>
+    <a href="#persona">Persona</a>
+    <a href="#movimientos">Movimientos</a>
+    <a href="#evento">Evento de venta</a>
+    <a href="#form">Nuevo movimiento</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <aside class="sidebar" aria-label="Navegación principal">
+    <div class="brandmark">
+      <span class="logs" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <div><div class="brandmark__name">Hermano Pío</div><div class="brandmark__sub">Grupo Scout 512 · Tesorería</div></div>
+    </div>
+    <nav class="nav" id="sideNav">
+      <a href="#dashboard" data-view="dashboard"><span class="nav__tile"><i data-lucide="house"></i></span>Inicio</a>
+      <a href="#movimientos" data-view="movimientos"><span class="nav__tile"><i data-lucide="arrow-left-right"></i></span>Movimientos</a>
+      <a href="#cajas" data-view="none"><span class="nav__tile"><i data-lucide="wallet"></i></span>Cajas</a>
+      <a href="#persona" data-view="persona"><span class="nav__tile"><i data-lucide="users"></i></span>Personas</a>
+      <a href="#inscripciones" data-view="none"><span class="nav__tile"><i data-lucide="clipboard-check"></i></span>Inscripciones<span class="nav__count">17</span></a>
+      <a href="#campamentos" data-view="none"><span class="nav__tile"><i data-lucide="tent"></i></span>Campamentos</a>
+      <a href="#evento" data-view="evento"><span class="nav__tile"><i data-lucide="calendar-heart"></i></span>Eventos</a>
+      <div class="nav__label">Fondos de rama</div>
+      <div class="nav nav-ramas">
+        <a href="#dashboard" class="r-manada"><span class="dot"></span>Manada<span class="num">$ 184.200</span></a>
+        <a href="#dashboard" class="r-unidad"><span class="dot"></span>Unidad<span class="num">$ 236.750</span></a>
+        <a href="#dashboard" class="r-caminantes"><span class="dot"></span>Caminantes<span class="num">$ 98.300</span></a>
+        <a href="#dashboard" class="r-rovers"><span class="dot"></span>Rovers<span class="num">$ 141.900</span></a>
+      </div>
+      <div class="nav__label">Grupo</div>
+      <a href="#config" data-view="none"><span class="nav__tile"><i data-lucide="settings-2"></i></span>Configuración</a>
+    </nav>
+    <div class="sidebar__user">
+      <span class="avatar avatar--plain r-caminantes" style="--size:34px">LM</span>
+      <div><b style="font-size:14px">Laura Méndez</b><small>Tesorera del grupo</small></div>
+    </div>
+  </aside>
+
+  <div class="app">
+    <header class="topbar">
+      <span class="logs" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <div class="topbar__title" id="mTitle">Inicio<small>Hermano Pío</small></div>
+      <button class="btn btn--ghost btn--icon" data-theme-toggle aria-label="Cambiar tema"><i data-lucide="moon"></i></button>
+      <span class="avatar avatar--plain r-caminantes" style="--size:34px">LM</span>
+    </header>
+
+    <main class="main">
+      <!-- ═════════ DASHBOARD ═════════ -->
+      <section class="view" id="view-dashboard" aria-labelledby="t-dash">
+        <div class="page-head">
+          <div><h1 id="t-dash">Buen día, Laura</h1><p>Así está la plata del grupo hoy, martes 6 de octubre.</p></div>
+          <div class="page-head__actions">
+            <label class="input hide-s" style="width:240px"><i data-lucide="search"></i><input placeholder="Buscar persona o pago" /></label>
+            <button class="btn btn--secondary btn--icon hide-s" data-theme-toggle aria-label="Cambiar tema"><i data-lucide="moon"></i></button>
+            <a href="#form" class="btn btn--primary hide-m"><i data-lucide="plus"></i>Nuevo movimiento</a>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="panel kpis">
+            <div class="kpi"><span class="kpi__label"><span class="tile tile--sm tile--in"><i data-lucide="arrow-down-left"></i></span>Entró en octubre</span><span class="kpi__value">$ 212.400</span><span class="kpi__foot"><span class="trend trend--up"><i data-lucide="trending-up"></i>18%</span> vs. septiembre</span></div>
+            <div class="kpi"><span class="kpi__label"><span class="tile tile--sm tile--out"><i data-lucide="arrow-up-right"></i></span>Salió en octubre</span><span class="kpi__value">$ 96.800</span><span class="kpi__foot"><span class="trend trend--up"><i data-lucide="trending-down"></i>12%</span> menos gasto</span></div>
+            <div class="kpi"><span class="kpi__label"><span class="tile tile--sm r-grupo"><i data-lucide="clipboard-check"></i></span>Inscripciones 2026</span><span class="kpi__value">41 <span style="font-size:16px;color:var(--color-ink-subtle);font-weight:600">de 58</span></span><div class="progress r-grupo" style="margin-top:4px"><i style="width:71%"></i></div></div>
+            <div class="kpi"><span class="kpi__label"><span class="tile tile--sm r-unidad"><i data-lucide="tent"></i></span>Próximo campamento</span><span class="kpi__value" style="font-size:20px;line-height:1.25">Sierra de la Ventana</span><span class="kpi__foot">12 de enero · 34 anotados</span></div>
+          </div>
+
+          <div class="grid">
+            <div class="panel caja s-8">
+              <div class="caja__top">
+                <div>
+                  <div class="caja__label"><span class="tile r-grupo"><i data-lucide="landmark"></i></span>Caja de grupo</div>
+                  <div class="caja__value"><span>$</span>1.284.350</div>
+                  <div class="flows">
+                    <span class="flow flow--in"><i data-lucide="arrow-down-left"></i>+ $ 212.400 este mes</span>
+                    <span class="flow flow--out"><i data-lucide="arrow-up-right"></i>− $ 96.800 este mes</span>
+                  </div>
+                </div>
+                <div class="legend" aria-hidden="true"><span><i style="background:var(--color-data-2)"></i>Ingresos</span><span><i style="background:var(--color-data-1)"></i>Egresos</span></div>
+              </div>
+              <div class="chart" id="chart" role="img" aria-label="Ingresos y egresos de mayo a octubre"></div>
+            </div>
+
+            <div class="s-4 stack">
+              <div class="panel" style="flex:1;display:flex;flex-direction:column">
+                <div class="panel__head"><h2 class="panel__title"><span class="tile tile--sm tile--out"><i data-lucide="hand-coins"></i></span>Por cobrar</h2><a class="link" href="#persona">Ver deudores</a></div>
+                <div class="panel__body">
+                  <div class="cobrar__value">$ 486.200</div>
+                  <div class="muted" style="font-size:13.5px">23 personas con saldo pendiente</div>
+                  <div class="split" aria-hidden="true"><i style="flex:318;background:var(--color-data-2)"></i><i style="flex:168;background:var(--color-data-4)"></i></div>
+                  <div class="split-legend">
+                    <div><b style="background:var(--color-data-2)"></b>Inscripciones<span class="amount">$ 318.000</span></div>
+                    <div><b style="background:var(--color-data-4)"></b>Campamentos<span class="amount">$ 168.200</span></div>
+                  </div>
+                </div>
+                <div class="due"><i data-lucide="calendar-clock"></i><span>Vence el 15/10: segunda cuota del campamento, <b class="num">$ 96.000</b> de 24 familias</span></div>
+              </div>
+              <div class="panel solidario r-solidario">
+                <span class="tile"><i data-lucide="heart-handshake"></i></span>
+                <div style="flex:1;min-width:0"><b style="font-size:14.5px">Fondo Solidario</b><p>Caja aparte para bonificaciones</p></div>
+                <span class="amount" style="font-size:16px">$ 145.000</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin:4px 2px 12px"><h2 class="panel__title" style="font-size:17px">Fondos de rama</h2><a class="link" href="#movimientos">Ver movimientos</a></div>
+            <div class="ramas" id="ramas"></div>
+          </div>
+
+          <div class="grid">
+            <div class="panel s-7">
+              <div class="panel__head"><h2 class="panel__title">Últimos movimientos</h2><a class="link" href="#movimientos">Ver todos</a></div>
+              <ul class="list" id="lastMovs" style="margin-top:10px"></ul>
+            </div>
+            <div class="panel s-5">
+              <div class="panel__head"><h2 class="panel__title">Deben más</h2><span class="subtle" style="font-size:13px">Inscripción + campamento</span></div>
+              <ul class="list" id="deudores" style="margin-top:10px"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ PERSONA ═════════ -->
+      <section class="view" id="view-persona" aria-labelledby="t-persona">
+        <a class="back" href="#dashboard"><i data-lucide="arrow-left"></i>Personas</a>
+        <div class="stack">
+          <div class="panel person r-unidad">
+            <div class="person__top">
+              <span class="avatar avatar--lg r-unidad">VR</span>
+              <div style="min-width:0">
+                <h1 class="person__name" id="t-persona">Valentina Ríos</h1>
+                <div class="person__chips"><span class="chip r-unidad">Unidad</span><span class="chip chip--plain">Protagonista</span><span class="badge badge--ok"><i data-lucide="circle-check"></i>Activa</span></div>
+                <div class="person__meta"><span><i data-lucide="id-card"></i>DNI 47.812.335</span><span><i data-lucide="cake"></i>14 años</span><span><i data-lucide="phone"></i>Mamá: Carolina, 11 5823-4410</span></div>
+              </div>
+              <div class="person__actions">
+                <button class="btn btn--secondary"><i data-lucide="repeat-2"></i>Transferir saldo</button>
+                <button class="btn btn--primary"><i data-lucide="hand-coins"></i>Registrar pago</button>
+              </div>
+            </div>
+            <div class="person__stats">
+              <div class="pstat"><div class="pstat__label"><i data-lucide="piggy-bank" style="width:15px;height:15px"></i>Saldo cuenta personal</div><div class="pstat__value amount--in">$ 10.500</div></div>
+              <div class="pstat"><div class="pstat__label">Deuda total</div><div class="pstat__value amount--out">$ 42.000</div></div>
+              <div class="pstat"><div class="pstat__label">Inscripciones</div><div class="pstat__value">$ 27.000</div></div>
+              <div class="pstat"><div class="pstat__label">Campamentos</div><div class="pstat__value">$ 15.000</div></div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="s-8 stack">
+              <div class="panel">
+                <div class="panel__head"><h2 class="panel__title">Obligaciones financieras</h2><span class="subtle" style="font-size:13px">3 activas</span></div>
+                <div style="margin-top:8px" id="oblig"></div>
+              </div>
+              <div class="panel">
+                <div class="panel__head"><h2 class="panel__title">Movimientos</h2><a class="link" href="#movimientos">Ver en Movimientos</a></div>
+                <ol class="timeline" id="timeline"></ol>
+              </div>
+            </div>
+            <div class="s-4 stack">
+              <div class="panel">
+                <div class="panel__head"><h2 class="panel__title">Documentación</h2><span class="badge badge--warn"><i data-lucide="clock-3"></i>2 faltan</span></div>
+                <div class="panel__body docs" id="docs"></div>
+              </div>
+              <div class="panel">
+                <div class="panel__head"><h2 class="panel__title">De dónde sale su saldo</h2></div>
+                <ul class="list" style="margin-top:8px">
+                  <li class="row"><span class="tile tile--sm r-caminantes"><i data-lucide="pizza"></i></span><div class="row__main"><div class="row__title">Pizzas de primavera</div><div class="row__sub">Ganancia de sus ventas</div></div><span class="amount amount--in">+ $ 12.000</span></li>
+                  <li class="row"><span class="tile tile--sm r-unidad"><i data-lucide="cookie"></i></span><div class="row__main"><div class="row__title">Rifa de invierno</div><div class="row__sub">Ganancia de sus números</div></div><span class="amount amount--in">+ $ 6.500</span></li>
+                  <li class="row"><span class="tile tile--sm tile--out"><i data-lucide="tent"></i></span><div class="row__main"><div class="row__title">Usado en campamento</div><div class="row__sub">12 de septiembre</div></div><span class="amount amount--out">− $ 8.000</span></li>
+                </ul>
+              </div>
+              <div class="panel">
+                <div class="empty">
+                  <div class="empty__art" aria-hidden="true"><i style="height:14px;background:var(--color-rama-manada)"></i><i style="height:24px;background:var(--color-rama-unidad)"></i><i style="height:19px;background:var(--color-rama-caminantes)"></i><i style="height:11px;background:var(--color-rama-rovers)"></i></div>
+                  <b>Sin bonificaciones</b>
+                  <p>Si la familia necesita ayuda, otorgala desde el Fondo Solidario.</p>
+                  <button class="btn btn--secondary btn--sm"><i data-lucide="heart-handshake"></i>Otorgar bonificación</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ MOVIMIENTOS ═════════ -->
+      <section class="view" id="view-movimientos" aria-labelledby="t-movs">
+        <div class="page-head">
+          <div><h1 id="t-movs">Movimientos</h1><p>Toda la plata que entra y sale, de todas las cajas.</p></div>
+          <div class="page-head__actions">
+            <button class="btn btn--secondary hide-s"><i data-lucide="download"></i>Exportar</button>
+            <a href="#form" class="btn btn--primary hide-m"><i data-lucide="plus"></i>Nuevo movimiento</a>
+          </div>
+        </div>
+        <div class="panel" style="overflow:hidden">
+          <div class="toolbar">
+            <div class="seg" role="group" aria-label="Tipo">
+              <button aria-pressed="true">Todos</button>
+              <button aria-pressed="false"><i data-lucide="arrow-down-left"></i>Ingresos</button>
+              <button aria-pressed="false"><i data-lucide="arrow-up-right"></i>Egresos</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;flex:1;justify-content:flex-end">
+              <label class="input input--sm" style="flex:1;max-width:280px;min-width:180px"><i data-lucide="search"></i><input placeholder="Concepto, persona o descripción" /></label>
+              <button class="btn btn--secondary btn--sm"><i data-lucide="calendar"></i>Octubre 2026<i data-lucide="chevron-down"></i></button>
+              <button class="btn btn--secondary btn--sm"><i data-lucide="wallet-cards"></i>Medio de pago<i data-lucide="chevron-down"></i></button>
+            </div>
+          </div>
+          <div class="filters" role="group" aria-label="Filtrar por caja">
+            <button class="fchip" aria-pressed="true"><i data-lucide="check"></i>Todas las cajas</button>
+            <button class="fchip r-grupo" aria-pressed="false"><span class="dot"></span>Caja de grupo</button>
+            <span class="filters__sep"></span>
+            <button class="fchip r-manada" aria-pressed="false"><span class="dot"></span>Manada</button>
+            <button class="fchip r-unidad" aria-pressed="false"><span class="dot"></span>Unidad</button>
+            <button class="fchip r-caminantes" aria-pressed="false"><span class="dot"></span>Caminantes</button>
+            <button class="fchip r-rovers" aria-pressed="false"><span class="dot"></span>Rovers</button>
+            <span class="filters__sep"></span>
+            <button class="fchip r-personal" aria-pressed="false"><span class="dot"></span>Cuentas personales</button>
+            <button class="fchip r-solidario" aria-pressed="false"><span class="dot"></span>Fondo Solidario</button>
+          </div>
+          <div class="summary-line"><span><b>248</b> movimientos</span><span>Entró <b class="amount--in">+ $ 1.204.300</b></span><span>Salió <b class="amount--out">− $ 731.950</b></span><span>Neto <b>+ $ 472.350</b></span></div>
+          <div class="table-wrap">
+            <table class="dense">
+              <thead><tr><th>Fecha</th><th>Concepto</th><th>Caja</th><th>Responsable</th><th>Estado</th><th class="r">Monto y medio</th></tr></thead>
+              <tbody id="movTable"></tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <span>Mostrando <b class="num" style="color:var(--color-ink)">1–12</b> de 248</span>
+            <div class="pager__pages">
+              <button class="edge" aria-label="Anterior"><i data-lucide="chevron-left"></i></button>
+              <button aria-current="page">1</button><button>2</button><button>3</button><button class="hide-s">…</button><button class="hide-s">21</button>
+              <button class="edge" aria-label="Siguiente"><i data-lucide="chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ EVENTO ═════════ -->
+      <section class="view" id="view-evento" aria-labelledby="t-evento">
+        <a class="back" href="#evento"><i data-lucide="arrow-left"></i>Eventos</a>
+        <div class="page-head" style="align-items:flex-start">
+          <div>
+            <h1 id="t-evento">Pizzas de primavera</h1>
+            <div class="meta-row"><span class="chip r-grupo">Evento de venta</span><span class="chip chip--plain"><i data-lucide="users" style="width:14px;height:14px"></i>Ganancia a cuentas personales</span><span class="badge badge--ok"><i data-lucide="circle-check"></i>Cerrado</span><span class="muted" style="font-size:13.5px">Sábado 21 de septiembre</span></div>
+          </div>
+          <div class="page-head__actions">
+            <button class="btn btn--ghost hide-s"><i data-lucide="external-link"></i>Reporte público</button>
+            <button class="btn btn--secondary"><i data-lucide="receipt"></i>Cargar gasto</button>
+            <button class="btn btn--primary"><i data-lucide="plus"></i>Registrar venta</button>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="panel equation">
+            <div class="eq"><div class="eq__label"><span class="tile tile--sm tile--in"><i data-lucide="banknote"></i></span>Recaudado</div><div class="eq__value">$ 684.000</div><div class="eq__foot">168 unidades · $ 38.000 a cobrar</div></div>
+            <div class="eq__op" aria-hidden="true">−</div>
+            <div class="eq"><div class="eq__label"><span class="tile tile--sm tile--out"><i data-lucide="shopping-basket"></i></span>Gastos</div><div class="eq__value">$ 251.300</div><div class="eq__foot">4 compras · 1 a reembolsar</div></div>
+            <div class="eq__op" aria-hidden="true">=</div>
+            <div class="eq eq--net"><div class="eq__label"><span class="tile tile--sm r-grupo" style="background:var(--color-surface)"><i data-lucide="flame"></i></span>Ganancia neta</div><div class="eq__value">$ 432.700</div><div class="eq__foot">Se reparte en 9 cuentas personales</div>
+              <div class="eq__bar" aria-hidden="true"><i style="flex:432.7;background:var(--color-brand)"></i><i style="flex:251.3;background:color-mix(in oklab,var(--color-brand) 30%,transparent)"></i></div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="panel s-7" style="display:flex;flex-direction:column">
+              <div class="panel__head"><h2 class="panel__title">Ventas por vendedor</h2><span class="subtle" style="font-size:13px">Color según rama</span></div>
+              <div class="panel__body" id="sellers"></div>
+              <div class="sellers-foot"><span>9 vendedores</span><span>Promedio <b class="num">$ 76.000</b></span><span>Total <b class="num">$ 684.000</b></span></div>
+            </div>
+            <div class="s-5 stack">
+              <div class="panel">
+                <div class="panel__head"><h2 class="panel__title">Gastos</h2><button class="btn btn--ghost btn--sm"><i data-lucide="plus"></i>Agregar</button></div>
+                <ul class="list" id="gastos" style="margin-top:8px"></ul>
+              </div>
+              <div class="panel">
+                <div class="panel__head"><h2 class="panel__title">A cobrar</h2><span class="badge badge--info"><i data-lucide="hourglass"></i>3 ventas</span></div>
+                <ul class="list" style="margin-top:8px">
+                  <li class="row"><span class="avatar r-unidad">MQ</span><div class="row__main"><div class="row__title">Mía Quiroga</div><div class="row__sub">2 fugazzetas, 1 muzzarella</div></div><span class="amount">$ 22.000</span></li>
+                  <li class="row"><span class="avatar r-manada">EG</span><div class="row__main"><div class="row__title">Emma Gauna</div><div class="row__sub">1 napolitana</div></div><span class="amount">$ 8.000</span></li>
+                  <li class="row"><span class="avatar r-rovers">TM</span><div class="row__main"><div class="row__title">Thiago Molina</div><div class="row__sub">1 muzzarella</div></div><span class="amount">$ 8.000</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="panel s-12" style="overflow:hidden">
+              <div class="panel__head"><h2 class="panel__title">Productos</h2><button class="btn btn--ghost btn--sm"><i data-lucide="pencil"></i>Editar precios</button></div>
+              <div class="table-wrap" style="margin-top:10px">
+                <table class="dense">
+                  <thead><tr><th>Producto</th><th class="r">Precio</th><th class="r">Costo</th><th class="r">Margen</th><th class="r">Vendidas</th><th class="r">Recaudado</th></tr></thead>
+                  <tbody id="productos"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ FORM ═════════ -->
+      <section class="view" id="view-form" aria-labelledby="t-form">
+        <a class="back" href="#movimientos"><i data-lucide="arrow-left"></i>Movimientos</a>
+        <div class="page-head"><div><h1 id="t-form">Nuevo movimiento</h1><p>Registrá un ingreso o un gasto. Lo vas a poder editar después.</p></div></div>
+        <div class="form-layout">
+          <form class="panel" onsubmit="return false" novalidate>
+            <div class="form">
+              <div class="alert" role="alert"><i data-lucide="circle-alert"></i><div><b>Falta 1 dato.</b> Revisá la descripción antes de guardar.</div></div>
+              <div class="form-section">
+                <div class="typeswitch" role="group" aria-label="Tipo de movimiento">
+                  <button type="button" aria-pressed="false"><span class="tile tile--in"><i data-lucide="arrow-down-left"></i></span><span><b>Ingreso</b><small>Entra plata</small></span></button>
+                  <button type="button" aria-pressed="true" class="is-out"><span class="tile tile--out" style="background:var(--color-surface)"><i data-lucide="arrow-up-right"></i></span><span><b>Egreso</b><small>Sale plata</small></span></button>
+                </div>
+              </div>
+              <div class="form-section">
+                <div class="fields">
+                  <div class="field field--full">
+                    <label for="monto">Monto</label>
+                    <div class="control control--money control--valid"><span class="control__prefix">$</span><span class="grow num" id="monto">46.500</span><i data-lucide="circle-check" style="color:var(--color-success)"></i></div>
+                  </div>
+                  <div class="field">
+                    <label>Concepto</label>
+                    <div class="control control--valid"><span class="grow">Gasto de campamento</span><i data-lucide="chevron-down" class="subtle"></i></div>
+                  </div>
+                  <div class="field">
+                    <label>Fecha</label>
+                    <div class="control"><i data-lucide="calendar" class="subtle"></i><span class="grow num">04/10/2026</span></div>
+                  </div>
+                  <div class="field field--full">
+                    <span class="label">Caja <small>De dónde sale la plata</small></span>
+                    <div class="caja-pick" role="radiogroup">
+                      <button type="button" class="fchip r-grupo" aria-pressed="false"><span class="dot"></span>Caja de grupo</button>
+                      <button type="button" class="fchip r-manada" aria-pressed="false"><span class="dot"></span>Manada</button>
+                      <button type="button" class="fchip r-unidad" aria-pressed="true"><span class="dot"></span>Unidad</button>
+                      <button type="button" class="fchip r-caminantes" aria-pressed="false"><span class="dot"></span>Caminantes</button>
+                      <button type="button" class="fchip r-rovers" aria-pressed="false"><span class="dot"></span>Rovers</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-section">
+                <h3>¿Cómo se pagó?</h3>
+                <div class="radio-cards" role="radiogroup" aria-label="Medio de pago">
+                  <button type="button" class="rcard" role="radio" aria-checked="false"><i data-lucide="banknote"></i>Efectivo<small>De la caja física</small></button>
+                  <button type="button" class="rcard" role="radio" aria-checked="true"><i data-lucide="landmark"></i>Transferencia<small>Desde la cuenta</small></button>
+                  <button type="button" class="rcard" role="radio" aria-checked="false" aria-disabled="true"><i data-lucide="piggy-bank"></i>Saldo personal<small>Solo pagos de personas</small></button>
+                  <button type="button" class="rcard" role="radio" aria-checked="false"><i data-lucide="split"></i>Mixto<small>Parte y parte</small></button>
+                </div>
+              </div>
+              <div class="form-section">
+                <div class="fields">
+                  <div class="field">
+                    <label>Responsable <small>Quién lo pagó</small></label>
+                    <div class="control control--focus"><span class="avatar r-unidad" style="--size:26px;box-shadow:none;font-size:10px">JS</span><span class="grow">Joaquín Sosa</span><i data-lucide="chevrons-up-down" class="subtle"></i></div>
+                  </div>
+                  <div class="field">
+                    <label>Estado de pago</label>
+                    <div class="control"><span class="badge badge--warn" style="height:22px"><i data-lucide="clock-3"></i>Pendiente de reembolso</span><span class="grow"></span><i data-lucide="chevron-down" class="subtle"></i></div>
+                    <span class="hint"><i data-lucide="info"></i>Joaquín lo puso de su bolsillo: queda registrado para devolvérselo.</span>
+                  </div>
+                  <div class="field field--full">
+                    <label for="desc">Descripción <small>Obligatoria</small></label>
+                    <div class="control control--area control--error" aria-invalid="true"><span class="grow" id="desc">Garrafa</span></div>
+                    <span class="hint hint--error"><i data-lucide="circle-alert"></i>Contá en qué se gastó, con al menos 10 caracteres (por ejemplo: “Garrafa y carbón para la salida”).</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn--secondary">Cancelar</button>
+              <button type="submit" class="btn btn--primary"><i data-lucide="check"></i>Guardar movimiento</button>
+            </div>
+          </form>
+
+          <aside class="panel preview hide-s" aria-label="Vista previa">
+            <div class="panel__head"><h2 class="panel__title">Así va a quedar</h2></div>
+            <div class="panel__body">
+              <div class="row" style="padding:0 0 14px;border:0"><span class="tile tile--out"><i data-lucide="tent"></i></span><div class="row__main"><div class="row__title">Gasto de campamento</div><div class="row__sub">Fondo Unidad · Transferencia</div></div></div>
+              <div class="preview__amount">− $ 46.500</div>
+              <div class="impact">
+                <div><span class="muted">Fondo Unidad hoy</span><span class="amount">$ 236.750</span></div>
+                <div><span class="muted">Después de guardar</span><span class="amount after">$ 190.250</span></div>
+                <div class="progress r-unidad" aria-hidden="true"><i style="width:80%"></i></div>
+              </div>
+              <ul class="checklist">
+                <li><i data-lucide="circle-check" class="ok"></i>Monto, concepto y caja</li>
+                <li><i data-lucide="circle-check" class="ok"></i>Medio de pago</li>
+                <li><i data-lucide="circle-alert" class="bad"></i>Descripción muy corta</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottomnav" aria-label="Navegación">
+      <a href="#dashboard" data-view="dashboard"><span class="bn-ico"><i data-lucide="house"></i></span>Inicio</a>
+      <a href="#movimientos" data-view="movimientos"><span class="bn-ico"><i data-lucide="arrow-left-right"></i></span>Movimientos</a>
+      <a href="#form" class="fab" aria-label="Nuevo movimiento"><span><i data-lucide="plus"></i></span></a>
+      <a href="#persona" data-view="persona"><span class="bn-ico"><i data-lucide="users"></i></span>Personas</a>
+      <a href="#evento" data-view="evento"><span class="bn-ico"><i data-lucide="menu"></i></span>Más</a>
+    </nav>
+  </div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const fmt = (n) => '$ ' + Math.abs(n).toLocaleString('es-AR');
+const signed = (n) => (n >= 0 ? '+ ' : '− ') + fmt(n);
+const RAMA_CLASS = { Manada: 'r-manada', Unidad: 'r-unidad', Caminantes: 'r-caminantes', Rovers: 'r-rovers', Grupo: 'r-grupo', Personal: 'r-personal', Solidario: 'r-solidario' };
+const CAJA_LABEL = { Grupo: 'Caja de grupo', Manada: 'Manada', Unidad: 'Unidad', Caminantes: 'Caminantes', Rovers: 'Rovers', Personal: 'Personal', Solidario: 'Fondo Solidario' };
+const MEDIO_ICON = { Efectivo: 'banknote', Transferencia: 'landmark', 'Saldo personal': 'piggy-bank', Mixto: 'split' };
+const ESTADO = { ok: ['badge--ok', 'circle-check', 'Pagado'], reembolso: ['badge--warn', 'clock-3', 'A reembolsar'], cobrar: ['badge--info', 'hourglass', 'A cobrar'] };
+const initials = (n) => n.split(' ').filter((p) => p.length > 2).map((p) => p[0].toUpperCase()).slice(0, 2).join('');
+
+const MOVS = [
+  ['04 oct', 'sáb', 'Gasto de campamento', 'Garrafa y carbón para la salida de Unidad', 'Unidad', ['Joaquín Sosa', 'Unidad'], 'Efectivo', 'reembolso', -18400, 'tent'],
+  ['03 oct', 'vie', 'Inscripción de grupo', 'Cuota anual 2026', 'Grupo', ['Valentina Ríos', 'Unidad'], 'Transferencia', 'ok', 15000, 'clipboard-check'],
+  ['03 oct', 'vie', 'Pago de campamento', 'Verano 2027, segunda cuota', 'Grupo', ['Bautista Correa', 'Manada'], 'Mixto', 'ok', 40000, 'tent'],
+  ['02 oct', 'jue', 'Asignación a fondo de rama', 'Fondo Manada de octubre', 'Manada', ['Laura Méndez', 'Caminantes'], 'Transferencia', 'ok', 60000, 'arrow-down-to-line'],
+  ['01 oct', 'mié', 'Gasto general', 'Resma y tóner para fichas médicas', 'Grupo', ['Laura Méndez', 'Caminantes'], 'Transferencia', 'reembolso', -23900, 'receipt'],
+  ['30 sep', 'mar', 'Ingreso evento de venta', 'Pizzas de primavera, ganancia', 'Personal', ['Camila Ledesma', 'Caminantes'], 'Transferencia', 'ok', 12000, 'pizza'],
+  ['29 sep', 'lun', 'Uso de saldo personal', 'Aplicado a inscripción Scout Argentina', 'Personal', ['Tomás Agüero', 'Unidad'], 'Saldo personal', 'ok', -9500, 'piggy-bank'],
+  ['28 sep', 'dom', 'Pago a Scout Argentina', 'Inscripción nacional, lote 3', 'Grupo', ['Laura Méndez', 'Caminantes'], 'Transferencia', 'ok', -142500, 'send'],
+  ['27 sep', 'sáb', 'Bonificación otorgada', 'Campamento de verano de Santino Paz', 'Solidario', ['Comisión de grupo', 'Grupo'], 'Transferencia', 'ok', -20000, 'heart-handshake'],
+  ['27 sep', 'sáb', 'Gasto evento de grupo', 'Peña de primavera: alquiler de sonido', 'Grupo', ['Federico Arce', 'Rovers'], 'Efectivo', 'cobrar', -35000, 'music'],
+  ['26 sep', 'vie', 'Inscripción Scout Argentina', 'Martina Ferreyra, 2026', 'Grupo', ['Martina Ferreyra', 'Caminantes'], 'Efectivo', 'ok', 28500, 'clipboard-check'],
+  ['25 sep', 'jue', 'Gasto de campamento', 'Seña del micro a Sierra de la Ventana', 'Rovers', ['Lucía Benítez', 'Rovers'], 'Transferencia', 'ok', -85000, 'bus'],
+];
+
+function renderChart() {
+  const months = ['may', 'jun', 'jul', 'ago', 'sep', 'oct'];
+  const inn = [380, 295, 520, 410, 640, 212], out = [260, 310, 180, 455, 390, 97];
+  const W = Math.max(300, $('#chart').clientWidth || 640), H = W < 500 ? 180 : 210, pad = { l: 48, b: 26, t: 8 }, max = 700, ih = H - pad.b - pad.t;
+  const step = (W - pad.l) / months.length, bw = W < 500 ? 11 : 20;
+  let s = `<svg viewBox="0 0 ${W} ${H}" aria-hidden="true">`;
+  [0, 200, 400, 600].forEach((v) => { const y = pad.t + ih - (v / max) * ih; s += `<line class="grid-line" x1="${pad.l}" x2="${W}" y1="${y}" y2="${y}"/><text x="0" y="${y + 4}">${v ? v + ' mil' : '0'}</text>`; });
+  months.forEach((m, i) => {
+    const cx = pad.l + step * i + step / 2, hi = (inn[i] / max) * ih, ho = (out[i] / max) * ih, last = i === months.length - 1;
+    s += `<rect class="bar-in" x="${cx - bw - 2}" y="${pad.t + ih - hi}" width="${bw}" height="${hi}" rx="5" opacity="${last ? 1 : 0.9}"/>`;
+    s += `<rect class="bar-out" x="${cx + 2}" y="${pad.t + ih - ho}" width="${bw}" height="${ho}" rx="5" opacity="${last ? 1 : 0.9}"/>`;
+    s += `<text x="${cx}" y="${H - 6}" text-anchor="middle" class="${last ? 'now' : ''}">${m}${last && W >= 500 ? ' (en curso)' : ''}</text>`;
+  });
+  $('#chart').innerHTML = s + '</svg>';
+}
+
+function spark(points) {
+  const w = 200, h = 30, max = Math.max(...points), min = Math.min(...points);
+  const xy = points.map((p, i) => [(i / (points.length - 1)) * w, h - 3 - ((p - min) / (max - min || 1)) * (h - 6)]);
+  const d = xy.map(([x, y], i) => (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1)).join(' ');
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><path class="area" d="${d} L ${w} ${h} L 0 ${h} Z"/><path d="${d}"/></svg>`;
+}
+
+function renderRamas() {
+  const R = [
+    ['Manada', 'paw-print', 184200, '18 lobatos y lobeznas', '+ $ 60.000 el 2/10', [120, 140, 110, 150, 124, 184]],
+    ['Unidad', 'tent-tree', 236750, '22 scouts', '− $ 18.400 el 4/10', [180, 210, 260, 230, 255, 236]],
+    ['Caminantes', 'mountain', 98300, '14 caminantes', 'Sin movimientos en oct.', [60, 90, 120, 105, 98, 98]],
+    ['Rovers', 'compass', 141900, '9 rovers', '− $ 85.000 el 25/9', [150, 170, 190, 210, 227, 142]],
+  ];
+  $('#ramas').innerHTML = R.map(([n, ic, v, who, last, pts]) => `
+    <article class="rama-card ${RAMA_CLASS[n]}">
+      <div class="rama-card__head"><span class="rama-card__name">${n}</span><span class="tile tile--sm tile--solid"><i data-lucide="${ic}"></i></span></div>
+      <div class="rama-card__value">${fmt(v)}</div>
+      <div class="rama-card__meta"><span>${who}</span><span>${last}</span></div>
+      ${spark(pts)}
+    </article>`).join('');
+}
+
+function renderLastMovs() {
+  $('#lastMovs').innerHTML = MOVS.slice(0, 6).map(([d, , c, desc, caja, [p], , , m]) => `
+    <li class="row">
+      <span class="tile ${m >= 0 ? 'tile--in' : 'tile--out'}"><i data-lucide="${m >= 0 ? 'arrow-down-left' : 'arrow-up-right'}"></i></span>
+      <div class="row__main"><div class="row__title">${c}</div><div class="row__sub"><span class="chip ${RAMA_CLASS[caja]}" style="height:22px;font-size:12px">${CAJA_LABEL[caja]}</span><span class="hide-s">${p}</span></div></div>
+      <div class="row__end"><span class="amount ${m >= 0 ? 'amount--in' : 'amount--out'}">${signed(m)}</span><small>${d}</small></div>
+    </li>`).join('');
+}
+
+function renderDeudores() {
+  const D = [['Santino Paz', 'Manada', 72000, 'Inscripción y campamento', 0.15], ['Mía Quiroga', 'Unidad', 58500, 'Campamento de verano', 0.35], ['Felipe Arce', 'Caminantes', 45000, 'Inscripción Scout Argentina', 0], ['Valentina Ríos', 'Unidad', 42000, 'Inscripción y campamento', 0.42], ['Thiago Molina', 'Rovers', 38000, 'Campamento de verano', 0.55], ['Emma Gauna', 'Manada', 27000, 'Inscripción de grupo', 0.4]];
+  $('#deudores').innerHTML = D.map(([n, r, v, what, paid]) => `
+    <li class="row">
+      <span class="avatar ${RAMA_CLASS[r]}">${initials(n)}</span>
+      <div class="row__main"><div class="row__title"><a href="#persona">${n}</a></div><div class="row__sub">${what}</div></div>
+      <div class="row__end"><span class="amount amount--out">${fmt(v)}</span><small>${paid ? Math.round(paid * 100) + '% pagado' : 'Sin pagos'}</small></div>
+    </li>`).join('');
+}
+
+function renderPersona() {
+  const O = [
+    ['clipboard-check', 'Inscripción de grupo 2026', 45000, 30000, 'warn', 'Pago parcial'],
+    ['badge-check', 'Inscripción Scout Argentina 2026', 12000, 0, 'bad', 'Pendiente'],
+    ['tent', 'Campamento de verano 2027', 95000, 80000, 'warn', 'Pago parcial'],
+    ['tent-tree', 'Campamento de invierno, Tandil', 60000, 60000, 'ok', 'Pagado'],
+  ];
+  $('#oblig').innerHTML = O.map(([ic, n, total, paid, st, lbl]) => {
+    const debe = total - paid, icon = st === 'ok' ? 'circle-check' : st === 'bad' ? 'circle-alert' : 'circle-dashed';
+    return `<div class="oblig">
+      <span class="tile r-unidad"><i data-lucide="${ic}"></i></span>
+      <div style="min-width:0"><div class="row__title">${n}</div><div class="row__sub"><span class="badge badge--${st}" style="height:22px"><i data-lucide="${icon}"></i>${lbl}</span></div></div>
+      <div class="oblig__prog r-unidad"><span>${fmt(paid)} de ${fmt(total)}</span><div class="progress"><i style="width:${(paid / total) * 100}%"></i></div></div>
+      <span class="amount ${debe ? 'amount--out' : 'subtle'}">${debe ? fmt(debe) : 'Al día'}</span>
+      ${debe ? '<button class="btn btn--secondary btn--sm">Pagar</button>' : '<span style="width:64px"></span>'}
+    </div>`;
+  }).join('');
+  const T = [
+    ['Octubre 2026'],
+    ['clipboard-check', 'Pagó inscripción de grupo', '3 oct · Transferencia · Caja de grupo', 15000],
+    ['Septiembre 2026'],
+    ['pizza', 'Ganancia de Pizzas de primavera', '30 sep · Acreditado a su cuenta personal', 12000],
+    ['tent', 'Pagó campamento de verano', '12 sep · Efectivo · Caja de grupo', 40000],
+    ['piggy-bank', 'Usó saldo personal en campamento', '12 sep · De su cuenta personal', -8000],
+    ['Agosto 2026'],
+    ['cookie', 'Ganancia de Rifa de invierno', '18 ago · Acreditado a su cuenta personal', 6500],
+  ];
+  $('#timeline').innerHTML = T.map((t) => t.length === 1 ? `<li class="tl-month">${t[0]}</li>` : `
+    <li class="tl"><span class="tile tile--sm ${t[3] >= 0 ? 'tile--in' : 'tile--out'}"><i data-lucide="${t[0]}"></i></span>
+    <div><div class="tl__title">${t[1]}</div><div class="tl__sub">${t[2]}</div></div><span class="amount ${t[3] >= 0 ? 'amount--in' : 'amount--out'}">${signed(t[3])}</span></li>`).join('');
+  const DOCS = [['id-card', 'DNI', 1], ['users', 'DNI de padre, madre o tutor', 1], ['stethoscope', 'Ficha médica', 1], ['camera', 'Autorización de imagen', 0], ['map', 'Autorización de salidas', 0]];
+  $('#docs').innerHTML = DOCS.map(([ic, n, ok]) => `<div class="doc"><span class="tile tile--sm ${ok ? 'tile--in' : ''}" ${ok ? '' : 'style="background:var(--color-warning-soft);color:var(--color-warning)"'}><i data-lucide="${ic}"></i></span>${n}<span class="badge ${ok ? 'badge--ok' : 'badge--warn'}"><i data-lucide="${ok ? 'check' : 'clock-3'}"></i>${ok ? 'Entregado' : 'Falta'}</span></div>`).join('');
+}
+
+function renderTable() {
+  $('#movTable').innerHTML = MOVS.map(([d, wd, c, desc, caja, [p, pr], medio, est, m, ic]) => {
+    const [bc, bi, bl] = ESTADO[est];
+    return `<tr>
+      <td class="cell-date c-hide"><b>${d}</b>${wd}</td>
+      <td class="c-concept"><div class="cell-concept"><span class="tile tile--sm ${m >= 0 ? 'tile--in' : 'tile--out'}"><i data-lucide="${ic}"></i></span><div style="min-width:0"><b>${c}</b><small>${desc}</small></div></div></td>
+      <td class="c-hide"><span class="chip ${RAMA_CLASS[caja]}">${CAJA_LABEL[caja]}</span></td>
+      <td class="c-hide"><span class="cell-person"><span class="avatar ${RAMA_CLASS[pr]}">${initials(p)}</span>${p}</span></td>
+      <td class="c-hide"><span class="badge ${bc}"><i data-lucide="${bi}"></i>${bl}</span></td>
+      <td class="r c-amount"><span class="amount ${m >= 0 ? 'amount--in' : 'amount--out'}">${signed(m)}</span><span class="medio"><i data-lucide="${MEDIO_ICON[medio]}"></i>${medio}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderEvento() {
+  const S = [['Camila Ledesma', 'Caminantes', 118500], ['Tomás Agüero', 'Unidad', 96000], ['Grupo Scout', 'Grupo', 88000], ['Thiago Molina', 'Rovers', 79500], ['Mía Quiroga', 'Unidad', 74500], ['Bautista Correa', 'Manada', 69000], ['Lucía Benítez', 'Rovers', 61000], ['Felipe Arce', 'Caminantes', 52000], ['Emma Gauna', 'Manada', 45500]];
+  const max = S[0][2];
+  $('#sellers').innerHTML = S.map(([n, r, v]) => `<div class="seller ${RAMA_CLASS[r]}"><span class="avatar ${RAMA_CLASS[r]}">${n === 'Grupo Scout' ? 'GS' : initials(n)}</span><span class="seller__name">${n}</span><span class="seller__bar"><i style="width:${(v / max) * 100}%"></i></span><span class="amount">${fmt(v)}</span></div>`).join('');
+  const G = [['wheat', 'Harina y levadura', 'Mayorista Diarco · Transferencia', 58400, 'ok'], ['milk', 'Muzzarella, 20 kg', 'Lácteos El Tambo · Transferencia', 124000, 'ok'], ['carrot', 'Salsa y verduras', 'Verdulería Don Tito · Efectivo', 31900, 'reembolso'], ['package', 'Cajas de pizza × 110', 'Papelera Sur · Efectivo', 37000, 'ok']];
+  $('#gastos').innerHTML = G.map(([ic, n, sub, v, st]) => { const [bc, bi, bl] = ESTADO[st]; return `<li class="row"><span class="tile tile--sm tile--out"><i data-lucide="${ic}"></i></span><div class="row__main"><div class="row__title">${n}</div><div class="row__sub">${sub}</div></div><div class="row__end"><span class="amount amount--out">${signed(-v)}</span>${st === 'ok' ? '' : `<span class="badge ${bc}" style="height:20px;font-size:11.5px"><i data-lucide="${bi}"></i>${bl}</span>`}</div></li>`; }).join('');
+  const P = [['Pizza muzzarella', 7000, 2600, 46], ['Fugazzeta', 7500, 2900, 24], ['Napolitana', 8000, 3100, 14], ['Prepizzas × 2', 3500, 1200, 20]];
+  $('#productos').innerHTML = P.map(([n, pr, co, q]) => `<tr><td class="c-concept"><div class="cell-concept"><span class="tile tile--sm r-manada"><i data-lucide="pizza"></i></span><b>${n}</b></div></td><td class="r num c-hide">${fmt(pr)}</td><td class="r num c-hide muted">${fmt(co)}</td><td class="r num c-hide"><span class="badge badge--ok">${Math.round(((pr - co) / pr) * 100)}%</span></td><td class="r num c-hide">${q}</td><td class="r c-amount"><span class="amount">${fmt(pr * q)}</span></td></tr>`).join('');
+}
+
+const VIEWS = { dashboard: 'Inicio', persona: 'Personas', movimientos: 'Movimientos', evento: 'Eventos', form: 'Nuevo movimiento' };
+function show() {
+  const v = (location.hash || '#dashboard').slice(1).split('&')[0];
+  const view = VIEWS[v] ? v : 'dashboard';
+  document.querySelectorAll('.view').forEach((el) => el.classList.toggle('is-active', el.id === 'view-' + view));
+  document.querySelectorAll('#protoTabs a').forEach((a) => (a.hash === '#' + view ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
+  const navView = view === 'form' ? 'movimientos' : view;
+  document.querySelectorAll('[data-view]').forEach((a) => (a.dataset.view === navView ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
+  $('#mTitle').innerHTML = (view === 'form' ? 'Movimientos' : VIEWS[view]) + '<small>Hermano Pío</small>';
+  window.scrollTo(0, 0);
+}
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  try { localStorage.setItem('fogon-theme', t); } catch (e) {}
+  document.querySelectorAll('[data-theme-toggle]').forEach((b) => { b.innerHTML = `<i data-lucide="${t === 'dark' ? 'sun' : 'moon'}"></i>`; });
+  if (window.lucide) lucide.createIcons();
+}
+const qp = new URLSearchParams(location.search).get('theme');
+let stored = null; try { stored = localStorage.getItem('fogon-theme'); } catch (e) {}
+renderChart(); renderRamas(); renderLastMovs(); renderDeudores(); renderPersona(); renderTable(); renderEvento();
+setTheme(qp || stored || 'light');
+document.querySelectorAll('[data-theme-toggle]').forEach((b) => b.addEventListener('click', () => setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')));
+document.querySelectorAll('.seg, .filters').forEach((g) => g.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; g.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); }));
+window.addEventListener('hashchange', show); show(); renderChart();
+window.addEventListener('resize', renderChart);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1553 @@
+<!doctype html>
+<html lang="es-AR" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Scout · Insignia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+/* TOKENS:START (generado desde tokens.css: @theme → :root) */
+/*
+ * Dirección "INSIGNIA" — precisión fintech con identidad scout.
+ * Neutros fríos (hue 276, chroma ≤ 0.02), indigo SAAC #242167 como estructura
+ * (sidebar, marca), burgundy #812128 solo como acento de identidad, y un indigo
+ * de acción derivado con contraste AA. Una sola familia (Geist) + Geist Mono para IDs.
+ * Contrato: src/shared/styles/TOKENS-CONTRACT.md · Ratios: DESIGN.md §Accesibilidad.
+ */
+:root {
+  /* Superficies — el lienzo es apenas más frío/oscuro que la card: lift por contraste, no por sombra */
+  --color-canvas: oklch(97.9% 0.004 276);
+  --color-surface: oklch(100% 0 0);
+  --color-surface-raised: oklch(100% 0 0);
+  --color-recessed: oklch(96.4% 0.005 276);
+
+  /* Texto */
+  --color-ink: oklch(21% 0.028 278);
+  --color-ink-muted: oklch(44% 0.02 277);
+  --color-ink-subtle: oklch(52.5% 0.016 277);
+
+  /* Bordes / foco — border es hairline decorativa; border-strong es el borde de campos (≥3:1) */
+  --color-border: oklch(91.8% 0.006 276);
+  --color-border-strong: oklch(61% 0.016 277);
+  --color-focus: oklch(50% 0.2 276);
+
+  /* Marca / acción — indigo de acción derivado de #242167 (más luz y croma para leerse como "tocable") */
+  --color-brand: oklch(44% 0.18 276);
+  --color-brand-hover: oklch(38.5% 0.165 277);
+  --color-on-brand: oklch(100% 0 0);
+  --color-brand-soft: oklch(95.6% 0.022 278);
+  --color-accent-2: oklch(40.5% 0.135 22); /* burgundy #812128: identidad, nunca acción */
+
+  /* Estados */
+  --color-success: oklch(48% 0.115 158);
+  --color-success-soft: oklch(96.2% 0.03 160);
+  --color-danger: oklch(51% 0.19 27);
+  --color-danger-soft: oklch(96.3% 0.022 25);
+  --color-warning: oklch(52% 0.115 62);
+  --color-warning-soft: oklch(96.4% 0.042 85);
+  --color-info: oklch(49% 0.13 250);
+  --color-info-soft: oklch(96.2% 0.022 250);
+
+  /* Dinero — egreso NO es rojo: es tinta. El rojo queda para deuda/error. Siempre con signo + ícono. */
+  --color-money-in: oklch(48% 0.115 158);
+  --color-money-out: oklch(34% 0.02 277);
+
+  /* Ramas — significado heredado: Manada amarillo-naranja, Unidad verde, Caminantes azul, Rovers violeta-rojizo */
+  --color-rama-manada: oklch(67.5% 0.16 58);
+  --color-rama-manada-soft: oklch(95.5% 0.045 80);
+  --color-rama-unidad: oklch(60% 0.15 148);
+  --color-rama-unidad-soft: oklch(95.5% 0.04 150);
+  --color-rama-caminantes: oklch(56% 0.15 252);
+  --color-rama-caminantes-soft: oklch(95.5% 0.025 252);
+  --color-rama-rovers: oklch(50% 0.17 338);
+  --color-rama-rovers-soft: oklch(95.5% 0.025 338);
+
+  /* Datos — secuencia ordenada por luminancia para que también funcione en gris */
+  --color-data-1: oklch(44% 0.18 276);
+  --color-data-2: oklch(72% 0.1 276);
+  --color-data-3: oklch(40.5% 0.135 22);
+  --color-data-4: oklch(62% 0.13 158);
+  --color-data-5: oklch(78% 0.12 75);
+
+  /* Sidebar — la "insignia": el indigo institucional como banda estructural */
+  --color-sidebar-bg: oklch(26.5% 0.105 280);
+  --color-sidebar-ink: oklch(91% 0.025 280);
+  --color-sidebar-hover: oklch(32% 0.11 280);
+
+  /* Tipografía (cargar con next/font: Geist 400/500/600 + Geist Mono 400/500) */
+  --font-sans: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-features: 'tnum' 1, 'ss01' 1, 'cv11' 1;
+
+  /* Radios — contenidos: la precisión vive en esquinas chicas */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-pill: 999px;
+
+  /* Elevación — mínima. Las superficies se separan por hairline; la sombra es para lo que flota */
+  --shadow-xs: 0 1px 0 oklch(21% 0.03 278 / 0.04);
+  --shadow-sm: 0 1px 2px oklch(21% 0.03 278 / 0.06), 0 0 0 1px oklch(21% 0.03 278 / 0.02);
+  --shadow-md: 0 6px 16px -6px oklch(21% 0.03 278 / 0.14), 0 2px 4px -2px oklch(21% 0.03 278 / 0.06);
+  --shadow-lg: 0 24px 48px -16px oklch(21% 0.03 278 / 0.24), 0 4px 12px -4px oklch(21% 0.03 278 / 0.08);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+}
+
+/*
+ * Dark: no es un invertido. El lienzo es un azul-noche casi negro tomado del indigo,
+ * las superficies SUBEN de luz con la elevación, y los acentos se re-tonan más claros
+ * y algo menos saturados para no vibrar.
+ */
+[data-theme='dark'] {
+  --color-canvas: oklch(15.5% 0.012 278);
+  --color-surface: oklch(19% 0.014 278);
+  --color-surface-raised: oklch(22.5% 0.016 278);
+  --color-recessed: oklch(13.5% 0.011 278);
+
+  --color-ink: oklch(95.5% 0.006 278);
+  --color-ink-muted: oklch(77% 0.014 278);
+  --color-ink-subtle: oklch(66% 0.014 278);
+
+  --color-border: oklch(27% 0.016 278);
+  --color-border-strong: oklch(52% 0.018 278);
+  --color-focus: oklch(74% 0.14 278);
+
+  --color-brand: oklch(72% 0.135 278);
+  --color-brand-hover: oklch(78% 0.115 278);
+  --color-on-brand: oklch(17% 0.04 280);
+  --color-brand-soft: oklch(27% 0.06 278);
+  --color-accent-2: oklch(69% 0.13 18);
+
+  --color-success: oklch(76% 0.13 158);
+  --color-success-soft: oklch(26% 0.045 160);
+  --color-danger: oklch(71% 0.16 25);
+  --color-danger-soft: oklch(27% 0.06 25);
+  --color-warning: oklch(80% 0.12 75);
+  --color-warning-soft: oklch(28% 0.05 70);
+  --color-info: oklch(75% 0.11 250);
+  --color-info-soft: oklch(26% 0.045 250);
+
+  --color-money-in: oklch(76% 0.13 158);
+  --color-money-out: oklch(86% 0.01 278);
+
+  --color-rama-manada: oklch(80% 0.14 72);
+  --color-rama-manada-soft: oklch(28% 0.05 72);
+  --color-rama-unidad: oklch(72% 0.14 150);
+  --color-rama-unidad-soft: oklch(26% 0.045 150);
+  --color-rama-caminantes: oklch(70% 0.13 252);
+  --color-rama-caminantes-soft: oklch(26% 0.05 252);
+  --color-rama-rovers: oklch(70% 0.15 340);
+  --color-rama-rovers-soft: oklch(27% 0.055 340);
+
+  --color-data-1: oklch(72% 0.135 278);
+  --color-data-2: oklch(48% 0.09 278);
+  --color-data-3: oklch(69% 0.13 18);
+  --color-data-4: oklch(74% 0.12 158);
+  --color-data-5: oklch(82% 0.11 78);
+
+  --color-sidebar-bg: oklch(13% 0.03 280);
+  --color-sidebar-ink: oklch(86% 0.018 280);
+  --color-sidebar-hover: oklch(20% 0.035 280);
+
+  --shadow-xs: 0 1px 0 oklch(0% 0 0 / 0.3);
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.4), 0 0 0 1px oklch(100% 0 0 / 0.03);
+  --shadow-md: 0 8px 20px -6px oklch(0% 0 0 / 0.55), 0 0 0 1px oklch(100% 0 0 / 0.04);
+  --shadow-lg: 0 24px 56px -12px oklch(0% 0 0 / 0.7), 0 0 0 1px oklch(100% 0 0 / 0.05);
+}
+
+/* TOKENS:END */
+
+/* ---------- Escala local del mockup (en React vive en utilidades) ---------- */
+:root {
+  --sidebar-w: 244px;
+  --topbar-h: 56px;
+  --gutter: 32px;
+  --ring: 0 0 0 3px color-mix(in oklch, var(--color-focus) 24%, transparent);
+  --ring-danger: 0 0 0 3px color-mix(in oklch, var(--color-danger) 18%, transparent);
+  --z-sticky: 20; --z-nav: 30; --z-pop: 40;
+  color-scheme: light;
+}
+[data-theme='dark'] { color-scheme: dark; }
+[data-theme='dark'] .typeseg button[aria-pressed='true'], [data-theme='dark'] .seg button[aria-pressed='true'] { box-shadow: inset 0 0 0 1px var(--color-border-strong); }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--color-canvas); color: var(--color-ink);
+  font-family: var(--font-sans); font-size: 14px; line-height: 20px;
+  font-feature-settings: var(--font-features);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; font-weight: 600; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+table { border-collapse: collapse; width: 100%; }
+.lucide { width: 16px; height: 16px; stroke-width: 1.75; flex: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: var(--radius-sm); }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); font-size: 0.92em; letter-spacing: -0.01em; }
+
+/* ---------- Barra de mockup (no es parte del producto) ---------- */
+.mock-bar {
+  display: flex; align-items: center; gap: 4px; padding: 6px 12px; overflow-x: auto;
+  background: oklch(14% 0.02 278); color: oklch(85% 0.01 278); font-size: 12px; scrollbar-width: none;
+}
+.mock-bar strong { font-weight: 600; margin-right: 12px; color: oklch(97% 0 0); white-space: nowrap; }
+.mock-bar a { padding: 4px 10px; border-radius: var(--radius-sm); white-space: nowrap; }
+.mock-bar a[aria-current='page'] { background: oklch(28% 0.03 278); color: oklch(98% 0 0); }
+.shot .mock-bar { display: none; }
+
+/* ---------- Shell ---------- */
+.app { display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); min-height: 100vh; }
+.sidebar { background: var(--color-sidebar-bg); color: var(--color-sidebar-ink); box-shadow: inset 0 3px 0 var(--color-accent-2); }
+.sidebar-in { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 2px; padding: 14px 12px 12px; }
+[hidden] { display: none !important; }
+.org { display: flex; align-items: center; gap: 10px; padding: 8px 8px 18px; }
+.crest {
+  width: 30px; height: 30px; border-radius: var(--radius-md); flex: none; display: grid; place-items: center;
+  background: var(--color-accent-2); color: oklch(98% 0.01 20);
+  box-shadow: inset 0 0 0 1px oklch(100% 0 0 / 0.14);
+}
+.crest svg { width: 18px; height: 18px; }
+.org-name { font-weight: 600; font-size: 14px; line-height: 18px; color: oklch(98% 0.005 280); }
+.org-sub { font-size: 12px; line-height: 16px; color: color-mix(in oklch, var(--color-sidebar-ink) 72%, transparent); }
+.nav-label { padding: 16px 10px 6px; font-size: 12px; line-height: 16px; color: color-mix(in oklch, var(--color-sidebar-ink) 62%, transparent); }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 10px; border-radius: var(--radius-md);
+  font-weight: 500; color: color-mix(in oklch, var(--color-sidebar-ink) 86%, transparent);
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+.nav-item .lucide { opacity: .8; }
+.nav-item:hover { background: var(--color-sidebar-hover); color: oklch(98% 0.005 280); }
+.nav-item[aria-current='page'] { background: var(--color-sidebar-hover); color: oklch(99% 0 0); box-shadow: inset 0 0 0 1px oklch(100% 0 0 / 0.07); }
+.nav-item[aria-current='page'] .lucide { opacity: 1; }
+.nav-item .count {
+  margin-left: auto; font-size: 12px; font-variant-numeric: tabular-nums; padding: 0 6px; height: 18px; line-height: 18px;
+  border-radius: var(--radius-sm); background: oklch(100% 0 0 / 0.08); color: var(--color-sidebar-ink);
+}
+.sidebar-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid oklch(100% 0 0 / 0.08); display: grid; gap: 2px; }
+.me { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-md); }
+.me .avatar { background: oklch(100% 0 0 / 0.12); color: oklch(98% 0 0); }
+.me-name { font-weight: 500; color: oklch(98% 0.005 280); line-height: 18px; }
+.me-role { font-size: 12px; line-height: 16px; color: color-mix(in oklch, var(--color-sidebar-ink) 72%, transparent); }
+
+.main { min-width: 0; display: flex; flex-direction: column; }
+.topbar {
+  position: sticky; top: 0; z-index: var(--z-sticky); height: var(--topbar-h);
+  display: flex; align-items: center; gap: 12px; padding: 0 var(--gutter);
+  background: color-mix(in oklch, var(--color-canvas) 92%, transparent);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: saturate(1.4) blur(8px);
+}
+.crumbs { display: flex; align-items: center; gap: 6px; color: var(--color-ink-subtle); font-size: 13px; min-width: 0; }
+.crumbs b { color: var(--color-ink); font-weight: 500; white-space: nowrap; }
+.crumbs .lucide { width: 14px; height: 14px; }
+.topbar-spacer { flex: 1; }
+.search {
+  display: flex; align-items: center; gap: 8px; height: 32px; width: 240px; padding: 0 8px 0 10px;
+  border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface);
+  color: var(--color-ink-subtle); font-size: 13px; box-shadow: var(--shadow-xs);
+}
+.search span { flex: 1; white-space: nowrap; }
+.search .kbd { flex: none; }
+.kbd {
+  font-family: var(--font-sans); font-size: 11px; line-height: 16px; padding: 0 5px; border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border); color: var(--color-ink-subtle); background: var(--color-recessed);
+}
+.icon-btn {
+  width: 32px; height: 32px; display: grid; place-items: center; border-radius: var(--radius-md);
+  border: 1px solid transparent; background: transparent; color: var(--color-ink-muted); position: relative;
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+.icon-btn:hover { background: var(--color-recessed); color: var(--color-ink); }
+.icon-btn .dot { position: absolute; top: 7px; right: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--color-accent-2); box-shadow: 0 0 0 2px var(--color-canvas); }
+.theme-toggle .moon { display: none; }
+[data-theme='dark'] .theme-toggle .moon { display: block; }
+[data-theme='dark'] .theme-toggle .sun { display: none; }
+
+.page { padding: 28px var(--gutter) 56px; width: 100%; max-width: 1400px; }
+.screen { display: none; }
+.screen.is-active { display: block; animation: enter var(--duration-base) var(--ease-out); }
+@keyframes enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.page-title { font-size: 26px; line-height: 32px; letter-spacing: -0.022em; }
+.page-sub { margin-top: 4px; color: var(--color-ink-muted); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- Primitivos ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 14px;
+  border-radius: var(--radius-md); border: 1px solid transparent; font-weight: 500; font-size: 14px; white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+.btn-primary {
+  background: var(--color-brand); color: var(--color-on-brand);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.14), 0 1px 2px oklch(21% 0.08 278 / 0.25);
+}
+.btn-primary:hover { background: var(--color-brand-hover); }
+.btn-secondary { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border); box-shadow: var(--shadow-xs); }
+.btn-secondary:hover { background: var(--color-recessed); border-color: color-mix(in oklch, var(--color-border-strong) 45%, var(--color-border)); }
+.btn-ghost { background: transparent; color: var(--color-ink-muted); padding: 0 10px; }
+.btn-ghost:hover { background: var(--color-recessed); color: var(--color-ink); }
+.btn-sm { height: 30px; padding: 0 10px; font-size: 13px; gap: 6px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.link { color: var(--color-brand); font-weight: 500; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; }
+.link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.panel { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-xs); min-width: 0; }
+.panel-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; min-height: 52px; }
+.panel-h.ruled { border-bottom: 1px solid var(--color-border); }
+.panel-t { font-size: 14px; line-height: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.panel-t small { font-weight: 400; color: var(--color-ink-subtle); font-size: 13px; }
+.panel-b { padding: 16px 18px; }
+.panel-f { padding: 10px 18px; border-top: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 7px 0 6px; border-radius: var(--radius-sm);
+  font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap;
+}
+.badge .lucide { width: 13px; height: 13px; stroke-width: 2; }
+.b-ok { background: var(--color-success-soft); color: var(--color-success); }
+.b-warn { background: var(--color-warning-soft); color: var(--color-warning); }
+.b-danger { background: var(--color-danger-soft); color: var(--color-danger); }
+.b-info { background: var(--color-info-soft); color: var(--color-info); }
+.b-neutral { background: var(--color-recessed); color: var(--color-ink-muted); }
+.b-brand { background: var(--color-brand-soft); color: var(--color-brand); }
+
+.rama {
+  display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px 0 7px; border-radius: var(--radius-pill);
+  font-size: 12px; font-weight: 500; color: var(--color-ink); white-space: nowrap; background: var(--rs);
+}
+.rama::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--rc); }
+.r-manada { --rc: var(--color-rama-manada); --rs: var(--color-rama-manada-soft); }
+.r-unidad { --rc: var(--color-rama-unidad); --rs: var(--color-rama-unidad-soft); }
+.r-caminantes { --rc: var(--color-rama-caminantes); --rs: var(--color-rama-caminantes-soft); }
+.r-rovers { --rc: var(--color-rama-rovers); --rs: var(--color-rama-rovers-soft); }
+.r-educ { --rc: var(--color-accent-2); --rs: var(--color-recessed); }
+.rdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--rc); flex: none; }
+
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  font-size: 11px; font-weight: 600; letter-spacing: .01em; background: var(--color-recessed); color: var(--color-ink-muted);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+/* Montos */
+.amt { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 500; }
+.amt .cur { color: var(--color-ink-subtle); font-weight: 400; margin-right: 0.18em; }
+.amt.in { color: var(--color-money-in); }
+.amt.out { color: var(--color-money-out); }
+.amt.debt { color: var(--color-danger); }
+.amt.in .cur, .amt.debt .cur { color: inherit; opacity: .8; }
+.figure { font-size: 40px; line-height: 44px; font-weight: 600; letter-spacing: -0.035em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.figure .cur { font-size: 0.5em; letter-spacing: 0; vertical-align: 0.62em; margin-right: 0.22em; color: var(--color-ink-subtle); font-weight: 500; }
+.figure-md { font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.figure-md .cur { font-size: 0.62em; vertical-align: 0.38em; margin-right: 0.18em; color: var(--color-ink-subtle); font-weight: 500; letter-spacing: 0; }
+
+.delta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; line-height: 16px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.delta .lucide { width: 14px; height: 14px; stroke-width: 2; }
+.delta.up { color: var(--color-money-in); }
+.delta.down { color: var(--color-danger); }
+.delta.flat { color: var(--color-ink-muted); }
+.muted { color: var(--color-ink-muted); }
+.subtle { color: var(--color-ink-subtle); }
+.small { font-size: 12px; line-height: 16px; }
+
+/* Ícono de movimiento: tile con dirección */
+.mv-ico { width: 28px; height: 28px; border-radius: var(--radius-md); display: grid; place-items: center; flex: none; background: var(--color-recessed); color: var(--color-ink-muted); box-shadow: inset 0 0 0 1px var(--color-border); }
+.mv-ico.in { background: var(--color-success-soft); color: var(--color-money-in); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-money-in) 18%, transparent); }
+.mv-ico .lucide { width: 15px; height: 15px; stroke-width: 2; }
+
+/* ---------- Tabla densa ---------- */
+.tbl th {
+  text-align: left; font-size: 12px; line-height: 16px; font-weight: 500; color: var(--color-ink-subtle);
+  padding: 9px 12px; border-bottom: 1px solid var(--color-border); white-space: nowrap; background: var(--color-surface);
+}
+.tbl th:first-child, .tbl td:first-child { padding-left: 18px; }
+.tbl th:last-child, .tbl td:last-child { padding-right: 18px; }
+.tbl td { padding: 0 12px; height: 48px; border-bottom: 1px solid var(--color-border); font-size: 13px; vertical-align: middle; }
+.tbl tbody tr { transition: background var(--duration-fast) var(--ease-out); }
+.tbl tbody tr:hover, .tbl tbody tr.is-hover { background: color-mix(in oklch, var(--color-recessed) 70%, var(--color-surface)); }
+.tbl tbody tr.is-selected { background: color-mix(in oklch, var(--color-brand-soft) 70%, var(--color-surface)); }
+.tbl tbody tr:last-child td { border-bottom: 0; }
+.tbl .r { text-align: right; }
+.tbl .sort { display: inline-flex; align-items: center; gap: 4px; color: var(--color-ink-muted); }
+.tbl .sort .lucide { width: 12px; height: 12px; }
+.cell-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.cell-title { font-weight: 500; color: var(--color-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell-sub { font-size: 12px; line-height: 16px; color: var(--color-ink-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.medio { display: inline-flex; align-items: center; gap: 6px; color: var(--color-ink-muted); white-space: nowrap; }
+.medio .lucide { width: 14px; height: 14px; }
+.check { width: 16px; height: 16px; border-radius: var(--radius-sm); border: 1px solid var(--color-border-strong); display: grid; place-items: center; background: var(--color-surface); }
+.check.on { background: var(--color-brand); border-color: var(--color-brand); color: var(--color-on-brand); }
+.check .lucide { width: 12px; height: 12px; stroke-width: 3; }
+.only-m { display: none; }
+
+/* ---------- Dashboard ---------- */
+.grid-dash { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.span-8 { grid-column: span 8; } .span-4 { grid-column: span 4; } .span-12 { grid-column: span 12; } .span-7 { grid-column: span 7; } .span-5 { grid-column: span 5; } .span-6 { grid-column: span 6; }
+
+.treasury { display: grid; grid-template-columns: 300px minmax(0, 1fr); height: 100%; }
+.treasury-l { padding: 20px 22px; border-right: 1px solid var(--color-border); display: flex; flex-direction: column; gap: 18px; }
+.treasury-r { padding: 14px 18px 12px 8px; position: relative; min-width: 0; display: flex; flex-direction: column; }
+.label { font-size: 13px; line-height: 18px; color: var(--color-ink-muted); display: flex; align-items: center; gap: 6px; }
+.split-bar { display: flex; gap: 2px; height: 8px; border-radius: var(--radius-sm); overflow: hidden; }
+.split-bar span { background: var(--c); }
+.legend { display: grid; gap: 9px; }
+.legend-row { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 8px; font-size: 13px; }
+.legend-row i.sw { width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+.legend-row .amt { font-weight: 500; }
+.chart-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 6px 12px; }
+.seg { display: inline-flex; padding: 2px; border-radius: var(--radius-md); background: var(--color-recessed); box-shadow: inset 0 0 0 1px var(--color-border); }
+.seg button { white-space: nowrap; height: 24px; padding: 0 9px; border: 0; background: transparent; border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; color: var(--color-ink-muted); }
+.seg button[aria-pressed='true'] { background: var(--color-surface-raised); color: var(--color-ink); box-shadow: var(--shadow-sm); }
+.chart svg { display: block; width: 100%; flex: 1; min-height: 232px; overflow: visible; }
+.chart .grid line { stroke: var(--color-border); stroke-width: 1; }
+.chart .axis text { fill: var(--color-ink-subtle); font-size: 11px; font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
+.chart .area { fill: color-mix(in oklch, var(--color-data-1) 9%, transparent); }
+.chart .line { fill: none; stroke: var(--color-data-1); stroke-width: 1.75; stroke-linejoin: round; stroke-linecap: round; }
+.chart .bar-in { fill: color-mix(in oklch, var(--color-money-in) 30%, transparent); }
+.chart .bar-out { fill: color-mix(in oklch, var(--color-ink-subtle) 24%, transparent); }
+.chart .cursor { stroke: var(--color-border-strong); stroke-dasharray: 2 3; }
+.chart .pt { fill: var(--color-surface); stroke: var(--color-data-1); stroke-width: 2; }
+.tip {
+  position: absolute; pointer-events: none; padding: 8px 10px; border-radius: var(--radius-lg);
+  background: var(--color-surface-raised); border: 1px solid var(--color-border); box-shadow: var(--shadow-md);
+  font-size: 12px; line-height: 16px; min-width: 156px;
+}
+.tip-t { color: var(--color-ink-muted); margin-bottom: 4px; }
+.tip-row { display: flex; justify-content: space-between; gap: 14px; align-items: center; }
+.tip-row + .tip-row { margin-top: 2px; }
+.tip-row span:first-child { display: inline-flex; align-items: center; gap: 6px; color: var(--color-ink-muted); }
+.tip i { width: 8px; height: 2px; border-radius: 1px; background: var(--c); display: inline-block; }
+
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.metric { padding: 16px 18px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.metric + .metric { border-left: 1px solid var(--color-border); }
+.metric-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.spark { width: 96px; height: 32px; flex: none; overflow: visible; }
+.spark path.l { fill: none; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+.spark path.a { stroke: none; }
+.meter { display: flex; gap: 2px; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.meter span { background: var(--c); }
+.meter-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 12px; color: var(--color-ink-muted); margin-top: 4px; }
+.meter-legend b { margin-left: auto; }
+.meter-legend b { font-weight: 500; color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.meter-legend span { display: flex; align-items: center; gap: 6px; }
+.meter-legend i { width: 6px; height: 6px; border-radius: 1px; background: var(--c); }
+
+.fund-list { display: grid; }
+.fund { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 12px 18px; border-top: 1px solid var(--color-border); }
+.fund:first-child { border-top: 0; }
+.fund-name { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.fund-meta { font-size: 12px; color: var(--color-ink-subtle); }
+.fund-track { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--color-recessed); overflow: hidden; }
+.fund-track span { display: block; height: 100%; background: var(--rc); border-radius: 2px; }
+.fund-amt { text-align: right; }
+
+.debtors li { list-style: none; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 18px; border-top: 1px solid var(--color-border); transition: background var(--duration-fast) var(--ease-out); }
+.debtors li:first-child { border-top: 0; }
+.debtors li:hover { background: color-mix(in oklch, var(--color-recessed) 70%, var(--color-surface)); }
+.debtors ul { margin: 0; padding: 0; }
+.debtor-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.debtor-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-ink-subtle); white-space: nowrap; overflow: hidden; }
+.debtor-r { text-align: right; display: grid; justify-items: end; gap: 2px; }
+.age { font-size: 12px; color: var(--color-ink-subtle); font-variant-numeric: tabular-nums; }
+.age.late { color: var(--color-danger); }
+
+/* ---------- Persona ---------- */
+.person-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 20px 22px; }
+.person-avatar { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 19px; font-weight: 600; background: var(--rs); color: var(--color-ink); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--rc) 35%, transparent); position: relative; }
+.person-avatar::after { content: ''; position: absolute; right: 1px; bottom: 1px; width: 14px; height: 14px; border-radius: 50%; background: var(--rc); box-shadow: 0 0 0 3px var(--color-surface); }
+.person-name { font-size: 22px; line-height: 28px; letter-spacing: -0.02em; font-weight: 600; }
+.person-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 6px; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--color-border); }
+.fact { padding: 12px 22px; min-width: 0; }
+.fact + .fact { border-left: 1px solid var(--color-border); }
+.fact dt { font-size: 12px; color: var(--color-ink-subtle); }
+.fact dd { margin: 2px 0 0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.account { display: grid; grid-template-columns: 1fr 1.6fr; }
+.account > div { padding: 18px 22px; }
+.account > div + div { border-left: 1px solid var(--color-border); }
+.debt-break { display: grid; gap: 10px; margin-top: 14px; }
+.debt-line { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 13px; }
+.debt-line .track { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--color-recessed); overflow: hidden; }
+.debt-line .track span { display: block; height: 100%; background: var(--color-danger); border-radius: 2px; }
+
+.obl { display: grid; }
+.obl-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 18px; border-top: 1px solid var(--color-border); }
+.obl-row:first-child { border-top: 0; }
+.obl-ico { width: 32px; height: 32px; border-radius: var(--radius-md); display: grid; place-items: center; background: var(--color-recessed); color: var(--color-ink-muted); box-shadow: inset 0 0 0 1px var(--color-border); }
+.obl-title { font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.obl-progress { display: flex; align-items: center; gap: 10px; margin-top: 6px; font-size: 12px; color: var(--color-ink-subtle); }
+.obl-progress .bar { width: 140px; height: 4px; border-radius: 2px; background: var(--color-recessed); overflow: hidden; }
+.obl-progress .bar span { display: block; height: 100%; background: var(--c, var(--color-brand)); }
+.obl-r { text-align: right; display: grid; gap: 2px; justify-items: end; }
+
+.docs { display: grid; grid-template-columns: 1fr 1fr; }
+.doc { display: flex; align-items: center; gap: 10px; padding: 11px 18px; border-top: 1px solid var(--color-border); font-size: 13px; min-width: 0; }
+.doc:nth-child(odd) { border-right: 1px solid var(--color-border); }
+.doc:nth-child(-n+2) { border-top: 0; }
+.doc-st { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.doc-st .lucide { width: 12px; height: 12px; stroke-width: 2.5; }
+.doc-st.yes { background: var(--color-success-soft); color: var(--color-success); }
+.doc-st.no { background: transparent; color: var(--color-warning); box-shadow: inset 0 0 0 1.5px currentColor; }
+.doc-st.na { background: var(--color-recessed); color: var(--color-ink-subtle); }
+.doc .note { margin-left: auto; font-size: 12px; color: var(--color-ink-subtle); white-space: nowrap; }
+
+.timeline { padding: 6px 18px 14px; }
+.tl-group { font-size: 12px; color: var(--color-ink-subtle); padding: 12px 0 6px 40px; }
+.tl-item { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 12px; align-items: start; position: relative; padding: 8px 0; }
+.tl-item::before { content: ''; position: absolute; left: 13.5px; top: 40px; bottom: -8px; width: 1px; background: var(--color-border); }
+.tl-item.last::before { display: none; }
+.tl-title { font-weight: 500; line-height: 20px; }
+.tl-sub { font-size: 12px; color: var(--color-ink-subtle); line-height: 16px; display: flex; gap: 0 8px; flex-wrap: wrap; }
+.tl-sub span + span::before { content: ''; display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .6; vertical-align: middle; margin-right: 8px; }
+.tl-r { text-align: right; padding-top: 4px; }
+
+.empty { display: grid; justify-items: center; text-align: center; gap: 8px; padding: 26px 20px; }
+.empty-ico { width: 36px; height: 36px; border-radius: var(--radius-lg); display: grid; place-items: center; background: var(--color-recessed); color: var(--color-ink-subtle); box-shadow: inset 0 0 0 1px var(--color-border); }
+.empty p { color: var(--color-ink-muted); max-width: 32ch; font-size: 13px; }
+
+/* ---------- Movimientos ---------- */
+.toolbar { display: flex; align-items: center; gap: 8px; padding: 12px 18px; flex-wrap: wrap; border-bottom: 1px solid var(--color-border); }
+.field-search { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; width: 232px; white-space: nowrap; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-ink-subtle); font-size: 13px; }
+.field-search .lucide { width: 15px; height: 15px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: var(--radius-md);
+  border: 1px dashed var(--color-border-strong); background: transparent; color: var(--color-ink-muted); font-size: 13px; font-weight: 500;
+}
+.chip:hover { background: var(--color-recessed); color: var(--color-ink); }
+.chip .lucide { width: 14px; height: 14px; }
+.chip.on { border-style: solid; border-color: color-mix(in oklch, var(--color-brand) 40%, transparent); background: var(--color-brand-soft); color: var(--color-brand); }
+.chip.on b { font-weight: 600; }
+.chip .x { margin-left: 2px; margin-right: -4px; width: 18px; height: 18px; border-radius: var(--radius-sm); display: grid; place-items: center; }
+.chip .x:hover { background: color-mix(in oklch, var(--color-brand) 14%, transparent); }
+.summary-line { display: flex; flex-wrap: wrap; gap: 6px 28px; padding: 12px 18px; border-bottom: 1px solid var(--color-border); background: var(--color-recessed); font-size: 13px; }
+.summary-line div { display: flex; align-items: baseline; gap: 8px; }
+.summary-line .k { color: var(--color-ink-muted); }
+.pager { display: flex; align-items: center; gap: 4px; }
+.pager button { min-width: 30px; height: 30px; padding: 0 8px; border-radius: var(--radius-md); border: 1px solid transparent; background: transparent; font-size: 13px; color: var(--color-ink-muted); font-variant-numeric: tabular-nums; display: inline-grid; place-items: center; }
+.pager button:hover { background: var(--color-recessed); color: var(--color-ink); }
+.pager button[aria-current='page'] { border-color: var(--color-border); background: var(--color-surface); color: var(--color-ink); font-weight: 600; box-shadow: var(--shadow-xs); }
+.selbar { display: flex; align-items: center; gap: 12px; }
+
+/* ---------- Evento ---------- */
+.event-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 20px; }
+.event-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; color: var(--color-ink-muted); font-size: 13px; }
+.event-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.equation { display: grid; grid-template-columns: 1fr auto 1fr auto 1.15fr; align-items: stretch; }
+.eq-cell { padding: 18px 22px; display: grid; gap: 6px; align-content: start; }
+.eq-op { display: grid; place-items: center; width: 36px; color: var(--color-ink-subtle); font-size: 20px; font-weight: 300; border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); background: var(--color-recessed); }
+.eq-cell.result { background: color-mix(in oklch, var(--color-success-soft) 60%, var(--color-surface)); border-radius: 0 calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px) 0; }
+.eq-cell.result .figure-md { color: var(--color-money-in); }
+.eq-cell.result .figure-md .cur { color: inherit; opacity: .75; }
+.eq-note { font-size: 12px; color: var(--color-ink-subtle); }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--color-border); margin: 24px 0 16px; overflow-x: auto; scrollbar-width: none; }
+.tab { height: 40px; padding: 0 12px; display: inline-flex; align-items: center; gap: 8px; color: var(--color-ink-muted); font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tab:hover { color: var(--color-ink); }
+.tab[aria-selected='true'] { color: var(--color-ink); border-bottom-color: var(--color-brand); }
+.tab .n { font-size: 12px; color: var(--color-ink-subtle); font-variant-numeric: tabular-nums; }
+.sellers li { list-style: none; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 18px; border-top: 1px solid var(--color-border); }
+.sellers li:first-child { border-top: 0; }
+.sellers ul { margin: 0; padding: 0; }
+.rank { font-size: 12px; color: var(--color-ink-subtle); font-variant-numeric: tabular-nums; text-align: right; }
+.seller-bar { height: 4px; border-radius: 2px; background: var(--color-recessed); margin-top: 6px; overflow: hidden; }
+.seller-bar span { display: block; height: 100%; background: var(--color-data-1); border-radius: 2px; }
+.margin-pill { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--color-ink-muted); }
+
+/* ---------- Formulario ---------- */
+.form-layout { display: grid; grid-template-columns: minmax(0, 680px) minmax(0, 340px); gap: 24px; align-items: start; }
+.form { padding: 4px 0 0; }
+.fsec { padding: 18px 22px 22px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.fsec + .fsec { border-top: 1px solid var(--color-border); }
+.fsec-t { font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 6px; min-width: 0; }
+.field label, .field .flabel { font-size: 13px; font-weight: 500; color: var(--color-ink); display: flex; justify-content: space-between; gap: 8px; }
+.field label .opt { font-weight: 400; color: var(--color-ink-subtle); }
+.control {
+  display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 10px; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong); background: var(--color-surface); color: var(--color-ink);
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+.control input, .control textarea { border: 0; outline: 0; background: transparent; flex: 1; width: 0; min-width: 0; height: 100%; font-size: 14px; }
+.control input::placeholder, .control textarea::placeholder { color: var(--color-ink-subtle); }
+.control .lucide { color: var(--color-ink-subtle); width: 16px; height: 16px; }
+.control .pre { color: var(--color-ink-subtle); font-weight: 500; }
+.control.is-focus { border-color: var(--color-focus); box-shadow: var(--ring); }
+.control.is-error { border-color: var(--color-danger); box-shadow: var(--ring-danger); }
+.control.is-valid .ok { color: var(--color-success); }
+.control.is-disabled { background: var(--color-recessed); border-color: var(--color-border); color: var(--color-ink-muted); }
+.control.select { justify-content: space-between; }
+.control.lg { height: 52px; }
+.control.lg input { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.control.lg .pre { font-size: 18px; }
+.control.area { height: auto; align-items: flex-start; padding: 8px 10px; }
+.control.area textarea { resize: none; height: 64px; line-height: 20px; }
+.hint { font-size: 12px; line-height: 16px; color: var(--color-ink-subtle); display: flex; gap: 6px; align-items: flex-start; }
+.hint .lucide { width: 14px; height: 14px; margin-top: 1px; }
+.err { color: var(--color-danger); font-weight: 500; }
+.okc { color: var(--color-success); }
+.typeseg { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; gap: 3px; border-radius: var(--radius-lg); background: var(--color-recessed); box-shadow: inset 0 0 0 1px var(--color-border); }
+.typeseg button { height: 34px; border: 0; border-radius: var(--radius-md); background: transparent; font-weight: 500; color: var(--color-ink-muted); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.typeseg button[aria-pressed='true'] { background: var(--color-surface-raised); color: var(--color-ink); box-shadow: var(--shadow-sm); }
+.typeseg button[aria-pressed='true'] .lucide { color: var(--color-money-out); }
+.pay { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.pay-opt {
+  display: grid; align-content: start; gap: 6px; padding: 10px 12px; border-radius: var(--radius-lg); border: 1px solid var(--color-border-strong);
+  background: var(--color-surface); text-align: left; position: relative; color: var(--color-ink);
+}
+.pay-opt:hover { background: var(--color-recessed); }
+.pay-opt .lucide { color: var(--color-ink-muted); }
+.pay-opt b { font-weight: 500; font-size: 13px; }
+.pay-opt small { font-size: 12px; color: var(--color-ink-subtle); line-height: 16px; }
+.pay-opt[aria-checked='true'] { border-color: var(--color-brand); box-shadow: 0 0 0 1px var(--color-brand); background: color-mix(in oklch, var(--color-brand-soft) 55%, var(--color-surface)); }
+.pay-opt[aria-checked='true'] .lucide { color: var(--color-brand); }
+.pay-opt .radio { position: absolute; top: 10px; right: 10px; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--color-border-strong); }
+.pay-opt[aria-checked='true'] .radio { border: 4px solid var(--color-brand); }
+.split-box { border-radius: var(--radius-lg); background: var(--color-recessed); box-shadow: inset 0 0 0 1px var(--color-border); padding: 14px; display: grid; gap: 12px; }
+.split-sum { display: flex; justify-content: space-between; gap: 12px; align-items: center; font-size: 13px; padding-top: 10px; border-top: 1px dashed var(--color-border-strong); }
+.catchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.catchip { height: 30px; padding: 0 11px; border-radius: var(--radius-pill); border: 1px solid var(--color-border); background: var(--color-surface); font-size: 13px; color: var(--color-ink-muted); font-weight: 500; }
+.catchip[aria-pressed='true'] { background: var(--color-ink); color: var(--color-surface); border-color: var(--color-ink); }
+.drop { border: 1px dashed var(--color-border-strong); border-radius: var(--radius-lg); padding: 14px; display: flex; align-items: center; gap: 12px; color: var(--color-ink-muted); font-size: 13px; }
+.drop .obl-ico { flex: none; }
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.switch { width: 36px; height: 20px; border-radius: 999px; background: var(--color-border-strong); position: relative; flex: none; border: 0; }
+.switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--color-surface); box-shadow: var(--shadow-sm); transition: transform var(--duration-base) var(--ease-out); }
+.switch[aria-checked='true'] { background: var(--color-brand); }
+.switch[aria-checked='true']::after { transform: translateX(16px); }
+.form-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 22px; border-top: 1px solid var(--color-border); background: var(--color-recessed); border-radius: 0 0 calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px); }
+.aside { position: sticky; top: calc(var(--topbar-h) + 24px); display: grid; gap: 16px; }
+.impact { display: grid; gap: 4px; padding: 16px 18px; }
+.impact-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: baseline; }
+.arrow-to { display: inline-flex; align-items: center; gap: 6px; }
+.checklist { margin: 0; padding: 4px 18px 14px; display: grid; gap: 8px; }
+.checklist li { list-style: none; display: flex; gap: 8px; align-items: flex-start; font-size: 13px; }
+.checklist .lucide { width: 16px; height: 16px; margin-top: 2px; }
+
+/* ---------- Mobile shell ---------- */
+.m-top, .bottom-nav, .m-actionbar { display: none; }
+
+@media (max-width: 1180px) {
+  .treasury { grid-template-columns: 1fr; }
+  .treasury-l { border-right: 0; border-bottom: 1px solid var(--color-border); }
+  .form-layout { grid-template-columns: 1fr; }
+  .aside { position: static; }
+}
+@media (max-width: 1024px) {
+  .span-8, .span-4, .span-7, .span-5, .span-6 { grid-column: span 12; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .metric:nth-child(3) { border-left: 0; }
+  .metric:nth-child(n+3) { border-top: 1px solid var(--color-border); }
+}
+@media (max-width: 860px) {
+  :root { --gutter: 16px; }
+  body { font-size: 15px; line-height: 22px; }
+  .app { grid-template-columns: 1fr; }
+  .sidebar, .topbar { display: none; }
+  .m-top {
+    display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 8px 0 16px; position: sticky; top: 0; z-index: var(--z-sticky);
+    background: var(--color-sidebar-bg); color: var(--color-sidebar-ink); box-shadow: inset 0 3px 0 var(--color-accent-2);
+  }
+  .m-top .crest { width: 28px; height: 28px; }
+  .m-top-title { flex: 1; min-width: 0; font-weight: 600; font-size: 16px; color: oklch(98% 0.005 280); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-top .icon-btn { width: 44px; height: 44px; color: var(--color-sidebar-ink); }
+  .m-top .icon-btn:hover { background: var(--color-sidebar-hover); }
+  .bottom-nav {
+    display: grid; grid-template-columns: repeat(5, 1fr); position: sticky; bottom: 0; z-index: var(--z-nav);
+    background: color-mix(in oklch, var(--color-surface) 94%, transparent); backdrop-filter: blur(12px) saturate(1.4);
+    border-top: 1px solid var(--color-border); padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+  }
+  .bn { display: grid; justify-items: center; gap: 2px; padding: 6px 0; min-height: 52px; font-size: 11px; font-weight: 500; color: var(--color-ink-subtle); }
+  .bn .lucide { width: 22px; height: 22px; }
+  .bn[aria-current='page'] { color: var(--color-brand); }
+  .bn-plus { align-self: center; justify-self: center; width: 48px; height: 48px; border-radius: var(--radius-lg); background: var(--color-brand); color: var(--color-on-brand); display: grid; place-items: center; box-shadow: var(--shadow-md); }
+  .bn-plus .lucide { width: 22px; height: 22px; stroke-width: 2; }
+  .page { padding: 20px 16px 28px; }
+  .page-head { flex-direction: column; align-items: stretch; gap: 14px; margin-bottom: 18px; }
+  .page-title { font-size: 22px; line-height: 28px; }
+  .page-head .actions .btn { flex: 1; height: 44px; }
+  .btn { height: 44px; font-size: 15px; }
+  .btn-sm { height: 36px; font-size: 14px; }
+  .grid-dash { gap: 12px; }
+  .figure { font-size: 34px; line-height: 40px; }
+  .treasury-l { padding: 18px 16px; }
+  .treasury-r { padding: 10px 8px 8px 0; }
+  .chart svg { min-height: 180px; }
+  .tip { display: none; }
+  .chart-head { padding-left: 16px; }
+  .legend { grid-template-columns: 1fr; }
+  .metric { padding: 14px 16px; }
+  .metric-row { flex-direction: column; align-items: stretch; gap: 8px; }
+  .metric:nth-child(n+3) { grid-column: 1 / -1; border-left: 0; }
+  .metric:nth-child(3) .metric-row { flex-direction: row; align-items: flex-end; }
+  .metric:nth-child(3) .spark { width: 112px; height: 32px; }
+  .spark { width: 100%; height: 28px; }
+  .spark circle { display: none; }
+  .metric .figure-md { font-size: 20px; line-height: 26px; }
+  .panel-h { padding: 12px 16px; }
+  .fund, .debtors li { padding-left: 16px; padding-right: 16px; }
+
+  /* Tabla → lista */
+  .tbl thead { display: none; }
+  .tbl, .tbl tbody { display: block; }
+  .tbl tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding: 12px 16px; border-bottom: 1px solid var(--color-border); }
+  .tbl tbody tr:last-child { border-bottom: 0; }
+  .tbl td { display: none; height: auto; padding: 0 !important; border: 0; font-size: 15px; }
+  .tbl td.c-main, .tbl td.c-amt { display: block; }
+  .tbl td.c-amt { text-align: right; }
+  .tbl td.c-amt .amt { font-size: 15px; }
+  .only-m { display: inline; }
+  .only-d { display: none !important; }
+  .cell-sub { font-size: 13px; }
+  .cell-title { white-space: normal; }
+  .mv-ico { width: 36px; height: 36px; }
+  .tbl tbody tr.is-hover { background: transparent; }
+
+  .toolbar { padding: 12px 16px; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+  .field-search { width: 100%; flex: none; height: 44px; font-size: 15px; }
+  .toolbar { flex-wrap: wrap; }
+  .chips-scroll { display: flex; gap: 8px; overflow-x: auto; width: calc(100% + 32px); margin: 0 -16px; padding: 0 16px; scrollbar-width: none; }
+  .chip { height: 36px; flex: none; }
+  .summary-line { padding: 12px 16px; gap: 4px 20px; }
+  .panel-f { padding: 12px 16px; }
+  .panel-f.pagerf { flex-direction: column; align-items: stretch; }
+  .pager { justify-content: center; }
+
+  .person-head { grid-template-columns: auto minmax(0, 1fr); padding: 18px 16px; gap: 14px; }
+  .person-head .actions { grid-column: 1 / -1; }
+  .person-head .actions .btn { flex: 1; }
+  .facts { grid-template-columns: 1fr 1fr; }
+  .fact { padding: 12px 16px; }
+  .fact:nth-child(3) { border-left: 0; }
+  .fact:nth-child(n+3) { border-top: 1px solid var(--color-border); }
+  .account { grid-template-columns: 1fr; }
+  .account > div { padding: 16px; }
+  .account > div + div { border-left: 0; border-top: 1px solid var(--color-border); }
+  .docs { grid-template-columns: 1fr; }
+  .doc:nth-child(odd) { border-right: 0; }
+  .doc:nth-child(2) { border-top: 1px solid var(--color-border); }
+  .obl-row { grid-template-columns: 32px minmax(0, 1fr); padding: 14px 16px; }
+  .obl-r { grid-column: 2; display: flex; align-items: baseline; gap: 8px; text-align: left; }
+  .obl-progress .bar { flex: 1; width: auto; }
+
+  .event-head { flex-direction: column; }
+  .equation { grid-template-columns: 1fr; }
+  .eq-op { width: auto; height: 28px; border: 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); font-size: 16px; }
+  .eq-cell.result { border-radius: 0 0 calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px); }
+
+  /* Formulario mobile */
+  .screen-form .page-head { display: none; }
+  .row2 { grid-template-columns: 1fr; }
+  .fsec { padding: 18px 16px 20px; gap: 18px; }
+  .control { height: 46px; }
+  .control input, .control textarea { font-size: 16px; }
+  .control.lg { height: 56px; }
+  .field label, .field .flabel { font-size: 14px; }
+  .hint { font-size: 13px; line-height: 18px; }
+  .small, .cell-sub, .debtor-meta, .fund-meta, .age, .tl-sub { font-size: 13px; line-height: 18px; }
+  .pay { grid-template-columns: 1fr 1fr; }
+  .pay-opt { min-height: 72px; }
+  .typeseg button { height: 40px; font-size: 15px; }
+  .catchip { height: 36px; font-size: 14px; }
+  .form-foot { display: none; }
+  .m-actionbar {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 8px; position: sticky; bottom: 0; z-index: var(--z-nav);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--color-surface); border-top: 1px solid var(--color-border);
+  }
+  body.on-form .bottom-nav { display: none; }
+  body:not(.on-form) .m-actionbar { display: none; }
+  .form-panel { border-radius: var(--radius-xl); }
+}
+.shot .bottom-nav, .shot .m-actionbar { position: static; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+</style>
+</head>
+<body>
+
+<nav class="mock-bar" aria-label="Pantallas del mockup">
+  <strong>Insignia</strong>
+  <a href="#dashboard">Dashboard</a>
+  <a href="#persona">Persona</a>
+  <a href="#movimientos">Movimientos</a>
+  <a href="#evento">Evento de venta</a>
+  <a href="#nuevo">Formulario</a>
+</nav>
+
+<!-- Mobile top bar -->
+<header class="m-top">
+  <button class="icon-btn m-back" aria-label="Volver" hidden><i data-lucide="arrow-left"></i></button>
+  <span class="crest m-crest" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-1.6 2.2-2.4 4.4-2.4 6.6 0 1.7.8 3.2 2.4 4.4 1.6-1.2 2.4-2.7 2.4-4.4C14.4 7.4 13.6 5.2 12 3Z"/><path d="M9.6 12.8C7.4 10.6 4.4 10.8 4 13.2c-.3 1.9 1.7 3 4 2.4"/><path d="M14.4 12.8c2.2-2.2 5.2-2 5.6.4.3 1.9-1.7 3-4 2.4"/><path d="M7.5 16.4h9"/><path d="M12 14v7"/></svg></span>
+  <span class="m-top-title" id="mTitle">Inicio</span>
+  <button class="icon-btn theme-toggle" aria-label="Cambiar tema"><i data-lucide="sun" class="sun"></i><i data-lucide="moon" class="moon"></i></button>
+  <button class="icon-btn" aria-label="Notificaciones"><i data-lucide="bell"></i></button>
+</header>
+
+<div class="app">
+  <aside class="sidebar" aria-label="Navegación principal"><div class="sidebar-in">
+    <div class="org">
+      <span class="crest" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-1.6 2.2-2.4 4.4-2.4 6.6 0 1.7.8 3.2 2.4 4.4 1.6-1.2 2.4-2.7 2.4-4.4C14.4 7.4 13.6 5.2 12 3Z"/><path d="M9.6 12.8C7.4 10.6 4.4 10.8 4 13.2c-.3 1.9 1.7 3 4 2.4"/><path d="M14.4 12.8c2.2-2.2 5.2-2 5.6.4.3 1.9-1.7 3-4 2.4"/><path d="M7.5 16.4h9"/><path d="M12 14v7"/></svg></span>
+      <div><div class="org-name">Grupo San Patricio</div><div class="org-sub">Grupo Scout N.º 312</div></div>
+    </div>
+    <a class="nav-item" data-nav="dashboard" href="#dashboard"><i data-lucide="layout-dashboard"></i>Inicio</a>
+    <a class="nav-item" data-nav="movimientos" href="#movimientos"><i data-lucide="arrow-left-right"></i>Movimientos</a>
+    <a class="nav-item" href="#dashboard"><i data-lucide="wallet"></i>Cajas</a>
+    <a class="nav-item" data-nav="persona" href="#persona"><i data-lucide="users"></i>Personas</a>
+    <div class="nav-label">Actividades</div>
+    <a class="nav-item" href="#dashboard"><i data-lucide="clipboard-check"></i>Inscripciones<span class="count">36</span></a>
+    <a class="nav-item" href="#dashboard"><i data-lucide="tent"></i>Campamentos</a>
+    <a class="nav-item" data-nav="evento" href="#evento"><i data-lucide="store"></i>Eventos</a>
+    <div class="nav-label">Análisis</div>
+    <a class="nav-item" href="#dashboard"><i data-lucide="chart-column"></i>Reportes</a>
+    <div class="sidebar-foot">
+      <a class="nav-item" href="#dashboard"><i data-lucide="settings"></i>Configuración</a>
+      <div class="me"><span class="avatar">FA</span><div><div class="me-name">Florencia Aguirre</div><div class="me-role">Tesorería</div></div></div>
+    </div>
+  </div></aside>
+
+  <div class="main">
+    <header class="topbar">
+      <nav class="crumbs" aria-label="Ubicación"><span>San Patricio</span><i data-lucide="chevron-right"></i><b id="crumb">Inicio</b></nav>
+      <div class="topbar-spacer"></div>
+      <div class="search" role="button" tabindex="0"><i data-lucide="search"></i><span>Buscar…</span><span class="kbd">⌘K</span></div>
+      <button class="icon-btn theme-toggle" aria-label="Cambiar tema"><i data-lucide="sun" class="sun"></i><i data-lucide="moon" class="moon"></i></button>
+      <button class="icon-btn" aria-label="Notificaciones, 3 nuevas"><i data-lucide="bell"></i><span class="dot"></span></button>
+    </header>
+
+    <main class="page">
+
+      <!-- ===================== DASHBOARD ===================== -->
+      <section class="screen" id="screen-dashboard" data-title="Inicio">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Buen día, Florencia</h1>
+            <p class="page-sub">Estado de las cajas al martes 6 de octubre. Último movimiento hace 2 horas.</p>
+          </div>
+          <div class="actions">
+            <a class="btn btn-secondary" href="#movimientos"><i data-lucide="download"></i>Exportar</a>
+            <a class="btn btn-primary" href="#nuevo"><i data-lucide="plus"></i>Nuevo movimiento</a>
+          </div>
+        </div>
+
+        <div class="grid-dash">
+          <article class="panel span-8">
+            <div class="treasury">
+              <div class="treasury-l">
+                <div>
+                  <div class="label"><i data-lucide="landmark"></i>Dinero del grupo</div>
+                  <div class="figure" style="margin-top:8px"><span class="cur">$</span>4.812.350</div>
+                  <div style="display:flex; gap:8px; align-items:center; margin-top:6px">
+                    <span class="delta up"><i data-lucide="trending-up"></i>+$ 312.400</span>
+                    <span class="small subtle">neto de septiembre</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="split-bar" role="img" aria-label="Distribución del dinero por caja">
+                    <span style="--c:var(--color-data-1); flex:2140000"></span>
+                    <span style="--c:var(--color-data-2); flex:1385200"></span>
+                    <span style="--c:var(--color-data-4); flex:918650"></span>
+                    <span style="--c:var(--color-data-3); flex:368500"></span>
+                  </div>
+                  <div class="legend" style="margin-top:14px">
+                    <div class="legend-row"><i class="sw" style="--c:var(--color-data-1)"></i><span>Caja del grupo</span><span class="amt"><span class="cur">$</span>2.140.000</span></div>
+                    <div class="legend-row"><i class="sw" style="--c:var(--color-data-2)"></i><span>Fondos de rama</span><span class="amt"><span class="cur">$</span>1.385.200</span></div>
+                    <div class="legend-row"><i class="sw" style="--c:var(--color-data-4)"></i><span>Cuentas personales</span><span class="amt"><span class="cur">$</span>918.650</span></div>
+                    <div class="legend-row"><i class="sw" style="--c:var(--color-data-3)"></i><span>Fondo Solidario</span><span class="amt"><span class="cur">$</span>368.500</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="treasury-r chart">
+                <div class="chart-head">
+                  <span class="small muted">Evolución mensual</span>
+                  <div class="seg" role="group" aria-label="Período">
+                    <button aria-pressed="false">6 m</button><button aria-pressed="true">12 m</button><button aria-pressed="false">Ciclo</button>
+                  </div>
+                </div>
+                <svg id="mainChart" role="img" aria-label="Saldo total del grupo de octubre 2025 a septiembre 2026, creciendo de 3,1 a 4,8 millones"></svg>
+                <div class="tip" id="tip"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel span-4">
+            <div class="panel-h ruled">
+              <h2 class="panel-t">Fondos de rama</h2>
+              <a class="link" href="#movimientos">Asignar</a>
+            </div>
+            <div class="fund-list" id="funds"></div>
+          </article>
+
+          <article class="panel span-12">
+            <div class="metrics">
+              <div class="metric">
+                <div class="label">Ingresos de septiembre</div>
+                <div class="metric-row">
+                  <div><div class="figure-md"><span class="cur">$</span>1.040.200</div><span class="delta up"><i data-lucide="arrow-up-right"></i>12,4 % vs. agosto</span></div>
+                  <svg class="spark" data-spark="in"></svg>
+                </div>
+              </div>
+              <div class="metric">
+                <div class="label">Egresos de septiembre</div>
+                <div class="metric-row">
+                  <div><div class="figure-md"><span class="cur">$</span>727.800</div><span class="delta flat"><i data-lucide="arrow-up-right"></i>3,1 % vs. agosto</span></div>
+                  <svg class="spark" data-spark="out"></svg>
+                </div>
+              </div>
+              <div class="metric">
+                <div class="label">Deuda a cobrar</div>
+                <div class="metric-row">
+                  <div><div class="figure-md"><span class="cur">$</span>1.126.800</div><span class="delta up"><i data-lucide="arrow-down-right"></i>8,2 % menos que agosto</span></div>
+                  <svg class="spark" data-spark="debt"></svg>
+                </div>
+              </div>
+              <div class="metric">
+                <div class="label">Inscripciones 2026</div>
+                <div class="figure-md num">112 <span class="small muted" style="font-weight:400; letter-spacing:0">de 148 al día</span></div>
+                <div class="meter" role="img" aria-label="Pagadas 98, bonificadas 14, parciales 21, pendientes 15">
+                  <span style="--c:var(--color-success); flex:98"></span><span style="--c:var(--color-info); flex:14"></span><span style="--c:var(--color-warning); flex:21"></span><span style="--c:var(--color-danger); flex:15"></span>
+                </div>
+                <div class="meter-legend"><span><i style="--c:var(--color-success)"></i>Pagas <b>98</b></span><span><i style="--c:var(--color-info)"></i>Bonificadas <b>14</b></span><span><i style="--c:var(--color-warning)"></i>Parciales <b>21</b></span><span><i style="--c:var(--color-danger)"></i>Pendientes <b>15</b></span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel span-8">
+            <div class="panel-h ruled">
+              <h2 class="panel-t">Últimos movimientos</h2>
+              <a class="link" href="#movimientos">Ver todos<i data-lucide="chevron-right"></i></a>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Concepto</th><th>Caja</th><th>Medio</th><th>Fecha</th><th class="r">Monto</th></tr></thead>
+              <tbody id="recent"></tbody>
+            </table>
+          </article>
+
+          <article class="panel span-4 debtors">
+            <div class="panel-h ruled">
+              <h2 class="panel-t">Deudores <small>38 personas</small></h2>
+              <a class="link" href="#persona">Reporte</a>
+            </div>
+            <ul id="debtors"></ul>
+            <div class="panel-f"><span class="small muted">Total adeudado</span><span class="amt debt"><span class="cur">$</span>1.126.800</span></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== PERSONA ===================== -->
+      <section class="screen" id="screen-persona" data-title="Valentina Ríos">
+        <article class="panel r-caminantes">
+          <div class="person-head">
+            <div class="person-avatar" aria-hidden="true">VR</div>
+            <div style="min-width:0">
+              <h1 class="person-name">Valentina Ríos</h1>
+              <div class="person-tags">
+                <span class="rama r-caminantes">Caminantes</span>
+                <span class="badge b-neutral">Protagonista</span>
+                <span class="badge b-ok"><i data-lucide="circle-check"></i>Activa</span>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-secondary"><i data-lucide="pencil"></i>Editar</button>
+              <a class="btn btn-primary" href="#nuevo"><i data-lucide="hand-coins"></i>Registrar pago</a>
+            </div>
+          </div>
+          <dl class="facts" style="margin:0">
+            <div class="fact"><dt>DNI</dt><dd class="mono">46.812.337</dd></div>
+            <div class="fact"><dt>Edad</dt><dd class="num">16 años</dd></div>
+            <div class="fact"><dt>Contacto</dt><dd>Silvina Ríos (madre)</dd></div>
+            <div class="fact"><dt>En el grupo desde</dt><dd>marzo 2019</dd></div>
+          </dl>
+        </article>
+
+        <div class="grid-dash" style="margin-top:16px">
+          <article class="panel span-12">
+            <div class="account">
+              <div>
+                <div class="label"><i data-lucide="wallet"></i>Saldo de cuenta personal</div>
+                <div class="figure" style="margin-top:8px; color:var(--color-money-in)"><span class="cur" style="color:inherit;opacity:.75">$</span>18.500</div>
+                <p class="small muted" style="margin-top:6px">Disponible para pagar inscripciones o campamentos. Origen: ventas de eventos.</p>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px">
+                  <div>
+                    <div class="label"><i data-lucide="circle-alert"></i>Deuda total</div>
+                    <div class="figure" style="margin-top:8px; color:var(--color-danger)"><span class="cur" style="color:inherit;opacity:.75">$</span>96.000</div>
+                  </div>
+                  <span class="badge b-danger" style="margin-top:4px"><i data-lucide="clock"></i>Vence 15 oct</span>
+                </div>
+                <div class="debt-break">
+                  <div class="debt-line"><span>Inscripciones</span><span class="amt"><span class="cur">$</span>36.000</span><div class="track"><span style="width:37.5%"></span></div></div>
+                  <div class="debt-line"><span>Campamentos</span><span class="amt"><span class="cur">$</span>60.000</span><div class="track"><span style="width:62.5%"></span></div></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel span-7">
+            <div class="panel-h ruled">
+              <h2 class="panel-t">Obligaciones</h2>
+              <div class="seg" role="group" aria-label="Año"><button aria-pressed="false">2025</button><button aria-pressed="true">2026</button></div>
+            </div>
+            <div class="obl">
+              <div class="obl-row">
+                <span class="obl-ico"><i data-lucide="clipboard-check"></i></span>
+                <div><div class="obl-title">Inscripción al grupo <span class="badge b-warn"><i data-lucide="circle-dashed"></i>Parcial</span></div>
+                  <div class="obl-progress"><span class="bar" style="--c:var(--color-warning)"><span style="width:40%"></span></span><span class="num">$ 24.000 de $ 60.000</span></div></div>
+                <div class="obl-r"><span class="amt debt"><span class="cur">$</span>36.000</span><span class="small subtle">pendiente</span></div>
+              </div>
+              <div class="obl-row">
+                <span class="obl-ico"><i data-lucide="shield-check"></i></span>
+                <div><div class="obl-title">Inscripción Scouts de Argentina <span class="badge b-ok"><i data-lucide="check"></i>Pagada</span></div>
+                  <div class="obl-progress"><span class="bar" style="--c:var(--color-success)"><span style="width:100%"></span></span><span class="num">$ 42.000, pagada el 12 abr</span></div></div>
+                <div class="obl-r"><span class="amt subtle"><span class="cur">$</span>0</span><span class="small subtle">al día</span></div>
+              </div>
+              <div class="obl-row">
+                <span class="obl-ico"><i data-lucide="tent"></i></span>
+                <div><div class="obl-title">Campamento de verano, Tandil <span class="badge b-danger"><i data-lucide="clock"></i>Pendiente</span></div>
+                  <div class="obl-progress"><span class="bar"><span style="width:0%"></span></span><span class="num">$ 0 de $ 60.000</span></div></div>
+                <div class="obl-r"><span class="amt debt"><span class="cur">$</span>60.000</span><span class="small subtle">vence 15 oct</span></div>
+              </div>
+              <div class="obl-row">
+                <span class="obl-ico"><i data-lucide="tent"></i></span>
+                <div><div class="obl-title">Campamento de invierno, Sierra de la Ventana <span class="badge b-info"><i data-lucide="gift"></i>Bonificado</span></div>
+                  <div class="obl-progress"><span class="bar" style="--c:var(--color-info)"><span style="width:100%"></span></span><span class="num">$ 38.000 desde Fondo Solidario</span></div></div>
+                <div class="obl-r"><span class="amt subtle"><span class="cur">$</span>0</span><span class="small subtle">cubierto</span></div>
+              </div>
+            </div>
+          </article>
+
+          <div class="span-5" style="display:grid; gap:16px; align-content:start">
+            <article class="panel">
+              <div class="panel-h ruled">
+                <h2 class="panel-t">Documentación <small>4 de 6</small></h2>
+                <a class="link" href="#persona">Actualizar</a>
+              </div>
+              <div class="docs">
+                <div class="doc"><span class="doc-st yes"><i data-lucide="check"></i></span>Ficha médica</div>
+                <div class="doc"><span class="doc-st yes"><i data-lucide="check"></i></span>DNI propio</div>
+                <div class="doc"><span class="doc-st yes"><i data-lucide="check"></i></span>Autorización de salidas</div>
+                <div class="doc"><span class="doc-st no"><i data-lucide="minus"></i></span>DNI de madre/padre<span class="note">falta</span></div>
+                <div class="doc"><span class="doc-st yes"><i data-lucide="check"></i></span>Uso de imagen</div>
+                <div class="doc"><span class="doc-st no"><i data-lucide="minus"></i></span>Ficha de ingreso<span class="note">falta</span></div>
+              </div>
+            </article>
+            <article class="panel">
+              <div class="panel-h ruled"><h2 class="panel-t">Reembolsos pendientes</h2></div>
+              <div class="empty">
+                <span class="empty-ico"><i data-lucide="undo-2"></i></span>
+                <b style="font-weight:500">Nada para devolverle a Valentina</b>
+                <p>Cuando pague un gasto del grupo de su bolsillo, aparece acá hasta que se le reintegre.</p>
+              </div>
+            </article>
+          </div>
+
+          <article class="panel span-12">
+            <div class="panel-h ruled">
+              <h2 class="panel-t">Actividad</h2>
+              <div class="seg" role="group" aria-label="Filtro"><button aria-pressed="true">Todo</button><button aria-pressed="false">Pagos</button><button aria-pressed="false">Cuenta personal</button></div>
+            </div>
+            <div class="timeline" id="timeline"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== MOVIMIENTOS ===================== -->
+      <section class="screen" id="screen-movimientos" data-title="Movimientos">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Movimientos</h1>
+            <p class="page-sub">Todo lo que entra y sale de las cajas del grupo.</p>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary"><i data-lucide="download"></i>Exportar</button>
+            <a class="btn btn-primary" href="#nuevo"><i data-lucide="plus"></i>Nuevo movimiento</a>
+          </div>
+        </div>
+        <article class="panel">
+          <div class="toolbar">
+            <div class="field-search"><i data-lucide="search"></i><span>Buscar movimientos</span></div>
+            <div class="seg only-d" role="group" aria-label="Tipo"><button aria-pressed="true">Todos</button><button aria-pressed="false">Ingresos</button><button aria-pressed="false">Egresos</button></div>
+            <div class="chips-scroll" style="display:contents">
+              <button class="chip on"><i data-lucide="calendar"></i><span>Septiembre 2026</span><span class="x" aria-label="Quitar filtro"><i data-lucide="x"></i></span></button>
+              <button class="chip on"><span>Caja: <b>Grupo</b></span><span class="x" aria-label="Quitar filtro"><i data-lucide="x"></i></span></button>
+              <button class="chip"><i data-lucide="plus"></i>Medio de pago</button>
+              <button class="chip"><i data-lucide="plus"></i>Estado</button>
+            </div>
+            <span style="flex:1" class="only-d"></span>
+            <button class="btn btn-ghost btn-sm only-d">Limpiar</button>
+          </div>
+          <div class="summary-line" aria-live="polite">
+            <div><span class="k">Movimientos</span><b class="num">214</b></div>
+            <div><span class="k">Ingresos</span><span class="amt in">+$ 1.040.200</span></div>
+            <div><span class="k">Egresos</span><span class="amt out">−$ 727.800</span></div>
+            <div><span class="k">Neto</span><span class="amt in">+$ 312.400</span></div>
+          </div>
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:34px"><span class="check"></span></th>
+              <th><span class="sort">Fecha<i data-lucide="arrow-down"></i></span></th>
+              <th>Concepto</th><th>Caja</th><th>Medio</th><th>Estado</th><th>Responsable</th><th class="r">Monto</th><th style="width:40px"></th>
+            </tr></thead>
+            <tbody id="movs"></tbody>
+          </table>
+          <div class="panel-f pagerf">
+            <div class="selbar"><span class="small muted">Mostrando <b class="num" style="color:var(--color-ink);font-weight:500">1–14</b> de <span class="num">214</span></span></div>
+            <div class="pager" aria-label="Paginación">
+              <button aria-label="Anterior"><i data-lucide="chevron-left"></i></button>
+              <button aria-current="page">1</button><button>2</button><button>3</button><button>…</button><button>16</button>
+              <button aria-label="Siguiente"><i data-lucide="chevron-right"></i></button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ===================== EVENTO ===================== -->
+      <section class="screen" id="screen-evento" data-title="Evento de venta">
+        <div class="event-head">
+          <div>
+            <div class="crumbs" style="margin-bottom:8px"><a href="#evento">Eventos</a><i data-lucide="chevron-right"></i><span>Venta</span></div>
+            <h1 class="page-title">Pastelitos del Día de la Tradición</h1>
+            <div class="event-meta">
+              <span><i data-lucide="calendar"></i>Sábado 8 de noviembre</span>
+              <span><i data-lucide="users"></i>14 vendedores</span>
+              <span><i data-lucide="wallet"></i>Ganancia a cuentas personales</span>
+              <span class="badge b-brand"><i data-lucide="circle-dot"></i>En curso</span>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary"><i data-lucide="receipt"></i>Cargar gasto</button>
+            <button class="btn btn-primary"><i data-lucide="plus"></i>Registrar venta</button>
+          </div>
+        </div>
+
+        <article class="panel">
+          <div class="equation">
+            <div class="eq-cell">
+              <div class="label">Recaudación</div>
+              <div class="figure-md"><span class="cur">$</span>458.000</div>
+              <div class="eq-note num">47 docenas y 7 medias docenas</div>
+            </div>
+            <div class="eq-op" aria-hidden="true">−</div>
+            <div class="eq-cell">
+              <div class="label">Costos y gastos</div>
+              <div class="figure-md"><span class="cur">$</span>171.300</div>
+              <div class="eq-note">Insumos, gas y alquiler de freidora</div>
+            </div>
+            <div class="eq-op" aria-hidden="true">=</div>
+            <div class="eq-cell result">
+              <div class="label">Ganancia neta <span class="badge b-ok" style="margin-left:4px">62,6 % margen</span></div>
+              <div class="figure-md"><span class="cur">$</span>286.700</div>
+              <div class="eq-note">Se reparte en 14 cuentas personales según lo vendido</div>
+            </div>
+          </div>
+        </article>
+
+        <div class="tabs" role="tablist">
+          <a class="tab" role="tab" aria-selected="true">Resumen</a>
+          <a class="tab" role="tab" aria-selected="false">Ventas <span class="n">61</span></a>
+          <a class="tab" role="tab" aria-selected="false">Entregas <span class="n">38</span></a>
+          <a class="tab" role="tab" aria-selected="false">Movimientos <span class="n">27</span></a>
+        </div>
+
+        <div class="grid-dash">
+          <article class="panel span-7">
+            <div class="panel-h ruled"><h2 class="panel-t">Productos</h2><button class="btn btn-ghost btn-sm"><i data-lucide="plus"></i>Agregar</button></div>
+            <table class="tbl" id="products">
+              <thead><tr><th>Producto</th><th class="r">Precio</th><th class="r">Costo</th><th class="r">Margen</th><th class="r">Vendidos</th><th class="r">Recaudado</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <div class="panel-b" style="border-top:1px solid var(--color-border)">
+              <div class="label" style="margin-bottom:10px">Recaudación por producto</div>
+              <div class="split-bar" style="height:10px"><span style="--c:var(--color-data-1);flex:234"></span><span style="--c:var(--color-data-2);flex:189"></span><span style="--c:var(--color-data-5);flex:35"></span></div>
+              <div class="meter-legend" style="grid-template-columns:repeat(3,auto);justify-content:start;gap:4px 20px;margin-top:10px"><span><i style="--c:var(--color-data-1)"></i>Membrillo <b>51 %</b></span><span><i style="--c:var(--color-data-2)"></i>Batata <b>41 %</b></span><span><i style="--c:var(--color-data-5)"></i>Mixta <b>8 %</b></span></div>
+            </div>
+          </article>
+          <article class="panel span-5 sellers">
+            <div class="panel-h ruled"><h2 class="panel-t">Ventas por vendedor</h2><a class="link">Ver las 14</a></div>
+            <ul id="sellers"></ul>
+          </article>
+          <article class="panel span-12">
+            <div class="panel-h ruled"><h2 class="panel-t">Gastos <small>6 gastos</small></h2><button class="btn btn-ghost btn-sm"><i data-lucide="plus"></i>Cargar gasto</button></div>
+            <table class="tbl">
+              <thead><tr><th>Gasto</th><th>Categoría</th><th>Pagó</th><th>Medio</th><th>Estado</th><th class="r">Monto</th></tr></thead>
+              <tbody id="gastos"></tbody>
+            </table>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== FORMULARIO ===================== -->
+      <section class="screen screen-form" id="screen-nuevo" data-title="Nuevo movimiento">
+        <div class="page-head">
+          <div>
+            <div class="crumbs" style="margin-bottom:8px"><a href="#movimientos">Movimientos</a><i data-lucide="chevron-right"></i><span>Nuevo</span></div>
+            <h1 class="page-title">Nuevo movimiento</h1>
+            <p class="page-sub">Registrá un ingreso o egreso. Se impacta en la caja apenas lo guardás.</p>
+          </div>
+        </div>
+        <div class="form-layout">
+          <form class="panel form-panel" onsubmit="return false" novalidate>
+            <div class="fsec">
+              <div class="typeseg" role="group" aria-label="Tipo de movimiento">
+                <button type="button" aria-pressed="false"><i data-lucide="arrow-down-left"></i>Ingreso</button>
+                <button type="button" aria-pressed="true"><i data-lucide="arrow-up-right"></i>Egreso</button>
+              </div>
+              <div class="field">
+                <label for="f-monto">Monto</label>
+                <div class="control lg is-valid"><span class="pre">$</span><input id="f-monto" value="17.600" inputmode="numeric" /><i data-lucide="circle-check" class="ok"></i></div>
+              </div>
+              <div class="row2">
+                <div class="field">
+                  <label>Concepto</label>
+                  <div class="control select" role="button" tabindex="0"><span>Gasto general</span><i data-lucide="chevron-down"></i></div>
+                </div>
+                <div class="field">
+                  <label>Caja</label>
+                  <div class="control select" role="button" tabindex="0"><span style="display:flex;align-items:center;gap:8px"><i class="sw" style="width:8px;height:8px;border-radius:2px;background:var(--color-data-1);display:inline-block"></i>Caja del grupo</span><i data-lucide="chevron-down"></i></div>
+                </div>
+              </div>
+              <div class="field">
+                <span class="flabel">Categoría</span>
+                <div class="catchips" role="group" aria-label="Categoría">
+                  <button type="button" class="catchip">Insumos</button>
+                  <button type="button" class="catchip">Comida</button>
+                  <button type="button" class="catchip">Transporte</button>
+                  <button type="button" class="catchip" aria-pressed="true">Material didáctico</button>
+                  <button type="button" class="catchip">Mantenimiento</button>
+                  <button type="button" class="catchip">Servicios</button>
+                  <button type="button" class="catchip">Otros</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="fsec">
+              <div class="fsec-t">Cómo se pagó</div>
+              <div class="pay" role="radiogroup" aria-label="Medio de pago">
+                <button type="button" class="pay-opt" role="radio" aria-checked="false"><i data-lucide="banknote"></i><b>Efectivo</b><small>Sale de la caja física</small><span class="radio"></span></button>
+                <button type="button" class="pay-opt" role="radio" aria-checked="false"><i data-lucide="landmark"></i><b>Transferencia</b><small>Cuenta bancaria del grupo</small><span class="radio"></span></button>
+                <button type="button" class="pay-opt" role="radio" aria-checked="false"><i data-lucide="wallet"></i><b>Saldo personal</b><small>Descuenta de una cuenta</small><span class="radio"></span></button>
+                <button type="button" class="pay-opt" role="radio" aria-checked="true"><i data-lucide="split"></i><b>Mixto</b><small>Parte y parte</small><span class="radio"></span></button>
+              </div>
+              <div class="split-box">
+                <div class="row2">
+                  <div class="field">
+                    <label for="f-ef">Efectivo</label>
+                    <div class="control"><span class="pre">$</span><input id="f-ef" value="10.000" inputmode="numeric" /></div>
+                  </div>
+                  <div class="field">
+                    <label for="f-tr">Transferencia</label>
+                    <div class="control is-error"><span class="pre">$</span><input id="f-tr" value="5.600" inputmode="numeric" aria-invalid="true" aria-describedby="e-tr" /><i data-lucide="circle-alert" style="color:var(--color-danger)"></i></div>
+                  </div>
+                </div>
+                <div class="split-sum">
+                  <span class="muted">Suma de las partes</span>
+                  <span class="amt num">$ 15.600 <span class="subtle" style="font-weight:400">de $ 17.600</span></span>
+                </div>
+                <p class="hint" id="e-tr"><i data-lucide="circle-alert" class="err"></i><span class="err">Faltan $ 2.000 para llegar al monto. Ajustá efectivo o transferencia.</span></p>
+              </div>
+            </div>
+
+            <div class="fsec">
+              <div class="row2">
+                <div class="field">
+                  <label for="f-resp">Responsable</label>
+                  <div class="control is-focus"><i data-lucide="search"></i><input id="f-resp" value="Pablo Ach" /><span class="kbd">↵</span></div>
+                  <p class="hint">Educador que hizo la compra.</p>
+                </div>
+                <div class="field">
+                  <label for="f-fecha">Fecha</label>
+                  <div class="control"><i data-lucide="calendar"></i><input id="f-fecha" value="06/10/2026" /></div>
+                </div>
+              </div>
+              <div class="field">
+                <label for="f-desc">Descripción <span class="opt num">38 / 200</span></label>
+                <div class="control area"><textarea id="f-desc">Témperas, cartulinas y cinta para la Manada</textarea></div>
+              </div>
+              <div class="field">
+                <span class="flabel">Comprobante <span class="opt" style="font-weight:400;color:var(--color-ink-subtle)">Opcional</span></span>
+                <div class="drop"><span class="obl-ico"><i data-lucide="paperclip"></i></span><span>Arrastrá la foto del ticket o <a class="link" style="font-size:inherit">elegí un archivo</a>. JPG, PNG o PDF hasta 5 MB.</span></div>
+              </div>
+              <div class="switch-row">
+                <div><div style="font-weight:500">Pendiente de reembolso</div><p class="hint" style="margin-top:2px">Pablo lo pagó de su bolsillo y hay que devolvérselo.</p></div>
+                <button type="button" class="switch" role="switch" aria-checked="true" aria-label="Pendiente de reembolso"></button>
+              </div>
+              <div class="field">
+                <label for="f-num">N.º de movimiento</label>
+                <div class="control is-disabled"><input id="f-num" class="mono" value="MOV-2026-01482" disabled /><i data-lucide="lock"></i></div>
+              </div>
+            </div>
+            <div class="form-foot">
+              <span class="small muted">Se guarda en <b style="color:var(--color-ink);font-weight:500">Caja del grupo</b></span>
+              <div class="actions"><a class="btn btn-ghost" href="#movimientos">Cancelar</a><button class="btn btn-primary" type="submit"><i data-lucide="check"></i>Guardar movimiento</button></div>
+            </div>
+          </form>
+
+          <aside class="aside">
+            <article class="panel">
+              <div class="panel-h ruled"><h2 class="panel-t">Impacto en las cajas</h2></div>
+              <div class="impact">
+                <div class="impact-row"><span class="muted small">Caja del grupo</span><span class="amt out">−$ 17.600</span>
+                  <span class="arrow-to num small subtle">$ 2.140.000 <i data-lucide="arrow-right" style="width:12px;height:12px"></i> <b style="color:var(--color-ink);font-weight:500">$ 2.122.400</b></span></div>
+              </div>
+              <div class="impact" style="border-top:1px solid var(--color-border)">
+                <div class="impact-row"><span class="muted small">A reembolsar a Pablo Achával</span><span class="amt">$ 17.600</span></div>
+              </div>
+            </article>
+            <article class="panel">
+              <div class="panel-h"><h2 class="panel-t">Antes de guardar</h2><span class="badge b-danger">1 por revisar</span></div>
+              <ul class="checklist">
+                <li><i data-lucide="circle-check" class="okc"></i>Monto y concepto completos</li>
+                <li><i data-lucide="circle-alert" class="err"></i><span>El pago mixto no suma el monto total</span></li>
+                <li><i data-lucide="circle-check" class="okc"></i>Responsable activo</li>
+                <li><i data-lucide="circle" class="subtle"></i><span class="muted">Comprobante (opcional)</span></li>
+              </ul>
+            </article>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<nav class="bottom-nav" aria-label="Navegación">
+  <a class="bn" data-nav="dashboard" href="#dashboard"><i data-lucide="layout-dashboard"></i>Inicio</a>
+  <a class="bn" data-nav="movimientos" href="#movimientos"><i data-lucide="arrow-left-right"></i>Movimientos</a>
+  <a class="bn" href="#nuevo" aria-label="Nuevo movimiento"><span class="bn-plus"><i data-lucide="plus"></i></span></a>
+  <a class="bn" data-nav="persona" href="#persona"><i data-lucide="users"></i>Personas</a>
+  <a class="bn" data-nav="evento" href="#evento"><i data-lucide="store"></i>Eventos</a>
+</nav>
+<div class="m-actionbar"><a class="btn btn-secondary" href="#movimientos">Cancelar</a><button class="btn btn-primary"><i data-lucide="check"></i>Guardar</button></div>
+
+<script>
+/* ---------- Formato ---------- */
+const fmt = (n) => Math.round(Math.abs(n)).toLocaleString('es-AR');
+const money = (n, kind) => {
+  const sign = kind === 'in' ? '+' : kind === 'out' ? '−' : '';
+  return `<span class="amt ${kind || ''}">${sign}<span class="cur">$</span>${fmt(n)}</span>`;
+};
+const RAMA = { Manada: 'r-manada', Unidad: 'r-unidad', Caminantes: 'r-caminantes', Rovers: 'r-rovers', Educadores: 'r-educ' };
+const MEDIO = { efectivo: ['banknote', 'Efectivo'], transferencia: ['landmark', 'Transferencia'], saldo_personal: ['wallet', 'Saldo personal'], mixto: ['split', 'Mixto'] };
+const ESTADO = {
+  pagado: ['b-ok', 'check', 'Pagado'],
+  pendiente_reembolso: ['b-info', 'undo-2', 'A reembolsar'],
+  pendiente_cobro: ['b-warn', 'clock', 'A cobrar'],
+};
+const medio = (m) => `<span class="medio"><i data-lucide="${MEDIO[m][0]}"></i>${MEDIO[m][1]}</span>`;
+const badge = (e) => `<span class="badge ${ESTADO[e][0]}"><i data-lucide="${ESTADO[e][1]}"></i>${ESTADO[e][2]}</span>`;
+const initials = (n) => n.split(' ').map((p) => p[0]).slice(0, 2).join('');
+const mvIco = (t) => `<span class="mv-ico ${t}"><i data-lucide="${t === 'in' ? 'arrow-down-left' : 'arrow-up-right'}"></i></span>`;
+
+/* ---------- Datos ---------- */
+const MOVS = [
+  { f: '06 oct', t: 'in', c: 'Inscripción al grupo', p: 'Tomás Benítez', caja: 'Caja del grupo', m: 'transferencia', e: 'pagado', r: 'Florencia Aguirre', a: 60000 },
+  { f: '05 oct', t: 'out', c: 'Material didáctico', p: 'Librería El Ateneo', caja: 'Fondo Manada', m: 'efectivo', e: 'pendiente_reembolso', r: 'Pablo Achával', a: 17600 },
+  { f: '05 oct', t: 'in', c: 'Pago de campamento', p: 'Juana Ferreyra', caja: 'Caja del grupo', m: 'mixto', e: 'pagado', r: 'Florencia Aguirre', a: 45000 },
+  { f: '04 oct', t: 'in', c: 'Ganancia de evento', p: 'Locro patrio, 9 vendedores', caja: 'Cuentas personales', m: 'efectivo', e: 'pagado', r: 'Carla Domínguez', a: 128400 },
+  { f: '03 oct', t: 'out', c: 'Transporte a campamento', p: 'Micros Ruta Sur', caja: 'Caja del grupo', m: 'transferencia', e: 'pagado', r: 'Carla Domínguez', a: 210000 },
+  { f: '03 oct', t: 'in', c: 'Inscripción Scouts de Argentina', p: 'Mateo Gauna', caja: 'Caja del grupo', m: 'saldo_personal', e: 'pagado', r: 'Florencia Aguirre', a: 42000 },
+  { f: '02 oct', t: 'out', c: 'Asignación a fondo de rama', p: 'Fondo Rovers', caja: 'Caja del grupo', m: 'transferencia', e: 'pagado', r: 'Florencia Aguirre', a: 80000 },
+  { f: '01 oct', t: 'out', c: 'Mantenimiento del local', p: 'Ferretería Don Luis', caja: 'Caja del grupo', m: 'efectivo', e: 'pagado', r: 'Ignacio Godoy', a: 23950 },
+  { f: '30 sep', t: 'in', c: 'Pago de campamento', p: 'Lucía Paz', caja: 'Caja del grupo', m: 'transferencia', e: 'pendiente_cobro', r: 'Florencia Aguirre', a: 30000 },
+  { f: '29 sep', t: 'out', c: 'Bonificación otorgada', p: 'Santino Díaz, campamento', caja: 'Fondo Solidario', m: 'transferencia', e: 'pagado', r: 'Carla Domínguez', a: 38000 },
+  { f: '28 sep', t: 'in', c: 'Inscripción al grupo', p: 'Martina Quiroga', caja: 'Caja del grupo', m: 'efectivo', e: 'pagado', r: 'Ignacio Godoy', a: 30000 },
+  { f: '27 sep', t: 'out', c: 'Gasto de campamento', p: 'Supermercado Día, víveres', caja: 'Fondo Unidad', m: 'efectivo', e: 'pendiente_reembolso', r: 'Agustina Medina', a: 64320 },
+  { f: '26 sep', t: 'in', c: 'Uso de saldo personal', p: 'Bautista Sosa', caja: 'Cuenta personal', m: 'saldo_personal', e: 'pagado', r: 'Florencia Aguirre', a: 12500 },
+  { f: '25 sep', t: 'out', c: 'Servicios del local', p: 'Edesur, luz septiembre', caja: 'Caja del grupo', m: 'transferencia', e: 'pagado', r: 'Ignacio Godoy', a: 18740 },
+];
+const DEBTORS = [
+  ['Lucía Paz', 'Unidad', 'Campamento', 96000, 52],
+  ['Santino Díaz', 'Caminantes', 'Inscripción y camp.', 84000, 41],
+  ['Valentina Ríos', 'Caminantes', 'Campamento', 96000, 21],
+  ['Joaquín Herrera', 'Rovers', 'Inscripción', 60000, 33],
+  ['Renata Vera', 'Manada', 'Inscripción', 36000, 12],
+  ['Facundo Ojeda', 'Unidad', 'Campamento', 30000, 6],
+];
+const FUNDS = [
+  ['Manada', 286400, '+$ 40.000', 'asignado 2 oct'],
+  ['Unidad', 412300, '−$ 64.320', 'víveres campamento'],
+  ['Caminantes', 371000, 'sin cambios', 'este mes'],
+  ['Rovers', 315500, '+$ 80.000', 'asignado 2 oct'],
+];
+
+/* ---------- Render: dashboard ---------- */
+const row = (m, full) => `
+  <tr${m.sel ? ' class="is-selected"' : ''}${m.hover ? ' class="is-hover"' : ''}>
+    ${full ? `<td class="only-d"><span class="check${m.sel ? ' on' : ''}">${m.sel ? '<i data-lucide="check"></i>' : ''}</span></td><td class="only-d num muted">${m.f}</td>` : ''}
+    <td class="c-main"><div class="cell-main">${mvIco(m.t)}<div style="min-width:0"><div class="cell-title">${m.c}</div>
+      <div class="cell-sub"><span class="only-d">${m.p}</span><span class="only-m">${m.f} · ${m.p}</span></div></div></div></td>
+    <td class="muted">${m.caja}</td>
+    <td>${medio(m.m)}</td>
+    ${full ? `<td>${badge(m.e)}</td><td class="muted">${m.r}</td>` : `<td class="num muted">${m.f}</td>`}
+    <td class="r c-amt">${money(m.a, m.t)}</td>
+    ${full ? '<td class="r"><button class="icon-btn" aria-label="Acciones" style="width:28px;height:28px"><i data-lucide="ellipsis"></i></button></td>' : ''}
+  </tr>`;
+document.getElementById('recent').innerHTML = MOVS.slice(0, 8).map((m) => row(m, false)).join('');
+const movsFull = MOVS.map((m, i) => ({ ...m, sel: i === 1, hover: i === 4 }));
+document.getElementById('movs').innerHTML = movsFull.map((m) => row(m, true)).join('');
+
+document.getElementById('debtors').innerHTML = DEBTORS.map(([n, r, c, a, d]) => `
+  <li><span class="avatar">${initials(n)}</span>
+    <div style="min-width:0"><div class="debtor-name">${n}</div><div class="debtor-meta"><span class="rdot ${RAMA[r]}"></span>${r}<span aria-hidden="true">·</span>${c}</div></div>
+    <div class="debtor-r">${money(a, 'debt')}<span class="age${d > 30 ? ' late' : ''}">${d} días</span></div></li>`).join('');
+
+const maxF = Math.max(...FUNDS.map((f) => f[1]));
+document.getElementById('funds').innerHTML = FUNDS.map(([r, a, d, note]) => `
+  <div class="fund ${RAMA[r]}">
+    <div><div class="fund-name"><span class="rdot"></span>${r}</div><div class="fund-meta">${d.startsWith('+') ? `<span style="color:var(--color-money-in);font-weight:500">${d}</span>` : d.startsWith('−') ? `<span style="color:var(--color-ink-muted);font-weight:500">${d}</span>` : d} ${note}</div></div>
+    <div class="fund-amt">${money(a)}</div>
+    <div class="fund-track"><span style="width:${(a / maxF) * 100}%"></span></div>
+  </div>`).join('');
+
+/* ---------- Gráfico principal ---------- */
+const MONTHS = ['oct', 'nov', 'dic', 'ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep'];
+const SALDO = [3.12, 3.28, 3.05, 2.71, 2.94, 3.86, 4.02, 4.11, 4.25, 4.08, 4.5, 4.81];
+const ING = [0.52, 0.61, 0.48, 0.22, 0.71, 1.38, 0.69, 0.58, 0.66, 0.41, 0.98, 1.04];
+const EGR = [0.38, 0.45, 0.71, 0.56, 0.48, 0.46, 0.53, 0.49, 0.52, 0.58, 0.56, 0.73];
+function drawMain() {
+  const svg = document.getElementById('mainChart');
+  const W = svg.clientWidth || 600, H = svg.clientHeight || 232;
+  const pl = 44, pr = 8, pt = 10, pb = 22, iw = W - pl - pr, ih = H - pt - pb;
+  const yMax = 5, x = (i) => pl + (iw / (MONTHS.length - 1)) * i, y = (v) => pt + ih - (v / yMax) * ih;
+  const bw = Math.min(8, iw / MONTHS.length / 4);
+  const ticks = [0, 1, 2, 3, 4, 5];
+  const grid = ticks.map((t) => `<line x1="${pl}" x2="${W - pr}" y1="${y(t)}" y2="${y(t)}"/>`).join('');
+  const yl = ticks.map((t) => `<text x="${pl - 10}" y="${y(t) + 4}" text-anchor="end">${t === 0 ? '0' : t + ' M'}</text>`).join('');
+  const xl = MONTHS.map((m, i) => (W < 480 && i % 2) ? '' : `<text x="${x(i)}" y="${H - 4}" text-anchor="middle">${m}</text>`).join('');
+  const bars = MONTHS.map((_, i) => `<rect class="bar-in" x="${x(i) - bw - 1}" y="${y(ING[i])}" width="${bw}" height="${y(0) - y(ING[i])}" rx="1.5"/><rect class="bar-out" x="${x(i) + 1}" y="${y(EGR[i])}" width="${bw}" height="${y(0) - y(EGR[i])}" rx="1.5"/>`).join('');
+  const pts = SALDO.map((v, i) => [x(i), y(v)]);
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const area = `${line} L ${x(SALDO.length - 1)} ${y(0)} L ${x(0)} ${y(0)} Z`;
+  const li = SALDO.length - 1;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = `<g class="grid">${grid}</g><g class="axis">${yl}${xl}</g>${bars}<path class="area" d="${area}"/><path class="line" d="${line}"/>
+    <line class="cursor" x1="${x(li)}" x2="${x(li)}" y1="${pt}" y2="${y(0)}"/><circle class="pt" cx="${x(li)}" cy="${y(SALDO[li])}" r="4"/>`;
+  const tip = document.getElementById('tip');
+  tip.innerHTML = `<div class="tip-t">Septiembre 2026</div>
+    <div class="tip-row"><span><i style="--c:var(--color-data-1)"></i>Saldo</span><b class="amt">$ 4.812.350</b></div>
+    <div class="tip-row"><span><i style="--c:var(--color-money-in)"></i>Ingresos</span><span class="amt">$ 1.040.200</span></div>
+    <div class="tip-row"><span><i style="--c:var(--color-ink-subtle)"></i>Egresos</span><span class="amt">$ 727.800</span></div>`;
+  const host = svg.parentElement.getBoundingClientRect(), sv = svg.getBoundingClientRect();
+  tip.style.left = `${sv.left - host.left + x(li) - tip.offsetWidth - 14}px`;
+  tip.style.top = `${sv.top - host.top + y(3.65)}px`;
+}
+
+/* ---------- Sparklines ---------- */
+const SPARK = {
+  in: [[0.52, 0.61, 0.48, 0.22, 0.71, 1.38, 0.69, 0.58, 0.66, 0.41, 0.98, 1.04], 'var(--color-money-in)'],
+  out: [[0.38, 0.45, 0.71, 0.56, 0.48, 0.46, 0.53, 0.49, 0.52, 0.58, 0.56, 0.73], 'var(--color-ink-subtle)'],
+  debt: [[1.62, 1.55, 1.71, 1.8, 1.66, 1.38, 1.31, 1.29, 1.35, 1.27, 1.23, 1.13], 'var(--color-danger)'],
+};
+document.querySelectorAll('[data-spark]').forEach((svg) => {
+  const [data, color] = SPARK[svg.dataset.spark];
+  const W = 96, H = 32, mn = Math.min(...data), mx = Math.max(...data);
+  const p = data.map((v, i) => [(W / (data.length - 1)) * i, 3 + (H - 6) * (1 - (v - mn) / (mx - mn))]);
+  const d = p.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' ');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('aria-hidden', 'true');
+  const last = p[p.length - 1];
+  svg.innerHTML = `<path class="a" d="${d} L ${W} ${H} L 0 ${H} Z" style="fill:color-mix(in oklch, ${color} 10%, transparent)"/><path class="l" d="${d}" style="stroke:${color}" vector-effect="non-scaling-stroke"/><circle cx="${last[0]}" cy="${last[1]}" r="2.5" style="fill:${color}"/>`;
+});
+
+/* ---------- Persona: timeline ---------- */
+const TL = [
+  ['Octubre', [
+    ['in', 'Pago de inscripción al grupo', 'Transferencia', 'Registró Florencia Aguirre', '2 oct', 24000],
+    ['in', 'Ganancia del Locro patrio', 'A cuenta personal', '18 docenas vendidas', '4 oct', 11200],
+  ]],
+  ['Septiembre', [
+    ['out', 'Uso de saldo personal', 'Saldo personal', 'Para inscripción Scouts de Argentina', '12 sep', 12000],
+    ['in', 'Bonificación recibida', 'Fondo Solidario', 'Campamento de invierno', '2 sep', 38000],
+    ['in', 'Ganancia de Pastelitos de invierno', 'A cuenta personal', '22 docenas vendidas', '1 sep', 19300],
+  ]],
+];
+document.getElementById('timeline').innerHTML = TL.map(([g, items], gi) => `<div class="tl-group">${g}</div>` + items.map(([t, c, m, s, f, a], i) => `
+  <div class="tl-item${gi === TL.length - 1 && i === items.length - 1 ? ' last' : ''}">${mvIco(t)}
+    <div style="min-width:0"><div class="tl-title">${c}</div><div class="tl-sub"><span class="num">${f}</span><span>${m}</span><span>${s}</span></div></div>
+    <div class="tl-r">${money(a, t)}</div></div>`).join('')).join('');
+
+/* ---------- Evento ---------- */
+const PRODUCTS = [
+  ['Pastelitos de membrillo', 'docena', 9000, 3100, 26],
+  ['Pastelitos de batata', 'docena', 9000, 3100, 21],
+  ['Media docena mixta', 'media docena', 5000, 1600, 7],
+];
+document.querySelector('#products tbody').innerHTML = PRODUCTS.map(([n, u, p, c, q]) => `
+  <tr><td class="c-main"><div class="cell-main"><span class="obl-ico" style="width:28px;height:28px"><i data-lucide="package"></i></span><div style="min-width:0"><div class="cell-title">${n}</div><div class="cell-sub">por ${u}<span class="only-m"> · ${q} vendidos</span></div></div></div></td>
+    <td class="r">${money(p)}</td><td class="r muted">${money(c)}</td><td class="r"><span class="margin-pill">${Math.round((1 - c / p) * 100)} %</span></td>
+    <td class="r num">${q}</td><td class="r c-amt">${money(p * q)}</td></tr>`).join('') +
+  `<tr><td class="c-main" style="font-weight:600">Total</td><td></td><td></td><td></td><td class="r num" style="font-weight:600">54</td><td class="r c-amt" style="font-weight:600">${money(458000)}</td></tr>`;
+
+const SELLERS = [
+  ['Juana Ferreyra', 'Unidad', 9, 81000],
+  ['Mateo Gauna', 'Caminantes', 8, 72000],
+  ['Valentina Ríos', 'Caminantes', 7, 63000],
+  ['Bautista Sosa', 'Rovers', 6, 54000],
+  ['Martina Quiroga', 'Manada', 5, 45000],
+  ['Catalina Ledesma', 'Unidad', 4, 36000],
+];
+document.getElementById('sellers').innerHTML = SELLERS.map(([n, r, q, a], i) => `
+  <li><span class="rank">${i + 1}</span>
+    <div style="min-width:0"><div style="display:flex;align-items:center;gap:8px;justify-content:space-between"><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${n}</span><span class="small subtle num" style="white-space:nowrap">${q} doc.</span></div>
+      <div class="seller-bar"><span style="width:${(q / 9) * 100}%"></span></div></div>
+    <div style="display:grid;justify-items:end;gap:2px">${money(a)}<span class="rama ${RAMA[r]}" style="height:18px;font-size:11px;padding:0 7px 0 6px">${r}</span></div></li>`).join('');
+
+const GASTOS = [
+  ['Harina 000, grasa y dulce', 'Distribuidora La Nona', 'Insumos', 'Carla Domínguez', 'transferencia', 'pagado', 96400],
+  ['Garrafas de gas x3', 'Gas del Oeste', 'Insumos', 'Ignacio Godoy', 'efectivo', 'pendiente_reembolso', 27000],
+  ['Alquiler de freidora industrial', 'Gastronómica Sur', 'Alquiler', 'Carla Domínguez', 'transferencia', 'pagado', 25000],
+  ['Bolsas y servilletas', 'Mayorista Diarco', 'Insumos', 'Agustina Medina', 'efectivo', 'pagado', 12600],
+  ['Almíbar y azúcar impalpable', 'Almacén Doña Rosa', 'Comida', 'Pablo Achával', 'saldo_personal', 'pendiente_reembolso', 6200],
+  ['Flete de mesas', 'Fletes Ramírez', 'Transporte', 'Ignacio Godoy', 'efectivo', 'pagado', 4100],
+];
+document.getElementById('gastos').innerHTML = GASTOS.map(([g, prov, cat, who, m, e, a]) => `
+  <tr><td class="c-main"><div class="cell-main">${mvIco('out')}<div style="min-width:0"><div class="cell-title">${g}</div><div class="cell-sub">${prov}<span class="only-m"> · ${who}</span></div></div></div></td>
+  <td><span class="badge b-neutral">${cat}</span></td><td class="muted">${who}</td><td>${medio(m)}</td><td>${badge(e)}</td><td class="r c-amt">${money(a, 'out')}</td></tr>`).join('');
+
+/* ---------- Router + tema ---------- */
+const params = new URLSearchParams(location.search);
+if (params.has('shot')) document.documentElement.classList.add('shot');
+const setTheme = (t) => { document.documentElement.dataset.theme = t; try { localStorage.setItem('insignia-theme', t); } catch (e) { /* storage bloqueado: el tema vive en memoria */ } };
+let initial = params.get('theme');
+if (!initial) { try { initial = localStorage.getItem('insignia-theme'); } catch (e) { initial = null; } }
+setTheme(initial || 'light');
+document.querySelectorAll('.theme-toggle').forEach((b) => b.addEventListener('click', () => { setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); }));
+
+function route() {
+  const id = (location.hash || '#dashboard').slice(1);
+  const screen = document.getElementById('screen-' + id) || document.getElementById('screen-dashboard');
+  document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('is-active', s === screen));
+  const key = screen.id.replace('screen-', '');
+  const navKey = key === 'nuevo' ? 'movimientos' : key;
+  document.querySelectorAll('[data-nav]').forEach((a) => { if (a.dataset.nav === navKey) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  document.querySelectorAll('.mock-bar a').forEach((a) => { if (a.getAttribute('href') === '#' + key) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  document.getElementById('crumb').textContent = screen.dataset.title;
+  document.getElementById('mTitle').textContent = screen.dataset.title;
+  document.body.classList.toggle('on-form', key === 'nuevo');
+  document.querySelector('.m-back').hidden = key !== 'nuevo';
+  document.querySelector('.m-crest').style.display = key === 'nuevo' ? 'none' : '';
+  if (key === 'dashboard') requestAnimationFrame(drawMain);
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+window.addEventListener('resize', () => { if (document.getElementById('screen-dashboard').classList.contains('is-active')) drawMain(); });
+lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
+route();
+</script>
+</body>
+</html>

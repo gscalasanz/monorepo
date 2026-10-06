@@ -1,0 +1,149 @@
+/*
+ * Dirección "Bitácora": libreta de campo scout.
+ * Hoja cálida, tinta azul-negra (deriva del índigo #242167), verde bosque para
+ * estados y el burgundy #812128 de Scouts de Argentina como único color de acción.
+ * Display: Newsreader (serif editorial con óptica variable). UI y cifras: IBM Plex Sans (tnum).
+ * Las familias se cargan con next/font (ver DESIGN.md); acá van con fallbacks.
+ */
+@theme {
+  /* Superficies: canvas = hoja, surface = ficha apoyada, recessed = renglón hundido */
+  --color-canvas: oklch(96.4% 0.011 75);
+  --color-surface: oklch(98.9% 0.005 80);
+  --color-surface-raised: oklch(100% 0 0);
+  --color-recessed: oklch(93.6% 0.013 75);
+
+  /* Texto: tinta azul-negra */
+  --color-ink: oklch(23% 0.035 272);
+  --color-ink-muted: oklch(42% 0.03 272);
+  --color-ink-subtle: oklch(50% 0.025 272);
+
+  /* Bordes / foco */
+  --color-border: oklch(87.5% 0.016 75);
+  --color-border-strong: oklch(56% 0.022 272);
+  --color-focus: oklch(46% 0.15 268);
+
+  /* Marca / acción: burgundy Scouts de Argentina (#812128) */
+  --color-brand: oklch(39.5% 0.125 21);
+  --color-brand-hover: oklch(33% 0.11 21);
+  --color-on-brand: oklch(98.9% 0.005 80);
+  --color-brand-soft: oklch(93.5% 0.028 21);
+  --color-accent-2: oklch(29% 0.11 279);
+
+  /* Estados: verde bosque para lo sano */
+  --color-success: oklch(44% 0.085 155);
+  --color-success-soft: oklch(93.5% 0.032 155);
+  --color-danger: oklch(49% 0.165 31);
+  --color-danger-soft: oklch(94% 0.03 31);
+  --color-warning: oklch(49% 0.1 62);
+  --color-warning-soft: oklch(93.5% 0.05 82);
+  --color-info: oklch(45% 0.1 245);
+  --color-info-soft: oklch(94% 0.024 245);
+
+  /* Dinero (siempre con signo o ícono, nunca solo color) */
+  --color-money-in: oklch(44% 0.085 155);
+  --color-money-out: oklch(49% 0.165 31);
+
+  /* Ramas (marcas no-textuales ≥3:1; el texto del chip va en ink) */
+  --color-rama-manada: oklch(66% 0.155 62);
+  --color-rama-manada-soft: oklch(93.5% 0.05 75);
+  --color-rama-unidad: oklch(55% 0.14 148);
+  --color-rama-unidad-soft: oklch(93.5% 0.04 148);
+  --color-rama-caminantes: oklch(53% 0.13 250);
+  --color-rama-caminantes-soft: oklch(93.5% 0.03 250);
+  --color-rama-rovers: oklch(50% 0.16 345);
+  --color-rama-rovers-soft: oklch(93.5% 0.035 345);
+
+  /* Datos (orden fijo) */
+  --color-data-1: oklch(56% 0.12 155);
+  --color-data-2: oklch(44% 0.15 27);
+  --color-data-3: oklch(45% 0.12 272);
+  --color-data-4: oklch(63% 0.14 64);
+  --color-data-5: oklch(60% 0.105 225);
+
+  /* Sidebar: la tapa de la libreta, en tinta */
+  --color-sidebar-bg: oklch(24.5% 0.04 272);
+  --color-sidebar-ink: oklch(91% 0.014 80);
+  --color-sidebar-hover: oklch(30.5% 0.045 272);
+
+  /* Tipografía */
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-features: 'tnum' 1, 'lnum' 1;
+
+  /* Radios: papel cortado, no burbujas */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-pill: 999px;
+
+  /* Elevación: sombra de hoja sobre hoja, tinta muy diluida */
+  --shadow-xs: 0 1px 0 oklch(23% 0.035 272 / 0.06);
+  --shadow-sm: 0 1px 0 oklch(23% 0.035 272 / 0.05), 0 1px 3px oklch(23% 0.035 272 / 0.06);
+  --shadow-md: 0 1px 0 oklch(23% 0.035 272 / 0.05), 0 6px 16px -6px oklch(23% 0.035 272 / 0.14);
+  --shadow-lg: 0 2px 0 oklch(23% 0.035 272 / 0.05), 0 18px 40px -12px oklch(23% 0.035 272 / 0.22);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+}
+
+[data-theme='dark'] {
+  /* Libreta de noche: tinta como papel, papel como tinta */
+  --color-canvas: oklch(19% 0.02 272);
+  --color-surface: oklch(22.5% 0.022 272);
+  --color-surface-raised: oklch(26% 0.024 272);
+  --color-recessed: oklch(17% 0.018 272);
+
+  --color-ink: oklch(94% 0.012 80);
+  --color-ink-muted: oklch(80% 0.016 80);
+  --color-ink-subtle: oklch(70% 0.016 80);
+
+  --color-border: oklch(32% 0.022 272);
+  --color-border-strong: oklch(60% 0.022 272);
+  --color-focus: oklch(78% 0.1 268);
+
+  --color-brand: oklch(67% 0.14 6);
+  --color-brand-hover: oklch(73% 0.12 6);
+  --color-on-brand: oklch(19% 0.02 272);
+  --color-brand-soft: oklch(27% 0.06 6);
+  --color-accent-2: oklch(78% 0.09 279);
+
+  --color-success: oklch(77% 0.12 155);
+  --color-success-soft: oklch(30% 0.05 155);
+  --color-danger: oklch(73% 0.15 31);
+  --color-danger-soft: oklch(31% 0.07 31);
+  --color-warning: oklch(81% 0.12 75);
+  --color-warning-soft: oklch(31% 0.05 70);
+  --color-info: oklch(77% 0.1 245);
+  --color-info-soft: oklch(30% 0.05 245);
+
+  --color-money-in: oklch(77% 0.12 155);
+  --color-money-out: oklch(73% 0.15 31);
+
+  --color-rama-manada: oklch(78% 0.15 70);
+  --color-rama-manada-soft: oklch(31% 0.05 70);
+  --color-rama-unidad: oklch(74% 0.15 148);
+  --color-rama-unidad-soft: oklch(30% 0.05 148);
+  --color-rama-caminantes: oklch(73% 0.12 250);
+  --color-rama-caminantes-soft: oklch(30% 0.05 250);
+  --color-rama-rovers: oklch(72% 0.14 345);
+  --color-rama-rovers-soft: oklch(31% 0.05 345);
+
+  --color-data-1: oklch(66% 0.14 155);
+  --color-data-2: oklch(58% 0.17 28);
+  --color-data-3: oklch(62% 0.12 272);
+  --color-data-4: oklch(66% 0.14 64);
+  --color-data-5: oklch(62% 0.11 225);
+
+  --color-sidebar-bg: oklch(15.5% 0.017 272);
+  --color-sidebar-ink: oklch(89% 0.013 80);
+  --color-sidebar-hover: oklch(22% 0.022 272);
+
+  --shadow-xs: 0 1px 0 oklch(0% 0 0 / 0.3);
+  --shadow-sm: 0 1px 0 oklch(0% 0 0 / 0.3), 0 1px 3px oklch(0% 0 0 / 0.3);
+  --shadow-md: 0 1px 0 oklch(0% 0 0 / 0.3), 0 6px 16px -6px oklch(0% 0 0 / 0.5);
+  --shadow-lg: 0 2px 0 oklch(0% 0 0 / 0.3), 0 18px 40px -12px oklch(0% 0 0 / 0.6);
+}
