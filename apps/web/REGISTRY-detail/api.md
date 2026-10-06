@@ -62,3 +62,25 @@ con `isKeepAlive` (no reinicia el timer) y reprograma, haya funcionado o no. Al 
 entradas. Paridad con `CacheService`: desaloja por orden de inserción (un `get` no refresca) y
 `ttl` 0 = default. Sin timer global: los vencidos se borran al leerlos o con `cleanup()`.
 Claves namespaced (`'movimientos:caja:<id>'`).
+
+## auth
+
+`@/shared/auth` — sesión JWT propia del backend. **Importar el módulo registra el refresh
+reactivo** en `apiClient` (`registerAuthBridge`); no toca `window` al importarse.
+
+- **Tokens:** `localStorage` con las claves de Angular (`accessToken`, `refreshToken`). Storage no
+  disponible = sin sesión (no rompe). `decodeJwt` valida `{sub,email,tipo,iat,exp}` con zod.
+- **Operaciones** (`session.ts`): `login`, `register` (guardan tokens + usuario), `logout()` (POST
+  `auth/logout` fire-and-forget con Bearer + refreshToken actuales, limpia, va a `/login`),
+  `changePassword` (invalida sesiones → limpia y a `/login`), `changeEmail` (actualiza el email del
+  usuario), `initializeSession()` (llamar al montar la app: restaura con `auth/me`, refrescando si el
+  access venció; cualquier fallo → anónimo), `refreshSession()` (single-flight).
+- **Refresh ante 401:** N requests concurrentes → **un** `auth/refresh`, luego se reintentan todas
+  con el token nuevo; un 401 que llega después de otro refresh reusa el token vigente; si el refresh
+  falla → **un** `logout()` y todas rechazan (en Angular quedaban colgadas).
+- **Guards:** `useRequireSession()` en el layout `(app)` → `{ status: 'checking'|'allowed'|'redirecting' }`
+  (pasa con access **o** refresh válido; si no guarda `redirectUrl` en sessionStorage y va a
+  `/login`). `useRedirectIfAuthenticated()` en `/login`. Ambos registran `router.replace` como
+  navegador de la sesión. Post-login: `router.replace(consumeRedirectUrl())` (default `/dashboard`,
+  solo paths internos).
+- **Estado:** `useSession()` → `{ user, isAuthenticated, isLoading, initialized }`; `sessionStore` fuera de React.

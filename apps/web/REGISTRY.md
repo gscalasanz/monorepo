@@ -27,3 +27,8 @@
 | `useKeepAlive` · `createKeepAlive` · `KEEP_ALIVE_MS` | api | `src/shared/api/keep-alive.ts`, `use-keep-alive.ts` → [api](./REGISTRY-detail/api.md#keep-alive) |
 | `pathSegment` | api | `src/shared/api/path-segment.ts` → [api](./REGISTRY-detail/api.md#endpoints) |
 | `appCache` · `createMemoryCache` · `CACHE_CONFIG` | api (cache) | `src/shared/cache/` → [api](./REGISTRY-detail/api.md#cache) |
+| `login` · `logout` · `register` · `changePassword` · `changeEmail` · `initializeSession` · `refreshSession` | api (auth) | `src/shared/auth/session.ts` → [api](./REGISTRY-detail/api.md#auth) |
+| `useSession` · `useRequireSession` · `useRedirectIfAuthenticated` | api (auth) | `src/shared/auth/hooks.ts` → [api](./REGISTRY-detail/api.md#auth) |
+| `evaluateAuthGuard` · `evaluateNoAuthGuard` · `saveRedirectUrl` · `consumeRedirectUrl` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |
+| `decodeJwt` · `isTokenValid` · `getAccessToken` · `setTokens` · `clearTokens` · `sessionStore` · `createSingleFlight` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |
+| `makeJwt` · `tokenExpiringIn` | testing | `src/shared/auth/testing/jwt.ts` |

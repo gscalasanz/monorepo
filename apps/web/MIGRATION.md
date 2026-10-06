@@ -37,7 +37,7 @@
 - [x] Retry con backoff (reglas de `retry.interceptor.ts`) + opt-out de error global
 - [x] Keep-alive 14 min
 - [x] Cache en memoria TTL 5 min / LRU 100
-- [ ] `shared/auth`: token storage, decode JWT, refresh con cola, logout, `useSession`, guard con `redirectUrl`
+- [x] `shared/auth`: token storage, decode JWT, refresh con cola, logout, `useSession`, guard con `redirectUrl`
 - [ ] Notificaciones (toast) + `ConfirmDialog` (ReUI)
 - [ ] Formatos: dinero ARS, humanize, status config (equivalentes de las pipes)
 - [ ] Kit de forms: `useFieldValidation` + campos (texto, número, fecha, fecha-hora, hora, email, teléfono con máscara, password, select, textarea, checkbox, días, time-picker) — ReUI primero
