@@ -11,6 +11,8 @@ resuelva, se resuelve como lo resuelve mi-tienda (`docs/principios-ingenieria.md
 | Tema | Documento |
 | --- | --- |
 | Estado de la migración (qué está hecho, qué falta) | `MIGRATION.md` |
+| Rarezas del backend/Angular ya relevadas (leer antes de cada módulo) | `docs/HALLAZGOS.md` |
+| Catálogo offline de ReUI (fallback del MCP) | `docs/reui/` |
 | Design system de Scout (tokens, componentes, estados) | `docs/DESIGN.md` · `src/app/globals.css` |
 | Índice de lo reutilizable | `REGISTRY.md` + `REGISTRY-detail/<categoría>.md` |
 | Comportamiento de referencia (paridad funcional) | `../frontend/` (Angular 21, **solo lectura**) |
