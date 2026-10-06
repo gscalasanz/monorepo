@@ -54,6 +54,13 @@ export const API_ENDPOINTS = {
   INSCRIPCIONES: 'inscripciones',
   INSCRIPCIONES_CONSOLIDADO: 'inscripciones/consolidado',
   inscripcion: (id: string): string => `inscripciones/${pathSegment(id)}`,
+  inscripcionPagar: (id: string): string =>
+    `inscripciones/${pathSegment(id)}/pagar`,
+  inscripcionBonificacion: (id: string): string =>
+    `inscripciones/${pathSegment(id)}/bonificacion`,
+  /** Borrar un pago de inscripción (el backend bloquea `DELETE /movimientos/:id` para estos). */
+  inscripcionPago: (params: { readonly id: string; readonly movimientoId: string }): string =>
+    `inscripciones/${pathSegment(params.id)}/pagos/${pathSegment(params.movimientoId)}`,
 
   CAMPAMENTOS: 'campamentos',
   campamento: (id: string): string => `campamentos/${pathSegment(id)}`,

@@ -53,3 +53,12 @@ export {
   type IngresoFormDraft,
   type IngresoFormValues,
 } from './ingreso-form-schema';
+export {
+  FormDialogShell,
+  type FormDialogShellProps,
+} from './form-dialog-shell';
+export {
+  useDialogSubmit,
+  type DialogSubmit,
+  type DialogSubmitOptions,
+} from './use-dialog-submit';

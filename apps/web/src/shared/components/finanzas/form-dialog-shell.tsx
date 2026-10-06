@@ -26,6 +26,10 @@ export interface FormDialogShellProps {
   readonly saving: boolean;
   readonly error: string | null;
   readonly children: ReactNode;
+  /** Acciones extra a la izquierda del pie (p. ej. "Eliminar"). */
+  readonly footerExtra?: ReactNode;
+  /** Deshabilita el submit (validación cruzada que el form no expresa por campo). */
+  readonly submitDisabled?: boolean;
 }
 
 /** Hoja a pantalla completa en mobile; modal centrado desde `md`. */
@@ -62,6 +66,8 @@ function FormDialogFooter({
   savingLabel,
   saving,
   error,
+  footerExtra,
+  submitDisabled,
 }: FormDialogShellProps) {
   return (
     <div className="flex flex-col gap-3 border-t border-border px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:px-5 md:pb-4">
@@ -75,6 +81,7 @@ function FormDialogFooter({
         </p>
       )}
       <div className="flex gap-2 md:justify-end [&>*]:flex-1 md:[&>*]:flex-none">
+        {footerExtra}
         <Button
           type="button"
           variant="secondary"
@@ -83,7 +90,12 @@ function FormDialogFooter({
         >
           {FINANZAS_COPY.form.cancelar}
         </Button>
-        <Button type="submit" form={formId} loading={saving}>
+        <Button
+          type="submit"
+          form={formId}
+          loading={saving}
+          disabled={submitDisabled}
+        >
           {saving && savingLabel ? savingLabel : submitLabel}
         </Button>
       </div>
