@@ -18,7 +18,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/**/*.test.{ts,tsx}', 'src/shared/components/reui/**'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/**/testing/**', 'src/shared/components/reui/**'],
     },
   },
 });
