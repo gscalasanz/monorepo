@@ -10,7 +10,7 @@ const LOGO_PX = 56;
 /** Panel institucional del login (indigo SAAC + filo burgundy). */
 export function LoginHero() {
   return (
-    <section className="relative flex flex-col justify-center gap-6 border-t-[3px] border-accent-2 bg-sidebar-bg px-6 py-8 text-sidebar-ink md:px-12 md:py-16">
+    <header className="relative flex flex-col justify-center gap-6 border-t-[3px] border-accent-2 bg-sidebar-bg px-6 py-8 text-sidebar-ink md:px-12 md:py-16">
       <div className="flex items-center gap-4">
         <Image
           src={LOGO_SRC}
@@ -38,6 +38,6 @@ export function LoginHero() {
           ))}
         </ul>
       </div>
-    </section>
+    </header>
   );
 }
