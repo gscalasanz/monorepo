@@ -19,10 +19,23 @@ import {
 
 type Col = AppColumnDef<Movimiento>;
 
+/**
+ * Anchos explícitos (el resto usa el default de 150px). Sin esto, "Movimientos
+ * de Ramas" (8 columnas) desborda el panel a 1440px y recorta Editar.
+ */
+const COLUMN_SIZE = {
+  FECHA: 104,
+  TIPO: 112,
+  DESCRIPCION: 132,
+  RESPONSABLE: 168,
+  ACCIONES: 136,
+} as const;
+
 const fecha: Col = {
   id: 'fecha',
   accessorFn: (row) => row.fecha,
   header: sortableHeader(C.COL_FECHA),
+  size: COLUMN_SIZE.FECHA,
   cell: ({ row }) => formatDate(row.original.fecha, DATE_FORMATS.date),
 };
 
@@ -35,6 +48,7 @@ const concepto: Col = {
 const tipo: Col = {
   id: 'tipo',
   header: C.COL_TIPO,
+  size: COLUMN_SIZE.TIPO,
   cell: ({ row }) => <TipoMovimientoLabel tipo={row.original.tipo} />,
 };
 
@@ -54,6 +68,7 @@ const monto: Col = {
 const descripcion: Col = {
   id: 'descripcion',
   header: C.COL_DESCRIPCION,
+  size: COLUMN_SIZE.DESCRIPCION,
   cell: ({ row }) => row.original.descripcion ?? C.EMPTY_CELL,
 };
 
@@ -66,6 +81,7 @@ const caja: Col = {
 const responsable: Col = {
   id: 'responsable',
   header: C.COL_RESPONSABLE,
+  size: COLUMN_SIZE.RESPONSABLE,
   cell: ({ row }) => row.original.responsable?.nombre ?? C.EMPTY_CELL,
 };
 
@@ -73,6 +89,7 @@ function actions(withEdit: boolean): Col {
   return {
     id: 'acciones',
     header: C.COL_ACCIONES,
+    size: COLUMN_SIZE.ACCIONES,
     cell: ({ row }) => (
       <MovimientoActions movimiento={row.original} withEdit={withEdit} />
     ),
