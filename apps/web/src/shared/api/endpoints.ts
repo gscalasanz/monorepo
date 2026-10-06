@@ -86,6 +86,32 @@ export const API_ENDPOINTS = {
   eventoReporte: (id: string): string => `eventos/${pathSegment(id)}/reporte`,
   eventoReportePublico: (id: string): string =>
     `eventos/${pathSegment(id)}/reporte/publico`,
+  /** `PATCH {reportePublico}` (prende/apaga el reporte sin login). */
+  eventoReportePublicoToggle: (id: string): string =>
+    `eventos/${pathSegment(id)}/reporte-publico`,
+  eventoKpis: (id: string): string => `eventos/${pathSegment(id)}/kpis`,
+  eventoCerrar: (id: string): string => `eventos/${pathSegment(id)}/cerrar`,
+  eventoHabilitarMovimientos: (id: string): string =>
+    `eventos/${pathSegment(id)}/habilitar-movimientos`,
+  eventoProductos: (id: string): string =>
+    `eventos/${pathSegment(id)}/productos`,
+  eventoVentas: (id: string): string => `eventos/${pathSegment(id)}/ventas`,
+  eventoVentasLote: (id: string): string =>
+    `eventos/${pathSegment(id)}/ventas/lote`,
+  eventoVenta: (id: string, ventaId: string): string =>
+    `eventos/${pathSegment(id)}/ventas/${pathSegment(ventaId)}`,
+  eventoVentaCobrar: (id: string, ventaId: string): string =>
+    `eventos/${pathSegment(id)}/ventas/${pathSegment(ventaId)}/cobrar`,
+  eventoMovimientos: (id: string): string =>
+    `eventos/${pathSegment(id)}/movimientos`,
+  eventoIngresos: (id: string): string => `eventos/${pathSegment(id)}/ingresos`,
+  eventoGastos: (id: string): string => `eventos/${pathSegment(id)}/gastos`,
+  eventoEntregas: (id: string): string => `eventos/${pathSegment(id)}/entregas`,
+  /** Literal antes que `:entregaId` en el backend. */
+  eventoEntregasStock: (id: string): string =>
+    `eventos/${pathSegment(id)}/entregas/stock-disponible`,
+  eventoEntrega: (id: string, entregaId: string): string =>
+    `eventos/${pathSegment(id)}/entregas/${pathSegment(entregaId)}`,
 
   /** Público (sin auth) en el backend. */
   REPORTES_DEUDAS: 'reportes/deudas',
