@@ -16,7 +16,7 @@ export function DeudasList({ deudas }: { readonly deudas: readonly PersonaDeuda[
       <div
         aria-hidden
         className={cn(
-          'hidden border-b border-border bg-recessed px-4 py-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase',
+          'hidden border-b border-border bg-recessed px-4 py-2.5 text-xs font-medium text-ink-subtle',
           DEUDA_GRID,
         )}
       >

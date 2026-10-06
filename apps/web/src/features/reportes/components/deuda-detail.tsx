@@ -16,7 +16,7 @@ import type { PersonaDeuda } from '@/features/reportes/models/deudas';
 function Section({ title, children }: { readonly title: string; readonly children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="text-xs font-semibold tracking-wide text-ink-muted uppercase">{title}</h3>
+      <h3 className="text-xs font-semibold text-ink-muted">{title}</h3>
       <div className="flex flex-wrap gap-2">{children}</div>
     </section>
   );
@@ -32,8 +32,8 @@ function MonetarySection({ persona }: { readonly persona: PersonaDeuda }) {
           key={`${card.label}-${card.ano}-${card.name}`}
           className="flex min-w-28 flex-col gap-1 rounded-lg border border-danger/30 bg-danger-soft px-3 py-2.5"
         >
-          <span className="text-xs font-semibold text-danger uppercase">
-            {card.label} <span className="font-medium normal-case">{card.ano}</span>
+          <span className="text-xs font-semibold text-danger">
+            {card.label} <span className="font-medium">{card.ano}</span>
           </span>
           <span className="max-w-36 truncate text-xs text-ink-muted">{card.name}</span>
           <Money amount={card.saldo} tone="debt" className="text-sm" />
