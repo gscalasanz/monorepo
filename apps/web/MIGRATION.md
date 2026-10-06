@@ -94,40 +94,58 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
 - [x] Módulo cerrado (DoD §9)
 
 ### personas
-- [ ] Paridad expandida
-- [ ] Dashboard de personas · protagonistas/educadores crear/editar/detalle · externas crear/detalle/editar
-- [ ] Persona-dashboard (cuenta, obligaciones, documentación, timeline) · habilitar/deshabilitar
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (`docs/paridad/personas-cajas.md` §personas)
+  - Desvío: `/personas/protagonistas|educadores|personas-externas` sin hijo redirigen a `/personas`
+    (en Angular daban NotFound).
+  - Contraseña de educador: mínimo 8, como `CreateEducadorDto` (Angular pedía 6 y el alta daba 400).
+  - La ficha acepta educadores con `cargo` null (hay datos reales así).
+- [x] Dashboard de personas · protagonistas/educadores crear/editar/detalle · externas crear/detalle/editar
+- [x] Persona-dashboard (cuenta, obligaciones, documentación, timeline) · habilitar/deshabilitar
+- [ ] Módulo cerrado (DoD §9) — falta la verificación visual 390/1440 light/dark
 
 ### cajas
-- [ ] Paridad expandida
-- [ ] Tabs caja grupo · fondos de rama · cuentas personales · fondo solidario · movimiento rápido
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (`docs/paridad/personas-cajas.md` §cajas)
+  - El movimiento rápido del drawer refresca el saldo del drawer, la StatCard y los últimos
+    movimientos (antes quedaban viejos hasta cambiar de tab).
+- [x] Tabs caja grupo · fondos de rama · cuentas personales · fondo solidario · movimiento rápido
+- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
 
 ### movimientos
-- [ ] Paridad expandida
-- [ ] Lista paginada con filtros · nuevo · editar · transferencias · selector de concepto
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (`docs/paridad/movimientos-inscripciones.md` §movimientos)
+  - Desvío (bug de Angular): el filtro de fechas manda 00:00 y 23:59:59.999 de BsAs
+    (`dayFilterBounds`), así que el día final queda incluido. Antes se mandaba la medianoche UTC y
+    ese día quedaba afuera; también aplica a fondos de rama.
+- [x] Lista paginada con filtros · nuevo · editar · transferencias · selector de concepto
+- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
 
 ### inscripciones
-- [ ] Paridad expandida
-- [ ] Lista · dashboard · crear · detalle · editar · pago · bonificaciones · borrar pagos · config de montos (localStorage)
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (`docs/paridad/movimientos-inscripciones.md` §inscripciones)
+  - Tras cada mutación del detalle se vuelve a pedir la inscripción, como `reloadDetail` en
+    Angular: `POST /pagar` devuelve el `montoPagado` previo al pago.
+  - Alta: año mínimo 2020 (`CreateInscripcionDto`). El saldo personal se descarta si la persona no
+    tiene saldo, y no puede superar el disponible.
+- [x] Lista · dashboard · crear · detalle · editar · pago · bonificaciones · borrar pagos · config de montos (localStorage)
+- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
 
 ### campamentos
-- [ ] Paridad expandida
-- [ ] Lista · crear · detalle · editar · participantes · pagos · gastos · bonificaciones
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (`docs/paridad/campamentos-reportes-configuracion.md` §campamentos)
+  - Desvíos:
+    - "Eliminar" del detalle borra de verdad (Angular solo confirmaba y navegaba).
+    - "Editar pago" se reemplaza por "Eliminar pago" (ver §Bloqueos).
+    - El filtro "Educadores" filtra en el cliente (ver §Bloqueos).
+    - Los errores de los diálogos se muestran adentro del diálogo, sin cerrarlo.
+- [x] Lista · crear · detalle · editar · participantes · pagos · gastos · bonificaciones
+- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
 
 ### eventos
-- [ ] Paridad expandida
-- [ ] Lista · crear · detalle · editar · productos · ventas en lote · entregas · gastos/ingresos · resumen financiero
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (`docs/paridad/eventos-reporte.md` §eventos)
+- [x] Lista · crear · detalle · editar · productos · ventas en lote · entregas · gastos/ingresos · resumen financiero
+- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
 
 ### event-report (público)
-- [ ] Paridad expandida (las ~16 secciones)
-- [ ] Con sesión / anónimo público / anónimo no público (404 → "no disponible")
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (`docs/paridad/eventos-reporte.md` §reporte)
+- [x] Con sesión / anónimo público / anónimo no público (404 → "no disponible")
+- [ ] Módulo cerrado (DoD §9) — falta la verificación visual
 
 ### reportes
 - [x] Paridad expandida (hoy oculto en el sidebar: mantenerlo oculto)
@@ -163,7 +181,23 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
 
 ## Bloqueos
 
-_(vacío)_
+Hacen falta una decisión de negocio o un cambio en el backend. La migración no los resuelve por su
+cuenta (scope guard):
+
+- **Campamentos, editar un pago:** `PATCH /campamentos/:id/pagos/:movimientoId` no existe (en Angular
+  siempre daba 404). React ofrece "Eliminar pago" en su lugar. Si hace falta editar, hay que agregar
+  el endpoint en el backend.
+- **Campamentos, filtro "Educadores":** el `rama` del backend no acepta `educador` (400). React no lo
+  manda y filtra `tipo === 'educador'` en el cliente. Confirmar si alcanza o sumar el soporte.
+- **Campamentos, "Eliminar" del detalle:** ahora borra de verdad (Angular solo confirmaba). Confirmar
+  con producto.
+- **Campamentos, agregar participante con filtros activos:** el selector solo excluye a los
+  participantes visibles. Si alguien ya inscripto está filtrado, el backend responde 400 "ya
+  inscrita" adentro del diálogo. Angular se comporta igual.
+- **Movimientos:** un monto de 0 pasa el form, y al editar no se puede vaciar la descripción.
+  Igual que en Angular: el DTO no acepta string vacío.
+- **Backend, `POST /inscripciones/:id/pagar`:** devuelve el `montoPagado` previo al pago. El front
+  lo resuelve recargando, pero conviene corregirlo en el backend.
 
 ## Bitácora
 
@@ -175,3 +209,6 @@ _(vacío)_
 | 2026-10-06 | dashboard | e21243a | KPIs en tira de métricas, eventos próximos, movimientos recientes, fondos por rama |
 | 2026-10-06 | configuracion | 913c7f3 | Montos de inscripción en localStorage (misma clave), descargas con nombre de fallback |
 | 2026-10-06 | reportes | feat(reportes) | Deudas con filtros/expandibles + 4 placeholders; sigue oculto en el sidebar |
+| 2026-10-06 | movimientos · cajas · personas · inscripciones | 3462df8 · fd7c07b · f1ce007 · 3bac143 | Un agente por módulo en worktree; integrados a main |
+| 2026-10-06 | event-report · campamentos · eventos | e96c423 · 1d0e560 · 4cbc5ca | Ídem; eventos se cortó por disco lleno y se retomó |
+| 2026-10-06 | fixes de e2e + reviews | 1ced92d · acff077 · e3911b0 · 443c66c · 0df1f84 | Suite e2e 40/40 contra el backend local; `pnpm build` en verde (42 rutas) |
