@@ -83,7 +83,10 @@ No toca `window` al importarse.
   access venció; cualquier fallo → anónimo), `refreshSession()` (single-flight).
 - **Refresh ante 401:** N requests concurrentes → **un** `auth/refresh`, luego se reintentan todas
   con el token nuevo; un 401 que llega después de otro refresh reusa el token vigente; si el refresh
-  falla → **un** `logout()` y todas rechazan (en Angular quedaban colgadas).
+  falla → **un** `logout()` y todas rechazan (en Angular quedaban colgadas). Con la sesión ya
+  cerrada (sin refresh token) un 401 rechaza con `AUTH_COPY.NO_REFRESH_TOKEN` sin repetir logout.
+- `setTokens` devuelve `boolean`; si no se pueden guardar, login/register/refresh fallan con
+  `AUTH_COPY.STORAGE_UNAVAILABLE`.
 - **Guards:** `useRequireSession()` en el layout `(app)` → `{ status: 'checking'|'allowed'|'redirecting' }`
   (pasa con access **o** refresh válido; si no guarda `redirectUrl` en sessionStorage y va a
   `/login`). `useRedirectIfAuthenticated()` en `/login`. Post-login: `router.replace(consumeRedirectUrl())` (default `/dashboard`,

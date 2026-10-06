@@ -34,7 +34,10 @@ import type {
 } from '@/shared/domain';
 
 function applyAuthResponse(response: AuthResponse): AuthUser {
-  setTokens(response);
+  if (!setTokens(response)) {
+    clearTokens();
+    throw new Error(AUTH_COPY.STORAGE_UNAVAILABLE);
+  }
   sessionStore.setState({ user: response.user });
   return response.user;
 }

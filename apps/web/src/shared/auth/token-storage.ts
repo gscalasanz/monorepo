@@ -15,9 +15,17 @@ export function getRefreshToken(): string | null {
   return readItem('local', TOKEN_KEYS.REFRESH_TOKEN);
 }
 
-export function setTokens({ accessToken, refreshToken }: TokenPair): void {
-  writeItem('local', { key: TOKEN_KEYS.ACCESS_TOKEN, value: accessToken });
-  writeItem('local', { key: TOKEN_KEYS.REFRESH_TOKEN, value: refreshToken });
+/** Devuelve `false` si no se pudo guardar alguno (storage lleno/bloqueado/SSR). */
+export function setTokens({ accessToken, refreshToken }: TokenPair): boolean {
+  const savedAccess = writeItem('local', {
+    key: TOKEN_KEYS.ACCESS_TOKEN,
+    value: accessToken,
+  });
+  const savedRefresh = writeItem('local', {
+    key: TOKEN_KEYS.REFRESH_TOKEN,
+    value: refreshToken,
+  });
+  return savedAccess && savedRefresh;
 }
 
 export function clearTokens(): void {

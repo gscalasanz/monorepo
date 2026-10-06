@@ -1,5 +1,6 @@
 import { apiClient, ApiError, globalErrorStore } from '@/shared/api';
 import {
+  AUTH_COPY,
   changeEmail,
   changePassword,
   getAccessToken,
@@ -79,6 +80,20 @@ describe('login / register', () => {
     );
     expect(getAccessToken()).toBeNull();
     expect(sessionStore.getState().isLoading).toBe(false);
+  });
+
+  it('si no se pueden guardar los tokens, el login falla con un mensaje claro', async () => {
+    const spy = vi
+      .spyOn(Storage.prototype, 'setItem')
+      .mockImplementation(() => {
+        throw new Error('QuotaExceededError');
+      });
+    fake.reply(authResponse('acc', 'ref'));
+    await expect(login({ email: 'x', password: 'y' })).rejects.toThrow(
+      AUTH_COPY.STORAGE_UNAVAILABLE,
+    );
+    expect(sessionStore.getState().user).toBeNull();
+    spy.mockRestore();
   });
 
   it('register también inicia sesión', async () => {
@@ -297,13 +312,13 @@ describe('refresh reactivo ante 401 (AuthBridge registrado por @/shared/auth)', 
     ]);
   });
 
-  it('sin refresh token: falla sin llamar al backend y cierra sesión', async () => {
+  it('sesión ya cerrada (sin refresh token): rechaza sin refresh, sin logout ni navegación', async () => {
     localStorage.setItem('accessToken', 'acc');
     fake.reply({ status: 401 });
-    await expect(apiClient.get('a', { schema: okSchema })).rejects.toBeTruthy();
-    expect(fake.requests.some((r) => r.url.endsWith('/auth/refresh'))).toBe(
-      false,
+    await expect(apiClient.get('a', { schema: okSchema })).rejects.toThrow(
+      AUTH_COPY.NO_REFRESH_TOKEN,
     );
-    expect(navigations).toEqual(['/login']);
+    expect(fake.requests.map((r) => r.url)).toEqual([`${BASE}/a`]);
+    expect(navigations).toEqual([]);
   });
 });

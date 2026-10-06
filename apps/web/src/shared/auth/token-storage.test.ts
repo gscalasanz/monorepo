@@ -38,6 +38,17 @@ describe('token storage (port de TokenService)', () => {
     expect(hasTokens()).toBe(false);
   });
 
+  it('setTokens devuelve si pudo guardar', () => {
+    expect(setTokens({ accessToken: 'a', refreshToken: 'r' })).toBe(true);
+    const spy = vi
+      .spyOn(Storage.prototype, 'setItem')
+      .mockImplementation(() => {
+        throw new Error('QuotaExceededError');
+      });
+    expect(setTokens({ accessToken: 'a', refreshToken: 'r' })).toBe(false);
+    spy.mockRestore();
+  });
+
   it('si localStorage no está disponible (modo privado, bloqueado) no explota', () => {
     const spy = vi
       .spyOn(Storage.prototype, 'getItem')
