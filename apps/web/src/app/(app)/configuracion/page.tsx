@@ -1,5 +1,6 @@
 import { AccountProfileCard } from '@/features/auth';
+import { ConfiguracionView } from '@/features/configuracion';
 
 export default function ConfiguracionPage() {
-  return <AccountProfileCard />;
+  return <ConfiguracionView profileSlot={<AccountProfileCard />} />;
 }

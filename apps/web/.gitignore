@@ -14,3 +14,4 @@ next-env.d.ts
 .claude/settings.local.json
 .playwright-mcp/
 .goal-logs/
+.claude/worktrees/

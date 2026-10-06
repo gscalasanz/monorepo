@@ -47,6 +47,8 @@ const eslintConfig = defineConfig([
     'playwright-report/**',
     'test-results/**',
     'design-directions/**',
+    // Worktrees de agentes (copias del repo).
+    '.claude/**',
     // ReUI vendorizado (shadcn registry): código de terceros, sí pasa por typecheck.
     'src/shared/components/reui/**',
   ]),

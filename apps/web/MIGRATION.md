@@ -135,9 +135,12 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
 - [ ] Módulo cerrado (DoD §9)
 
 ### configuracion
-- [ ] Paridad expandida
-- [ ] Configuración · descarga de backups (blob)
-- [ ] Módulo cerrado (DoD §9)
+- [x] Paridad expandida (`docs/paridad/campamentos-reportes-configuracion.md` §configuracion)
+  - Desvío: descarga con nombre de fallback (`scout-export.xlsx` / `scout-backup.sql.gz`) porque el
+    backend no expone `Content-Disposition` por CORS (Angular terminaba igual); los errores de
+    descarga se muestran una sola vez (Angular duplicaba el toast global).
+- [x] Configuración · descarga de backups (blob)
+- [x] Módulo cerrado (DoD §9)
 
 ## Fase 3 — Cierre
 
