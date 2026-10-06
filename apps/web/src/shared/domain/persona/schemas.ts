@@ -41,7 +41,8 @@ export const educadorSchema = z.object({
   ...personaBaseShape,
   tipo: z.literal(PERSONA_TYPE.EDUCADOR),
   rama: nullableField(ramaSchema),
-  cargo: cargoEducadorSchema,
+  // Herencia de tabla única: la columna admite null en la DB y hay educadores reales sin cargo.
+  cargo: nullableField(cargoEducadorSchema),
 });
 
 export const personaExternaSchema = z.object({

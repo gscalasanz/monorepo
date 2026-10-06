@@ -46,3 +46,10 @@ del Angular y anotarlo en `MIGRATION.md §Bloqueos` solo si no se puede decidir.
   activa el keep-alive) y `useRequireSession()` para el guard. Fuera de ese layout (reporte
   público) no hace falta montarlo: el token igual se adjunta y un logout cae a `window.location`.
 - Todo read del cliente HTTP exige un schema zod: es el borde de validación.
+
+## Educadores con `cargo: null` (2026-10-06)
+
+`Educador.cargo` se declara no-nullable en la entidad, pero es una columna de herencia de tabla única
+(STI) y la DB local tiene educadores con `cargo = null`. Con el schema estricto, `GET /personas`
+fallaba la validación zod y rompía todo selector de personas ("El servidor respondió algo
+inesperado"). `educadorSchema.cargo` ahora es `nullableField(...)`; las pantallas deben tolerar el null.

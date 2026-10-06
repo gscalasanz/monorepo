@@ -79,6 +79,12 @@ describe('personaSchema (STI discriminada por tipo)', () => {
     expect(persona).not.toHaveProperty('passwordHash');
   });
 
+  it('acepta educadores sin cargo (columna STI nullable con datos reales)', () => {
+    const persona = personaSchema.parse({ ...EDUCADOR_FIXTURE, cargo: null });
+    if (persona.tipo !== PERSONA_TYPE.EDUCADOR) throw new Error('tipo inesperado');
+    expect(persona.cargo).toBeNull();
+  });
+
   it('rechaza una rama inválida', () => {
     expect(
       personaSchema.safeParse({ ...PROTAGONISTA_FIXTURE, rama: 'manada' })
