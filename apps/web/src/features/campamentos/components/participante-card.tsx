@@ -185,7 +185,7 @@ export function ParticipanteCard({
   readonly handlers: ParticipanteHandlers;
 }) {
   return (
-    <article className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-3 md:p-4">
+    <article className="flex min-w-0 flex-col gap-3 rounded-lg border border-border bg-surface p-3 md:p-4">
       <CardHeader participante={participante} actions={handlers.actions} />
       <ParticipantePagos
         pagos={participante.pagos}

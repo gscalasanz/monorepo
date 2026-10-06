@@ -20,7 +20,7 @@ export interface ParticipantesTabProps {
 function ParticipantesList({ state, handlers }: ParticipantesTabProps) {
   if (state.participantes.length > 0) {
     return (
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         {state.participantes.map((p) => (
           <ParticipanteCard key={p.id} participante={p} handlers={handlers} />
         ))}
