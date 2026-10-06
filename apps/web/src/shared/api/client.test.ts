@@ -136,6 +136,16 @@ describe('createApiClient — transporte', () => {
   });
 });
 
+describe('createApiClient — seguridad', () => {
+  it('un endpoint que escapa de la base nunca llega a fetch', async () => {
+    const { fake, client } = setup(bridgeWith());
+    await expect(
+      client.get('eventos/../../../otro', { schema: itemSchema }),
+    ).rejects.toThrow(/fuera de la URL base/);
+    expect(fake.requests).toHaveLength(0);
+  });
+});
+
 describe('createApiClient — errores globales', () => {
   it('un 4xx publica el mensaje de NestJS y propaga el ApiError', async () => {
     const { fake, client, published } = setup();

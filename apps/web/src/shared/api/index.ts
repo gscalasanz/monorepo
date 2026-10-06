@@ -3,6 +3,7 @@
  * keep-alive, `ApiError` tipado, endpoints y bus de errores globales.
  */
 export { API_BASE_URL, parseApiBaseUrl } from './env';
+export { pathSegment } from './path-segment';
 export {
   API_ENDPOINTS,
   HTTP_CONFIG,

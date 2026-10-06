@@ -31,6 +31,9 @@ const zip = await apiClient.getBlob(API_ENDPOINTS.BACKUPS_DOWNLOAD);
 
 `API_ENDPOINTS` (constantes + builders con id: `persona(id)`, `saldoPersonal(personaId)`,
 `eventoReportePublico(id)`, `producto(productoId)`…), `QUERY_PARAMS.SOLO_ACTIVOS`, `HTTP_CONFIG`.
+**Todo id interpolado en un path pasa por `pathSegment(id)`** (`encodeURIComponent`; rechaza `''`,
+`.`, `..`): un id de la URL como `../backups/download` no puede saltar a otro endpoint con el Bearer
+del usuario. Además `buildUrl` rechaza endpoints con segmentos `.`/`..` o que resuelvan fuera de la base.
 `API_BASE_URL` sale de `NEXT_PUBLIC_API_URL`, validada con zod al importar (fail fast).
 
 ## errores

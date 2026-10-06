@@ -1,4 +1,5 @@
 /** Rutas de la app (paridad con `frontend/src/app/app.routes.ts`). */
+import { pathSegment } from '@/shared/api';
 import type { PersonaType } from '@/shared/domain';
 
 export const APP_ROUTES = {
@@ -17,7 +18,7 @@ export const APP_ROUTES = {
   CONFIGURACION: '/configuracion',
   /** Reporte público: accesible sin sesión. */
   eventoReportePublico: (eventoId: string): string =>
-    `/eventos/${eventoId}/reporte`,
+    `/eventos/${pathSegment(eventoId)}/reporte`,
 } as const;
 
 /** Ruta base de cada tipo de persona (port de `PERSONA_TYPE_ROUTES`). */

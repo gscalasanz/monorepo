@@ -25,3 +25,4 @@
 | `registerAuthBridge` · `setActivityListener` | api | `src/shared/api/registry.ts` → [api](./REGISTRY-detail/api.md#cliente) |
 | `createFakeFetch` | testing | `src/shared/api/testing/fake-fetch.ts` → [testing](./REGISTRY-detail/testing.md) |
 | `useKeepAlive` · `createKeepAlive` · `KEEP_ALIVE_MS` | api | `src/shared/api/keep-alive.ts`, `use-keep-alive.ts` → [api](./REGISTRY-detail/api.md#keep-alive) |
+| `pathSegment` | api | `src/shared/api/path-segment.ts` → [api](./REGISTRY-detail/api.md#endpoints) |

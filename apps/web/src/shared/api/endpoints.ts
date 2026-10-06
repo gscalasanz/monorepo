@@ -3,6 +3,8 @@
  * Port de `shared/constants/api.constants.ts` + builders de las rutas con id que
  * hoy arman a mano los services de Angular (verificadas contra los controllers).
  */
+import { pathSegment } from '@/shared/api/path-segment';
+
 export const API_ENDPOINTS = {
   /** `GET /` (público, texto plano): ping de keep-alive. */
   ROOT: '',
@@ -23,18 +25,19 @@ export const API_ENDPOINTS = {
   PERSONAS_CON_DEUDAS: 'personas/con-deudas',
   /** Único listado que incluye la agrupación "Grupo Scout". */
   PERSONAS_VENDEDORES_ELEGIBLES: 'personas/vendedores-elegibles',
-  persona: (id: string): string => `personas/${id}`,
-  personaDashboard: (id: string): string => `personas/${id}/dashboard`,
+  persona: (id: string): string => `personas/${pathSegment(id)}`,
+  personaDashboard: (id: string): string =>
+    `personas/${pathSegment(id)}/dashboard`,
   personaTransferirSaldo: (id: string): string =>
-    `personas/${id}/transferir-saldo-a-grupo`,
+    `personas/${pathSegment(id)}/transferir-saldo-a-grupo`,
 
   CAJAS: 'cajas',
   CAJAS_GRUPO: 'cajas/grupo',
   CAJAS_CONSOLIDADO: 'cajas/consolidado',
   CAJAS_FONDO_SOLIDARIO: 'cajas/fondo-solidario',
-  caja: (id: string): string => `cajas/${id}`,
+  caja: (id: string): string => `cajas/${pathSegment(id)}`,
   saldoPersonal: (personaId: string): string =>
-    `cajas/personal/${personaId}/saldo`,
+    `cajas/personal/${pathSegment(personaId)}/saldo`,
 
   MOVIMIENTOS: 'movimientos',
   MOVIMIENTOS_RECIENTES: 'movimientos/recientes',
@@ -42,24 +45,29 @@ export const API_ENDPOINTS = {
   MOVIMIENTOS_COBROS_PENDIENTES: 'movimientos/cobros-pendientes',
   MOVIMIENTOS_TRANSFERENCIA: 'movimientos/transferencia',
   MOVIMIENTOS_GASTO_GENERAL: 'movimientos/gasto-general',
-  movimiento: (id: string): string => `movimientos/${id}`,
-  movimientosSaldo: (cajaId: string): string => `movimientos/saldo/${cajaId}`,
-  movimientosCaja: (cajaId: string): string => `movimientos/caja/${cajaId}`,
+  movimiento: (id: string): string => `movimientos/${pathSegment(id)}`,
+  movimientosSaldo: (cajaId: string): string =>
+    `movimientos/saldo/${pathSegment(cajaId)}`,
+  movimientosCaja: (cajaId: string): string =>
+    `movimientos/caja/${pathSegment(cajaId)}`,
 
   INSCRIPCIONES: 'inscripciones',
   INSCRIPCIONES_CONSOLIDADO: 'inscripciones/consolidado',
-  inscripcion: (id: string): string => `inscripciones/${id}`,
+  inscripcion: (id: string): string => `inscripciones/${pathSegment(id)}`,
 
   CAMPAMENTOS: 'campamentos',
-  campamento: (id: string): string => `campamentos/${id}`,
-  campamentoDetalle: (id: string): string => `campamentos/${id}/detalle`,
+  campamento: (id: string): string => `campamentos/${pathSegment(id)}`,
+  campamentoDetalle: (id: string): string =>
+    `campamentos/${pathSegment(id)}/detalle`,
 
   EVENTOS: 'eventos',
-  evento: (id: string): string => `eventos/${id}`,
+  evento: (id: string): string => `eventos/${pathSegment(id)}`,
   /** Update/delete de producto: sin eventoId en la ruta. */
-  producto: (productoId: string): string => `eventos/productos/${productoId}`,
-  eventoReporte: (id: string): string => `eventos/${id}/reporte`,
-  eventoReportePublico: (id: string): string => `eventos/${id}/reporte/publico`,
+  producto: (productoId: string): string =>
+    `eventos/productos/${pathSegment(productoId)}`,
+  eventoReporte: (id: string): string => `eventos/${pathSegment(id)}/reporte`,
+  eventoReportePublico: (id: string): string =>
+    `eventos/${pathSegment(id)}/reporte/publico`,
 
   /** Público (sin auth) en el backend. */
   REPORTES_DEUDAS: 'reportes/deudas',
