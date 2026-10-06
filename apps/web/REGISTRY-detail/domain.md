@@ -14,6 +14,7 @@
 | `resolveBackendDate(value)` | Cualquier fecha → `Instant` o `null` (fecha calendario = medianoche BsAs). |
 | `parseLocalDate` · `parseInstant` · `isLocalDateString` · `localDateOf` | Validar/normalizar (lanzan si es inválido). |
 | `addDays` · `daysBetween({from,to})` · `isBefore` · `calculateWeekRange` · `msFromInstant` · `msToInstant` | Aritmética. |
+| `dayFilterBounds({from?,to?})` | Filtro "desde/hasta" de días → instantes BsAs (`00:00` / `23:59:59.999`). **Usarlo siempre** al mandar rangos de fecha al backend: `YYYY-MM-DD` crudo se vuelve medianoche UTC y deja afuera el día final. |
 | `toDateInputValue` · `toDateTimeInputValue` · `dateTimeInputToInstant` | `<input type="date|datetime-local">` ↔ backend. |
 | `calculateDurationInMinutes({start,end})` · `formatDuration` | Horas `HH:mm` (`time-helpers`). |
 | `localDateSchema` · `instantSchema` | zod para el borde de la API (`localDateSchema` acepta `YYYY-MM-DD` y el ISO de medianoche de POST/PATCH). |
