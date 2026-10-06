@@ -16,10 +16,15 @@ import { useCajaDrawer } from '@/features/cajas/hooks/use-caja-drawer';
 export interface CajaDrawerBodyProps {
   readonly caja: CajaConSaldo;
   readonly onClose: () => void;
+  readonly onChanged: () => void;
 }
 
 /** Contenido del drawer: header con saldo, filtro, lista y acciones. */
-export function CajaDrawerBody({ caja, onClose }: CajaDrawerBodyProps) {
+export function CajaDrawerBody({
+  caja,
+  onClose,
+  onChanged,
+}: CajaDrawerBodyProps) {
   const drawer = useCajaDrawer(caja);
   const [quickOpen, setQuickOpen] = useState(false);
   const openQuick = () => setQuickOpen(true);
@@ -58,7 +63,10 @@ export function CajaDrawerBody({ caja, onClose }: CajaDrawerBodyProps) {
         open={quickOpen}
         onOpenChange={setQuickOpen}
         caja={caja}
-        onSuccess={() => void drawer.reload()}
+        onSuccess={() => {
+          void drawer.reload();
+          onChanged();
+        }}
       />
     </div>
   );

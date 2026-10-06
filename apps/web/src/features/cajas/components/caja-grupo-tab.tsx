@@ -5,22 +5,22 @@ import { useState } from 'react';
 
 import { StatCard } from '@/shared/components/charts';
 import { ErrorState, LoadingState } from '@/shared/components/feedback';
-import type { CajaConSaldo } from '@/shared/domain';
 import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
+import { CajaDrawer } from '@/features/cajas/components/caja-drawer';
 import { CajaGrupoActions } from '@/features/cajas/components/caja-grupo-actions';
 import { UltimosMovimientosPanel } from '@/features/cajas/components/ultimos-movimientos-panel';
 import { TransferenciaDialog } from '@/features/cajas/components/transferencia-dialog';
 import { useCajaGrupo } from '@/features/cajas/hooks/use-caja-grupo';
 
-export interface CajaGrupoTabProps {
-  /** Abre el drawer de la caja ("Ver Detalles"). */
-  readonly onOpenDrawer: (caja: CajaConSaldo) => void;
-}
-
-/** Tab "Caja de Grupo": saldo, acciones y últimos 10 movimientos. */
-export function CajaGrupoTab({ onOpenDrawer }: CajaGrupoTabProps) {
+/**
+ * Tab "Caja de Grupo": saldo, acciones, últimos 10 movimientos y el drawer
+ * "Ver Detalles". El drawer lee la caja de estos mismos datos, así un
+ * movimiento rápido refresca su saldo, la StatCard y los últimos a la vez.
+ */
+export function CajaGrupoTab() {
   const { caja, ultimos, isLoading, error, reload } = useCajaGrupo();
   const [transferOpen, setTransferOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   if (isLoading) return <LoadingState label={C.LOADING} />;
   if (!caja)
@@ -45,7 +45,7 @@ export function CajaGrupoTab({ onOpenDrawer }: CajaGrupoTabProps) {
         <CajaGrupoActions
           cajaId={caja.id}
           onTransferir={() => setTransferOpen(true)}
-          onVerDetalles={() => onOpenDrawer(caja)}
+          onVerDetalles={() => setDrawerOpen(true)}
         />
       </section>
       <UltimosMovimientosPanel movimientos={ultimos} />
@@ -54,6 +54,11 @@ export function CajaGrupoTab({ onOpenDrawer }: CajaGrupoTabProps) {
         onOpenChange={setTransferOpen}
         origen={{ id: caja.id, saldo: caja.saldoActual }}
         onSuccess={() => void reload()}
+      />
+      <CajaDrawer
+        caja={drawerOpen ? caja : null}
+        onClose={() => setDrawerOpen(false)}
+        onChanged={() => void reload()}
       />
     </div>
   );

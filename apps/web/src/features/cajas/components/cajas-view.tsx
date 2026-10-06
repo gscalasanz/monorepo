@@ -1,14 +1,11 @@
 'use client';
 
 import { HandHeart, Trees, User, Wallet } from 'lucide-react';
-import { useState } from 'react';
 
 import { SegmentedTabs, type SegmentedTabItem } from '@/shared/components/data';
-import type { CajaConSaldo } from '@/shared/domain';
 import { PageHeader } from '@/shared/layout';
 import { CAJAS_TAB, type CajasTab } from '@/features/cajas/constants/cajas';
 import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
-import { CajaDrawer } from '@/features/cajas/components/caja-drawer';
 import { CajaGrupoTab } from '@/features/cajas/components/caja-grupo-tab';
 import { CuentasPersonalesTab } from '@/features/cajas/components/cuentas-personales-tab';
 import { FondoSolidarioTab } from '@/features/cajas/components/fondo-solidario-tab';
@@ -48,10 +45,9 @@ const TAB_LABELS: Readonly<Record<CajasTab, string>> = {
   'fondo-solidario': C.TAB_FONDO_SOLIDARIO,
 };
 
-/** `/cajas`: 4 tabs (cada una recarga al volver) + drawer de la caja de grupo. */
+/** `/cajas`: 4 tabs (cada una recarga al volver). */
 export function CajasView() {
   const { tab, setTab } = useCajasTab();
-  const [drawerCaja, setDrawerCaja] = useState<CajaConSaldo | null>(null);
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
@@ -70,14 +66,11 @@ export function CajasView() {
         aria-label={TAB_LABELS[tab]}
         tabIndex={-1}
       >
-        {tab === CAJAS_TAB.GRUPO && (
-          <CajaGrupoTab onOpenDrawer={setDrawerCaja} />
-        )}
+        {tab === CAJAS_TAB.GRUPO && <CajaGrupoTab />}
         {tab === CAJAS_TAB.RAMA && <FondosRamaTab />}
         {tab === CAJAS_TAB.PERSONAL && <CuentasPersonalesTab />}
         {tab === CAJAS_TAB.FONDO_SOLIDARIO && <FondoSolidarioTab />}
       </div>
-      <CajaDrawer caja={drawerCaja} onClose={() => setDrawerCaja(null)} />
     </div>
   );
 }
