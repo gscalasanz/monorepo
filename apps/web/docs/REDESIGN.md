@@ -123,7 +123,7 @@ Leyenda: ✅ hecha · 🟦 con mockup, pendiente · ⬜ sin mockup (propuesta en
 | `/personas` (listado), `/personas/educadores`, `/personas/personas-externas` | ✅ | §7.10: `ListPanel` con pestañas + búsqueda + «Mostrar deshabilitados» en una línea; nombre con rama (y cargo/contacto) como sub-línea, fila navegable con ⋯ y chevron. `/educadores` y `/personas-externas` redirigen al listado (como antes) |
 | `/personas/educadores/:id`, `/personas/personas-externas/:id` | ✅ | Educador: misma ficha que protagonista (sin chip de cargo repetido). Externa: mismo encabezado (`PersonaHeaderCard`) con Editar + ⋯ (Eliminar) y panel «Datos de contacto» |
 | Formularios de persona (`crear`, `editar`) | ✅ | §7.7: a todo el ancho en dos tarjetas (datos | documentación · acceso · notas) con `FormActions` sticky |
-| `/configuracion` | ⬜ | §7.11 |
+| `/configuracion` | ✅ | §7.11: 880px con índice lateral (Perfil · Seguridad · Backup · Inscripciones) desde `lg`; «Mi Perfil» solo lectura; «Seguridad» con email y contraseña en dos columnas y botones del mismo ancho a la derecha; backup como filas que descargan al tocar |
 | `/login` | ⬜ | §7.12 |
 | `/eventos/:id/reporte` (público) | ✅ | Ya usa paneles, `KpiStrip` y tablas; sin cambios |
 

@@ -2,7 +2,12 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ApiError } from '@/shared/api';
-import { AccountProfileCard, LoginView, loginErrorMessage } from '@/features/auth';
+import {
+  AccountProfileCard,
+  AccountSecurityCard,
+  LoginView,
+  loginErrorMessage,
+} from '@/features/auth';
 import {
   changeEmailFormSchema,
   changePasswordFormSchema,
@@ -13,7 +18,12 @@ const replace = vi.fn();
 const loginMock = vi.fn();
 const changePasswordMock = vi.fn();
 const changeEmailMock = vi.fn();
-const SESSION_USER = { id: '1', nombre: 'Ana Admin', email: 'ana@scout.com', tipo: 'educador' };
+const SESSION_USER = {
+  id: '1',
+  nombre: 'Ana Admin',
+  email: 'ana@scout.com',
+  tipo: 'educador',
+};
 let sessionUser: typeof SESSION_USER | null = SESSION_USER;
 
 vi.mock('next/navigation', () => ({
@@ -39,18 +49,32 @@ vi.mock('@/shared/auth', async (importOriginal) => {
 });
 
 function apiError(status: number, message: string): ApiError {
-  return new ApiError({ kind: 'http', status, method: 'POST', url: '/auth/login', body: { message } });
+  return new ApiError({
+    kind: 'http',
+    status,
+    method: 'POST',
+    url: '/auth/login',
+    body: { message },
+  });
 }
 
 describe('schemas de auth', () => {
   it('login: email requerido/válido y contraseña mín. 6', () => {
     const result = loginFormSchema.safeParse({ email: 'x', password: '123' });
     expect(result.success).toBe(false);
-    expect(loginFormSchema.safeParse({ email: 'a@b.com', password: '123456' }).success).toBe(true);
+    expect(
+      loginFormSchema.safeParse({ email: 'a@b.com', password: '123456' })
+        .success,
+    ).toBe(true);
   });
 
   it('cambio de email exige contraseña de 8', () => {
-    expect(changeEmailFormSchema.safeParse({ newEmail: 'a@b.com', currentPassword: '1234567' }).success).toBe(false);
+    expect(
+      changeEmailFormSchema.safeParse({
+        newEmail: 'a@b.com',
+        currentPassword: '1234567',
+      }).success,
+    ).toBe(false);
   });
 
   it('cambio de contraseña detecta que no coinciden', () => {
@@ -70,8 +94,12 @@ describe('loginErrorMessage', () => {
     );
   });
   it('otro error → mensaje del backend o fallback', () => {
-    expect(loginErrorMessage(apiError(400, 'Cuenta bloqueada'))).toBe('Cuenta bloqueada');
-    expect(loginErrorMessage('raro')).toBe('Error al iniciar sesión. Por favor, intente nuevamente.');
+    expect(loginErrorMessage(apiError(400, 'Cuenta bloqueada'))).toBe(
+      'Cuenta bloqueada',
+    );
+    expect(loginErrorMessage('raro')).toBe(
+      'Error al iniciar sesión. Por favor, intente nuevamente.',
+    );
   });
 });
 
@@ -85,7 +113,9 @@ describe('LoginView', () => {
   it('valida antes de enviar', async () => {
     render(<LoginView />);
     await userEvent.click(screen.getByRole('button', { name: /Ingresar/ }));
-    expect(await screen.findByText('El correo es requerido')).toBeInTheDocument();
+    expect(
+      await screen.findByText('El correo es requerido'),
+    ).toBeInTheDocument();
     expect(loginMock).not.toHaveBeenCalled();
   });
 
@@ -93,66 +123,111 @@ describe('LoginView', () => {
     sessionStorage.setItem('redirectUrl', '/eventos');
     loginMock.mockResolvedValue({});
     render(<LoginView />);
-    await userEvent.type(screen.getByLabelText(/Correo electrónico/), 'ana@scout.com');
+    await userEvent.type(
+      screen.getByLabelText(/Correo electrónico/),
+      'ana@scout.com',
+    );
     await userEvent.type(screen.getByLabelText(/^Contraseña/), 'secreto1');
     await userEvent.click(screen.getByRole('button', { name: /Ingresar/ }));
     await waitFor(() => expect(replace).toHaveBeenCalledWith('/eventos'));
-    expect(loginMock).toHaveBeenCalledWith({ email: 'ana@scout.com', password: 'secreto1' });
+    expect(loginMock).toHaveBeenCalledWith({
+      email: 'ana@scout.com',
+      password: 'secreto1',
+    });
   });
 
   it('login 401 muestra el error inline', async () => {
     loginMock.mockRejectedValue(apiError(401, 'Unauthorized'));
     render(<LoginView />);
-    await userEvent.type(screen.getByLabelText(/Correo electrónico/), 'ana@scout.com');
+    await userEvent.type(
+      screen.getByLabelText(/Correo electrónico/),
+      'ana@scout.com',
+    );
     await userEvent.type(screen.getByLabelText(/^Contraseña/), 'secreto1');
     await userEvent.click(screen.getByRole('button', { name: /Ingresar/ }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Credenciales inválidas');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Credenciales inválidas',
+    );
   });
 });
 
-describe('AccountProfileCard', () => {
+describe('Mi Perfil y Seguridad', () => {
   afterEach(() => {
     sessionUser = SESSION_USER;
   });
 
   it('no pisa el email que el usuario ya empezó a escribir', async () => {
     sessionUser = null;
-    const { rerender } = render(<AccountProfileCard />);
+    const { rerender } = render(<AccountSecurityCard />);
     const input = screen.getByLabelText(/Nuevo email/);
     await userEvent.type(input, 'otro@scout.com');
     sessionUser = SESSION_USER;
-    rerender(<AccountProfileCard />);
+    rerender(<AccountSecurityCard />);
     expect(screen.getByLabelText(/Nuevo email/)).toHaveValue('otro@scout.com');
   });
 
-  it('muestra nombre y tipo, y precarga el email actual', async () => {
+  it('Mi Perfil muestra nombre y tipo (sin formularios)', () => {
     render(<AccountProfileCard />);
     expect(screen.getByText('Ana Admin')).toBeInTheDocument();
     expect(screen.getByText('Educador')).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByLabelText(/Nuevo email/)).toHaveValue('ana@scout.com'));
+    expect(screen.queryByLabelText(/Nuevo email/)).not.toBeInTheDocument();
+  });
+
+  it('Seguridad agrupa email y contraseña y precarga el email actual', async () => {
+    render(<AccountSecurityCard />);
+    expect(
+      screen.getByRole('heading', { name: 'Seguridad' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Guardar email' }),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByLabelText(/Nuevo email/)).toHaveValue('ana@scout.com'),
+    );
   });
 
   it('contraseñas distintas no llaman al backend', async () => {
-    render(<AccountProfileCard />);
+    render(<AccountSecurityCard />);
     const [current] = screen.getAllByLabelText(/Contraseña actual/).slice(-1);
     await userEvent.type(current!, '12345678');
-    await userEvent.type(screen.getByLabelText(/^Nueva contraseña/), 'abcdefgh');
-    await userEvent.type(screen.getByLabelText(/Confirmar nueva contraseña/), 'abcdefgX');
-    await userEvent.click(screen.getByRole('button', { name: 'Cambiar contraseña' }));
-    expect(await screen.findByText('Las contraseñas no coinciden')).toBeInTheDocument();
+    await userEvent.type(
+      screen.getByLabelText(/^Nueva contraseña/),
+      'abcdefgh',
+    );
+    await userEvent.type(
+      screen.getByLabelText(/Confirmar nueva contraseña/),
+      'abcdefgX',
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Cambiar contraseña' }),
+    );
+    expect(
+      await screen.findByText('Las contraseñas no coinciden'),
+    ).toBeInTheDocument();
     expect(changePasswordMock).not.toHaveBeenCalled();
   });
 
   it('cambio de contraseña OK llama al backend', async () => {
     changePasswordMock.mockResolvedValue(undefined);
-    render(<AccountProfileCard />);
+    render(<AccountSecurityCard />);
     const [current] = screen.getAllByLabelText(/Contraseña actual/).slice(-1);
     await userEvent.type(current!, '12345678');
-    await userEvent.type(screen.getByLabelText(/^Nueva contraseña/), 'abcdefgh');
-    await userEvent.type(screen.getByLabelText(/Confirmar nueva contraseña/), 'abcdefgh');
-    await userEvent.click(screen.getByRole('button', { name: 'Cambiar contraseña' }));
+    await userEvent.type(
+      screen.getByLabelText(/^Nueva contraseña/),
+      'abcdefgh',
+    );
+    await userEvent.type(
+      screen.getByLabelText(/Confirmar nueva contraseña/),
+      'abcdefgh',
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Cambiar contraseña' }),
+    );
     await waitFor(() =>
-      expect(changePasswordMock).toHaveBeenCalledWith({ currentPassword: '12345678', newPassword: 'abcdefgh' }),
+      expect(changePasswordMock).toHaveBeenCalledWith({
+        currentPassword: '12345678',
+        newPassword: 'abcdefgh',
+      }),
     );
   });
 });

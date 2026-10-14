@@ -31,7 +31,9 @@ export function InscripcionConfigCard() {
         />
       </div>
       <div className="mt-4 flex justify-end">
-        <Button onClick={save}>{C.SAVE}</Button>
+        <Button className="w-full sm:w-44" onClick={save}>
+          {C.SAVE}
+        </Button>
       </div>
     </Panel>
   );

@@ -19,7 +19,8 @@ export const AUTH_FEATURE_COPY = {
   PASSWORD_PLACEHOLDER: '••••••••',
   SUBMIT: 'Ingresar',
   SUBMITTING: 'Ingresando...',
-  INVALID_CREDENTIALS: 'Credenciales inválidas. Verifique su email y contraseña.',
+  INVALID_CREDENTIALS:
+    'Credenciales inválidas. Verifique su email y contraseña.',
   LOGIN_FALLBACK: 'Error al iniciar sesión. Por favor, intente nuevamente.',
   // Validación
   EMAIL_REQUIRED: 'El correo es requerido',
@@ -28,6 +29,7 @@ export const AUTH_FEATURE_COPY = {
   PASSWORD_MIN: 'Mínimo 6 caracteres',
   // Mi Perfil
   PROFILE_TITLE: 'Mi Perfil',
+  SECURITY_TITLE: 'Seguridad',
   PROFILE_NAME: 'Nombre',
   PROFILE_TYPE: 'Tipo',
   CHANGE_EMAIL_TITLE: 'Cambiar email',
@@ -41,7 +43,8 @@ export const AUTH_FEATURE_COPY = {
   NEW_PASSWORD_LABEL: 'Nueva contraseña',
   CONFIRM_PASSWORD_LABEL: 'Confirmar nueva contraseña',
   SAVE_PASSWORD: 'Cambiar contraseña',
-  PASSWORD_UPDATED: 'Contraseña actualizada. Por favor inicia sesión nuevamente.',
+  PASSWORD_UPDATED:
+    'Contraseña actualizada. Por favor inicia sesión nuevamente.',
   PASSWORD_UPDATE_ERROR: 'Error al actualizar la contraseña',
   REQUIRED_F: 'Requerida',
   MIN_8: 'Mínimo 8 caracteres',
