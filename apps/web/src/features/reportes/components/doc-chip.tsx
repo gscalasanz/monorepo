@@ -9,7 +9,7 @@ export function DocChip({ doc }: { readonly doc: DocItem }) {
   return (
     <span>
       <StatusBadge
-        tone={doc.ok ? 'success' : 'danger'}
+        tone={doc.ok ? 'success' : 'warning'}
         icon={doc.ok ? CircleCheck : CircleX}
         label={doc.label}
       />

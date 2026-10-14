@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
@@ -18,7 +18,12 @@ import { DeudasView, PlaceholderReportView } from '@/features/reportes';
 const mocks = vi.hoisted(() => ({ fetchDeudas: vi.fn() }));
 vi.mock('@/features/reportes/services/reportes-api', () => mocks);
 
-const DOCS_OK = { dni: true, partidaNacimiento: true, dniPadres: true, carnetObraSocial: true };
+const DOCS_OK = {
+  dni: true,
+  partidaNacimiento: true,
+  dniPadres: true,
+  carnetObraSocial: true,
+};
 
 function persona(overrides: Partial<PersonaDeuda> = {}): PersonaDeuda {
   return {
@@ -39,12 +44,32 @@ function persona(overrides: Partial<PersonaDeuda> = {}): PersonaDeuda {
 }
 
 const camp = (ano: number, saldo: number, autorizacionEntregada = true) => ({
-  campamentoId: `c${ano}`, nombre: `Camp ${ano}`, ano, montoTotal: saldo, montoPagado: 0, saldo, autorizacionEntregada,
+  campamentoId: `c${ano}`,
+  nombre: `Camp ${ano}`,
+  ano,
+  montoTotal: saldo,
+  montoPagado: 0,
+  saldo,
+  autorizacionEntregada,
 });
 const insc = (ano: number, saldo: number) => ({
-  inscripcionId: `i${ano}`, tipo: 'x', ano, montoTotal: saldo, montoBonificado: 0, montoPagado: 0, saldo,
+  inscripcionId: `i${ano}`,
+  tipo: 'x',
+  ano,
+  montoTotal: saldo,
+  montoBonificado: 0,
+  montoPagado: 0,
+  saldo,
 });
-const docInsc = { inscripcionId: 'i1', ano: 2026, declaracionDeSalud: false, autorizacionDeImagen: true, salidasCercanas: false, autorizacionIngreso: true, certificadoAptitudFisica: true };
+const docInsc = {
+  inscripcionId: 'i1',
+  ano: 2026,
+  declaracionDeSalud: false,
+  autorizacionDeImagen: true,
+  salidasCercanas: false,
+  autorizacionIngreso: true,
+  certificadoAptitudFisica: true,
+};
 
 describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
   it('debtCards: solo saldo > 0, ordenadas por año y etiqueta', () => {
@@ -53,12 +78,20 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
       inscripcionesScout: [insc(2025, 100)],
       inscripcionesGrupo: [insc(2026, 200)],
     });
-    expect(debtCards(p).map((c) => `${c.label} ${c.ano}`)).toEqual(['Scout AR 2025', 'Camp. 2026', 'Grupo 2026']);
+    expect(debtCards(p).map((c) => `${c.label} ${c.ano}`)).toEqual([
+      'Scout AR 2025',
+      'Camp. 2026',
+      'Grupo 2026',
+    ]);
   });
 
   it('personalDocItems: sin doc → []; mayor de edad sin "DNI padres"', () => {
-    expect(personalDocItems(persona({ documentacionPersonal: null }))).toEqual([]);
-    expect(personalDocItems(persona({ esMayorDeEdad: true })).map((d) => d.label)).toEqual(['DNI', 'Partida nac.', 'Obra social']);
+    expect(personalDocItems(persona({ documentacionPersonal: null }))).toEqual(
+      [],
+    );
+    expect(
+      personalDocItems(persona({ esMayorDeEdad: true })).map((d) => d.label),
+    ).toEqual(['DNI', 'Partida nac.', 'Obra social']);
     expect(personalDocItems(persona())).toHaveLength(4);
   });
 
@@ -72,19 +105,41 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
     });
     expect(hasDocDeuda(p)).toBe(true);
     expect(countDocsFaltantes(p)).toBe(1 + 2 + 1);
-    expect(hasDocDeuda(persona({ campamentos: [camp(2026, 0, false)] }))).toBe(true);
+    expect(hasDocDeuda(persona({ campamentos: [camp(2026, 0, false)] }))).toBe(
+      true,
+    );
   });
 
   it('summarize y toDeudaFilters', () => {
-    const list = [persona({ deudaTotal: 300 }), persona({ personaId: 'p2', deudaTotal: 200, documentacionInscripcion: [docInsc] })];
-    expect(summarize(list)).toEqual({ personas: 2, totalDeuda: 500, docsFaltantes: 1 });
-    expect(toDeudaFilters({ rama: 'Manada', ano: '2025', tipo: '' })).toEqual({ rama: 'Manada', ano: 2025 });
-    expect(toDeudaFilters({ rama: 'Otra', tipo: 'documentacion' })).toEqual({ tipo: 'documentacion' });
+    const list = [
+      persona({ deudaTotal: 300 }),
+      persona({
+        personaId: 'p2',
+        deudaTotal: 200,
+        documentacionInscripcion: [docInsc],
+      }),
+    ];
+    expect(summarize(list)).toEqual({
+      personas: 2,
+      totalDeuda: 500,
+      docsFaltantes: 1,
+    });
+    expect(toDeudaFilters({ rama: 'Manada', ano: '2025', tipo: '' })).toEqual({
+      rama: 'Manada',
+      ano: 2025,
+    });
+    expect(toDeudaFilters({ rama: 'Otra', tipo: 'documentacion' })).toEqual({
+      tipo: 'documentacion',
+    });
     expect(toDeudaFilters({})).toEqual({});
   });
 
   it('yearOptions del año actual hasta 2020 y guard de placeholders', () => {
-    expect(yearOptions(2022).map((o) => o.value)).toEqual(['2022', '2021', '2020']);
+    expect(yearOptions(2022).map((o) => o.value)).toEqual([
+      '2022',
+      '2021',
+      '2020',
+    ]);
     expect(isPlaceholderReport('caja')).toBe(true);
     expect(isPlaceholderReport('toString')).toBe(false);
   });
@@ -93,28 +148,58 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
 describe('<DeudasView>', () => {
   beforeEach(() => mocks.fetchDeudas.mockReset());
 
-  it('muestra KPIs, filas y expande el detalle de a una', async () => {
+  it('KPIs, tabla con nombre y chevron a la ficha, chips neutros y filas expandibles', async () => {
     mocks.fetchDeudas.mockResolvedValue([
       persona({ deudaTotal: 500, campamentos: [camp(2026, 500, false)] }),
-      persona({ personaId: 'p2', nombre: 'Beto Gómez', deudaTotal: 0, documentacionInscripcion: [docInsc] }),
+      persona({
+        personaId: 'p2',
+        nombre: 'Beto Gómez',
+        deudaTotal: 0,
+        documentacionInscripcion: [docInsc],
+      }),
     ]);
     render(<DeudasView />);
-    expect(await screen.findByLabelText('Resumen de deudas')).toHaveTextContent('Personas con deuda2');
-    expect(screen.getByRole('link', { name: 'Ver ficha de Ana Pérez' })).toHaveAttribute('href', '/personas/protagonistas/p1');
-    expect(screen.getByText('2 docs')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Ver detalle de Ana Pérez' }));
+    expect(await screen.findByLabelText('Resumen de deudas')).toHaveTextContent(
+      'Personas con deuda2',
+    );
+    const table = screen.getByRole('region', { name: 'Personas con deuda' });
+    expect(
+      within(table).getByRole('link', { name: 'Ana Pérez' }),
+    ).toHaveAttribute('href', '/personas/protagonistas/p1');
+    expect(
+      within(table).getByRole('link', { name: 'Ver ficha de Ana Pérez' }),
+    ).toHaveAttribute('href', '/personas/protagonistas/p1');
+    const chip = within(table).getByText('2 docs');
+    expect(chip.className).not.toMatch(/warning|danger/);
+    expect(
+      within(table).getByText('Camp. 2026').closest('span')?.className,
+    ).not.toMatch(/danger/);
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ver detalle de Ana Pérez' }),
+    );
     expect(screen.getByText('Aut. Camp 2026 2026')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Ver detalle de Beto Gómez' }));
-    expect(screen.queryByText('Aut. Camp 2026 2026')).not.toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ver detalle de Beto Gómez' }),
+    );
     expect(screen.getByText('Decl. salud 2026')).toBeInTheDocument();
   });
 
   it('vacío y error con reintento', async () => {
-    mocks.fetchDeudas.mockRejectedValueOnce(new Error('boom')).mockResolvedValueOnce([]);
+    mocks.fetchDeudas
+      .mockRejectedValueOnce(new Error('boom'))
+      .mockResolvedValueOnce([]);
     render(<DeudasView />);
-    expect(await screen.findByText(/Error al cargar el reporte/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Error al cargar el reporte/),
+    ).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
-    await waitFor(() => expect(screen.getByText('No hay deudas pendientes con los filtros seleccionados')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          'No hay deudas pendientes con los filtros seleccionados',
+        ),
+      ).toBeInTheDocument(),
+    );
   });
 });
 
@@ -122,6 +207,8 @@ describe('<PlaceholderReportView>', () => {
   it('replica título y texto de Angular', () => {
     render(<PlaceholderReportView report="caja" />);
     expect(screen.getByText('Reporte de Caja')).toBeInTheDocument();
-    expect(screen.getByText('Reporte de movimientos de caja')).toBeInTheDocument();
+    expect(
+      screen.getByText('Reporte de movimientos de caja'),
+    ).toBeInTheDocument();
   });
 });

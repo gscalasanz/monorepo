@@ -119,7 +119,7 @@ Leyenda: ✅ hecha · 🟦 con mockup, pendiente · ⬜ sin mockup (propuesta en
 | `/campamentos/crear`, `/:id/editar` | ✅ | §7.7 (dos tarjetas) |
 | `/eventos` | ✅ | Tabla en `ListPanel`, fila navegable con chevron y ⋯ |
 | `/eventos/crear`, `/:id/editar`, `/:id/ventas/registrar` | ✅ | `FormCard`: dos tarjetas lado a lado a todo el ancho, igual que movimientos |
-| `/reportes`, `/reportes/deudas`, `/reportes/:report` | ⬜ | §7.9 |
+| `/reportes`, `/reportes/deudas`, `/reportes/:report` | ✅ | §7.9: `KpiStrip` + `ListPanel` con filtros y `AppDataGrid` expandible (clic en la fila abre el desglose; nombre y chevron a la ficha), chips en tinta neutra y rojo solo en el total, rama como sub-línea; sin paginar (como antes). Placeholders: `EmptyState` dentro de un `Panel` |
 | `/personas` (listado), `/personas/educadores`, `/personas/personas-externas` | ⬜ | §7.10 |
 | `/personas/educadores/:id`, `/personas/personas-externas/:id` | ⬜ | §7.10 (fichas) |
 | Formularios de persona (`crear`, `editar`) | ⬜ | §7.7 |
