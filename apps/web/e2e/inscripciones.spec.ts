@@ -69,26 +69,21 @@ test.describe.serial('inscripciones', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: nombre }),
     ).toBeVisible();
-    await expect(page.getByText('Saldo pendiente')).toBeVisible();
-    await expect(page.getByText(/pagado de/)).toContainText(/1\.000/);
+    const kpis = page.getByLabel('Resumen de la inscripción');
+    await expect(kpis.getByText('Saldo pendiente')).toBeVisible();
+    await expect(kpis.getByText('0% completado')).toBeVisible();
 
     // Registrar un pago de 100
-    await page
-      .getByRole('button', {
-        name: 'Registrar nuevo pago para esta inscripción',
-      })
-      .click();
+    await page.getByRole('button', { name: 'Registrar pago' }).click();
     const pagoDialog = page.getByRole('dialog');
     await pagoDialog.getByLabel('Pago en Efectivo/Transferencia').fill('100');
     await pagoDialog.getByRole('button', { name: 'Registrar Pago' }).click();
     await expect(page.getByText('Pago registrado exitosamente')).toBeVisible();
-    await expect(page.getByText(/pagado de/)).toContainText(
-      /\$\s?100 pagado de/,
-    );
-    await expect(page.getByText('10% completado')).toBeVisible();
+    await expect(kpis.getByText('10% completado')).toBeVisible();
 
     // Eliminar el pago desde "Editar Pago"
-    await page.getByRole('button', { name: /^Editar pago de/ }).click();
+    await page.getByRole('button', { name: /^Acciones para pago de/ }).click();
+    await page.getByRole('menuitem', { name: 'Editar pago' }).click();
     await page
       .getByRole('dialog')
       .getByRole('button', { name: 'Eliminar' })
@@ -98,9 +93,9 @@ test.describe.serial('inscripciones', () => {
 
     // Eliminar la inscripción
     await page
-      .getByRole('group', { name: 'Acciones' })
-      .getByRole('button', { name: 'Eliminar' })
+      .getByRole('button', { name: 'Más acciones de la inscripción' })
       .click();
+    await page.getByRole('menuitem', { name: 'Eliminar' }).click();
     await page
       .getByRole('alertdialog')
       .getByRole('button', { name: 'Eliminar' })

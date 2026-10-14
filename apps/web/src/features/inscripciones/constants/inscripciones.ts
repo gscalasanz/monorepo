@@ -25,13 +25,6 @@ export const MEDIO_PAGO_OPTIONS: readonly {
   { value: MEDIO_PAGO.TRANSFERENCIA, label: MEDIO_PAGO_LABELS.transferencia },
 ];
 
-/** Marcadores de sección del form (01 Datos, 02 Importes, 03 Autorizaciones). */
-export const SECTION_MARKERS = {
-  DATOS: '01',
-  IMPORTES: '02',
-  AUTORIZACIONES: '03',
-} as const;
-
 /** Clave de rama en `porRama` del consolidado (sin `total`). */
 export type RamaKey = Exclude<keyof DistribucionPorRama, 'total'>;
 

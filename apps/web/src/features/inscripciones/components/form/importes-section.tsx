@@ -1,7 +1,6 @@
 import { CheckboxField } from '@/shared/components/ui/form';
 import { TIPO_INSCRIPCION } from '@/shared/domain';
 import { FORM_COPY as C } from '@/features/inscripciones/constants/copy';
-import { SECTION_MARKERS } from '@/features/inscripciones/constants/inscripciones';
 import {
   montoAPagarCreate,
   usarTodoSaldo,
@@ -31,7 +30,7 @@ interface ImportesSectionProps {
 export function ImportesSection(props: ImportesSectionProps) {
   const { values, onChange } = props;
   return (
-    <FormSection marker={SECTION_MARKERS.IMPORTES} title={C.SECTION_IMPORTES}>
+    <FormSection title={C.SECTION_IMPORTES}>
       {values.tipo === TIPO_INSCRIPCION.SCOUT_ARGENTINA ? (
         <CheckboxField
           label={C.PERSONA_NUEVA}

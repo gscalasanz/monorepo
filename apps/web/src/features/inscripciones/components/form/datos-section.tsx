@@ -8,7 +8,6 @@ import type { SelectOption } from '@/shared/queries';
 import { FORM_COPY as C } from '@/features/inscripciones/constants/copy';
 import {
   ANO_MAX,
-  SECTION_MARKERS,
   ANO_MIN,
   TIPO_OPTIONS,
 } from '@/features/inscripciones/constants/inscripciones';
@@ -21,27 +20,22 @@ interface DatosSectionProps {
   readonly ano: number | null;
   readonly personaOptions: readonly SelectOption[];
   readonly errors?: CreateFieldErrors;
-  /** Editar: persona, tipo y año no se modifican. */
-  readonly disabled?: boolean;
-  readonly onPersonaChange?: (personaId: string | null) => void;
-  readonly onTipoChange?: (tipo: TipoInscripcion) => void;
-  readonly onAnoChange?: (ano: number | null) => void;
+  readonly onPersonaChange: (personaId: string | null) => void;
+  readonly onTipoChange: (tipo: TipoInscripcion) => void;
+  readonly onAnoChange: (ano: number | null) => void;
 }
 
-const noop = () => undefined;
-
-/** 01 "Datos de la Inscripción": persona, tipo y año. */
+/** "Datos de la Inscripción" del alta: persona, tipo y año. */
 export function DatosSection(props: DatosSectionProps) {
-  const { errors = {}, disabled = false } = props;
+  const { errors = {} } = props;
   return (
-    <FormSection marker={SECTION_MARKERS.DATOS} title={C.SECTION_DATOS}>
+    <FormSection title={C.SECTION_DATOS}>
       <ComboboxField
         label={C.PERSONA}
         required
-        disabled={disabled}
         options={props.personaOptions}
         value={props.personaId}
-        onChange={props.onPersonaChange ?? noop}
+        onChange={props.onPersonaChange}
         placeholder={C.PERSONA_PLACEHOLDER}
         emptyText={C.PERSONA_EMPTY}
         error={errors.personaId}
@@ -50,21 +44,19 @@ export function DatosSection(props: DatosSectionProps) {
         <SelectField<TipoInscripcion>
           label={C.TIPO}
           required
-          disabled={disabled}
           options={TIPO_OPTIONS}
           value={props.tipo}
-          onChange={(tipo) => (tipo ? props.onTipoChange?.(tipo) : undefined)}
+          onChange={(tipo) => (tipo ? props.onTipoChange(tipo) : undefined)}
           placeholder={C.TIPO_PLACEHOLDER}
           error={errors.tipo}
         />
         <NumberField
           label={C.ANO}
           required
-          disabled={disabled}
           min={ANO_MIN}
           max={ANO_MAX}
           value={props.ano}
-          onChange={props.onAnoChange ?? noop}
+          onChange={props.onAnoChange}
           error={errors.ano}
         />
       </div>

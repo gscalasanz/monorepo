@@ -24,12 +24,10 @@ import {
   validateCreate,
 } from '@/features/inscripciones/helpers/create-form';
 import {
-  authSummary,
   isPagoEditable,
   mergeInscripcion,
   montoAPagar,
   progressPercent,
-  progressTone,
 } from '@/features/inscripciones/helpers/detail';
 import {
   ALL_YEARS,
@@ -335,16 +333,6 @@ describe('detalle', () => {
         montoPagado: 0,
       }),
     ).toBe(100);
-    expect(progressTone(INSCRIPCION)).toBe('partial');
-    expect(progressTone({ saldoPendiente: 0, montoPagado: 0 })).toBe('success');
-  });
-
-  it('autorizaciones pendientes', () => {
-    expect(authSummary(INSCRIPCION)).toEqual({
-      complete: false,
-      pending: 3,
-      total: 5,
-    });
   });
 
   it('solo los ingresos de inscripción son editables', () => {

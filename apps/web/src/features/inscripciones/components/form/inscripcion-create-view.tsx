@@ -9,7 +9,6 @@ import { FORM_COPY as C } from '@/features/inscripciones/constants/copy';
 import { URL_PARAMS } from '@/features/inscripciones/constants/inscripciones';
 import { inscripcionRoutes } from '@/features/inscripciones/constants/routes';
 import { useInscripcionCreateForm } from '@/features/inscripciones/hooks/use-inscripcion-create-form';
-import { AnoBadge } from '@/features/inscripciones/components/form/ano-badge';
 import { InscripcionCreateForm } from '@/features/inscripciones/components/form/inscripcion-create-form';
 
 /** `/inscripciones/crear` (tipo inicial desde `?tipo`, default Scout Argentina). */
@@ -27,7 +26,6 @@ export function InscripcionCreateView() {
         title={C.CREATE_TITLE}
         subtitle={C.CREATE_SUBTITLE}
         backHref={inscripcionRoutes.list}
-        actions={<AnoBadge ano={form.values.ano} />}
       />
       {personasLoading && personaOptions.length === 0 ? (
         <LoadingState label={C.LOADING} />

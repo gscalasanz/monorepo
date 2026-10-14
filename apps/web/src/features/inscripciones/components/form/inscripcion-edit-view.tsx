@@ -14,7 +14,6 @@ import {
 } from '@/features/inscripciones/constants/copy';
 import { inscripcionRoutes } from '@/features/inscripciones/constants/routes';
 import { useInscripcionEditForm } from '@/features/inscripciones/hooks/use-inscripcion-edit-form';
-import { AnoBadge } from '@/features/inscripciones/components/form/ano-badge';
 import { InscripcionEditForm } from '@/features/inscripciones/components/form/inscripcion-edit-form';
 
 /** `/inscripciones/:id/editar` y `/inscripciones/:id/pago` (paridad: mismo form). */
@@ -40,7 +39,6 @@ export function InscripcionEditView({ id }: { readonly id: string }) {
         title={C.EDIT_TITLE}
         subtitle={C.EDIT_SUBTITLE}
         backHref={inscripcionRoutes.list}
-        actions={<AnoBadge ano={inscripcion?.ano ?? null} />}
       />
       {body}
     </div>

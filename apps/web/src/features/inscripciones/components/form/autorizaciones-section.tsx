@@ -2,7 +2,6 @@ import { CheckboxField } from '@/shared/components/ui/form';
 import { FORM_COPY as C } from '@/features/inscripciones/constants/copy';
 import {
   AUTORIZACIONES,
-  SECTION_MARKERS,
   type AutorizacionKey,
   type Autorizaciones,
 } from '@/features/inscripciones/constants/inscripciones';
@@ -20,7 +19,6 @@ export function AutorizacionesSection({
 }: AutorizacionesSectionProps) {
   return (
     <FormSection
-      marker={SECTION_MARKERS.AUTORIZACIONES}
       title={C.SECTION_AUTORIZACIONES}
       description={C.AUTORIZACIONES_DESC}
     >

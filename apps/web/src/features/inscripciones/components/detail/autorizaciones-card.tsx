@@ -2,47 +2,64 @@ import { Check, Minus } from 'lucide-react';
 
 import { Panel } from '@/shared/components/ui/panel';
 import { cn } from '@/shared/lib/utils';
-import { AUTH_COPY as C } from '@/features/inscripciones/constants/copy';
+import {
+  AUTH_COPY as C,
+  DETAIL_COPY,
+} from '@/features/inscripciones/constants/copy';
 import {
   AUTORIZACIONES,
   type Autorizaciones,
 } from '@/features/inscripciones/constants/inscripciones';
-import { authSummary } from '@/features/inscripciones/helpers/detail';
-import { AuthStatus } from '@/features/inscripciones/components/detail/auth-status';
 
-/** Autorizaciones de Scout Argentina: estado general + grilla de las 5. */
+interface AutorizacionesCardProps {
+  readonly values: Autorizaciones;
+  /** Edición de la inscripción (donde se marcan las autorizaciones). */
+  readonly editHref: string;
+}
+
+/** Checklist en grilla (como la documentación de la ficha): solo lo que falta lleva texto visible. */
 export function AutorizacionesCard({
   values,
-}: {
-  readonly values: Autorizaciones;
-}) {
+  editHref,
+}: AutorizacionesCardProps) {
+  const entregadas = AUTORIZACIONES.filter((item) => values[item.key]).length;
   return (
-    <Panel title={C.SECTION_TITLE}>
-      <div className="grid gap-4">
-        <AuthStatus summary={authSummary(values)} />
-        <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {AUTORIZACIONES.map((item) => {
-            const ok = values[item.key];
-            const Icon = ok ? Check : Minus;
-            return (
-              <li
-                key={item.key}
-                className="flex items-center gap-2 rounded-md bg-recessed px-2.5 py-2 text-[13px] text-ink"
+    <Panel
+      title={C.SECTION_TITLE}
+      meta={DETAIL_COPY.AUT_COUNT(entregadas, AUTORIZACIONES.length)}
+      action={{ label: DETAIL_COPY.AUT_UPDATE, href: editHref }}
+      flush
+    >
+      <ul className="grid grid-cols-1 sm:grid-cols-2">
+        {AUTORIZACIONES.map((item) => {
+          const ok = values[item.key];
+          const Icon = ok ? Check : Minus;
+          return (
+            <li
+              key={item.key}
+              className="flex min-h-12 items-center gap-2.5 border-b border-border px-4 py-2.5 text-sm text-ink sm:odd:border-r md:px-[18px]"
+            >
+              <span
+                aria-hidden
+                className={cn(
+                  'grid size-5 shrink-0 place-items-center rounded-full',
+                  ok
+                    ? 'bg-success-soft text-success'
+                    : 'bg-warning-soft text-warning',
+                )}
               >
-                <Icon
-                  aria-hidden
-                  className={cn(
-                    'size-4 shrink-0',
-                    ok ? 'text-success' : 'text-ink-subtle',
-                  )}
-                />
-                {item.short}
-                <span className="sr-only">{`: ${ok ? C.PRESENTED : C.MISSING}`}</span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+                <Icon className="size-3" strokeWidth={2.5} />
+              </span>
+              <span className="flex-1">{item.label}</span>
+              {ok ? (
+                <span className="sr-only">{C.PRESENTED}</span>
+              ) : (
+                <span className="text-xs text-warning">{C.MISSING}</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </Panel>
   );
 }

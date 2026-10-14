@@ -7,7 +7,6 @@ import {
   type MovimientoInscripcion,
 } from '@/shared/domain';
 import {
-  AUTORIZACION_KEYS,
   PERCENT,
   type Autorizaciones,
 } from '@/features/inscripciones/constants/inscripciones';
@@ -32,29 +31,6 @@ export function progressPercent(
     PERCENT,
     Math.round((inscripcion.montoPagado / total) * PERCENT),
   );
-}
-
-export type ProgressTone = 'success' | 'partial' | 'pending';
-
-export function progressTone(
-  inscripcion: Pick<Inscripcion, 'saldoPendiente' | 'montoPagado'>,
-): ProgressTone {
-  if (inscripcion.saldoPendiente === 0) return 'success';
-  if (inscripcion.montoPagado > 0) return 'partial';
-  return 'pending';
-}
-
-export interface AuthSummary {
-  readonly complete: boolean;
-  readonly pending: number;
-  readonly total: number;
-}
-
-export function authSummary(autorizaciones: Autorizaciones): AuthSummary {
-  const pending = AUTORIZACION_KEYS.filter(
-    (key) => !autorizaciones[key],
-  ).length;
-  return { complete: pending === 0, pending, total: AUTORIZACION_KEYS.length };
 }
 
 export function pickAutorizaciones(source: Autorizaciones): Autorizaciones {

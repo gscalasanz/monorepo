@@ -154,15 +154,54 @@ describe('<InscripcionesDashboardView>', () => {
 });
 
 describe('<InscripcionDetailView>', () => {
-  it('muestra saldo pendiente, historial y autorizaciones', async () => {
+  it('encabezado con link a la ficha, KPIs, historial y autorizaciones', async () => {
     render(<InscripcionDetailView id="ins-1" />);
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Juan' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Saldo pendiente')).toBeInTheDocument();
-    expect(screen.getByText('33% completado')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Ver ficha/ })).toHaveAttribute(
+      'href',
+      '/personas/protagonistas/per-1',
+    );
+    const kpis = screen.getByLabelText('Resumen de la inscripción');
+    expect(within(kpis).getByText('Saldo pendiente')).toBeInTheDocument();
+    expect(within(kpis).getByText('33% completado')).toBeInTheDocument();
     expect(screen.getByText('Historial de pagos')).toBeInTheDocument();
-    expect(screen.getByText('3 de 5')).toBeInTheDocument();
+    expect(screen.getByText('2 de 5')).toBeInTheDocument();
+    expect(screen.getAllByText('Falta')).toHaveLength(3);
+  });
+
+  it('el ⋯ del encabezado agrupa editar, bonificar y eliminar', async () => {
+    const user = userEvent.setup();
+    render(<InscripcionDetailView id="ins-1" />);
+    await user.click(
+      await screen.findByRole('button', {
+        name: 'Más acciones de la inscripción',
+      }),
+    );
+    expect(
+      await screen.findByRole('menuitem', { name: 'Editar inscripción' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Bonificar' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Eliminar' }),
+    ).toBeInTheDocument();
+  });
+
+  it('cada pago editable tiene su ⋯ con "Editar pago"', async () => {
+    const user = userEvent.setup();
+    render(<InscripcionDetailView id="ins-1" />);
+    await user.click(
+      await screen.findByRole('button', { name: /^Acciones para pago de/ }),
+    );
+    await user.click(
+      await screen.findByRole('menuitem', { name: 'Editar pago' }),
+    );
+    expect(
+      await screen.findByRole('dialog', { name: 'Editar Pago' }),
+    ).toBeInTheDocument();
   });
 
   it('404 → "Inscripción no encontrada"', async () => {
@@ -173,7 +212,7 @@ describe('<InscripcionDetailView>', () => {
     ).toBeInTheDocument();
   });
 
-  it('registra un pago desde el diálogo', async () => {
+  it('registra un pago desde la acción principal', async () => {
     api.pagarInscripcion.mockResolvedValue({
       ...INSCRIPCION,
       montoPagado: 10100,
@@ -182,9 +221,7 @@ describe('<InscripcionDetailView>', () => {
     const user = userEvent.setup();
     render(<InscripcionDetailView id="ins-1" />);
     await user.click(
-      await screen.findByRole('button', {
-        name: 'Registrar nuevo pago para esta inscripción',
-      }),
+      await screen.findByRole('button', { name: 'Registrar pago' }),
     );
     const dialog = await screen.findByRole('dialog');
     await user.type(
@@ -220,6 +257,18 @@ describe('<InscripcionEditView>', () => {
     );
     expect(push).toHaveBeenCalledWith('/inscripciones');
   });
+
+  it('dos tarjetas: datos de solo lectura y autorizaciones editables', async () => {
+    render(<InscripcionEditView id="ins-1" />);
+    const datos = await screen.findByRole('region', {
+      name: 'Datos de la Inscripción',
+    });
+    expect(within(datos).getByText('Juan')).toBeInTheDocument();
+    expect(within(datos).getByText('Scout Argentina')).toBeInTheDocument();
+    expect(within(datos).queryByRole('textbox')).not.toBeInTheDocument();
+    const editables = screen.getByRole('region', { name: 'Autorizaciones' });
+    expect(within(editables).getAllByRole('checkbox')).toHaveLength(5);
+  });
 });
 
 describe('<InscripcionCreateView>', () => {
@@ -232,6 +281,12 @@ describe('<InscripcionCreateView>', () => {
     render(<InscripcionCreateView />);
     expect(await screen.findByLabelText('Monto Total')).toHaveValue('700');
     expect(screen.queryByText('Persona nueva')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: 'Datos de la Inscripción' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: 'Importes' }),
+    ).toBeInTheDocument();
     await userEvent
       .setup()
       .click(screen.getByRole('button', { name: 'Crear inscripción' }));

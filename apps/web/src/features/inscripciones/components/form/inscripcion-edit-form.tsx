@@ -9,8 +9,8 @@ import type { Autorizaciones } from '@/features/inscripciones/constants/inscripc
 import { inscripcionRoutes } from '@/features/inscripciones/constants/routes';
 import type { InscripcionEditModel } from '@/features/inscripciones/hooks/use-inscripcion-edit-form';
 import { AutorizacionesSection } from '@/features/inscripciones/components/form/autorizaciones-section';
-import { DatosSection } from '@/features/inscripciones/components/form/datos-section';
-import { ImportesReadonlySection } from '@/features/inscripciones/components/form/importes-readonly-section';
+import { InscripcionFormCard } from '@/features/inscripciones/components/form/form-card';
+import { InscripcionSummary } from '@/features/inscripciones/components/form/inscripcion-summary';
 
 interface InscripcionEditFormProps {
   readonly inscripcion: Inscripcion;
@@ -18,37 +18,32 @@ interface InscripcionEditFormProps {
   readonly model: InscripcionEditModel;
 }
 
-/** Edición: persona / tipo / año / monto bloqueados; solo autorizaciones (SA). */
+/** Edición como movimientos: izquierda los datos de solo lectura, derecha las autorizaciones (SA). */
 export function InscripcionEditForm({
   inscripcion,
   autorizaciones,
   model,
 }: InscripcionEditFormProps) {
   const router = useRouter();
-  const persona = {
-    value: inscripcion.personaId,
-    label: inscripcion.persona?.nombre ?? inscripcion.personaId,
-  };
   return (
     <form
       noValidate
       onSubmit={(event) => void model.submit(event)}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 md:gap-6"
     >
-      <DatosSection
-        disabled
-        personaId={inscripcion.personaId}
-        tipo={inscripcion.tipo}
-        ano={inscripcion.ano}
-        personaOptions={[persona]}
-      />
-      <ImportesReadonlySection montoTotal={inscripcion.montoTotal} />
-      {inscripcion.tipo === TIPO_INSCRIPCION.SCOUT_ARGENTINA ? (
-        <AutorizacionesSection
-          values={autorizaciones}
-          onChange={model.setAutorizacion}
-        />
-      ) : null}
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:items-start">
+        <InscripcionFormCard>
+          <InscripcionSummary inscripcion={inscripcion} />
+        </InscripcionFormCard>
+        {inscripcion.tipo === TIPO_INSCRIPCION.SCOUT_ARGENTINA ? (
+          <InscripcionFormCard>
+            <AutorizacionesSection
+              values={autorizaciones}
+              onChange={model.setAutorizacion}
+            />
+          </InscripcionFormCard>
+        ) : null}
+      </div>
       <FormActions
         cancelLabel={C.CANCEL}
         saveLabel={C.SAVE}

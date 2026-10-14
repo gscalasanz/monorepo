@@ -92,6 +92,8 @@ export const FORM_COPY = {
   AUTORIZACIONES_DESC:
     'Documentos firmados por el responsable del protagonista',
   PERSONA: 'Persona a inscribir',
+  PERSONA_LABEL: 'Persona',
+  EDIT_READONLY: 'No se modifican una vez creada la inscripción',
   PERSONA_PLACEHOLDER: 'Seleccionar persona',
   PERSONA_EMPTY: 'No hay personas disponibles',
   PERSONA_REQUIRED: 'Selecciona una persona',
@@ -151,13 +153,8 @@ export const AUTH_COPY = {
   SHORT_SALIDAS: 'Salidas',
   SHORT_INGRESO: 'Ingreso',
   SHORT_APTITUD: 'Apto Físico',
-  COMPLETE_TITLE: 'Listo para actividades',
-  COMPLETE_DESC: 'Todo completado',
-  PENDING_TITLE: 'Pendientes',
   PRESENTED: 'Presentada',
   MISSING: 'Falta',
-  pendingCount: (pending: number, total: number): string =>
-    `${pending} de ${total}`,
 } as const;
 
 export const DETAIL_COPY = {
@@ -168,19 +165,14 @@ export const DETAIL_COPY = {
   BACK_TO_LIST: 'Volver al listado',
   SIN_NOMBRE: 'Sin nombre',
   SALDO_PENDIENTE: 'Saldo pendiente',
-  ESTADO_PAGO: 'Estado de pago',
   AL_DIA: 'Al día',
-  PAGADO: 'pagado',
   INSCRIPCION: 'Inscripción',
   BONIFICACION: 'Bonificación',
-  TOTAL: 'Total',
   PAGADO_LABEL: 'Pagado',
   BONIFICAR: 'Bonificar',
   AJUSTAR_BONIFICACION: 'Ajustar bonificación',
   QUITAR_BONIFICACION: 'Quitar bonificación',
   HISTORIAL: 'Historial de pagos',
-  ADD_PAGO: 'Pago',
-  ADD_PAGO_LABEL: 'Registrar nuevo pago para esta inscripción',
   SIN_PAGOS: 'Sin pagos',
   PRIMER_PAGO: 'Registrá el primer pago',
   DELETE: 'Eliminar',
@@ -188,16 +180,27 @@ export const DETAIL_COPY = {
   DELETED: 'Inscripción eliminada exitosamente',
   BONIFICADA: 'Bonificación otorgada exitosamente',
   BONIFICACION_QUITADA: 'Bonificación quitada exitosamente',
-  ACTIONS: 'Acciones',
   PAGOS_LABEL: 'Lista de pagos realizados',
   subtitle: (tipo: string, ano: number): string => `${tipo} · ${ano}`,
-  pagadoDe: (pagado: string, total: string): string =>
-    `${pagado} pagado de ${total}`,
   progress: (pct: number): string => `${pct}% completado`,
   progressLabel: (pct: number): string => `${pct}% del pago completado`,
   pagosCount: (count: number): string =>
     `${count} ${count === 1 ? 'pago' : 'pagos'}`,
-  editPagoLabel: (monto: string): string => `Editar pago de ${monto}`,
+  pagoActions: (monto: string): string => `Acciones para pago de ${monto}`,
+  EDIT_PAGO: 'Editar pago',
+  REGISTRAR_PAGO: 'Registrar pago',
+  MAS_ACCIONES: 'Más acciones de la inscripción',
+  VER_FICHA: 'Ver ficha',
+  KPIS_LABEL: 'Resumen de la inscripción',
+  A_PAGAR: 'A pagar',
+  HINT_INSCRIPCION: 'Monto de la inscripción antes de la bonificación',
+  HINT_BONIFICACION: 'Lo que cubre el Fondo Solidario',
+  HINT_A_PAGAR: 'Inscripción menos bonificación',
+  HINT_PAGADO: 'Pagos registrados (efectivo, transferencia o saldo personal)',
+  HINT_SALDO: 'Lo que falta pagar',
+  AUT_COUNT: (entregadas: number, total: number): string =>
+    `${entregadas} de ${total}`,
+  AUT_UPDATE: 'Actualizar',
 } as const;
 
 export const PAGO_COPY = {
