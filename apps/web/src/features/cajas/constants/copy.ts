@@ -32,6 +32,7 @@ export const CAJAS_COPY = {
   COL_NOMBRE: 'Nombre',
   COL_RAMA: 'Rama',
   COL_SALDO: 'Saldo',
+  abrirMovimiento: (concepto: string): string => `Abrir ${concepto}`,
   VER: 'Ver',
   EDITAR: 'Editar',
   ELIMINAR: 'Eliminar',
@@ -126,6 +127,7 @@ export const CAJAS_COPY = {
   // Fondo Solidario
   FS_HINT:
     'Financia las bonificaciones. Su saldo no forma parte de la caja de grupo: sólo se libera al otorgar una bonificación.',
+  FS_LABEL: 'Resumen del fondo solidario',
   SALDO_DISPONIBLE: 'Saldo Disponible',
   BONIFICADO: 'Bonificado a la Fecha',
   TRANSFERIR_FS: 'Transferir a Fondo Solidario',

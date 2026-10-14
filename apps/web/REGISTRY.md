@@ -52,5 +52,5 @@
 | `Panel` · `NavChevron` | ui | `src/shared/components/ui/panel.tsx` → [ui](./REGISTRY-detail/ui.md#panel--sharedcomponentsuipaneltsx) |
 | `useAsyncData` | hooks (datos) | `src/shared/hooks/use-async-data.ts` → [ui](./REGISTRY-detail/ui.md#useasyncdata--sharedhooksuse-async-datats) |
 | `FormDialogShell` · `useDialogSubmit` | ui (finanzas) | `src/shared/components/finanzas/` → [ui](./REGISTRY-detail/ui.md#finanzas--sharedcomponentsfinanzas) |
-| `MovimientoCard` · `EstadoPagoBadge` · `MovimientoFilterTabs` · `filterMovimientosBy` · `confirmPagarReembolso` · `GastoFormDialog` · `IngresoFormDialog` · `toGastoDto`/`toGastoEventoDto`/`toIngresoDto` | ui (finanzas) | `src/shared/components/finanzas/` → [ui](./REGISTRY-detail/ui.md#finanzas--sharedcomponentsfinanzas) |
+| `MovimientoCard` · `MovimientoConcepto` · `EstadoPagoBadge` · `MovimientoFilterTabs` · `filterMovimientosBy` · `confirmPagarReembolso` · `GastoFormDialog` · `IngresoFormDialog` · `toGastoDto`/`toGastoEventoDto`/`toIngresoDto` | ui (finanzas) | `src/shared/components/finanzas/` → [ui](./REGISTRY-detail/ui.md#finanzas--sharedcomponentsfinanzas) |
 | `fetchPersonasActivas` · `fetchCajas` · `fetchFondoSolidario` · `fetchSaldoPersonal` · `cajaLabel` · `personaOptions` | api (lecturas) | `src/shared/queries/` → [api](./REGISTRY-detail/api.md#lecturas-transversales--sharedqueries) |

@@ -8,6 +8,7 @@ export const FINANZAS_COPY = {
     sinDescripcion: 'Sin descripción',
     marcarComoPagado: 'Marcar como pagado',
     eliminar: 'Eliminar movimiento',
+    comprobanteEntregado: 'Comprobante entregado',
   },
   filters: {
     ariaLabel: 'Filtrar movimientos',

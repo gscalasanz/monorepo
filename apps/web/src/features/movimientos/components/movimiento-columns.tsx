@@ -7,7 +7,7 @@ import {
 } from '@/shared/components/data';
 import type { Movimiento } from '@/shared/domain';
 import { DATE_FORMATS, formatDate } from '@/shared/time';
-import { EstadoPagoBadge } from '@/shared/components/finanzas';
+import { EstadoPagoBadge, MovimientoConcepto } from '@/shared/components/finanzas';
 import { MOVIMIENTOS_COPY as C } from '@/features/movimientos/constants/copy';
 import { COLUMN_SIZE, MONEY_DECIMALS } from '@/features/movimientos/constants/movimientos';
 import {
@@ -18,7 +18,6 @@ import {
   medioPagoLabel,
   responsableText,
 } from '@/features/movimientos/helpers/view-model';
-import { ConceptoCell } from '@/features/movimientos/components/concepto-cell';
 import { MovimientoRowActions } from '@/features/movimientos/components/movimiento-row-actions';
 
 type Column = AppColumnDef<Movimiento>;
@@ -44,7 +43,7 @@ const conceptoColumn: Column = {
   id: 'concepto',
   header: C.COL_CONCEPTO,
   size: COLUMN_SIZE.concepto,
-  cell: ({ row }) => <ConceptoCell movimiento={row.original} />,
+  cell: ({ row }) => <MovimientoConcepto movimiento={row.original} />,
 };
 
 const montoColumn: Column = {

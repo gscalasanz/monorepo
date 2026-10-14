@@ -1,9 +1,8 @@
 'use client';
 
-import { Landmark } from 'lucide-react';
 import { useState } from 'react';
 
-import { StatCard } from '@/shared/components/charts';
+import { Money } from '@/shared/components/data';
 import { ErrorState, LoadingState } from '@/shared/components/feedback';
 import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
 import { CajaDrawer } from '@/features/cajas/components/caja-drawer';
@@ -33,22 +32,24 @@ export function CajaGrupoTab() {
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
-      <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <StatCard
-          icon={Landmark}
-          title={C.SALDO_GRUPO}
-          value={caja.saldoActual}
-          format="currency"
-          variant={caja.saldoActual >= 0 ? 'success' : 'danger'}
-          className="lg:min-w-72"
-        />
+      <section className="flex flex-col gap-4 rounded-xl border border-border bg-surface px-4 py-4 shadow-xs md:px-[18px] lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[13px] leading-[18px] text-ink-muted">
+            {C.SALDO_GRUPO}
+          </span>
+          <Money
+            amount={caja.saldoActual}
+            size="figure"
+            tone={caja.saldoActual < 0 ? 'debt' : undefined}
+          />
+        </div>
         <CajaGrupoActions
           cajaId={caja.id}
           onTransferir={() => setTransferOpen(true)}
           onVerDetalles={() => setDrawerOpen(true)}
         />
       </section>
-      <UltimosMovimientosPanel movimientos={ultimos} />
+      <UltimosMovimientosPanel cajaId={caja.id} movimientos={ultimos} />
       <TransferenciaDialog
         open={transferOpen}
         onOpenChange={setTransferOpen}

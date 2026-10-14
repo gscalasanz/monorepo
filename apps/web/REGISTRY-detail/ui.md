@@ -124,6 +124,10 @@ Cableado a11y automático (label↔control, `aria-invalid`, `aria-describedby` a
 - `FormActions` — `{ onCancel?, onSave?, saveLabel?, cancelLabel?, saving?, saveDisabled?, form?, extra? }`: barra fija abajo en mobile, estática desde `md`. Sin `onSave` el botón es `type="submit"`.
 - Piezas: `InputControl` (input de marca con `prefix`/`suffix`/`size`), `FieldMessage`, `FieldLabelText`, `ControlStatusIcon`, `ChoiceRow`, `RadioCard`, `DayToggle`, `PasswordToggle`, `CONTROL_SURFACE`/`CONTROL_SIZE`.
 
+## `MovimientoConcepto` — `shared/components/finanzas/movimiento-concepto.tsx`
+
+`{ movimiento: { tipo, concepto, descripcion, comprobanteEntregado } }`: primera columna rica de una tabla de movimientos: `DirectionTile` + nombre del concepto + descripción como sub-línea (reemplaza las columnas «Tipo» y «Descripción») + clip si el comprobante está entregado. La usan Movimientos y Cajas.
+
 ## `NavChevron` — `shared/components/ui/nav-chevron.tsx`
 
 `{ className? }`: chevron decorativo (`aria-hidden`) que indica "esto navega". Se desplaza y oscurece con `group-hover:` (el link padre lleva `group`). Lo usan el `action` de `Panel`, `KpiStrip`, `ChartLegend` y las filas navegables del dashboard.

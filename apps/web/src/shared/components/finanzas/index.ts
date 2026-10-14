@@ -5,6 +5,10 @@
  */
 export { FINANZAS_COPY, DESCRIPCION_MAX_LENGTH } from './copy';
 export type { MovimientoCardData } from './types';
+export {
+  MovimientoConcepto,
+  type MovimientoConceptoData,
+} from './movimiento-concepto';
 export { MovimientoCard, type MovimientoCardProps } from './movimiento-card';
 export {
   EstadoPagoBadge,

@@ -1,11 +1,33 @@
 'use client';
 
-import { ArrowLeftRight, HandHeart, Heart, Plus } from 'lucide-react';
+import { ArrowLeftRight, Plus } from 'lucide-react';
 
-import { StatCard } from '@/shared/components/charts';
+import { KpiStrip, type KpiItem } from '@/shared/components/charts';
+import { Money } from '@/shared/components/data';
 import { Button } from '@/shared/components/ui/button';
 import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
 import type { FondoSolidarioView } from '@/features/cajas/helpers/fondo-solidario';
+
+function kpiItems(view: FondoSolidarioView): readonly KpiItem[] {
+  return [
+    {
+      id: 'saldo',
+      label: C.SALDO_DISPONIBLE,
+      value: (
+        <Money
+          amount={view.saldo}
+          size="figure-md"
+          tone={view.saldo < 0 ? 'debt' : undefined}
+        />
+      ),
+    },
+    {
+      id: 'bonificado',
+      label: C.BONIFICADO,
+      value: <Money amount={view.bonificado} size="figure-md" />,
+    },
+  ];
+}
 
 export interface FondoSolidarioSummaryProps {
   readonly view: FondoSolidarioView;
@@ -24,22 +46,7 @@ export function FondoSolidarioSummary({
   return (
     <>
       <p className="max-w-prose text-sm text-ink-muted">{C.FS_HINT}</p>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <StatCard
-          icon={HandHeart}
-          title={C.SALDO_DISPONIBLE}
-          value={view.saldo}
-          format="currency"
-          variant={view.saldo > 0 ? 'success' : 'info'}
-        />
-        <StatCard
-          icon={Heart}
-          title={C.BONIFICADO}
-          value={view.bonificado}
-          format="currency"
-          variant="info"
-        />
-      </div>
+      <KpiStrip ariaLabel={C.FS_LABEL} items={kpiItems(view)} />
       <div className="flex flex-col gap-2 sm:flex-row">
         {view.cajaId ? (
           <Button

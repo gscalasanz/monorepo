@@ -34,7 +34,6 @@ export const MOVIMIENTOS_COPY = {
   YES: 'Sí',
   NO: 'No',
   rowActions: (concepto: string): string => `Acciones para ${concepto}`,
-  COMPROBANTE_ICON: 'Comprobante entregado',
   EDIT: 'Editar',
   DELETE: 'Eliminar',
   ENTITY: 'movimiento',
