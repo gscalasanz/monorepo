@@ -10,7 +10,7 @@ import {
   LoadingState,
 } from '@/shared/components/feedback';
 import { PageHeader } from '@/shared/layout';
-import { ButtonLink } from '@/features/eventos/components/button-link';
+import { ButtonLink } from '@/shared/components/ui/button-link';
 import { EventosTable } from '@/features/eventos/components/eventos-table';
 import { EVENTOS_COPY } from '@/features/eventos/constants/copy';
 import { EVENTOS_ROUTES } from '@/features/eventos/constants/eventos';

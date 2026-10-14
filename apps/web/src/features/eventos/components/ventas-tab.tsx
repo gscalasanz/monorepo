@@ -14,7 +14,7 @@ import { EmptyState, LoadingState } from '@/shared/components/feedback';
 import { confirmDialog } from '@/shared/confirm';
 import type { DeleteVentaResult, Evento } from '@/shared/domain';
 import { notify } from '@/shared/notifications';
-import { ButtonLink } from '@/features/eventos/components/button-link';
+import { ButtonLink } from '@/shared/components/ui/button-link';
 import { VentasTable } from '@/features/eventos/components/ventas-table';
 import { EVENTOS_COPY } from '@/features/eventos/constants/copy';
 import { EVENTOS_ROUTES } from '@/features/eventos/constants/eventos';

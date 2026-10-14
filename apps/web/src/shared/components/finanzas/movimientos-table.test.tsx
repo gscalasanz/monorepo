@@ -70,4 +70,51 @@ describe('MovimientosTable', () => {
       .click(screen.getByRole('button', { name: /Pendiente de Reembolso/ }));
     expect(onPagar).toHaveBeenCalledWith(pendiente);
   });
+
+  describe('lista mobile (<860px)', () => {
+    beforeEach(() => {
+      vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
+        matches: true,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+    });
+    afterEach(() => vi.restoreAllMocks());
+
+    it('conserva el pago del reembolso y el ⋯; el estado normal no se repite', async () => {
+      const onPagar = vi.fn();
+      const pendiente = {
+        ...BASE,
+        id: 'm2',
+        estadoPago: 'pendiente_reembolso' as const,
+      };
+      render(
+        <MovimientosTable
+          movimientos={[BASE, pendiente]}
+          ariaLabel="Movimientos"
+          deletable
+          onDelete={vi.fn()}
+          onPagarReembolso={onPagar}
+        />,
+      );
+      const list = screen.getByRole('list', { name: 'Movimientos' });
+      expect(within(list).queryByText('Pagado')).not.toBeInTheDocument();
+      expect(
+        within(list).getAllByRole('button', {
+          name: 'Acciones para Gasto General',
+        }),
+      ).toHaveLength(2);
+      await userEvent
+        .setup()
+        .click(
+          within(list).getByRole('button', { name: /Pendiente de Reembolso/ }),
+        );
+      expect(onPagar).toHaveBeenCalledWith(pendiente);
+    });
+  });
 });

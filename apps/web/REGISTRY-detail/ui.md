@@ -57,7 +57,7 @@ movimiento en mobile; el bottom-nav se oculta en rutas de formulario, `isFormRou
 
 Importar de `@/shared/components/data`.
 
-- `AppDataGrid<T>` — tabla densa (DataGrid ReUI, TanStack v9): `{ columns: AppColumnDef<T>[], data, isLoading?, emptyState?, pagination?: 'client' (default, `UI_CONFIG.PAGINATION`) | 'none' | { pageIndex, pageSize, total, onChange }, sorting?: { state, onChange, manual? }, initialSorting?, onRowClick?, getRowId?, mobileRow?: (row) => ReactNode, layout?: 'auto'|'table'|'list', ariaLabel? }`. <860px → lista (`mobileRow` o primeras dos columnas). Labels en español (`DATA_GRID_I18N_ES`). `sortableHeader('Fecha')` para headers ordenables; `MONEY_CELL_CLASS` en `meta.cellClassName`/`headerClassName` para montos.
+- `AppDataGrid<T>` — tabla densa (DataGrid ReUI, TanStack v9): `{ columns: AppColumnDef<T>[], data, isLoading?, emptyState?, pagination?: 'client' (default, `UI_CONFIG.PAGINATION`) | 'none' | { pageIndex, pageSize, total, onChange }, sorting?: { state, onChange, manual? }, initialSorting?, onRowClick?, getRowId?, mobileRow?: (row) => ReactNode, layout?: 'auto'|'table'|'list', expandable?: { label: (row) => string, render: (row) => ReactNode }, ariaLabel? }`. `expandable` agrega un ▸ (`ExpandToggle`, columna `__expand`) que abre `render(row)` debajo de la fila, en tabla y en lista mobile (campamentos: pagos del participante). <860px → lista (`mobileRow` o primeras dos columnas). Labels en español (`DATA_GRID_I18N_ES`). `sortableHeader('Fecha')` para headers ordenables; `MONEY_CELL_CLASS` en `meta.cellClassName`/`headerClassName` para montos.
 - `Money` — `{ amount, sign?: 'in'|'out'|'auto', tone?: 'debt', size?: 'inline'|'figure-md'|'figure', decimals?, placeholder? }`. `+`/`−` (U+2212), `$` subordinado. Helpers puros `toMoneyParts`, `formatSignedMoney`.
 - `StatusBadge` — `{ status?, label?, tone?, icon?, hideIcon? }`; tono vía `resolveStatusTone` + estados de pago de DESIGN (parcial, bonificado, a reembolsar, a cobrar); siempre ícono + texto. `resolveBadgeTone`, `BADGE_TONE`.
 - `RamaChip` — `{ rama, variant?: 'chip'|'dot' }` (fuera de las 4 ramas: punto burgundy).
@@ -137,6 +137,10 @@ Cableado a11y automático (label↔control, `aria-invalid`, `aria-describedby` a
 
 `{ label, children }`: tarjeta de formulario con la misma superficie que las de movimientos, sin título visible (`label` es el nombre accesible). Siempre dos `FormCard` lado a lado desde `lg` (`grid lg:grid-cols-2 lg:items-start`), página a todo el ancho y `FormActions` sticky: es el patrón de TODOS los formularios.
 
+## `ButtonLink` — `shared/components/ui/button-link.tsx`
+
+- `{ href, children, icon?, variant?: 'primary'|'secondary', size?: 'md'|'sm', className? }`: link con la apariencia de `Button` (navega, no acciona). Usado en eventos y campamentos (alta, "Ver reporte").
+
 ## `InfoHint` — `shared/components/ui/info-hint.tsx`
 
 `{ label, text }`: ⓘ que explica un dato (Popover con `openOnHover`: hover en desktop, tap en mobile, teclado). Botón con nombre "Qué significa {label}". Lo usa `KpiStrip` vía `hint`.
@@ -156,7 +160,7 @@ efectos). Patrón de carga de todas las pantallas (no hay react-query).
 
 Piezas de dinero que comparten campamentos y eventos (port de los componentes compartidos de Angular). Copy exacto en `copy.ts`.
 
-- `MovimientosTable({ movimientos: MovimientoCardData[], ariaLabel, deletable?, onDelete?, onPagarReembolso? })`: tabla densa (Fecha · Concepto con tile · Responsable · Medio · Estado · Monto · ⋯ Eliminar), lista en mobile. Reemplaza a las cards en pantallas nuevas (eventos ya; campamentos pendiente).
+- `MovimientosTable({ movimientos: MovimientoCardData[], ariaLabel, deletable?, onDelete?, onPagarReembolso? })`: tabla densa (Fecha · Concepto con tile · Responsable · Medio · Estado · Monto · ⋯ Eliminar), lista en mobile. Reemplaza a las cards en pantallas nuevas (eventos y campamentos). En mobile la fila muestra el estado solo si no es "Pagado" y conserva el ⋯ si es `deletable`.
 - `MovimientoCard({ movimiento: MovimientoCardData, deletable?, deleting?, onDelete?, onPagarReembolso? })`: tarjeta de un movimiento con badge de estado de pago.
 - `EstadoPagoBadge({ movimiento, onPagarReembolso? })`: muestra "Pagado", "Pendiente de Reembolso" o "A cobrar". El de reembolso es un botón ("Marcar como pagado") solo cuando se pasa `onPagarReembolso`.
 - `MovimientoFilterTabs({ value, onValueChange })`: Todos / Ingresos / Egresos / Gastos. `filterMovimientosBy({ movimientos, filtro, isGasto })` devuelve una lista nueva.

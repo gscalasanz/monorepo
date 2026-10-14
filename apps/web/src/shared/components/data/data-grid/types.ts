@@ -29,6 +29,13 @@ export interface AppGridSorting {
 
 export type AppGridLayout = 'auto' | 'table' | 'list';
 
+/** Filas que se abren (▸) para mostrar contenido debajo, en tabla y en lista mobile. */
+export interface AppGridExpandable<T extends object> {
+  /** Nombre accesible del toggle de cada fila. */
+  readonly label: (row: T) => string;
+  readonly render: (row: T) => ReactNode;
+}
+
 export interface AppDataGridProps<T extends object> {
   readonly columns: readonly AppColumnDef<T>[];
   readonly data: readonly T[];
@@ -45,6 +52,7 @@ export interface AppDataGridProps<T extends object> {
   readonly mobileRow?: (row: T) => ReactNode;
   /** `auto` (default) según viewport; `table`/`list` lo fuerzan. */
   readonly layout?: AppGridLayout;
+  readonly expandable?: AppGridExpandable<T>;
   /** Nombre accesible de la tabla/lista. */
   readonly ariaLabel?: string;
   readonly className?: string;

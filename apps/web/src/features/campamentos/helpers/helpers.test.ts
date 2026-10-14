@@ -9,6 +9,8 @@ import {
   PROTAGONISTA_FIXTURE,
 } from '@/shared/domain/testing/fixtures';
 import { asLocalDate, msFromInstant, resolveBackendDate } from '@/shared/time';
+import { filterCampamentos } from '@/features/campamentos/helpers/campamento-list';
+import { resolveCampTab } from '@/features/campamentos/helpers/detalle-tabs';
 import {
   INITIAL_AGREGAR_DRAFT,
   agregarState,
@@ -436,5 +438,59 @@ describe('agregar participante', () => {
     expect(agregarState({ ...draft, montoPago: 1000 }, 0).montosVisibles).toBe(
       false,
     );
+  });
+});
+
+describe('lista: filtros', () => {
+  const base = {
+    fechaInicio: asLocalDate('2026-01-10'),
+    fechaFin: asLocalDate('2026-01-15'),
+  };
+  const camps = [
+    { ...base, id: 'a', nombre: 'Verano Manada', descripcion: null },
+    {
+      ...base,
+      id: 'b',
+      nombre: 'Invierno',
+      descripcion: 'Tandil',
+      fechaInicio: asLocalDate('2026-07-10'),
+      fechaFin: asLocalDate('2026-07-15'),
+    },
+  ];
+  const today = asLocalDate('2026-03-01');
+
+  it('busca por nombre o descripción sin distinguir mayúsculas', () => {
+    expect(
+      filterCampamentos({ camps, values: { busqueda: 'tandil' }, today }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(['b']);
+    expect(
+      filterCampamentos({ camps, values: { busqueda: 'MANADA' }, today }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(['a']);
+  });
+
+  it('filtra por estado temporal', () => {
+    expect(
+      filterCampamentos({ camps, values: { estado: 'upcoming' }, today }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(['b']);
+    expect(
+      filterCampamentos({ camps, values: { estado: 'past' }, today }).map(
+        (c) => c.id,
+      ),
+    ).toEqual(['a']);
+    expect(filterCampamentos({ camps, values: {}, today })).toHaveLength(2);
+  });
+});
+
+describe('detalle: pestaña desde la URL', () => {
+  it('movimientos si se pide; participantes por defecto', () => {
+    expect(resolveCampTab('movimientos')).toBe('movimientos');
+    expect(resolveCampTab(null)).toBe('participantes');
+    expect(resolveCampTab('otra')).toBe('participantes');
   });
 });

@@ -14,10 +14,12 @@ import {
 } from '@/features/campamentos';
 import { PagoDialog } from '@/features/campamentos/components/pago-dialog';
 
-const push = vi.fn();
+const nav = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), search: '' }));
+const push = nav.push;
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push, replace: vi.fn() }),
-  usePathname: () => '/campamentos',
+  useRouter: () => ({ push: nav.push, replace: nav.replace }),
+  usePathname: () => '/campamentos/cam-1',
+  useSearchParams: () => new URLSearchParams(nav.search),
 }));
 
 const api = {
@@ -61,6 +63,11 @@ vi.mock('@/shared/confirm', () => ({
       runDelete(entity, config),
     run: vi.fn(),
   },
+}));
+
+vi.mock('@/shared/queries', () => ({
+  fetchPersonasActivas: vi.fn().mockResolvedValue([]),
+  fetchSaldoPersonal: vi.fn().mockResolvedValue(0),
 }));
 
 const notifySuccess = vi.fn();
@@ -156,18 +163,35 @@ const DETALLE: CampamentoDetalle = campamentoDetalleSchema.parse({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  nav.search = '';
 });
 
 describe('CampamentosListView', () => {
-  it('muestra resumen y cards', async () => {
+  it('tabla con link al detalle, chevron, descripción y resumen con hints', async () => {
     api.fetchCampamentos.mockResolvedValue([CAMPAMENTO]);
     render(<CampamentosListView />);
+    const tabla = await screen.findByRole('region', {
+      name: 'Lista de campamentos',
+    });
     expect(
-      await screen.findByRole('link', { name: 'Campamento de verano' }),
+      within(tabla).getByRole('link', { name: 'Campamento de verano' }),
     ).toHaveAttribute('href', '/campamentos/cam-1');
+    expect(
+      within(tabla).getByRole('link', {
+        name: 'Abrir campamento Campamento de verano',
+      }),
+    ).toHaveAttribute('href', '/campamentos/cam-1');
+    expect(within(tabla).getByText('Sierra de la Ventana')).toBeInTheDocument();
     const resumen = screen.getByLabelText('Resumen de campamentos');
     expect(within(resumen).getByText('Finalizados')).toBeInTheDocument();
-    expect(screen.getByText('Sierra de la Ventana')).toBeInTheDocument();
+    expect(
+      within(resumen).getByRole('button', {
+        name: 'Qué significa Finalizados',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Crear Campamento' }),
+    ).toHaveAttribute('href', '/campamentos/crear');
   });
 
   it('vacío: mensaje de Angular', async () => {
@@ -178,12 +202,31 @@ describe('CampamentosListView', () => {
     ).toBeInTheDocument();
   });
 
-  it('elimina con confirmación y lo saca de la lista', async () => {
+  it('⋯ de la fila: Editar navega a la edición', async () => {
+    api.fetchCampamentos.mockResolvedValue([CAMPAMENTO]);
+    render(<CampamentosListView />);
+    await userEvent.click(
+      await screen.findByRole('button', {
+        name: 'Acciones para Campamento de verano',
+      }),
+    );
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Editar' }),
+    );
+    expect(push).toHaveBeenCalledWith('/campamentos/cam-1/editar');
+  });
+
+  it('⋯ de la fila: Eliminar confirma y lo saca de la lista', async () => {
     api.fetchCampamentos.mockResolvedValue([CAMPAMENTO]);
     api.deleteCampamento.mockResolvedValue(undefined);
     render(<CampamentosListView />);
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Eliminar campamento' }),
+      await screen.findByRole('button', {
+        name: 'Acciones para Campamento de verano',
+      }),
+    );
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Eliminar' }),
     );
     expect(runDelete).toHaveBeenCalledWith('campamento', expect.anything());
     expect(api.deleteCampamento).toHaveBeenCalledWith('cam-1', {
@@ -233,6 +276,26 @@ describe('CampamentoFormView', () => {
     expect(push).toHaveBeenCalledWith('/campamentos/nuevo');
   });
 
+  it('dos tarjetas: datos del campamento y costos', async () => {
+    render(<CampamentoFormView />);
+    const datos = screen.getByRole('region', { name: 'Datos del campamento' });
+    expect(
+      within(datos).getByLabelText(/Nombre del Campamento/),
+    ).toBeInTheDocument();
+    expect(within(datos).getByLabelText(/Fecha de Inicio/)).toBeInTheDocument();
+    expect(within(datos).getByLabelText(/Descripción/)).toBeInTheDocument();
+    const costos = screen.getByRole('region', { name: 'Costos' });
+    expect(
+      within(costos).getByLabelText(/Costo por Persona/),
+    ).toBeInTheDocument();
+    expect(
+      within(costos).getByLabelText(/Cantidad de Cuotas/),
+    ).toBeInTheDocument();
+    expect(
+      within(costos).getByLabelText(/Aporte de Educadores/),
+    ).toBeInTheDocument();
+  });
+
   it('edición: precarga los datos', async () => {
     api.fetchCampamento.mockResolvedValue(CAMPAMENTO);
     render(<CampamentoFormView id="cam-1" />);
@@ -243,8 +306,14 @@ describe('CampamentoFormView', () => {
   });
 });
 
+async function openActionsFor(nombre: string) {
+  await userEvent.click(
+    await screen.findByRole('button', { name: `Acciones para ${nombre}` }),
+  );
+}
+
 describe('CampamentoDetailView', () => {
-  it('KPIs, participantes con estado y exento', async () => {
+  it('encabezado, un solo panel de KPIs con hints y barra de recaudación', async () => {
     api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
     render(<CampamentoDetailView id="cam-1" />);
     expect(
@@ -253,29 +322,116 @@ describe('CampamentoDetailView', () => {
         name: 'Campamento de verano',
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Total a Recaudar')).toBeInTheDocument();
+    const kpis = screen.getByLabelText('Resumen Financiero');
+    for (const label of [
+      'Costo por persona',
+      'Cuotas sugeridas',
+      'Participantes',
+      'Total a Recaudar',
+      'Balance',
+    ]) {
+      expect(
+        within(kpis).getByRole('button', { name: `Qué significa ${label}` }),
+      ).toBeInTheDocument();
+    }
     expect(
       screen.getByRole('progressbar', { name: 'Recaudación' }),
     ).toHaveAttribute('aria-valuenow', '33');
-    expect(screen.getByText('Exento')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Registrar pago' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Eliminar pago' }),
-    ).toBeInTheDocument();
     expect(api.fetchCampamentoDetalle.mock.calls[0]?.[0]).toEqual({
       id: 'cam-1',
       filtroMovimientos: 'todos',
     });
   });
 
-  it('toggle de autorización recarga y avisa', async () => {
+  it('pestañas con contador', async () => {
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    expect(
+      await screen.findByRole('tab', { name: /Participantes.*2/ }),
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(
+      screen.getByRole('tab', { name: /Movimientos.*1/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('participantes en tabla: link a la ficha, estado y autorización', async () => {
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    const tabla = await screen.findByRole('region', {
+      name: 'Participantes del campamento',
+    });
+    expect(within(tabla).getByRole('link', { name: 'Juan' })).toHaveAttribute(
+      'href',
+      '/personas/protagonistas/per-1',
+    );
+    const juan = within(tabla).getByRole('row', { name: /Juan/ });
+    expect(within(juan).getByText('Pendiente')).toBeInTheDocument();
+    expect(within(juan).getByText('pendiente')).toBeInTheDocument();
+    const lucia = within(tabla).getByRole('row', { name: /Lucía/ });
+    expect(within(lucia).getByText('Exento')).toBeInTheDocument();
+    expect(within(lucia).getByText('Entregada')).toBeInTheDocument();
+  });
+
+  it('mobile: la fila muestra la autorización solo si falta', async () => {
+    const spy = vi
+      .spyOn(window, 'matchMedia')
+      .mockImplementation((query: string) => ({
+        matches: true,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    const lista = await screen.findByRole('list', {
+      name: 'Participantes del campamento',
+    });
+    expect(within(lista).getAllByText('Pendiente')).toHaveLength(1);
+    expect(within(lista).queryByText('Entregada')).not.toBeInTheDocument();
+    spy.mockRestore();
+  });
+
+  it('⋯ del participante: acciones según su estado', async () => {
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    await openActionsFor('Juan');
+    const items = (await screen.findAllByRole('menuitem')).map(
+      (i) => i.textContent,
+    );
+    expect(items).toEqual([
+      'Registrar pago',
+      'Bonificar',
+      'Marcar autorización entregada',
+      'Quitar participante',
+    ]);
+  });
+
+  it('⋯ del exento: sin pago ni bonificación', async () => {
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    await openActionsFor('Lucía');
+    const items = (await screen.findAllByRole('menuitem')).map(
+      (i) => i.textContent,
+    );
+    expect(items).toEqual([
+      'Marcar autorización pendiente',
+      'Quitar participante',
+    ]);
+  });
+
+  it('marcar autorización recarga y avisa', async () => {
     api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
     api.updateAutorizacion.mockResolvedValue(undefined);
     render(<CampamentoDetailView id="cam-1" />);
+    await openActionsFor('Juan');
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Autorización pendiente' }),
+      await screen.findByRole('menuitem', {
+        name: 'Marcar autorización entregada',
+      }),
     );
     expect(api.updateAutorizacion).toHaveBeenCalledWith(
       { campamentoId: 'cam-1', personaId: 'per-1' },
@@ -289,14 +445,29 @@ describe('CampamentoDetailView', () => {
     expect(api.fetchCampamentoDetalle).toHaveBeenCalledTimes(2);
   });
 
-  it('tab Movimientos: filtro en el servidor', async () => {
+  it('la fila se expande y muestra los pagos con su eliminar', async () => {
     api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
     render(<CampamentoDetailView id="cam-1" />);
+    expect(screen.queryByRole('button', { name: 'Eliminar pago' })).toBeNull();
     await userEvent.click(
-      await screen.findByRole('tab', { name: 'Movimientos' }),
+      await screen.findByRole('button', { name: 'Ver pagos de Juan' }),
     );
-    expect(screen.getByText('Leña')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Gasto' })).toBeInTheDocument();
+    const historial = screen.getByRole('list', { name: 'Historial de pagos' });
+    expect(
+      within(historial).getByRole('button', { name: 'Eliminar pago' }),
+    ).toBeInTheDocument();
+  });
+
+  it('tab Movimientos: tabla compartida y filtro en el servidor', async () => {
+    nav.search = 'tab=movimientos';
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    expect(
+      await screen.findByRole('region', { name: 'Movimientos del campamento' }),
+    ).toHaveTextContent('Leña');
+    expect(
+      screen.getByRole('button', { name: 'Registrar gasto' }),
+    ).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Gastos' }));
     await waitFor(() =>
       expect(api.fetchCampamentoDetalle).toHaveBeenLastCalledWith(
@@ -306,17 +477,61 @@ describe('CampamentoDetailView', () => {
     );
   });
 
-  it('Eliminar del detalle borra de verdad y vuelve a la lista (desvío documentado)', async () => {
+  it('cambiar de pestaña actualiza la URL', async () => {
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    await userEvent.click(
+      await screen.findByRole('tab', { name: /Movimientos/ }),
+    );
+    expect(nav.replace).toHaveBeenCalledWith(
+      '/campamentos/cam-1?tab=movimientos',
+      {
+        scroll: false,
+      },
+    );
+  });
+
+  it('⋯ del encabezado: Editar navega a la edición', async () => {
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    await userEvent.click(
+      await screen.findByRole('button', {
+        name: 'Más acciones del campamento',
+      }),
+    );
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Editar campamento' }),
+    );
+    expect(push).toHaveBeenCalledWith('/campamentos/cam-1/editar');
+  });
+
+  it('⋯ del encabezado: Eliminar borra y vuelve a la lista', async () => {
     api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
     api.deleteCampamento.mockResolvedValue(undefined);
     render(<CampamentoDetailView id="cam-1" />);
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Eliminar' }),
+      await screen.findByRole('button', {
+        name: 'Más acciones del campamento',
+      }),
+    );
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Eliminar campamento' }),
     );
     await waitFor(() => expect(push).toHaveBeenCalledWith('/campamentos'));
     expect(api.deleteCampamento).toHaveBeenCalledWith('cam-1', {
       skipGlobalError: true,
     });
+  });
+
+  it('acción principal: Agregar participante abre el diálogo', async () => {
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Agregar participante' }),
+    );
+    expect(
+      await screen.findByRole('dialog', { name: 'Agregar Participante' }),
+    ).toBeInTheDocument();
   });
 });
 

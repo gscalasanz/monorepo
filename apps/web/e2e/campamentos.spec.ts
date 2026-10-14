@@ -100,13 +100,13 @@ test.describe('campamentos', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: nombre }),
     ).toBeVisible();
-    await expect(page.getByText('Total a Recaudar')).toBeVisible();
+    await expect(page.getByLabel('Resumen Financiero')).toBeVisible();
     await expect(page.getByText('Sin participantes')).toBeVisible();
 
     await page
-      .getByRole('button', { name: 'Editar campamento' })
-      .last()
+      .getByRole('button', { name: 'Más acciones del campamento' })
       .click();
+    await page.getByRole('menuitem', { name: 'Editar campamento' }).click();
     await expect(
       page.getByRole('heading', { level: 1, name: 'Editar Campamento' }),
     ).toBeVisible();
@@ -121,8 +121,10 @@ test.describe('campamentos', () => {
     ).toBeVisible();
 
     await page.goto('/campamentos');
-    const card = page.getByRole('article').filter({ hasText: editado });
-    await card.getByRole('button', { name: 'Eliminar campamento' }).click();
+    await page
+      .getByRole('button', { name: `Acciones para ${editado}`, exact: true })
+      .click();
+    await page.getByRole('menuitem', { name: 'Eliminar' }).click();
     await page
       .getByRole('alertdialog')
       .getByRole('button', { name: 'Eliminar' })
@@ -142,7 +144,7 @@ test.describe('campamentos', () => {
       page.getByRole('heading', { level: 1, name: nombre }),
     ).toBeVisible();
 
-    await page.getByRole('button', { name: 'Agregar', exact: true }).click();
+    await page.getByRole('button', { name: 'Agregar participante' }).click();
     const agregar = page.getByRole('dialog', { name: 'Agregar Participante' });
     await expect(
       agregar.getByText(/persona\(s\) disponible\(s\)/),
@@ -152,22 +154,30 @@ test.describe('campamentos', () => {
     await expect(
       page.getByText('Participante agregado exitosamente'),
     ).toBeVisible();
-    await expect(page.getByText(/Inscripto el/)).toBeVisible();
+    await expect(page.getByLabel('Participantes del campamento')).toBeVisible();
 
     await page
-      .getByRole('button', { name: 'Autorización pendiente' })
-      .first()
+      .getByRole('button', { name: /^Acciones para / })
+      .last()
+      .click();
+    await page
+      .getByRole('menuitem', { name: 'Marcar autorización entregada' })
       .click();
     await expect(
       page.getByText('Autorización actualizada exitosamente'),
     ).toBeVisible();
+    await page
+      .getByRole('button', { name: /^Acciones para / })
+      .last()
+      .click();
     await expect(
-      page.getByRole('button', { name: 'Autorización entregada' }).first(),
+      page.getByRole('menuitem', { name: 'Marcar autorización pendiente' }),
     ).toBeVisible();
+    await page.keyboard.press('Escape');
 
-    await page.getByRole('tab', { name: 'Movimientos' }).click();
+    await page.getByRole('tab', { name: /Movimientos/ }).click();
     await expect(page.getByText('Sin movimientos')).toBeVisible();
-    await page.getByRole('button', { name: 'Gasto', exact: true }).click();
+    await page.getByRole('button', { name: 'Registrar gasto' }).click();
     const gasto = page.getByRole('dialog', { name: 'Registrar Gasto' });
     const descripcion = `${E2E_PREFIX}leña ${uniqueSuffix()}`;
     await gasto.getByLabel(/^Monto/).fill('1500');

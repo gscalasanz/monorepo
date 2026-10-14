@@ -114,9 +114,9 @@ Leyenda: ✅ hecha · 🟦 con mockup, pendiente · ⬜ sin mockup (propuesta en
 | `/inscripciones` | ✅ | |
 | `/inscripciones/dashboard` | ✅ | |
 | `/inscripciones/:id`, `/crear`, `/:id/editar`, `/:id/pago` | ⬜ | §7.4 |
-| `/campamentos` | ⬜ | §7.5 |
-| `/campamentos/:id` | ⬜ | §7.6 |
-| `/campamentos/crear`, `/:id/editar` | ⬜ | §7.7 (formularios) |
+| `/campamentos` | ✅ | §7.5 (tabla en `ListPanel`; sin barra de recaudación: la lista de la API no la trae) |
+| `/campamentos/:id` | ✅ | §7.6 (pagos en fila expandible) |
+| `/campamentos/crear`, `/:id/editar` | ✅ | §7.7 (dos tarjetas) |
 | `/eventos` | ✅ | Tabla en `ListPanel`, fila navegable con chevron y ⋯ |
 | `/eventos/crear`, `/:id/editar`, `/:id/ventas/registrar` | ✅ | `FormCard`: dos tarjetas lado a lado a todo el ancho, igual que movimientos |
 | `/reportes`, `/reportes/deudas`, `/reportes/:report` | ⬜ | §7.9 |

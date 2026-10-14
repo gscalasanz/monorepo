@@ -1,12 +1,14 @@
 'use client';
 
-import { ReceiptText } from 'lucide-react';
+import { CircleMinus, ReceiptText } from 'lucide-react';
 
+import { ListPanel, ListToolbar } from '@/shared/components/data';
 import { EmptyState } from '@/shared/components/feedback';
 import {
-  MovimientoCard,
   MovimientoFilterTabs,
+  MovimientosTable,
 } from '@/shared/components/finanzas';
+import { Button } from '@/shared/components/ui/button';
 import type { MovimientoCampamento } from '@/shared/domain';
 import { MOVIMIENTOS_COPY as C } from '@/features/campamentos/constants/copy';
 import type { DetalleActions } from '@/features/campamentos/hooks/use-detalle-actions';
@@ -16,33 +18,44 @@ export interface MovimientosTabProps {
   readonly state: CampamentoDetalleState;
   readonly movimientos: readonly MovimientoCampamento[];
   readonly actions: DetalleActions;
+  readonly onGasto: () => void;
 }
 
-/** Tab "Movimientos": filtro en el servidor (Todos/Ingresos/Egresos/Gastos) + cards. */
+/** Tab "Movimientos" (como eventos): filtro en el servidor, "Registrar gasto" y la tabla compartida. */
 export function MovimientosTab({
   state,
   movimientos,
   actions,
+  onGasto,
 }: MovimientosTabProps) {
   return (
-    <div className="flex flex-col gap-3">
-      <MovimientoFilterTabs
-        value={state.filtro}
-        onValueChange={state.setFiltro}
-      />
+    <ListPanel
+      toolbar={
+        <ListToolbar>
+          <MovimientoFilterTabs
+            value={state.filtro}
+            onValueChange={state.setFiltro}
+          />
+          <Button
+            variant="secondary"
+            icon={<CircleMinus aria-hidden />}
+            onClick={onGasto}
+            className="md:ml-auto"
+          >
+            {C.REGISTRAR_GASTO}
+          </Button>
+        </ListToolbar>
+      }
+    >
       {movimientos.length === 0 ? (
         <EmptyState icon={ReceiptText} title={C.EMPTY} hint={C.EMPTY_HINT} />
       ) : (
-        <div className="flex flex-col gap-2">
-          {movimientos.map((m) => (
-            <MovimientoCard
-              key={m.id}
-              movimiento={m}
-              onPagarReembolso={(mov) => void actions.pagarReembolso(mov)}
-            />
-          ))}
-        </div>
+        <MovimientosTable
+          movimientos={movimientos}
+          ariaLabel={C.TABLE_LABEL}
+          onPagarReembolso={(m) => void actions.pagarReembolso(m)}
+        />
       )}
-    </div>
+    </ListPanel>
   );
 }

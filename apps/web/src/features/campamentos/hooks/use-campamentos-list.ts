@@ -1,22 +1,36 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
+import type { FilterValues } from '@/shared/components/data';
 import { confirmDialog } from '@/shared/confirm';
 import { useAsyncData } from '@/shared/hooks';
 import { notify } from '@/shared/notifications';
 import { todayBsAs } from '@/shared/time';
 import { LIST_COPY as C } from '@/features/campamentos/constants/copy';
 import { campStats } from '@/features/campamentos/helpers/camp-status';
-import { deleteCampamento, fetchCampamentos } from '@/features/campamentos/services/campamentos-api';
+import { filterCampamentos } from '@/features/campamentos/helpers/campamento-list';
+import {
+  deleteCampamento,
+  fetchCampamentos,
+} from '@/features/campamentos/services/campamentos-api';
 
 const LIST_KEY = 'campamentos';
 
-/** Lista de campamentos + eliminación con confirmación (el error se ve en el diálogo). */
+/** Lista de campamentos (filtros en el cliente) + eliminación con confirmación (el error se ve en el diálogo). */
 export function useCampamentosList() {
   const query = useAsyncData({ key: LIST_KEY, load: fetchCampamentos });
   const campamentos = useMemo(() => query.data ?? [], [query.data]);
-  const stats = useMemo(() => campStats(campamentos, todayBsAs()), [campamentos]);
+  const [values, setValues] = useState<FilterValues>({});
+  const [today] = useState(todayBsAs);
+  const stats = useMemo(
+    () => campStats(campamentos, today),
+    [campamentos, today],
+  );
+  const filtered = useMemo(
+    () => filterCampamentos({ camps: campamentos, values, today }),
+    [campamentos, values, today],
+  );
   const { setData } = query;
 
   const remove = useCallback(
@@ -33,6 +47,9 @@ export function useCampamentosList() {
 
   return {
     campamentos,
+    filtered,
+    values,
+    setValues,
     stats,
     isLoading: query.isLoading && query.data === undefined,
     error: query.error,

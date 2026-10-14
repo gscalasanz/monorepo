@@ -8,7 +8,8 @@ export const LIST_COPY = {
   ERROR_FALLBACK: 'Error al cargar campamentos',
   RETRY: 'Reintentar',
   EMPTY_TITLE: 'No hay campamentos registrados',
-  EMPTY_HINT: 'Comienza creando tu primer campamento para gestionar participantes y pagos.',
+  EMPTY_HINT:
+    'Comienza creando tu primer campamento para gestionar participantes y pagos.',
   CREATE: 'Crear Campamento',
   STATS_LABEL: 'Resumen de campamentos',
   GRID_LABEL: 'Lista de campamentos',
@@ -18,18 +19,32 @@ export const LIST_COPY = {
   STAT_PAST: 'Finalizados',
   DELETED: 'Campamento eliminado exitosamente',
   ENTITY: 'campamento',
+  HINT_TOTAL: 'Todos los campamentos cargados, de cualquier fecha.',
+  HINT_UPCOMING: 'Campamentos que todavía no empezaron.',
+  HINT_ACTIVE: 'Campamentos que se están haciendo hoy.',
+  HINT_PAST: 'Campamentos cuya fecha de fin ya pasó.',
+  SEARCH_LABEL: 'Buscar',
+  SEARCH_PLACEHOLDER: 'Buscar campamento...',
+  ESTADO_LABEL: 'Estado',
+  FILTERED_EMPTY: 'No hay campamentos que coincidan con los filtros.',
+  COL_CAMPAMENTO: 'Campamento',
+  COL_FECHAS: 'Fechas',
+  COL_PARTICIPANTES: 'Participantes',
+  COL_COSTO: 'Costo',
+  COL_CUOTAS: 'Cuotas',
+  COL_ESTADO: 'Estado',
+  COL_ACCIONES: 'Acciones',
+  EDITAR: 'Editar',
+  ELIMINAR: 'Eliminar',
+  acciones: (nombre: string): string => `Acciones para ${nombre}`,
+  abrir: (nombre: string): string => `Abrir campamento ${nombre}`,
+  participantes: (n: number): string => `${n} participantes`,
 } as const;
 
 export const CARD_COPY = {
   ACTIVE: 'En curso',
   PAST: 'Finalizado',
   daysShort: (days: number): string => `${days}d`,
-  PARTICIPANTES: 'Participantes',
-  COSTO: 'Costo',
-  CUOTAS: 'Cuotas',
-  VER_DETALLE: 'Ver detalle',
-  EDITAR: 'Editar campamento',
-  ELIMINAR: 'Eliminar campamento',
 } as const;
 
 export const FORM_COPY = {
@@ -59,6 +74,8 @@ export const FORM_COPY = {
   CANCEL: 'Cancelar',
   SUBMIT_NEW: 'Crear Campamento',
   SUBMIT_EDIT: 'Actualizar',
+  SECTION_DATOS: 'Datos del campamento',
+  SECTION_COSTOS: 'Costos',
   CREATED: 'Campamento creado exitosamente',
   UPDATED: 'Campamento actualizado exitosamente',
 } as const;
@@ -69,7 +86,6 @@ export const DETAIL_COPY = {
   BACK: 'Volver',
   NOT_FOUND: 'Campamento no encontrado',
   BACK_TO_LIST: 'Volver al listado',
-  EDIT_ICON: 'Editar campamento',
   diasRestantes: (days: number): string => `${days} días`,
   COSTO_POR_PERSONA: 'Costo por persona',
   CUOTAS_SUGERIDAS: 'Cuotas sugeridas',
@@ -81,13 +97,26 @@ export const DETAIL_COPY = {
   KPI_REEMBOLSOS: 'Reembolsos Pendientes',
   KPI_BALANCE: 'Balance',
   RECAUDACION: 'Recaudación',
+  HINT_COSTO: 'Lo que paga cada protagonista por el campamento completo.',
+  HINT_CUOTAS:
+    'En cuántas cuotas se sugiere pagar el costo. Es orientativo: no genera deuda por cuota.',
+  HINT_PARTICIPANTES: 'Personas inscriptas, incluidos los educadores exentos.',
+  HINT_A_RECAUDAR:
+    'Suma de lo que le corresponde pagar a cada participante (los exentos suman $ 0).',
+  HINT_RECAUDADO:
+    'Todo lo que ingresó al campamento: pagos de los participantes y bonificaciones del Fondo Solidario.',
+  HINT_GASTADO: 'Gastos del campamento ya pagados.',
+  HINT_REEMBOLSOS:
+    'Gastos que alguien pagó de su bolsillo y todavía hay que devolverle.',
+  HINT_BALANCE:
+    'Recaudado menos gastado: la plata del campamento que queda disponible.',
   TABS_LABEL: 'Secciones del campamento',
   TAB_PARTICIPANTES: 'Participantes',
   TAB_MOVIMIENTOS: 'Movimientos',
-  AGREGAR: 'Agregar',
-  GASTO: 'Gasto',
-  ELIMINAR: 'Eliminar',
+  AGREGAR: 'Agregar participante',
+  MAS_ACCIONES: 'Más acciones del campamento',
   EDITAR: 'Editar campamento',
+  ELIMINAR: 'Eliminar campamento',
 } as const;
 
 export const PARTICIPANTES_COPY = {
@@ -107,6 +136,21 @@ export const PARTICIPANTES_COPY = {
   PENDIENTE: 'pendiente',
   AUTORIZACION_OK: 'Autorización entregada',
   AUTORIZACION_PENDIENTE: 'Autorización pendiente',
+  AUTORIZACION_OK_SHORT: 'Entregada',
+  AUTORIZACION_PENDIENTE_SHORT: 'Pendiente',
+  MARCAR_ENTREGADA: 'Marcar autorización entregada',
+  MARCAR_PENDIENTE: 'Marcar autorización pendiente',
+  TABLE_LABEL: 'Participantes del campamento',
+  COL_PERSONA: 'Persona',
+  COL_PAGADO: 'Pagado / total',
+  COL_BONIFICADO: 'Bonificado',
+  COL_ESTADO: 'Estado',
+  COL_AUTORIZACION: 'Autorización',
+  COL_ACCIONES: 'Acciones',
+  acciones: (nombre: string): string => `Acciones para ${nombre}`,
+  abrirFicha: (nombre: string): string => `Abrir ficha de ${nombre}`,
+  verPagos: (nombre: string): string => `Ver pagos de ${nombre}`,
+  SIN_PAGOS: 'Sin pagos registrados',
   QUITAR: 'Quitar participante',
   HISTORIAL: 'Historial de pagos',
   ELIMINAR_PAGO: 'Eliminar pago',
@@ -131,6 +175,8 @@ export const PARTICIPANTES_COPY = {
 export const MOVIMIENTOS_COPY = {
   EMPTY: 'Sin movimientos',
   EMPTY_HINT: 'No hay movimientos para el filtro seleccionado',
+  TABLE_LABEL: 'Movimientos del campamento',
+  REGISTRAR_GASTO: 'Registrar gasto',
   GASTO_REGISTRADO: 'Gasto registrado exitosamente',
 } as const;
 
@@ -180,7 +226,8 @@ export const PAGO_COPY = {
   SALDO_RESTANTE: 'Saldo Restante:',
   PAGAR_TODO_MIXTO: 'Pagar Todo (mixto)',
   soloSaldo: (monto: number): string => `Solo Saldo (${formatMoney(monto)})`,
-  soloEfectivo: (monto: number): string => `Solo Efectivo (${formatMoney(monto)})`,
+  soloEfectivo: (monto: number): string =>
+    `Solo Efectivo (${formatMoney(monto)})`,
   SUBMIT: 'Registrar Pago',
   SAVING: 'Registrando pago...',
 } as const;
@@ -192,9 +239,11 @@ export const BONIFICAR_COPY = {
   SALDO_FONDO: 'Saldo Fondo Solidario:',
   MONTO: 'Monto a Bonificar',
   maximo: (max: number): string => `Máximo bonificable: ${formatMoney(max)}`,
-  excede: (max: number): string => `No puede exceder el saldo pendiente (${formatMoney(max)})`,
+  excede: (max: number): string =>
+    `No puede exceder el saldo pendiente (${formatMoney(max)})`,
   SALDO_INSUFICIENTE: 'El fondo solidario no tiene saldo suficiente',
-  bonificarTodo: (max: number): string => `Bonificar el saldo pendiente (${formatMoney(max)})`,
+  bonificarTodo: (max: number): string =>
+    `Bonificar el saldo pendiente (${formatMoney(max)})`,
   SUBMIT: 'Confirmar',
   LOADING_FONDO: 'Cargando fondo solidario...',
 } as const;

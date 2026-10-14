@@ -13,6 +13,7 @@ import {
 } from '@/shared/components/data';
 import {
   CONCEPTO_MOVIMIENTO_LABELS,
+  ESTADO_PAGO,
   MEDIO_PAGO_LABELS,
   TIPO_MOVIMIENTO,
   type ConceptoMovimiento,
@@ -134,24 +135,36 @@ function dataColumns(
   ];
 }
 
+function DeleteMenu({
+  movimiento,
+  onDelete,
+}: {
+  readonly movimiento: Row;
+  readonly onDelete: MovimientosTableProps['onDelete'];
+}) {
+  return (
+    <RowActionsMenu
+      ariaLabel={C.acciones(titleOf(movimiento))}
+      actions={[
+        {
+          key: 'delete',
+          label: C.eliminar,
+          icon: Trash2,
+          destructive: true,
+          onSelect: () => onDelete?.(movimiento),
+        },
+      ]}
+    />
+  );
+}
+
 function actionsColumn(onDelete: MovimientosTableProps['onDelete']): Column {
   return {
     id: 'actions',
     size: ACTIONS_WIDTH,
     header: () => <span className="sr-only">{C.colAcciones}</span>,
     cell: ({ row }) => (
-      <RowActionsMenu
-        ariaLabel={C.acciones(titleOf(row.original))}
-        actions={[
-          {
-            key: 'delete',
-            label: C.eliminar,
-            icon: Trash2,
-            destructive: true,
-            onSelect: () => onDelete?.(row.original),
-          },
-        ]}
-      />
+      <DeleteMenu movimiento={row.original} onDelete={onDelete} />
     ),
   };
 }
@@ -163,19 +176,38 @@ function buildColumns(
   return params.deletable ? [...base, actionsColumn(params.onDelete)] : base;
 }
 
-function MobileRow({ movimiento }: { readonly movimiento: Row }) {
+type MobileRowProps = { readonly movimiento: Row } & Pick<
+  MovimientosTableProps,
+  'deletable' | 'onDelete' | 'onPagarReembolso'
+>;
+
+/** Mobile: el estado solo si no es el normal (conserva "Pagar" reembolso) y el ⋯ si se puede borrar. */
+function MobileRow({ movimiento, ...actions }: MobileRowProps) {
   return (
     <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
-      <ConceptoCell movimiento={movimiento} />
-      <div className="flex shrink-0 flex-col items-end gap-1">
-        <Money
-          amount={movimiento.monto}
-          sign={isIngreso(movimiento) ? 'in' : 'out'}
-          className="text-sm"
-        />
-        <span className="text-xs text-ink-subtle">
-          {formatDate(movimiento.fecha, DATE_FORMATS.dayMonthPadded)}
-        </span>
+      <div className="flex min-w-0 flex-col gap-1">
+        <ConceptoCell movimiento={movimiento} />
+        {movimiento.estadoPago !== ESTADO_PAGO.PAGADO && (
+          <EstadoPagoBadge
+            movimiento={movimiento}
+            onPagarReembolso={actions.onPagarReembolso}
+          />
+        )}
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        <div className="flex flex-col items-end gap-1">
+          <Money
+            amount={movimiento.monto}
+            sign={isIngreso(movimiento) ? 'in' : 'out'}
+            className="text-sm"
+          />
+          <span className="text-xs text-ink-subtle">
+            {formatDate(movimiento.fecha, DATE_FORMATS.dayMonthPadded)}
+          </span>
+        </div>
+        {actions.deletable && (
+          <DeleteMenu movimiento={movimiento} onDelete={actions.onDelete} />
+        )}
       </div>
     </div>
   );
@@ -202,7 +234,14 @@ export function MovimientosTable({
       data={movimientos}
       ariaLabel={ariaLabel}
       getRowId={(row) => row.id}
-      mobileRow={(row) => <MobileRow movimiento={row} />}
+      mobileRow={(row) => (
+        <MobileRow
+          movimiento={row}
+          deletable={deletable}
+          onDelete={onDelete}
+          onPagarReembolso={onPagarReembolso}
+        />
+      )}
     />
   );
 }

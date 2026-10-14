@@ -6,7 +6,7 @@ import { Button } from '@/shared/components/ui/button';
 import { DESTINO_GANANCIA_LABELS, type Evento } from '@/shared/domain';
 import { PageHeader } from '@/shared/layout';
 import { DATE_FORMATS, formatDate } from '@/shared/time';
-import { ButtonLink } from '@/features/eventos/components/button-link';
+import { ButtonLink } from '@/shared/components/ui/button-link';
 import { EventoEstadoBadge } from '@/features/eventos/components/evento-estado-badge';
 import { EventoHeaderMenu } from '@/features/eventos/components/evento-header-menu';
 import { EventoTipoBadge } from '@/features/eventos/components/evento-tipo-badge';
