@@ -40,7 +40,10 @@ import {
   parseFilters,
   toFilterValues,
 } from '@/features/inscripciones/helpers/filters';
-import { filterBySearch } from '@/features/inscripciones/helpers/list';
+import {
+  filterBySearch,
+  missingAutorizaciones,
+} from '@/features/inscripciones/helpers/list';
 import {
   buildPagoDto,
   summarizeBonificar,
@@ -137,6 +140,29 @@ describe('lista', () => {
     expect(filterBySearch([INSCRIPCION], 'JUA')).toHaveLength(1);
     expect(filterBySearch([INSCRIPCION], 'pedro')).toHaveLength(0);
     expect(filterBySearch([INSCRIPCION], '  ')).toHaveLength(1);
+  });
+
+  it('lista los papeles que faltan con su nombre corto, en el orden de Angular', () => {
+    const faltan = missingAutorizaciones({
+      ...INSCRIPCION,
+      declaracionDeSalud: true,
+      autorizacionDeImagen: false,
+      salidasCercanas: true,
+      autorizacionIngreso: false,
+      certificadoAptitudFisica: true,
+    });
+    expect(faltan).toEqual(['Imagen', 'Ingreso']);
+  });
+
+  it('con todos los papeles no falta ninguno', () => {
+    const completos = {
+      declaracionDeSalud: true,
+      autorizacionDeImagen: true,
+      salidasCercanas: true,
+      autorizacionIngreso: true,
+      certificadoAptitudFisica: true,
+    };
+    expect(missingAutorizaciones(completos)).toEqual([]);
   });
 });
 
@@ -246,7 +272,9 @@ describe('form de alta', () => {
 
   it('saldo personal: se descarta si la persona no tiene saldo y no puede superarlo', () => {
     const values = { ...base, montoConSaldoPersonal: 300 };
-    expect(withSaldoPersonalVisible(values, 0).montoConSaldoPersonal).toBeNull();
+    expect(
+      withSaldoPersonalVisible(values, 0).montoConSaldoPersonal,
+    ).toBeNull();
     expect(withSaldoPersonalVisible(values, 500)).toBe(values);
     expect(saldoPersonalExcedido(values, 200)).toBe(true);
     expect(saldoPersonalExcedido(values, 300)).toBe(false);

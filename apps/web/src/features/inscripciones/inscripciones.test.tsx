@@ -7,6 +7,7 @@ import {
   InscripcionCreateView,
   InscripcionDetailView,
   InscripcionEditView,
+  InscripcionesDashboardView,
   InscripcionesListView,
 } from '@/features/inscripciones';
 
@@ -95,8 +96,11 @@ describe('<InscripcionesListView>', () => {
     expect(await screen.findByText('Juan')).toBeInTheDocument();
     expect(screen.getByText('Inscriptos')).toBeInTheDocument();
     expect(
-      screen.getByRole('columnheader', { name: 'Declaración de Salud' }),
+      screen.getByRole('columnheader', { name: 'Papeles' }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Abrir inscripción de Juan' }),
+    ).toHaveAttribute('href', '/inscripciones/ins-1');
     expect(api.fetchInscripciones).toHaveBeenCalledWith(
       expect.objectContaining({
         query: expect.objectContaining({ tipo: 'scout_argentina' }),
@@ -109,7 +113,7 @@ describe('<InscripcionesListView>', () => {
     render(<InscripcionesListView />);
     await screen.findByText('Juan');
     expect(
-      screen.queryByRole('columnheader', { name: 'Declaración de Salud' }),
+      screen.queryByRole('columnheader', { name: 'Papeles' }),
     ).not.toBeInTheDocument();
     await userEvent
       .setup()
@@ -118,6 +122,34 @@ describe('<InscripcionesListView>', () => {
       '/inscripciones?tipo=scout_argentina',
       { scroll: false },
     );
+  });
+});
+
+describe('<InscripcionesDashboardView>', () => {
+  it('resume en una tira: inscriptos, esperado, pagado, adeudado y bonificado', async () => {
+    render(<InscripcionesDashboardView />);
+    const strip = await screen.findByLabelText('Resumen de inscripciones');
+    for (const label of [
+      'Inscriptos',
+      'Monto Esperado',
+      'Monto Pagado',
+      'Monto Adeudado',
+      'Bonificado',
+    ]) {
+      expect(within(strip).getByText(label)).toBeInTheDocument();
+    }
+  });
+
+  it('el cobro es una sola barra apilada y los deudores llevan al reporte', async () => {
+    render(<InscripcionesDashboardView />);
+    expect(
+      await screen.findByRole('img', { name: /^Cobro de las inscripciones/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ver deudores' })).toHaveAttribute(
+      'href',
+      '/reportes/deudas',
+    );
+    expect(screen.getByText('Deuda de Dinero')).toBeInTheDocument();
   });
 });
 

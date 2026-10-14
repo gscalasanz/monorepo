@@ -16,22 +16,18 @@ export const LIST_COPY = {
   COL_PAGADO: 'Pagado',
   COL_PENDIENTE: 'Pendiente',
   COL_ESTADO: 'Estado',
-  COL_SALUD: 'Declaración de Salud',
-  COL_IMAGEN: 'Autorización de Imagen',
-  COL_SALIDAS: 'Salidas Cercanas',
-  COL_INGRESO: 'Autorización de Ingreso',
-  COL_APTITUD: 'Cert. Aptitud Física',
+  COL_PAPELES: 'Papeles',
   COL_ACCIONES: 'Acciones',
-  COL_FECHA: 'Fecha de inscripción',
-  VIEW: 'Ver',
+  COL_FECHA: 'Fecha',
+  PAPELES_COMPLETOS: 'Completos',
+  papelesFaltan: (faltan: readonly string[]): string =>
+    `Falta: ${faltan.join(', ')}`,
+  abrir: (persona: string): string => `Abrir inscripción de ${persona}`,
+  rowActions: (persona: string): string => `Acciones para ${persona}`,
   EDIT: 'Editar',
   DELETE: 'Eliminar',
-  YES: 'Sí',
-  NO: 'No',
   ENTITY: 'inscripción',
   ramaTooltip: (rama: string, count: number): string => `${rama}: ${count}`,
-  actionLabel: (action: string, persona: string): string =>
-    `${action} inscripción de ${persona}`,
 } as const;
 
 export const FILTER_COPY = {
@@ -51,17 +47,20 @@ export const DASHBOARD_COPY = {
   TITLE: 'Dashboard',
   SUBTITLE: 'Inscripciones',
   VIEW_LIST: 'Ver lista',
-  TOTAL: 'Total Inscripciones',
   ALL_YEARS: 'Todos los años',
   DISTRIBUTION: 'Distribución por Rama',
-  FINANCIAL: 'Resumen Financiero',
   ESPERADO: 'Monto Esperado',
   PAGADO: 'Monto Pagado',
   ADEUDADO: 'Monto Adeudado',
   BONIFICADO: 'Bonificado',
   COBRADO: 'Cobrado',
   COBRADO_TITLE: '% Cobrado',
-  ESPERADO_SHORT: 'Esperado',
+  KPIS_LABEL: 'Resumen de inscripciones',
+  COBRADO_DEL_ESPERADO: 'cobrado del monto esperado',
+  VER_DEUDORES: 'Ver deudores',
+  INSCRIPTOS: 'Inscriptos',
+  cobroLabel: (detail: string): string =>
+    `Cobro de las inscripciones: ${detail}`,
   PENDIENTE: 'Pendiente',
   DEUDORES: 'Deudores',
   DEUDA_DINERO: 'Deuda de Dinero',
@@ -71,7 +70,6 @@ export const DASHBOARD_COPY = {
   AMBOS: 'Dinero + Docs',
   AMBOS_DESC: 'Ambos tipos de deuda',
   PERSONAS: 'personas',
-  MONTO_TOTAL: 'Monto total',
   LOADING: 'Cargando dashboard...',
   updated: (fecha: string): string => `Actualizado: ${fecha}`,
   ramaShare: (params: {
@@ -79,7 +77,6 @@ export const DASHBOARD_COPY = {
     readonly count: number;
     readonly pct: string;
   }): string => `${params.rama}: ${params.count} (${params.pct}%)`,
-  cobradoLabel: (pct: string): string => `${pct}% cobrado del monto esperado`,
 } as const;
 
 export const FORM_COPY = {
@@ -115,7 +112,8 @@ export const FORM_COPY = {
   CUENTA_PERSONAL: 'Cuenta Personal',
   CONSULTANDO_SALDO: 'Consultando saldo...',
   SALDO_DISPONIBLE: 'Saldo disponible',
-  SALDO_PERSONAL_EXCEDIDO: 'El monto supera el saldo disponible de la cuenta personal',
+  SALDO_PERSONAL_EXCEDIDO:
+    'El monto supera el saldo disponible de la cuenta personal',
   USAR_TODO: 'Usar todo →',
   USAR_CUENTA: 'Usar de cuenta personal',
   MONTOS_EXCEDEN:

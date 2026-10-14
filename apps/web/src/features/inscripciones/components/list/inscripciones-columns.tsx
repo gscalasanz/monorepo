@@ -10,25 +10,16 @@ import {
   type Inscripcion,
   type TipoInscripcion,
 } from '@/shared/domain';
-import { formatDate } from '@/shared/time';
+import { DATE_FORMATS, formatDate } from '@/shared/time';
 import { LIST_COPY as C } from '@/features/inscripciones/constants/copy';
-import type { AutorizacionKey } from '@/features/inscripciones/constants/inscripciones';
 import { personaNombre } from '@/features/inscripciones/helpers/list';
-import { BoolCell } from '@/features/inscripciones/components/list/bool-cell';
+import { PapelesCell } from '@/features/inscripciones/components/list/papeles-cell';
+import { PersonaCell } from '@/features/inscripciones/components/list/persona-cell';
 import { RowActions } from '@/features/inscripciones/components/list/row-actions';
 
 type Column = AppColumnDef<Inscripcion>;
 
-const DOCUMENT_COLUMNS: readonly {
-  readonly key: AutorizacionKey;
-  readonly header: string;
-}[] = [
-  { key: 'declaracionDeSalud', header: C.COL_SALUD },
-  { key: 'autorizacionDeImagen', header: C.COL_IMAGEN },
-  { key: 'salidasCercanas', header: C.COL_SALIDAS },
-  { key: 'autorizacionIngreso', header: C.COL_INGRESO },
-  { key: 'certificadoAptitudFisica', header: C.COL_APTITUD },
-];
+const NOWRAP = { cellClassName: 'whitespace-nowrap' } as const;
 
 const moneyColumn = (params: {
   readonly id: 'montoPagado' | 'saldoPendiente';
@@ -36,48 +27,65 @@ const moneyColumn = (params: {
 }): Column => ({
   id: params.id,
   header: params.header,
-  cell: ({ row }) => <Money amount={row.original[params.id]} />,
+  cell: ({ row }) => (
+    <Money
+      amount={row.original[params.id]}
+      tone={
+        params.id === 'saldoPendiente' && row.original.saldoPendiente > 0
+          ? 'debt'
+          : undefined
+      }
+    />
+  ),
   meta: { cellClassName: MONEY_CELL_CLASS, headerClassName: MONEY_CELL_CLASS },
 });
 
-const BASE_COLUMNS: readonly Column[] = [
-  { id: 'persona', header: C.COL_PERSONA, accessorFn: personaNombre },
-  moneyColumn({ id: 'montoPagado', header: C.COL_PAGADO }),
-  moneyColumn({ id: 'saldoPendiente', header: C.COL_PENDIENTE }),
-  {
-    id: 'estado',
-    header: C.COL_ESTADO,
-    cell: ({ row }) => (
-      <StatusBadge
-        status={row.original.estado}
-        label={ESTADO_INSCRIPCION_LABELS[row.original.estado]}
-      />
-    ),
-  },
-];
+const personaColumn: Column = {
+  id: 'persona',
+  header: C.COL_PERSONA,
+  accessorFn: personaNombre,
+  cell: ({ row }) => <PersonaCell inscripcion={row.original} />,
+};
 
-const documentColumns: readonly Column[] = DOCUMENT_COLUMNS.map(
-  ({ key, header }) => ({
-    id: key,
-    header,
-    cell: ({ row }) => <BoolCell value={row.original[key]} />,
-  }),
-);
+const estadoColumn: Column = {
+  id: 'estado',
+  header: C.COL_ESTADO,
+  meta: NOWRAP,
+  cell: ({ row }) => (
+    <StatusBadge
+      status={row.original.estado}
+      label={ESTADO_INSCRIPCION_LABELS[row.original.estado]}
+    />
+  ),
+};
+
+const papelesColumn: Column = {
+  id: 'papeles',
+  header: C.COL_PAPELES,
+  meta: NOWRAP,
+  cell: ({ row }) => <PapelesCell autorizaciones={row.original} />,
+};
 
 const fechaColumn: Column = {
   id: 'fechaInscripcion',
   header: C.COL_FECHA,
-  cell: ({ row }) => formatDate(row.original.createdAt),
+  meta: NOWRAP,
+  cell: ({ row }) => (
+    <span className="tabular-nums" title={formatDate(row.original.createdAt)}>
+      {formatDate(row.original.createdAt, DATE_FORMATS.dayMonthPadded)}
+    </span>
+  ),
 };
 
-/** Columnas de Angular: base + (SA: 5 documentos) + Acciones + Fecha de inscripción. */
+/** Persona, importes, estado, (SA: Papeles con contador), fecha y ⋯ + chevron. */
 export function buildColumns(params: {
   readonly tipo: TipoInscripcion;
   readonly onDelete: (id: string) => void;
 }): readonly Column[] {
   const actions: Column = {
     id: 'actions',
-    header: C.COL_ACCIONES,
+    header: () => <span className="sr-only">{C.COL_ACCIONES}</span>,
+    size: 88,
     cell: ({ row }) => (
       <RowActions
         id={row.original.id}
@@ -86,7 +94,15 @@ export function buildColumns(params: {
       />
     ),
   };
-  const docs =
-    params.tipo === TIPO_INSCRIPCION.SCOUT_ARGENTINA ? documentColumns : [];
-  return [...BASE_COLUMNS, ...docs, actions, fechaColumn];
+  const papeles =
+    params.tipo === TIPO_INSCRIPCION.SCOUT_ARGENTINA ? [papelesColumn] : [];
+  return [
+    personaColumn,
+    moneyColumn({ id: 'montoPagado', header: C.COL_PAGADO }),
+    moneyColumn({ id: 'saldoPendiente', header: C.COL_PENDIENTE }),
+    estadoColumn,
+    ...papeles,
+    fechaColumn,
+    actions,
+  ];
 }
