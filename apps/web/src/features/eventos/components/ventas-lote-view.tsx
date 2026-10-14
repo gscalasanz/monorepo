@@ -30,11 +30,11 @@ function LoteForm({ state }: { readonly state: VentasLoteState }) {
       className="flex flex-col gap-4 md:gap-6"
     >
       <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:items-start">
-        <FormCard title={C.ventaSection}>
+        <FormCard label={C.ventaSection}>
           <VendedorFields state={state} />
           <PagoFields state={state} />
         </FormCard>
-        <FormCard title={C.cantidadesSection}>
+        <FormCard label={C.cantidadesSection}>
           <CantidadesTable
             productos={state.productos}
             cantidades={state.form.values.cantidades}
@@ -73,7 +73,7 @@ function LoteBody({ state }: { readonly state: VentasLoteState }) {
 export function VentasLoteView({ id }: { readonly id: string }) {
   const state = useVentasLote(id);
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       <PageHeader
         title={C.title}
         subtitle={C.subtitle}

@@ -75,7 +75,7 @@ Grilla de 2 columnas; check para lo entregado (con texto solo para lectores de p
 ## 4. Decisiones transversales (ya aplicadas)
 
 - Sin barra superior en desktop; el toggle de tema vive en el sidebar junto a Configuración.
-- Contenido sin `max-w`. Quedan acotados: formularios de persona (2xl), formularios de evento y campamento, Configuración (880px), detalle de persona externa y reporte público (`max-w-6xl`). Los formularios de movimiento ocupan todo el ancho en dos tarjetas.
+- Contenido sin `max-w`. Quedan acotados solo: Configuración (880px), detalle de persona externa y reporte público (`max-w-6xl`). **Todos los formularios** (movimiento, evento, campamento, persona, inscripción) ocupan todo el ancho en dos tarjetas.
 - Sin avatar con iniciales en la ficha (el chip de rama ya identifica).
 - «Registrar gasto» no tiene acceso propio en el dashboard (apuntaba a la misma ruta que «Nuevo movimiento»).
 - Evolución del saldo del grupo: se arma en el front paginando `GET /movimientos` (no hay endpoint de evolución).
@@ -118,7 +118,7 @@ Leyenda: ✅ hecha · 🟦 con mockup, pendiente · ⬜ sin mockup (propuesta en
 | `/campamentos/:id` | ⬜ | §7.6 |
 | `/campamentos/crear`, `/:id/editar` | ⬜ | §7.7 (formularios) |
 | `/eventos` | ✅ | Tabla en `ListPanel`, fila navegable con chevron y ⋯ |
-| `/eventos/crear`, `/:id/editar`, `/:id/ventas/registrar` | ✅ | `FormCard`; el alta/edición mantienen su ancho, la venta en lote va en dos tarjetas |
+| `/eventos/crear`, `/:id/editar`, `/:id/ventas/registrar` | ✅ | `FormCard`: dos tarjetas lado a lado a todo el ancho, igual que movimientos |
 | `/reportes`, `/reportes/deudas`, `/reportes/:report` | ⬜ | §7.9 |
 | `/personas` (listado), `/personas/educadores`, `/personas/personas-externas` | ⬜ | §7.10 |
 | `/personas/educadores/:id`, `/personas/personas-externas/:id` | ⬜ | §7.10 (fichas) |
@@ -168,7 +168,7 @@ Hoy: tres franjas apiladas (datos, KPIs, recaudación) y **una tarjeta por parti
 - Editar y Eliminar en el encabezado (Eliminar dentro de un menú, no suelto al pie).
 
 ### 7.7 Formularios (persona, campamento, evento, inscripción)
-Aplicar el patrón de §3.6 a todos: dos tarjetas desde `lg`, secciones con título corto, `FormActions` sticky, errores bajo el campo. Los que hoy están acotados a un ancho angosto (persona 2xl, evento, campamento) conservan su ancho: un formulario a 2200px es peor.
+Aplicar el patrón de §3.6 a todos: dos tarjetas desde `lg`, secciones con título corto, `FormActions` sticky, errores bajo el campo. **Todos los formularios (persona, evento, campamento, inscripción, venta en lote) usan la misma composición que movimientos: página a todo el ancho y dos tarjetas lado a lado desde `lg`** (decisión del usuario: la estética debe ser idéntica en todos).
 - **Venta en lote (`/eventos/:id/ventas/registrar`):** carga repetitiva → tabla editable (una fila por vendedor/producto) en vez de formularios apilados. Se confirma al implementarla qué trae hoy la pantalla.
 
 ### 7.8 Eventos, listado (`/eventos`)

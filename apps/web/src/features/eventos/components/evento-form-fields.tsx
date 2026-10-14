@@ -91,8 +91,8 @@ function BaseFields({ form }: { readonly form: EventoFormState }) {
 export function EventoFormFields({ form, isEditing }: FieldsProps) {
   const { values, errors } = form;
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
-      <FormCard title={C.sectionDatos}>
+    <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:items-start">
+      <FormCard label={C.sectionDatos}>
         <BaseFields form={form} />
         {values.tipo === TIPO_EVENTO.GRUPO && (
           <TextField
@@ -106,7 +106,7 @@ export function EventoFormFields({ form, isEditing }: FieldsProps) {
           />
         )}
       </FormCard>
-      <FormCard title={C.sectionDetalle}>
+      <FormCard label={C.sectionDetalle}>
         <VentaFields form={form} isEditing={isEditing} />
         <TextareaField
           label={C.descripcion}

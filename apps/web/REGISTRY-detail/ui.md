@@ -135,7 +135,7 @@ Cableado a11y automático (label↔control, `aria-invalid`, `aria-describedby` a
 
 ## `FormCard` — `shared/components/ui/form/form-card.tsx`
 
-`{ title, description?, children }`: tarjeta de sección de un formulario (región nombrada por su `h2`). Dos `FormCard` lado a lado desde `lg`, o apiladas en formularios angostos.
+`{ label, children }`: tarjeta de formulario con la misma superficie que las de movimientos, sin título visible (`label` es el nombre accesible). Siempre dos `FormCard` lado a lado desde `lg` (`grid lg:grid-cols-2 lg:items-start`), página a todo el ancho y `FormActions` sticky: es el patrón de TODOS los formularios.
 
 ## `InfoHint` — `shared/components/ui/info-hint.tsx`
 
