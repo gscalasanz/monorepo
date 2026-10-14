@@ -65,6 +65,7 @@ Importar de `@/shared/components/data`.
 - `KeyValueList` — `{ items: { label, value, id? }[], columns?: 1|2|3|4 }` (equivale a `readonly-card`).
 - `SegmentedTabs` / `ButtonTabs` — `{ items, value, onValueChange, ariaLabel, semantics?: 'tabs'|'toggle', getPanelId? }` (tablist con flechas).
 - `FilterBar` — `{ fields: FilterField[], value: FilterValues, onChange, trailing?, debounceMs? }`; campos `search` (debounce `UI_CONFIG.DEBOUNCE_TIME_MS`), `select` (chip "+ Label" → popover), `chips` (segmentado con "Todos"), `date-range` (`{ from?, to? }` `yyyy-MM-dd`). "Limpiar filtros" emite `{}`. Helpers `setFilterValue`, `hasActiveFilters`, `useDebouncedCommit`.
+- `ListPanel` / `ListToolbar` — `{ toolbar?, ariaLabel?, children }` card ÚNICO de toda lista (filtros arriba, tabla/lista mobile y paginador adentro); `ListToolbar` = fila de tabs + `FilterBar` en una línea (`bare` = suelta sobre el fondo, p. ej. dashboard). Movimientos e Inscripciones lo usan: toda lista nueva debe usarlo.
 - `TotalsBar` — `{ count, ingresos, egresos, neto?, countLabel? }` barra hundida con `aria-live="polite"`.
 - `useMediaQuery(query)` · `MOBILE_LIST_QUERY` — media query SSR-safe.
 
@@ -76,7 +77,7 @@ Importar de `@/shared/components/charts`. Colores solo `var(--color-data-n)` (`S
 - `DonutChart` — `{ data: { label, value, color? }[], ariaLabel, format? (default `formatMoney`), centerLabel?, size? }` con total al centro + leyenda con montos.
 - `ProgressTrack` — `{ value, max, color?, ariaLabel? }` pista de 4px (fondos de rama, obligaciones, desglose de deuda); decorativa sin `ariaLabel`, con él es `progressbar`. Acota 0–100 % y tolera `max` 0.
 - `Sparkline` — `{ values, color?, ariaLabel? }` SVG 96×32 (decorativa si no hay `ariaLabel`).
-- `KpiStrip` — `{ items: { id, label, value, delta?: { direction, value, comparison?, tone? }, sparkline?, sparklineColor?, footer?, href? }[], ariaLabel? }`: un panel, celdas con hairlines (`footer` = contenido bajo la cifra, p. ej. barra apilada; `href` = la celda entera navega, con chevron). `KpiDelta` suelto.
+- `KpiStrip` — `{ items: { id, label, value, delta?: { direction, value, comparison?, tone? }, sparkline?, sparklineColor?, footer?, href?, hint? }[], ariaLabel? }`: un panel, celdas con hairlines (`footer` = contenido bajo la cifra, p. ej. barra apilada; `href` = la celda entera navega, con chevron; `hint` = texto que explica el número, con ⓘ `InfoHint`). `KpiDelta` suelto.
 - `StatCard` — `{ icon, title, value, variant?, format?: 'number'|'currency' }` (paridad `stat-card`).
 - `DistributionBar` — `{ segments: { label, value, color?, href? }[], format?, ariaLabel?, showLegend?, legendClassName? }` barra segmentada 2px + leyenda.
 - `ChartLegend`, `ChartTooltip` — piezas reutilizables para gráficos propios. `LegendItem.href?`: la fila entera pasa a ser un link con chevron (los `href` de `DistributionBar` llegan acá).
@@ -131,6 +132,10 @@ Cableado a11y automático (label↔control, `aria-invalid`, `aria-describedby` a
 ## `NavChevron` — `shared/components/ui/nav-chevron.tsx`
 
 `{ className? }`: chevron decorativo (`aria-hidden`) que indica "esto navega". Se desplaza y oscurece con `group-hover:` (el link padre lleva `group`). Lo usan el `action` de `Panel`, `KpiStrip`, `ChartLegend` y las filas navegables del dashboard.
+
+## `InfoHint` — `shared/components/ui/info-hint.tsx`
+
+`{ label, text }`: ⓘ que explica un dato (Popover con `openOnHover`: hover en desktop, tap en mobile, teclado). Botón con nombre "Qué significa {label}". Lo usa `KpiStrip` vía `hint`.
 
 ## `Panel` — `shared/components/ui/panel.tsx`
 

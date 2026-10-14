@@ -2,6 +2,7 @@
 
 import {
   FilterBar,
+  ListToolbar,
   SegmentedTabs,
   type FilterValues,
 } from '@/shared/components/data';
@@ -27,7 +28,7 @@ export function MovimientosToolbar({
   onFiltersChange,
 }: MovimientosToolbarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3 border-b border-border p-4 md:px-[18px]">
+    <ListToolbar>
       <SegmentedTabs
         items={TIPO_TABS}
         value={tab}
@@ -42,6 +43,6 @@ export function MovimientosToolbar({
         onChange={onFiltersChange}
         className="min-w-0 basis-full md:basis-0 md:flex-1"
       />
-    </div>
+    </ListToolbar>
   );
 }

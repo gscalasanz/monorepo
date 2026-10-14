@@ -3,7 +3,6 @@
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
-import { ErrorState } from '@/shared/components/feedback';
 import { Button } from '@/shared/components/ui/button';
 import { PageHeader } from '@/shared/layout';
 import { LIST_COPY as C } from '@/features/inscripciones/constants/copy';
@@ -11,8 +10,7 @@ import { inscripcionRoutes } from '@/features/inscripciones/constants/routes';
 import { dashboardSearch } from '@/features/inscripciones/helpers/filters';
 import { useInscripcionesList } from '@/features/inscripciones/hooks/use-inscripciones-list';
 import { InscripcionesStatsBar } from '@/features/inscripciones/components/list/inscripciones-stats-bar';
-import { InscripcionesTable } from '@/features/inscripciones/components/list/inscripciones-table';
-import { InscripcionesToolbar } from '@/features/inscripciones/components/shared/inscripciones-toolbar';
+import { InscripcionesListPanel } from '@/features/inscripciones/components/list/inscripciones-list-panel';
 
 /** `/inscripciones`: stats por rama, tabs SA/Grupo, filtros en la URL y tabla. */
 export function InscripcionesListView() {
@@ -44,24 +42,7 @@ export function InscripcionesListView() {
           dashboardHref={dashboardHref}
         />
       ) : null}
-      <InscripcionesToolbar
-        tipo={filters.tipo}
-        onTipoChange={list.setTipo}
-        filterValues={list.filterValues}
-        onFiltersChange={list.onFiltersChange}
-        currentYear={list.currentYear}
-        withSearch
-      />
-      {list.error && !list.isLoading ? (
-        <ErrorState message={list.error} onRetry={() => void list.reload()} />
-      ) : (
-        <InscripcionesTable
-          rows={list.rows}
-          tipo={filters.tipo}
-          isLoading={list.isLoading}
-          onDelete={list.remove}
-        />
-      )}
+      <InscripcionesListPanel list={list} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
+import { InfoHint } from '@/shared/components/ui/info-hint';
 import { NavChevron } from '@/shared/components/ui/nav-chevron';
 
 import { KpiDelta, type KpiDeltaValue } from '@/shared/components/charts/kpi-delta';
@@ -20,6 +21,8 @@ export interface KpiItem {
   readonly footer?: ReactNode;
   /** Si está, la celda entera navega ahí (link con chevron en la etiqueta). */
   readonly href?: string;
+  /** Qué representa el número: agrega un ⓘ junto a la etiqueta. */
+  readonly hint?: string;
 }
 
 export interface KpiStripProps {
@@ -40,15 +43,20 @@ const COLUMN_CLASSES: Readonly<Record<number, string>> = {
 
 const LINKED_CELL = 'group relative transition-colors hover:bg-recessed has-[a:focus-visible]:outline-2 has-[a:focus-visible]:-outline-offset-2 has-[a:focus-visible]:outline-focus';
 
-/** Etiqueta; con `href` es un link "estirado" que cubre toda la celda. */
+/** Etiqueta; con `href` es un link "estirado" que cubre toda la celda; con `hint` suma un ⓘ. */
 function KpiLabel({ item }: { readonly item: KpiItem }) {
-  if (!item.href) return <dt className="text-[13px] leading-[18px] text-ink-muted">{item.label}</dt>;
+  const text = item.href ? (
+    <Link href={item.href} className="inline-flex items-center gap-1 outline-none after:absolute after:inset-0 group-hover:text-ink">
+      {item.label}
+      <NavChevron />
+    </Link>
+  ) : (
+    item.label
+  );
   return (
-    <dt className="text-[13px] leading-[18px] text-ink-muted">
-      <Link href={item.href} className="inline-flex items-center gap-1 outline-none after:absolute after:inset-0 group-hover:text-ink">
-        {item.label}
-        <NavChevron />
-      </Link>
+    <dt className="flex items-center gap-1.5 text-[13px] leading-[18px] text-ink-muted">
+      {text}
+      {item.hint ? <InfoHint label={item.label} text={item.hint} /> : null}
     </dt>
   );
 }

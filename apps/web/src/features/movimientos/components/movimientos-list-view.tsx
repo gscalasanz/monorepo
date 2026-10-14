@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
+import { ListPanel } from '@/shared/components/data';
 import { ErrorState } from '@/shared/components/feedback';
 import { MOVIMIENTOS_COPY as C } from '@/features/movimientos/constants/copy';
 import {
@@ -36,13 +37,16 @@ function MovimientosList({
   return (
     <div className="flex flex-col gap-4 md:gap-6">
       <MovimientosListHeader total={list.total} />
-      <section className="flex min-w-0 flex-col rounded-xl border border-border bg-surface shadow-xs">
-        <MovimientosToolbar
-          tab={list.state.tab}
-          onTabChange={list.setTab}
-          filters={list.state.filters}
-          onFiltersChange={list.setFilters}
-        />
+      <ListPanel
+        toolbar={
+          <MovimientosToolbar
+            tab={list.state.tab}
+            onTabChange={list.setTab}
+            filters={list.state.filters}
+            onFiltersChange={list.setFilters}
+          />
+        }
+      >
         {list.error ? (
           <ErrorState
             message={list.error}
@@ -60,7 +64,7 @@ function MovimientosList({
             onDelete={onDelete}
           />
         )}
-      </section>
+      </ListPanel>
     </div>
   );
 }

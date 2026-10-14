@@ -6,6 +6,7 @@ export { DirectionTile, type DirectionTileProps } from './direction-tile';
 export * from './filter-bar';
 export { InitialsAvatar, type InitialsAvatarProps } from './initials-avatar';
 export { KeyValueList, type KeyValueItem, type KeyValueListProps } from './key-value-list';
+export { ListPanel, ListToolbar, type ListPanelProps } from './list-panel';
 export { Money, type MoneyProps, type MoneySize } from './money';
 export {
   MINUS_SIGN,
