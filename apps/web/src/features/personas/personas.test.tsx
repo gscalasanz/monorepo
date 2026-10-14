@@ -165,6 +165,22 @@ describe('<ProtagonistaFormView>', () => {
   });
 });
 
+const DASHBOARD_BASE = {
+  persona: { id: 'per-1', nombre: 'Juan Pérez', tipo: 'protagonista', estado: 'activo', rama: 'Manada' },
+  cuentaPersonal: { id: 'c1', saldo: 0 },
+  documentacionPersonal: { partidaNacimiento: true, dni: true, dniPadres: true, carnetObraSocial: true, completa: true },
+  inscripciones: { resumen: { total: 0, cantidad: 0 }, items: [] },
+  campamentos: { resumen: { total: 0, cantidad: 0 }, items: [] },
+  deudaTotal: { total: 0, inscripciones: 0, campamentos: 0 },
+  ultimosMovimientos: [],
+};
+const INSCRIPCION_ITEM = {
+  id: 'i1', tipo: 'grupo', ano: 2026, montoTotal: 5000, montoBonificado: 0, montoPagado: 5000, saldoPendiente: 0, estado: 'pagado',
+};
+const CAMPAMENTO_ITEM = {
+  id: 'c1', nombre: 'Campamento de verano', ano: 2026, montoTotal: 60000, montoPagado: 0, saldoPendiente: 60000, autorizacionEntregada: false,
+};
+
 describe('<PersonaFichaView>', () => {
   it('muestra saldo, deuda, obligaciones, documentación y "Transferir a caja grupo"', async () => {
     api.fetchPersonaDashboard.mockResolvedValue(
@@ -216,9 +232,75 @@ describe('<PersonaFichaView>', () => {
       'href',
       '/inscripciones/i1',
     );
-    expect(screen.getByText('Sin campamentos registrados')).toBeInTheDocument();
+    expect(screen.queryByText('Sin campamentos registrados')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^Obligaciones/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Actividad' })).toBeInTheDocument();
     expect(screen.getByText('Sin movimientos recientes')).toBeInTheDocument();
     expect(screen.getByText('3 de 4')).toBeInTheDocument();
+    expect(screen.getByText('Falta')).toBeInTheDocument();
+  });
+
+  it('inscripciones y campamentos conviven en Obligaciones; el año se elige solo si hay más de uno', async () => {
+    const user = userEvent.setup();
+    api.fetchPersonaDashboard.mockResolvedValue(
+      personaDashboardSchema.parse({
+        ...DASHBOARD_BASE,
+        inscripciones: {
+          resumen: { total: 0, cantidad: 2 },
+          items: [
+            { ...INSCRIPCION_ITEM, id: 'i1', ano: 2026 },
+            { ...INSCRIPCION_ITEM, id: 'i0', ano: 2025, tipo: 'scout_argentina' },
+          ],
+        },
+        campamentos: {
+          resumen: { total: 60000, cantidad: 1 },
+          items: [CAMPAMENTO_ITEM],
+        },
+      }),
+    );
+    render(<PersonaFichaView id="per-1" />);
+    const panel = (await screen.findByRole('heading', { name: /^Obligaciones/ })).closest('section') as HTMLElement;
+    expect(within(panel).getByRole('link', { name: /Grupo/ })).toHaveAttribute('href', '/inscripciones/i1');
+    expect(within(panel).getByRole('link', { name: /Campamento de verano/ })).toHaveAttribute('href', '/campamentos/c1');
+    expect(within(panel).queryByRole('link', { name: /Scout Argentina/ })).not.toBeInTheDocument();
+    expect(within(panel).getByText('Falta autorización')).toBeInTheDocument();
+    await user.click(within(panel).getByRole('button', { name: '2025' }));
+    expect(within(panel).getByRole('link', { name: /Scout Argentina/ })).toHaveAttribute('href', '/inscripciones/i0');
+    expect(within(panel).queryByRole('link', { name: /Campamento de verano/ })).not.toBeInTheDocument();
+  });
+
+  it('no hay avatar con iniciales y todo lo navegable lleva chevron', async () => {
+    api.fetchPersonaDashboard.mockResolvedValue(
+      personaDashboardSchema.parse({
+        ...DASHBOARD_BASE,
+        inscripciones: { resumen: { total: 0, cantidad: 1 }, items: [INSCRIPCION_ITEM] },
+        ultimosMovimientos: [
+          { id: 'm1', fecha: '2026-05-15T15:00:00.000Z', tipo: 'ingreso', concepto: 'Pago inscripción grupo', monto: 1500, medioPago: 'efectivo' },
+        ],
+      }),
+    );
+    render(<PersonaFichaView id="per-1" />);
+    const heading = await screen.findByRole('heading', { level: 1, name: 'Juan Pérez' });
+    expect(heading.parentElement?.previousElementSibling).toBeNull();
+    expect(screen.queryByText('JP')).not.toBeInTheDocument();
+    const insc = screen.getByRole('link', { name: /Grupo/ });
+    expect(insc.querySelector('svg.lucide-chevron-right')).not.toBeNull();
+    const mov = screen.getByRole('link', { name: /Pago inscripción grupo/ });
+    expect(mov).toHaveAttribute('href', '/movimientos/m1/editar');
+    expect(mov.querySelector('svg.lucide-chevron-right')).not.toBeNull();
+    expect(screen.getByRole('link', { name: /Actualizar/ })).toHaveAttribute(
+      'href',
+      '/personas/protagonistas/per-1/editar',
+    );
+  });
+
+  it('con un solo año no hay selector de año; sin obligaciones, un estado vacío', async () => {
+    api.fetchPersonaDashboard.mockResolvedValue(
+      personaDashboardSchema.parse({ ...DASHBOARD_BASE }),
+    );
+    render(<PersonaFichaView id="per-1" />);
+    expect(await screen.findByText('Sin inscripciones ni campamentos registrados')).toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: 'Año' })).not.toBeInTheDocument();
   });
 
   it('error del backend: mensaje y "Volver"', async () => {

@@ -7,6 +7,15 @@ import {
 } from '@/shared/domain/testing/fixtures';
 import { PERSONA_ROUTES } from '@/features/personas/constants/personas';
 import {
+  campamentoDashboardItemSchema,
+  inscripcionDashboardItemSchema,
+} from '@/features/personas/models/dashboard-schema';
+import {
+  buildObligaciones,
+  obligacionYears,
+  obligacionesOfYear,
+} from '@/features/personas/helpers/obligaciones';
+import {
   conceptoLabel,
   docItems,
   groupMovimientosByMonth,
@@ -322,5 +331,67 @@ describe('formularios', () => {
       contacto: undefined,
       notas: 'x',
     });
+  });
+});
+
+const inscripcion = (over: Record<string, unknown> = {}) =>
+  inscripcionDashboardItemSchema.parse({
+    id: 'i1',
+    tipo: 'grupo',
+    ano: 2026,
+    montoTotal: 60000,
+    montoBonificado: 0,
+    montoPagado: 24000,
+    saldoPendiente: 36000,
+    estado: 'parcial',
+    ...over,
+  });
+
+const campamento = (over: Record<string, unknown> = {}) =>
+  campamentoDashboardItemSchema.parse({
+    id: 'c1',
+    nombre: 'Campamento de verano',
+    ano: 2026,
+    montoTotal: 60000,
+    montoPagado: 0,
+    saldoPendiente: 60000,
+    autorizacionEntregada: false,
+    ...over,
+  });
+
+describe('obligaciones de la ficha', () => {
+  it('unifica inscripciones y campamentos con el mismo shape', () => {
+    const list = buildObligaciones({
+      inscripciones: [inscripcion({ montoBonificado: 6000 })],
+      campamentos: [campamento()],
+    });
+    expect(list.map((o) => [o.kind, o.id, o.title, o.ano])).toEqual([
+      ['inscripcion', 'i1', 'Grupo', 2026],
+      ['campamento', 'c1', 'Campamento de verano', 2026],
+    ]);
+    expect(list[0]).toMatchObject({ pagado: 30000, total: 60000, pendiente: 36000 });
+    expect(list[1]).toMatchObject({ pagado: 0, total: 60000, pendiente: 60000 });
+  });
+
+  it('ordena por año descendente y conserva el orden dentro del año', () => {
+    const list = buildObligaciones({
+      inscripciones: [inscripcion({ id: 'a', ano: 2025 }), inscripcion({ id: 'b', ano: 2026 })],
+      campamentos: [campamento({ id: 'c', ano: 2025 })],
+    });
+    expect(list.map((o) => o.id)).toEqual(['b', 'a', 'c']);
+  });
+
+  it('años distintos en orden descendente; filtra por año', () => {
+    const list = buildObligaciones({
+      inscripciones: [inscripcion({ id: 'a', ano: 2025 }), inscripcion({ id: 'b', ano: 2026 })],
+      campamentos: [campamento({ id: 'c', ano: 2026 })],
+    });
+    expect(obligacionYears(list)).toEqual([2026, 2025]);
+    expect(obligacionesOfYear(list, 2025).map((o) => o.id)).toEqual(['a']);
+    expect(obligacionesOfYear(list, 2026).map((o) => o.id)).toEqual(['b', 'c']);
+  });
+
+  it('sin obligaciones no hay años', () => {
+    expect(obligacionYears(buildObligaciones({ inscripciones: [], campamentos: [] }))).toEqual([]);
   });
 });

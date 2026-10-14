@@ -1,9 +1,9 @@
 import { PERSONA_TYPE } from '@/shared/domain';
 import { cn } from '@/shared/lib/utils';
+import { PERSONA_ROUTES } from '@/features/personas/constants/personas';
 import type { PersonaDashboard } from '@/features/personas/models/dashboard-schema';
-import { CampamentosPanel } from '@/features/personas/components/ficha/campamentos-panel';
 import { DocumentacionPanel } from '@/features/personas/components/ficha/documentacion-panel';
-import { InscripcionesPanel } from '@/features/personas/components/ficha/inscripciones-panel';
+import { ObligacionesPanel } from '@/features/personas/components/ficha/obligaciones-panel';
 import { MovimientosPanel } from '@/features/personas/components/ficha/movimientos-panel';
 import { PersonaIdentityCard } from '@/features/personas/components/ficha/persona-identity-card';
 import { PersonaMoneySummary } from '@/features/personas/components/ficha/persona-money-summary';
@@ -13,7 +13,7 @@ export interface PersonaFichaContentProps {
   readonly onTransfer: () => void;
 }
 
-/** Layout de la ficha: identidad · dinero · obligaciones + documentación · movimientos. */
+/** Layout de la ficha: identidad · dinero · obligaciones + documentación · actividad. */
 export function PersonaFichaContent({
   dashboard,
   onTransfer,
@@ -32,22 +32,22 @@ export function PersonaFichaContent({
       <div
         className={cn(
           'grid items-start gap-4 md:gap-6',
-          docs
-            ? 'lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]'
-            : 'lg:grid-cols-2',
+          docs && 'lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]',
         )}
       >
-        <div
-          className={cn(
-            'grid min-w-0 gap-4 md:gap-6',
-            !docs && 'lg:col-span-2 lg:grid-cols-2',
-          )}
-        >
-          <InscripcionesPanel inscripciones={dashboard.inscripciones} />
-          <CampamentosPanel campamentos={dashboard.campamentos} />
-        </div>
+        <ObligacionesPanel
+          inscripciones={dashboard.inscripciones}
+          campamentos={dashboard.campamentos}
+        />
         {docs ? (
-          <DocumentacionPanel documentacion={docs} rama={persona.rama} />
+          <DocumentacionPanel
+            documentacion={docs}
+            rama={persona.rama}
+            editHref={PERSONA_ROUTES.edit({
+              tipo: persona.tipo,
+              id: persona.id,
+            })}
+          />
         ) : null}
       </div>
       <MovimientosPanel movimientos={dashboard.ultimosMovimientos} />
