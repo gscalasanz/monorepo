@@ -184,15 +184,126 @@ describe('EventoDetailView', () => {
     expect(api.habilitarMovimientos).not.toHaveBeenCalled();
   });
 
+  it('cada KPI explica qué representa con su ⓘ', async () => {
+    const user = userEvent.setup();
+    api.fetchEvento.mockResolvedValue(evento);
+    render(<EventoDetailView id="evt-1" />);
+    const strip = await screen.findByLabelText('KPIs financieros');
+    for (const label of [
+      'Recaudado',
+      'Ganancia Ventas',
+      'Gastado',
+      'Reembolsos Pendientes',
+      'Balance',
+      'Costo recuperado (grupo)',
+    ]) {
+      expect(
+        within(strip).getByRole('button', { name: `Qué significa ${label}` }),
+      ).toBeInTheDocument();
+    }
+    await user.click(
+      within(strip).getByRole('button', { name: 'Qué significa Gastado' }),
+    );
+    expect(
+      await screen.findByText(/Gastos del evento ya pagados/),
+    ).toBeInTheDocument();
+  });
+
+  it('encabezado: estado, destino de la ganancia y acciones agrupadas en ⋯', async () => {
+    const user = userEvent.setup();
+    api.fetchEvento.mockResolvedValue(evento);
+    render(<EventoDetailView id="evt-1" />);
+    expect(await screen.findByText('En curso')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Ver reporte' }),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole('button', { name: 'Más acciones del evento' }),
+    );
+    expect(
+      await screen.findByRole('menuitem', { name: 'Hacer privado' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Copiar link' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Editar evento' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Cerrar evento' }),
+    ).toBeInTheDocument();
+  });
+
+  it('reporte privado: el menú ofrece hacerlo público y no hay link para copiar', async () => {
+    const user = userEvent.setup();
+    api.fetchEvento.mockResolvedValue({ ...evento, reportePublico: false });
+    render(<EventoDetailView id="evt-1" />);
+    await user.click(
+      await screen.findByRole('button', { name: 'Más acciones del evento' }),
+    );
+    expect(
+      await screen.findByRole('menuitem', { name: 'Hacer público' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: 'Copiar link' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('evento cerrado: sin acciones de edición', async () => {
+    const user = userEvent.setup();
     api.fetchEvento.mockResolvedValue({ ...evento, estaCerrado: true });
     render(<EventoDetailView id="evt-1" />);
     expect(await screen.findByText('Cerrado')).toBeInTheDocument();
+    expect(screen.queryByText('En curso')).not.toBeInTheDocument();
+    await user.click(
+      screen.getByRole('button', { name: 'Más acciones del evento' }),
+    );
     expect(
-      screen.queryByRole('button', { name: 'Cerrar evento' }),
+      await screen.findByRole('menuitem', { name: 'Hacer privado' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: 'Cerrar evento' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: 'Editar evento' }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Gestionar Productos' }),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe('tab Productos', () => {
+  it('tabla con costo, ganancia y vendidas; el ⋯ edita y elimina', async () => {
+    const user = userEvent.setup();
+    api.fetchEvento.mockResolvedValue(evento);
+    ventasApi.fetchProductos.mockResolvedValue([
+      { ...productoSinCosto, precioCosto: 200 },
+    ]);
+    ventasApi.deleteProducto.mockResolvedValue(undefined);
+    render(<EventoDetailView id="evt-1" />);
+    const table = await screen.findByRole('region', {
+      name: 'Productos del evento',
+    });
+    expect(within(table).getByText('Pastelitos')).toBeInTheDocument();
+    expect(within(table).getByText('3 vendidas')).toBeInTheDocument();
+    await user.click(
+      within(table).getByRole('button', { name: 'Acciones para Pastelitos' }),
+    );
+    await user.click(await screen.findByRole('menuitem', { name: 'Eliminar' }));
+    await waitFor(() =>
+      expect(ventasApi.deleteProducto).toHaveBeenCalledWith('prod-1'),
+    );
+  });
+
+  it('evento cerrado: la tabla no ofrece acciones', async () => {
+    api.fetchEvento.mockResolvedValue({ ...evento, estaCerrado: true });
+    render(<EventoDetailView id="evt-1" />);
+    const table = await screen.findByRole('region', {
+      name: 'Productos del evento',
+    });
+    expect(
+      within(table).queryByRole('button', { name: /Acciones para/ }),
     ).not.toBeInTheDocument();
   });
 });
@@ -285,7 +396,9 @@ describe('tab Ventas', () => {
       { ...base, id: 'v2', cantidad: 1, estadoCobro: 'cobrado' },
     ]);
     render(<EventoDetailView id="evt-1" />);
-    expect(await screen.findByText('Ventas registradas')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('region', { name: 'Ventas registradas' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('A cobrar')).toBeInTheDocument();
     expect(screen.getByText('3 u')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Registrar cobro/ }));

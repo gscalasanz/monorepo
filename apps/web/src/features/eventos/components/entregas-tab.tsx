@@ -3,8 +3,14 @@
 import { Truck } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import {
+  FilterBar,
+  ListPanel,
+  ListToolbar,
+  stringValue,
+  type FilterField,
+} from '@/shared/components/data';
 import { EmptyState, LoadingState } from '@/shared/components/feedback';
-import { TextField } from '@/shared/components/ui/form';
 import { confirmDialog } from '@/shared/confirm';
 import type { Entrega, Evento } from '@/shared/domain';
 import { notify } from '@/shared/notifications';
@@ -60,7 +66,7 @@ function EntregasList({
   if (!props.data) return <LoadingState />;
   if (rows.length === 0) return <EmptyState icon={Truck} title={C.empty} />;
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="divide-y divide-border">
       {rows.map((row) => (
         <VendedorEntregasRowItem
           key={row.vendedorId}
@@ -74,20 +80,37 @@ function EntregasList({
   );
 }
 
-/** Tab Entregas: búsqueda por persona, fila por vendedor y diálogo de entrega. */
+const SEARCH_KEY = 'search';
+
+function EntregasToolbar({ props }: { readonly props: EntregasTabProps }) {
+  const fields: readonly FilterField[] = [
+    {
+      key: SEARCH_KEY,
+      type: 'search',
+      label: C.searchLabel,
+      placeholder: C.searchPlaceholder,
+    },
+  ];
+  return (
+    <ListToolbar>
+      <FilterBar
+        fields={fields}
+        value={{ [SEARCH_KEY]: props.search || undefined }}
+        onChange={(values) => props.onSearch(stringValue(values[SEARCH_KEY]))}
+        className="min-w-0 flex-1"
+      />
+    </ListToolbar>
+  );
+}
+
+/** Tab Entregas: un card con búsqueda por persona, una fila expandible por vendedor y el diálogo de entrega. */
 export function EntregasTab(props: EntregasTabProps) {
   const [vendedor, setVendedor] = useState<DialogVendedor>(undefined);
   return (
-    <div className="flex flex-col gap-4">
-      <TextField
-        label={C.searchLabel}
-        type="search"
-        placeholder={C.searchPlaceholder}
-        value={props.search}
-        onChange={props.onSearch}
-        className="sm:max-w-xs"
-      />
-      <EntregasList props={props} onRegistrar={setVendedor} />
+    <>
+      <ListPanel toolbar={<EntregasToolbar props={props} />}>
+        <EntregasList props={props} onRegistrar={setVendedor} />
+      </ListPanel>
       {vendedor !== undefined && (
         <EntregaDialog
           key={vendedor}
@@ -99,6 +122,6 @@ export function EntregasTab(props: EntregasTabProps) {
           onSaved={() => void props.onChanged()}
         />
       )}
-    </div>
+    </>
   );
 }

@@ -152,6 +152,7 @@ efectos). Patrón de carga de todas las pantallas (no hay react-query).
 
 Piezas de dinero que comparten campamentos y eventos (port de los componentes compartidos de Angular). Copy exacto en `copy.ts`.
 
+- `MovimientosTable({ movimientos: MovimientoCardData[], ariaLabel, deletable?, onDelete?, onPagarReembolso? })`: tabla densa (Fecha · Concepto con tile · Responsable · Medio · Estado · Monto · ⋯ Eliminar), lista en mobile. Reemplaza a las cards en pantallas nuevas (eventos ya; campamentos pendiente).
 - `MovimientoCard({ movimiento: MovimientoCardData, deletable?, deleting?, onDelete?, onPagarReembolso? })`: tarjeta de un movimiento con badge de estado de pago.
 - `EstadoPagoBadge({ movimiento, onPagarReembolso? })`: muestra "Pagado", "Pendiente de Reembolso" o "A cobrar". El de reembolso es un botón ("Marcar como pagado") solo cuando se pasa `onPagarReembolso`.
 - `MovimientoFilterTabs({ value, onValueChange })`: Todos / Ingresos / Egresos / Gastos. `filterMovimientosBy({ movimientos, filtro, isGasto })` devuelve una lista nueva.

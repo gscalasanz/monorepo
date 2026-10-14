@@ -1,15 +1,21 @@
 'use client';
 
-import { ListChecks, Receipt, ShoppingCart } from 'lucide-react';
+import { Receipt, ShoppingCart } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import {
+  FilterBar,
+  ListPanel,
+  ListToolbar,
+  stringValue,
+  type FilterField,
+} from '@/shared/components/data';
 import { EmptyState, LoadingState } from '@/shared/components/feedback';
-import { TextField } from '@/shared/components/ui/form';
 import { confirmDialog } from '@/shared/confirm';
 import type { DeleteVentaResult, Evento } from '@/shared/domain';
 import { notify } from '@/shared/notifications';
 import { ButtonLink } from '@/features/eventos/components/button-link';
-import { VentaGroupCard } from '@/features/eventos/components/venta-group-card';
+import { VentasTable } from '@/features/eventos/components/ventas-table';
 import { EVENTOS_COPY } from '@/features/eventos/constants/copy';
 import { EVENTOS_ROUTES } from '@/features/eventos/constants/eventos';
 import { groupVentasByLote } from '@/features/eventos/helpers/venta-groups';
@@ -76,7 +82,7 @@ function useVentaActions({
   return { cobrandoId, remove, cobrar };
 }
 
-function VentasList({ props }: { readonly props: VentasTabProps }) {
+function VentasBody({ props }: { readonly props: VentasTabProps }) {
   const groups = useMemo(
     () => groupVentasByLote(props.ventas ?? []),
     [props.ventas],
@@ -88,50 +94,52 @@ function VentasList({ props }: { readonly props: VentasTabProps }) {
       <EmptyState icon={Receipt} title={C.emptyTitle} hint={C.emptyHint} />
     );
   return (
-    <section className="flex flex-col gap-3">
-      <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
-        <ListChecks aria-hidden className="size-4 text-ink-muted" />
-        {C.registradas}
-      </h3>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {groups.map((group) => (
-          <VentaGroupCard
-            key={group.key}
-            group={group}
-            readonly={props.evento.estaCerrado}
-            cobrando={actions.cobrandoId === group.primaryVentaId}
-            onDelete={(g) => void actions.remove(g)}
-            onCobrar={(g) => void actions.cobrar(g)}
-          />
-        ))}
-      </div>
-    </section>
+    <VentasTable
+      groups={groups}
+      readonly={props.evento.estaCerrado}
+      cobrandoId={actions.cobrandoId}
+      onDelete={(g) => void actions.remove(g)}
+      onCobrar={(g) => void actions.cobrar(g)}
+    />
   );
 }
 
-/** Tab Ventas: búsqueda por vendedor (al backend), lotes, cobro y borrado en cascada. */
+const SEARCH_KEY = 'search';
+
+function VentasToolbar({ props }: { readonly props: VentasTabProps }) {
+  const fields: readonly FilterField[] = [
+    {
+      key: SEARCH_KEY,
+      type: 'search',
+      label: C.searchLabel,
+      placeholder: C.searchPlaceholder,
+    },
+  ];
+  return (
+    <ListToolbar>
+      <FilterBar
+        fields={fields}
+        value={{ [SEARCH_KEY]: props.search || undefined }}
+        onChange={(values) => props.onSearch(stringValue(values[SEARCH_KEY]))}
+        className="min-w-0 basis-full md:basis-0 md:flex-1"
+      />
+      {!props.evento.estaCerrado && (
+        <ButtonLink
+          href={EVENTOS_ROUTES.ventasLote(props.evento.id)}
+          icon={<ShoppingCart aria-hidden />}
+        >
+          {C.registrarLote}
+        </ButtonLink>
+      )}
+    </ListToolbar>
+  );
+}
+
+/** Tab Ventas: un card con búsqueda por vendedor (al backend) y registro en lote arriba, y la tabla de lotes. */
 export function VentasTab(props: VentasTabProps) {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <TextField
-          label={C.searchLabel}
-          type="search"
-          placeholder={C.searchPlaceholder}
-          value={props.search}
-          onChange={props.onSearch}
-          className="sm:max-w-xs sm:flex-1"
-        />
-        {!props.evento.estaCerrado && (
-          <ButtonLink
-            href={EVENTOS_ROUTES.ventasLote(props.evento.id)}
-            icon={<ShoppingCart aria-hidden />}
-          >
-            {C.registrarLote}
-          </ButtonLink>
-        )}
-      </div>
-      <VentasList props={props} />
-    </div>
+    <ListPanel toolbar={<VentasToolbar props={props} />}>
+      <VentasBody props={props} />
+    </ListPanel>
   );
 }

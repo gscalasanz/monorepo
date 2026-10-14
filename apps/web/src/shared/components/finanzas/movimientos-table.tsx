@@ -1,0 +1,208 @@
+'use client';
+
+import { Trash2 } from 'lucide-react';
+import { useMemo } from 'react';
+
+import {
+  AppDataGrid,
+  DirectionTile,
+  MONEY_CELL_CLASS,
+  Money,
+  RowActionsMenu,
+  type AppColumnDef,
+} from '@/shared/components/data';
+import {
+  CONCEPTO_MOVIMIENTO_LABELS,
+  MEDIO_PAGO_LABELS,
+  TIPO_MOVIMIENTO,
+  type ConceptoMovimiento,
+} from '@/shared/domain';
+import { DATE_FORMATS, formatDate } from '@/shared/time';
+
+import { FINANZAS_COPY } from './copy';
+import { EstadoPagoBadge } from './estado-pago-badge';
+import type { MovimientoCardData } from './types';
+
+const C = FINANZAS_COPY.table;
+const NOWRAP = { cellClassName: 'whitespace-nowrap' } as const;
+const ACTIONS_WIDTH = 48;
+
+type Row = MovimientoCardData;
+type Column = AppColumnDef<Row>;
+
+export interface MovimientosTableProps {
+  readonly movimientos: readonly MovimientoCardData[];
+  readonly ariaLabel: string;
+  /** Muestra el ⋯ con "Eliminar". */
+  readonly deletable?: boolean;
+  readonly onDelete?: (movimiento: MovimientoCardData) => void;
+  /** Si se pasa, el badge "Pendiente de Reembolso" es un botón. */
+  readonly onPagarReembolso?: (movimiento: MovimientoCardData) => void;
+}
+
+const isIngreso = (m: Row): boolean => m.tipo === TIPO_MOVIMIENTO.INGRESO;
+
+function titleOf(m: Row): string {
+  const label = m.concepto
+    ? CONCEPTO_MOVIMIENTO_LABELS[m.concepto as ConceptoMovimiento]
+    : undefined;
+  return label ?? m.descripcion ?? FINANZAS_COPY.card.sinDescripcion;
+}
+
+/** Tile de dirección + concepto y la descripción como sub-línea. */
+function ConceptoCell({ movimiento }: { readonly movimiento: Row }) {
+  const hasConcepto = Boolean(
+    movimiento.concepto &&
+    CONCEPTO_MOVIMIENTO_LABELS[movimiento.concepto as ConceptoMovimiento],
+  );
+  return (
+    <span className="flex min-w-0 items-center gap-2.5">
+      <DirectionTile direction={isIngreso(movimiento) ? 'in' : 'out'} />
+      <span className="min-w-0">
+        <span className="block truncate font-medium text-ink">
+          {titleOf(movimiento)}
+        </span>
+        {hasConcepto && movimiento.descripcion ? (
+          <span className="block max-w-72 truncate text-xs text-ink-subtle">
+            {movimiento.descripcion}
+          </span>
+        ) : null}
+      </span>
+    </span>
+  );
+}
+
+const fechaColumn: Column = {
+  id: 'fecha',
+  header: C.colFecha,
+  meta: NOWRAP,
+  cell: ({ row }) => (
+    <span className="tabular-nums" title={formatDate(row.original.fecha)}>
+      {formatDate(row.original.fecha, DATE_FORMATS.dayMonthPadded)}
+    </span>
+  ),
+};
+
+const montoColumn: Column = {
+  id: 'monto',
+  header: C.colMonto,
+  meta: {
+    cellClassName: MONEY_CELL_CLASS,
+    headerClassName: MONEY_CELL_CLASS,
+  },
+  cell: ({ row }) => (
+    <Money
+      amount={row.original.monto}
+      sign={isIngreso(row.original) ? 'in' : 'out'}
+    />
+  ),
+};
+
+function dataColumns(
+  onPagarReembolso: MovimientosTableProps['onPagarReembolso'],
+): readonly Column[] {
+  return [
+    fechaColumn,
+    {
+      id: 'concepto',
+      header: C.colConcepto,
+      cell: ({ row }) => <ConceptoCell movimiento={row.original} />,
+    },
+    {
+      id: 'responsable',
+      header: C.colResponsable,
+      cell: ({ row }) => row.original.responsableNombre,
+    },
+    {
+      id: 'medio',
+      header: C.colMedio,
+      cell: ({ row }) =>
+        MEDIO_PAGO_LABELS[row.original.medioPago] ?? row.original.medioPago,
+    },
+    {
+      id: 'estado',
+      header: C.colEstado,
+      meta: NOWRAP,
+      cell: ({ row }) => (
+        <EstadoPagoBadge
+          movimiento={row.original}
+          onPagarReembolso={onPagarReembolso}
+        />
+      ),
+    },
+    montoColumn,
+  ];
+}
+
+function actionsColumn(onDelete: MovimientosTableProps['onDelete']): Column {
+  return {
+    id: 'actions',
+    size: ACTIONS_WIDTH,
+    header: () => <span className="sr-only">{C.colAcciones}</span>,
+    cell: ({ row }) => (
+      <RowActionsMenu
+        ariaLabel={C.acciones(titleOf(row.original))}
+        actions={[
+          {
+            key: 'delete',
+            label: C.eliminar,
+            icon: Trash2,
+            destructive: true,
+            onSelect: () => onDelete?.(row.original),
+          },
+        ]}
+      />
+    ),
+  };
+}
+
+function buildColumns(
+  params: Omit<MovimientosTableProps, 'movimientos' | 'ariaLabel'>,
+): readonly Column[] {
+  const base = dataColumns(params.onPagarReembolso);
+  return params.deletable ? [...base, actionsColumn(params.onDelete)] : base;
+}
+
+function MobileRow({ movimiento }: { readonly movimiento: Row }) {
+  return (
+    <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+      <ConceptoCell movimiento={movimiento} />
+      <div className="flex shrink-0 flex-col items-end gap-1">
+        <Money
+          amount={movimiento.monto}
+          sign={isIngreso(movimiento) ? 'in' : 'out'}
+          className="text-sm"
+        />
+        <span className="text-xs text-ink-subtle">
+          {formatDate(movimiento.fecha, DATE_FORMATS.dayMonthPadded)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Tabla densa de movimientos de campamentos y eventos (mismo lenguaje que la lista de
+ * Movimientos): concepto con tile, estado, monto y ⋯ para eliminar.
+ */
+export function MovimientosTable({
+  movimientos,
+  ariaLabel,
+  deletable = false,
+  onDelete,
+  onPagarReembolso,
+}: MovimientosTableProps) {
+  const columns = useMemo(
+    () => buildColumns({ deletable, onDelete, onPagarReembolso }),
+    [deletable, onDelete, onPagarReembolso],
+  );
+  return (
+    <AppDataGrid
+      columns={columns}
+      data={movimientos}
+      ariaLabel={ariaLabel}
+      getRowId={(row) => row.id}
+      mobileRow={(row) => <MobileRow movimiento={row} />}
+    />
+  );
+}

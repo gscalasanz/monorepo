@@ -53,17 +53,27 @@ export function resolveTab(params: {
 export interface KpiConfig {
   readonly id: keyof EventoKpis;
   readonly label: string;
+  /** Qué representa el número (tooltip ⓘ). */
+  readonly hint: string;
 }
 
 const BASE_KPIS: readonly KpiConfig[] = [
-  { id: 'totalRecaudado', label: K.recaudado },
-  { id: 'gananciaVentas', label: K.ganancia },
-  { id: 'totalGastado', label: K.gastado },
-  { id: 'totalPendienteReembolso', label: K.reembolsos },
-  { id: 'balance', label: K.balance },
+  { id: 'totalRecaudado', label: K.recaudado, hint: K.hints.totalRecaudado },
+  { id: 'gananciaVentas', label: K.ganancia, hint: K.hints.gananciaVentas },
+  { id: 'totalGastado', label: K.gastado, hint: K.hints.totalGastado },
+  {
+    id: 'totalPendienteReembolso',
+    label: K.reembolsos,
+    hint: K.hints.totalPendienteReembolso,
+  },
+  { id: 'balance', label: K.balance, hint: K.hints.balance },
 ];
 
-const RECUPERO_KPI: KpiConfig = { id: 'totalRecuperado', label: K.recuperado };
+const RECUPERO_KPI: KpiConfig = {
+  id: 'totalRecuperado',
+  label: K.recuperado,
+  hint: K.hints.totalRecuperado,
+};
 
 /** "Costo recuperado (grupo)" solo aplica a venta con destino cuentas personales. */
 export function kpiConfigsFor(
@@ -75,9 +85,9 @@ export function kpiConfigsFor(
   return aplicaRecupero ? [...BASE_KPIS, RECUPERO_KPI] : BASE_KPIS;
 }
 
-export function productosSinCosto<T extends Pick<Producto, 'precioCosto' | 'nombre'>>(
-  productos: readonly T[],
-): T[] {
+export function productosSinCosto<
+  T extends Pick<Producto, 'precioCosto' | 'nombre'>,
+>(productos: readonly T[]): T[] {
   return productos.filter((producto) => producto.precioCosto === null);
 }
 

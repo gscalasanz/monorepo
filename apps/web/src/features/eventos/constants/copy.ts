@@ -67,6 +67,9 @@ export const EVENTOS_COPY = {
     notFound: 'Evento no encontrado',
     back: 'Volver',
     cerrado: 'Cerrado',
+    enCurso: 'En curso',
+    masAcciones: 'Más acciones del evento',
+    hacerPrivado: 'Hacer privado',
     verReporte: 'Ver reporte',
     reportePublico: 'Reporte público',
     hacerPublico: 'Hacer público',
@@ -99,6 +102,20 @@ export const EVENTOS_COPY = {
     reembolsos: 'Reembolsos Pendientes',
     balance: 'Balance',
     recuperado: 'Costo recuperado (grupo)',
+    hints: {
+      totalRecaudado:
+        'Plata cobrada a los clientes: precio de venta × cantidad vendida de cada producto.',
+      gananciaVentas:
+        'Ingresos que registró el evento sin contar el costo recuperado. En una venta es el margen: precio de venta menos costo.',
+      totalGastado:
+        'Gastos del evento ya pagados. No incluye los que están pendientes de reembolso.',
+      totalPendienteReembolso:
+        'Gastos que alguien pagó de su bolsillo y todavía no se le devolvieron. Aún no restan del Balance.',
+      balance:
+        'Recaudado menos Gastado: lo que le queda al evento hoy. Los reembolsos pendientes todavía no se restan.',
+      totalRecuperado:
+        'Parte de lo vendido que vuelve a la caja del grupo para cubrir el costo de los productos. No es ganancia. Solo aplica si la ganancia va a cuentas personales.',
+    },
   },
   tabs: {
     productos: 'Productos',
@@ -117,6 +134,16 @@ export const EVENTOS_COPY = {
     emptyHint: 'Agregá productos para registrar ventas.',
     editar: 'Editar producto',
     eliminar: 'Eliminar producto',
+    tableLabel: 'Productos del evento',
+    colProducto: 'Producto',
+    colPrecio: 'Precio de venta',
+    colCosto: 'Costo',
+    colGanancia: 'Ganancia',
+    colVendidas: 'Vendidas',
+    colAcciones: 'Acciones',
+    acciones: (nombre: string): string => `Acciones para ${nombre}`,
+    editarAccion: 'Editar',
+    eliminarAccion: 'Eliminar',
     precioVenta: 'precio de venta',
     costo: 'costo',
     sinCosto: 'Sin costo',
@@ -153,6 +180,16 @@ export const EVENTOS_COPY = {
     emptyTitle: 'Sin ventas registradas',
     emptyHint: 'Usá el botón de arriba para registrar ventas en lote.',
     registradas: 'Ventas registradas',
+    colFecha: 'Fecha',
+    colVendedor: 'Vendedor',
+    colDetalle: 'Detalle',
+    colUnidades: 'Unidades',
+    colGanancia: 'Ganancia',
+    colEstado: 'Cobro',
+    colAcciones: 'Acciones',
+    acciones: (nombre: string): string => `Acciones para ${nombre}`,
+    item: (params: { nombre: string; cantidad: number }): string =>
+      `${params.nombre} ×${params.cantidad}`,
     sinVendedor: 'Sin vendedor',
     producto: 'Producto',
     eliminar: 'Eliminar venta',
@@ -244,6 +281,7 @@ export const EVENTOS_COPY = {
     registrarGasto: 'Registrar Gasto',
     emptyTitle: 'Sin movimientos registrados',
     emptyHint: 'Usá los botones de arriba para registrar ingresos y gastos.',
+    tableLabel: 'Movimientos del evento',
     filteredEmpty: 'Sin movimientos para este filtro',
     deleted: 'Movimiento eliminado exitosamente',
     ingresoOk: 'Ingreso registrado exitosamente',

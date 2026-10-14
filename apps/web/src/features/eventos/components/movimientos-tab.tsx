@@ -3,12 +3,13 @@
 import { ArrowLeftRight, CirclePlus, CircleMinus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import { ListPanel, ListToolbar } from '@/shared/components/data';
 import { EmptyState, LoadingState } from '@/shared/components/feedback';
 import {
   GastoFormDialog,
   IngresoFormDialog,
-  MovimientoCard,
   MovimientoFilterTabs,
+  MovimientosTable,
   confirmPagarReembolso,
   filterMovimientosBy,
   toGastoEventoDto,
@@ -81,21 +82,35 @@ function useMovimientoActions(onChanged: () => Promise<void>) {
   return { remove, pagar };
 }
 
-function MovimientosList({ props }: { readonly props: MovimientosTabProps }) {
-  const [filtro, setFiltro] = useState<FiltroMovimientos>(
-    FILTRO_MOVIMIENTOS.TODOS,
-  );
+function useFilteredCards(params: {
+  readonly movimientos: readonly Movimiento[] | undefined;
+  readonly filtro: FiltroMovimientos;
+}) {
   const cards = useMemo(
-    () => (props.movimientos ?? []).map(toCardData),
-    [props.movimientos],
+    () => (params.movimientos ?? []).map(toCardData),
+    [params.movimientos],
   );
   const filtered = useMemo(
-    () => filterMovimientosBy({ movimientos: cards, filtro, isGasto }),
-    [cards, filtro],
+    () =>
+      filterMovimientosBy({
+        movimientos: cards,
+        filtro: params.filtro,
+        isGasto,
+      }),
+    [cards, params.filtro],
   );
-  const actions = useMovimientoActions(props.onChanged);
-  const readonly = props.evento.estaCerrado;
-  if (props.movimientos === undefined) return <LoadingState />;
+  return { cards, filtered };
+}
+
+function MovimientosBody(props: {
+  readonly tab: MovimientosTabProps;
+  readonly cards: readonly MovimientoCardData[];
+  readonly filtered: readonly MovimientoCardData[];
+}) {
+  const { tab, cards, filtered } = props;
+  const actions = useMovimientoActions(tab.onChanged);
+  const readonly = tab.evento.estaCerrado;
+  if (tab.movimientos === undefined) return <LoadingState />;
   if (cards.length === 0)
     return (
       <EmptyState
@@ -104,28 +119,15 @@ function MovimientosList({ props }: { readonly props: MovimientosTabProps }) {
         hint={C.emptyHint}
       />
     );
+  if (filtered.length === 0) return <EmptyState title={C.filteredEmpty} />;
   return (
-    <div className="flex flex-col gap-3">
-      <MovimientoFilterTabs value={filtro} onValueChange={setFiltro} />
-      {filtered.length === 0 ? (
-        <EmptyState title={C.filteredEmpty} />
-      ) : (
-        <ul className="flex flex-col gap-2">
-          {filtered.map((movimiento) => (
-            <li key={movimiento.id}>
-              <MovimientoCard
-                movimiento={movimiento}
-                deletable={!readonly}
-                onDelete={(m) => void actions.remove(m)}
-                onPagarReembolso={
-                  readonly ? undefined : (m) => void actions.pagar(m)
-                }
-              />
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <MovimientosTable
+      movimientos={filtered}
+      ariaLabel={C.tableLabel}
+      deletable={!readonly}
+      onDelete={(m) => void actions.remove(m)}
+      onPagarReembolso={readonly ? undefined : (m) => void actions.pagar(m)}
+    />
   );
 }
 
@@ -168,35 +170,58 @@ function MovimientoDialogs({
   );
 }
 
-/** Tab Movimientos: ingresos (solo grupo), gastos, filtros, reembolsos y borrado. */
+function RegisterButtons(props: {
+  readonly evento: Evento;
+  readonly onOpen: (kind: Exclude<DialogKind, null>) => void;
+}) {
+  const { evento, onOpen } = props;
+  if (evento.estaCerrado) return null;
+  return (
+    <div className="flex flex-wrap gap-2 md:ml-auto">
+      {evento.tipo === TIPO_EVENTO.GRUPO && (
+        <Button
+          variant="secondary"
+          icon={<CirclePlus aria-hidden />}
+          onClick={() => onOpen('ingreso')}
+        >
+          {C.registrarIngreso}
+        </Button>
+      )}
+      <Button
+        variant="secondary"
+        icon={<CircleMinus aria-hidden />}
+        onClick={() => onOpen('gasto')}
+      >
+        {C.registrarGasto}
+      </Button>
+    </div>
+  );
+}
+
+/** Tab Movimientos: un card con filtros y registro arriba y la tabla de ingresos / gastos. */
 export function MovimientosTab(props: MovimientosTabProps) {
   const [dialog, setDialog] = useState<DialogKind>(null);
-  const { evento } = props;
+  const [filtro, setFiltro] = useState<FiltroMovimientos>(
+    FILTRO_MOVIMIENTOS.TODOS,
+  );
+  const { cards, filtered } = useFilteredCards({
+    movimientos: props.movimientos,
+    filtro,
+  });
   const close = (open: boolean) => !open && setDialog(null);
   return (
-    <div className="flex flex-col gap-4">
-      {!evento.estaCerrado && (
-        <div className="flex flex-wrap gap-2">
-          {evento.tipo === TIPO_EVENTO.GRUPO && (
-            <Button
-              variant="secondary"
-              icon={<CirclePlus aria-hidden />}
-              onClick={() => setDialog('ingreso')}
-            >
-              {C.registrarIngreso}
-            </Button>
-          )}
-          <Button
-            variant="secondary"
-            icon={<CircleMinus aria-hidden />}
-            onClick={() => setDialog('gasto')}
-          >
-            {C.registrarGasto}
-          </Button>
-        </div>
-      )}
-      <MovimientosList props={props} />
+    <>
+      <ListPanel
+        toolbar={
+          <ListToolbar>
+            <MovimientoFilterTabs value={filtro} onValueChange={setFiltro} />
+            <RegisterButtons evento={props.evento} onOpen={setDialog} />
+          </ListToolbar>
+        }
+      >
+        <MovimientosBody tab={props} cards={cards} filtered={filtered} />
+      </ListPanel>
       <MovimientoDialogs dialog={dialog} close={close} props={props} />
-    </div>
+    </>
   );
 }

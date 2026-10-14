@@ -10,6 +10,7 @@ export {
   type MovimientoConceptoData,
 } from './movimiento-concepto';
 export { MovimientoCard, type MovimientoCardProps } from './movimiento-card';
+export { MovimientosTable, type MovimientosTableProps } from './movimientos-table';
 export {
   EstadoPagoBadge,
   type EstadoPagoBadgeProps,
