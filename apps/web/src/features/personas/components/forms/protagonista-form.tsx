@@ -1,6 +1,6 @@
 'use client';
 
-import { SelectField } from '@/shared/components/ui/form';
+import { FormCard, SelectField } from '@/shared/components/ui/form';
 import { RAMA_LABELS, RAMAS, type Rama } from '@/shared/domain';
 import {
   FORM_COPY as F,
@@ -17,6 +17,7 @@ import {
   updatePersona,
 } from '@/features/personas/services/personas-api';
 import { PersonaFormActions } from '@/features/personas/components/forms/persona-form-actions';
+import { PersonaFormLayout } from '@/features/personas/components/forms/persona-form-layout';
 import { NombreField } from '@/features/personas/components/forms/nombre-field';
 import { ProtagonistaDocsFieldset } from '@/features/personas/components/forms/protagonista-docs-fieldset';
 
@@ -31,7 +32,7 @@ export interface ProtagonistaFormProps {
   readonly editId?: string;
 }
 
-/** Form de protagonista: nombre, rama y documentación entregada. */
+/** Form de protagonista: datos (nombre, rama) | documentación entregada. */
 export function ProtagonistaForm({ initial, editId }: ProtagonistaFormProps) {
   const form = usePersonaForm({
     schema: protagonistaFormSchema,
@@ -43,33 +44,41 @@ export function ProtagonistaForm({ initial, editId }: ProtagonistaFormProps) {
     successMessage: editId ? P.UPDATED_OK : P.CREATED_OK,
   });
   return (
-    <form
-      noValidate
+    <PersonaFormLayout
       onSubmit={(event) => void form.submit(event)}
-      className="flex flex-col gap-5"
+      actions={
+        <PersonaFormActions
+          editing={editId !== undefined}
+          saving={form.saving}
+          createLabel={P.CREATE}
+        />
+      }
     >
-      <NombreField
-        value={form.values.nombre}
-        error={form.errors.nombre}
-        valid={form.valid.nombre}
-        onChange={(value) => form.update('nombre', value)}
-        onBlur={() => form.blur('nombre')}
-      />
-      <SelectField<Rama>
-        label={F.RAMA}
-        required
-        placeholder={F.RAMA_PLACEHOLDER}
-        options={RAMA_OPTIONS}
-        value={form.values.rama}
-        error={form.errors.rama}
-        onChange={(value) => form.update('rama', value)}
-        onBlur={() => form.blur('rama')}
-      />
-      <ProtagonistaDocsFieldset
-        values={form.values}
-        onChange={(name, value) => form.update(name, value)}
-      />
-      <PersonaFormActions editing={editId !== undefined} saving={form.saving} createLabel={P.CREATE} />
-    </form>
+      <FormCard label={F.CARD_DATOS}>
+        <NombreField
+          value={form.values.nombre}
+          error={form.errors.nombre}
+          valid={form.valid.nombre}
+          onChange={(value) => form.update('nombre', value)}
+          onBlur={() => form.blur('nombre')}
+        />
+        <SelectField<Rama>
+          label={F.RAMA}
+          required
+          placeholder={F.RAMA_PLACEHOLDER}
+          options={RAMA_OPTIONS}
+          value={form.values.rama}
+          error={form.errors.rama}
+          onChange={(value) => form.update('rama', value)}
+          onBlur={() => form.blur('rama')}
+        />
+      </FormCard>
+      <FormCard label={F.DOCS_TITLE}>
+        <ProtagonistaDocsFieldset
+          values={form.values}
+          onChange={(name, value) => form.update(name, value)}
+        />
+      </FormCard>
+    </PersonaFormLayout>
   );
 }

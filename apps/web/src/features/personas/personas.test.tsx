@@ -8,6 +8,9 @@ import {
   PROTAGONISTA_FIXTURE,
 } from '@/shared/domain/testing/fixtures';
 import {
+  EducadorFormView,
+  PersonaExternaDetailView,
+  PersonaExternaFormView,
   PersonaFichaView,
   PersonasListView,
   ProtagonistaFormView,
@@ -103,6 +106,25 @@ describe('<PersonasListView>', () => {
     ).toBeInTheDocument();
   });
 
+  it('fila navegable: nombre y chevron a la ficha, ⋯ con acciones y cargo como sub-línea', async () => {
+    const user = userEvent.setup();
+    render(<PersonasListView />);
+    expect(await screen.findByRole('link', { name: 'Juan' })).toHaveAttribute(
+      'href',
+      '/personas/protagonistas/per-1',
+    );
+    expect(
+      screen.getByRole('link', { name: 'Abrir ficha de Juan' }),
+    ).toHaveAttribute('href', '/personas/protagonistas/per-1');
+    expect(
+      screen.getByRole('button', { name: 'Acciones para Juan' }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByText('Manada', { selector: 'td *' }));
+    expect(push).toHaveBeenCalledWith('/personas/protagonistas/per-1');
+    await user.click(screen.getByRole('tab', { name: 'Educadores' }));
+    expect(await screen.findByText('Jefe de Grupo')).toBeInTheDocument();
+  });
+
   it('"Nuevo Miembro" navega al alta según la tab', async () => {
     const user = userEvent.setup();
     render(<PersonasListView />);
@@ -154,6 +176,16 @@ describe('<ProtagonistaFormView>', () => {
     ).toBeInTheDocument();
   });
 
+  it('dos tarjetas: datos de la persona y documentación', async () => {
+    render(<ProtagonistaFormView />);
+    const datos = screen.getByRole('region', { name: 'Datos de la persona' });
+    expect(within(datos).getByLabelText(/Nombre/)).toBeInTheDocument();
+    const docs = screen.getByRole('region', {
+      name: 'Documentación entregada',
+    });
+    expect(within(docs).getAllByRole('checkbox')).toHaveLength(4);
+  });
+
   it('edición de una persona de otro tipo: mensaje y vuelta al listado', async () => {
     api.fetchPersona.mockResolvedValue(
       personasSchema.parse([EDUCADOR_FIXTURE])[0],
@@ -166,19 +198,44 @@ describe('<ProtagonistaFormView>', () => {
 });
 
 const DASHBOARD_BASE = {
-  persona: { id: 'per-1', nombre: 'Juan Pérez', tipo: 'protagonista', estado: 'activo', rama: 'Manada' },
+  persona: {
+    id: 'per-1',
+    nombre: 'Juan Pérez',
+    tipo: 'protagonista',
+    estado: 'activo',
+    rama: 'Manada',
+  },
   cuentaPersonal: { id: 'c1', saldo: 0 },
-  documentacionPersonal: { partidaNacimiento: true, dni: true, dniPadres: true, carnetObraSocial: true, completa: true },
+  documentacionPersonal: {
+    partidaNacimiento: true,
+    dni: true,
+    dniPadres: true,
+    carnetObraSocial: true,
+    completa: true,
+  },
   inscripciones: { resumen: { total: 0, cantidad: 0 }, items: [] },
   campamentos: { resumen: { total: 0, cantidad: 0 }, items: [] },
   deudaTotal: { total: 0, inscripciones: 0, campamentos: 0 },
   ultimosMovimientos: [],
 };
 const INSCRIPCION_ITEM = {
-  id: 'i1', tipo: 'grupo', ano: 2026, montoTotal: 5000, montoBonificado: 0, montoPagado: 5000, saldoPendiente: 0, estado: 'pagado',
+  id: 'i1',
+  tipo: 'grupo',
+  ano: 2026,
+  montoTotal: 5000,
+  montoBonificado: 0,
+  montoPagado: 5000,
+  saldoPendiente: 0,
+  estado: 'pagado',
 };
 const CAMPAMENTO_ITEM = {
-  id: 'c1', nombre: 'Campamento de verano', ano: 2026, montoTotal: 60000, montoPagado: 0, saldoPendiente: 60000, autorizacionEntregada: false,
+  id: 'c1',
+  nombre: 'Campamento de verano',
+  ano: 2026,
+  montoTotal: 60000,
+  montoPagado: 0,
+  saldoPendiente: 60000,
+  autorizacionEntregada: false,
 };
 
 describe('<PersonaFichaView>', () => {
@@ -232,9 +289,15 @@ describe('<PersonaFichaView>', () => {
       'href',
       '/inscripciones/i1',
     );
-    expect(screen.queryByText('Sin campamentos registrados')).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /^Obligaciones/ })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Actividad' })).toBeInTheDocument();
+    expect(
+      screen.queryByText('Sin campamentos registrados'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /^Obligaciones/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Actividad' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Sin movimientos recientes')).toBeInTheDocument();
     expect(screen.getByText('3 de 4')).toBeInTheDocument();
     expect(screen.getByText('Falta')).toBeInTheDocument();
@@ -249,7 +312,12 @@ describe('<PersonaFichaView>', () => {
           resumen: { total: 0, cantidad: 2 },
           items: [
             { ...INSCRIPCION_ITEM, id: 'i1', ano: 2026 },
-            { ...INSCRIPCION_ITEM, id: 'i0', ano: 2025, tipo: 'scout_argentina' },
+            {
+              ...INSCRIPCION_ITEM,
+              id: 'i0',
+              ano: 2025,
+              tipo: 'scout_argentina',
+            },
           ],
         },
         campamentos: {
@@ -259,28 +327,54 @@ describe('<PersonaFichaView>', () => {
       }),
     );
     render(<PersonaFichaView id="per-1" />);
-    const panel = (await screen.findByRole('heading', { name: /^Obligaciones/ })).closest('section') as HTMLElement;
-    expect(within(panel).getByRole('link', { name: /Grupo/ })).toHaveAttribute('href', '/inscripciones/i1');
-    expect(within(panel).getByRole('link', { name: /Campamento de verano/ })).toHaveAttribute('href', '/campamentos/c1');
-    expect(within(panel).queryByRole('link', { name: /Scout Argentina/ })).not.toBeInTheDocument();
+    const panel = (
+      await screen.findByRole('heading', { name: /^Obligaciones/ })
+    ).closest('section') as HTMLElement;
+    expect(within(panel).getByRole('link', { name: /Grupo/ })).toHaveAttribute(
+      'href',
+      '/inscripciones/i1',
+    );
+    expect(
+      within(panel).getByRole('link', { name: /Campamento de verano/ }),
+    ).toHaveAttribute('href', '/campamentos/c1');
+    expect(
+      within(panel).queryByRole('link', { name: /Scout Argentina/ }),
+    ).not.toBeInTheDocument();
     expect(within(panel).getByText('Falta autorización')).toBeInTheDocument();
     await user.click(within(panel).getByRole('button', { name: '2025' }));
-    expect(within(panel).getByRole('link', { name: /Scout Argentina/ })).toHaveAttribute('href', '/inscripciones/i0');
-    expect(within(panel).queryByRole('link', { name: /Campamento de verano/ })).not.toBeInTheDocument();
+    expect(
+      within(panel).getByRole('link', { name: /Scout Argentina/ }),
+    ).toHaveAttribute('href', '/inscripciones/i0');
+    expect(
+      within(panel).queryByRole('link', { name: /Campamento de verano/ }),
+    ).not.toBeInTheDocument();
   });
 
   it('no hay avatar con iniciales y todo lo navegable lleva chevron', async () => {
     api.fetchPersonaDashboard.mockResolvedValue(
       personaDashboardSchema.parse({
         ...DASHBOARD_BASE,
-        inscripciones: { resumen: { total: 0, cantidad: 1 }, items: [INSCRIPCION_ITEM] },
+        inscripciones: {
+          resumen: { total: 0, cantidad: 1 },
+          items: [INSCRIPCION_ITEM],
+        },
         ultimosMovimientos: [
-          { id: 'm1', fecha: '2026-05-15T15:00:00.000Z', tipo: 'ingreso', concepto: 'Pago inscripción grupo', monto: 1500, medioPago: 'efectivo' },
+          {
+            id: 'm1',
+            fecha: '2026-05-15T15:00:00.000Z',
+            tipo: 'ingreso',
+            concepto: 'Pago inscripción grupo',
+            monto: 1500,
+            medioPago: 'efectivo',
+          },
         ],
       }),
     );
     render(<PersonaFichaView id="per-1" />);
-    const heading = await screen.findByRole('heading', { level: 1, name: 'Juan Pérez' });
+    const heading = await screen.findByRole('heading', {
+      level: 1,
+      name: 'Juan Pérez',
+    });
     expect(heading.parentElement?.previousElementSibling).toBeNull();
     expect(screen.queryByText('JP')).not.toBeInTheDocument();
     const insc = screen.getByRole('link', { name: /Grupo/ });
@@ -299,8 +393,12 @@ describe('<PersonaFichaView>', () => {
       personaDashboardSchema.parse({ ...DASHBOARD_BASE }),
     );
     render(<PersonaFichaView id="per-1" />);
-    expect(await screen.findByText('Sin inscripciones ni campamentos registrados')).toBeInTheDocument();
-    expect(screen.queryByRole('group', { name: 'Año' })).not.toBeInTheDocument();
+    expect(
+      await screen.findByText('Sin inscripciones ni campamentos registrados'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('group', { name: 'Año' }),
+    ).not.toBeInTheDocument();
   });
 
   it('error del backend: mensaje y "Volver"', async () => {
@@ -313,5 +411,52 @@ describe('<PersonaFichaView>', () => {
         'Dashboard no disponible para PersonaExterna',
       ),
     );
+  });
+});
+
+describe('<PersonaExternaDetailView>', () => {
+  it('encabezado como la ficha: nombre, chips, Editar y ⋯ con Eliminar; datos en un panel', async () => {
+    api.fetchPersona.mockResolvedValue(
+      personasSchema.parse([EXTERNO_FIXTURE])[0],
+    );
+    const user = userEvent.setup();
+    render(<PersonaExternaDetailView id="per-3" />);
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Ana' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Persona Externa')).toBeInTheDocument();
+    const datos = screen
+      .getByRole('heading', { name: 'Datos de contacto' })
+      .closest('section');
+    expect(datos).toHaveTextContent('Mamá de Juan');
+    await user.click(screen.getByRole('button', { name: 'Editar' }));
+    expect(push).toHaveBeenCalledWith(
+      '/personas/personas-externas/per-3/editar',
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Más acciones de Ana' }),
+    );
+    expect(
+      await screen.findByRole('menuitem', { name: 'Eliminar' }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('formularios de educador y persona externa', () => {
+  it('educador (alta): datos a la izquierda y acceso al sistema a la derecha', () => {
+    render(<EducadorFormView />);
+    const datos = screen.getByRole('region', { name: 'Datos de la persona' });
+    expect(within(datos).getByLabelText(/Cargo/)).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: 'Acceso al sistema' }),
+    ).toBeInTheDocument();
+  });
+
+  it('persona externa: datos y notas en dos tarjetas', () => {
+    render(<PersonaExternaFormView />);
+    expect(
+      screen.getByRole('region', { name: 'Datos de la persona' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Notas' })).toBeInTheDocument();
   });
 });

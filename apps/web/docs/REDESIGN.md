@@ -120,9 +120,9 @@ Leyenda: ✅ hecha · 🟦 con mockup, pendiente · ⬜ sin mockup (propuesta en
 | `/eventos` | ✅ | Tabla en `ListPanel`, fila navegable con chevron y ⋯ |
 | `/eventos/crear`, `/:id/editar`, `/:id/ventas/registrar` | ✅ | `FormCard`: dos tarjetas lado a lado a todo el ancho, igual que movimientos |
 | `/reportes`, `/reportes/deudas`, `/reportes/:report` | ✅ | §7.9: `KpiStrip` + `ListPanel` con filtros y `AppDataGrid` expandible (clic en la fila abre el desglose; nombre y chevron a la ficha), chips en tinta neutra y rojo solo en el total, rama como sub-línea; sin paginar (como antes). Placeholders: `EmptyState` dentro de un `Panel` |
-| `/personas` (listado), `/personas/educadores`, `/personas/personas-externas` | ⬜ | §7.10 |
-| `/personas/educadores/:id`, `/personas/personas-externas/:id` | ⬜ | §7.10 (fichas) |
-| Formularios de persona (`crear`, `editar`) | ⬜ | §7.7 |
+| `/personas` (listado), `/personas/educadores`, `/personas/personas-externas` | ✅ | §7.10: `ListPanel` con pestañas + búsqueda + «Mostrar deshabilitados» en una línea; nombre con rama (y cargo/contacto) como sub-línea, fila navegable con ⋯ y chevron. `/educadores` y `/personas-externas` redirigen al listado (como antes) |
+| `/personas/educadores/:id`, `/personas/personas-externas/:id` | ✅ | Educador: misma ficha que protagonista (sin chip de cargo repetido). Externa: mismo encabezado (`PersonaHeaderCard`) con Editar + ⋯ (Eliminar) y panel «Datos de contacto» |
+| Formularios de persona (`crear`, `editar`) | ✅ | §7.7: a todo el ancho en dos tarjetas (datos | documentación · acceso · notas) con `FormActions` sticky |
 | `/configuracion` | ⬜ | §7.11 |
 | `/login` | ⬜ | §7.12 |
 | `/eventos/:id/reporte` (público) | ✅ | Ya usa paneles, `KpiStrip` y tablas; sin cambios |

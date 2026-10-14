@@ -57,6 +57,7 @@ export function PersonasTable(props: PersonasTableProps) {
         emptyState={
           <EmptyState icon={UserX} title={C.EMPTY} hint={C.EMPTY_HINT} />
         }
+        onRowClick={actions.view}
         mobileRow={(persona) => (
           <PersonaMobileRow
             persona={persona}

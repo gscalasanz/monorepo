@@ -27,6 +27,7 @@ export const PERSONAS_COPY = {
     `Documentación ${entregados} de ${total}`,
   TABLE_LABEL: 'Listado de personas',
   ROW_ACTIONS: (nombre: string): string => `Acciones para ${nombre}`,
+  ABRIR_FICHA: (nombre: string): string => `Abrir ficha de ${nombre}`,
   LOADING: 'Cargando personas...',
   LOAD_ERROR: 'Error al cargar personas',
   EMPTY: 'No se encontraron personas',
@@ -110,7 +111,6 @@ export const FICHA_COPY = {
 
 /** Detalle de persona externa (`PersonasExternasDetailComponent`). */
 export const EXTERNA_DETAIL_COPY = {
-  TITLE: 'Detalle de Persona Externa',
   LOADING: 'Cargando...',
   NOT_FOUND: 'Persona externa no encontrada',
   BACK: 'Volver',
@@ -121,4 +121,6 @@ export const EXTERNA_DETAIL_COPY = {
   EDIT: 'Editar',
   DELETE: 'Eliminar',
   DELETED_OK: 'Persona externa eliminada exitosamente',
+  DATOS: 'Datos de contacto',
+  masAcciones: (nombre: string): string => `Más acciones de ${nombre}`,
 } as const;

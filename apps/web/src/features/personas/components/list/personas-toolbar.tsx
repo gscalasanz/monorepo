@@ -2,6 +2,7 @@
 
 import {
   FilterBar,
+  ListToolbar,
   SegmentedTabs,
   type FilterField,
   type FilterValues,
@@ -46,22 +47,22 @@ export interface PersonasToolbarProps {
   readonly panelId: string;
 }
 
-/** Tabs por rama/educadores/externos + búsqueda + "Mostrar deshabilitados". */
+/** Una línea: tabs por rama/educadores/externos + búsqueda + "Mostrar deshabilitados" (se parte en mobile). */
 export function PersonasToolbar(props: PersonasToolbarProps) {
   return (
-    <div className="flex flex-col gap-3 border-b border-border px-4 py-3 md:px-[18px]">
+    <ListToolbar>
       <SegmentedTabs<PersonasTab>
         ariaLabel={C.TABS_LABEL}
         items={TAB_ITEMS}
         value={props.tab}
         onValueChange={props.onTabChange}
         getPanelId={() => props.panelId}
-        className="self-start"
       />
       <FilterBar
         fields={FILTER_FIELDS}
         value={props.filters}
         onChange={props.onFiltersChange}
+        className="min-w-0 flex-1"
         trailing={
           <SwitchField
             label={C.SHOW_DISABLED}
@@ -71,6 +72,6 @@ export function PersonasToolbar(props: PersonasToolbarProps) {
           />
         }
       />
-    </div>
+    </ListToolbar>
   );
 }

@@ -17,7 +17,7 @@ export interface PersonaFormFrameProps {
   readonly children: ReactNode;
 }
 
-/** Página de formulario: encabezado + estados de carga/error de la persona a editar. */
+/** Página de formulario a todo el ancho: encabezado + estados de carga/error de la persona a editar. */
 export function PersonaFormFrame({
   title,
   subtitle,
@@ -28,7 +28,7 @@ export function PersonaFormFrame({
 }: PersonaFormFrameProps) {
   const failure = error ?? (wrongType ? F.WRONG_TYPE : null);
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       <PageHeader
         title={title}
         subtitle={subtitle}
@@ -43,11 +43,7 @@ export function PersonaFormFrame({
           actionLabel={F.BACK_TO_LIST}
         />
       ) : null}
-      {!loading && !failure ? (
-        <div className="rounded-xl border border-border bg-surface p-4 shadow-xs md:p-6">
-          {children}
-        </div>
-      ) : null}
+      {!loading && !failure ? children : null}
     </div>
   );
 }

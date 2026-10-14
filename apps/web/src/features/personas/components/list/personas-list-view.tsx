@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useId } from 'react';
 
+import { ListPanel } from '@/shared/components/data';
 import { Button } from '@/shared/components/ui/button';
 import { PERSONA_TYPE } from '@/shared/domain';
 import { PageHeader } from '@/shared/layout';
@@ -50,16 +51,19 @@ export function PersonasListView() {
         }
       />
       <PersonasStats stats={list.stats} />
-      <section className="flex min-w-0 flex-col rounded-xl border border-border bg-surface shadow-xs">
-        <PersonasToolbar
-          tab={list.tab}
-          onTabChange={list.setTab}
-          filters={list.filters}
-          onFiltersChange={list.setFilters}
-          showDisabled={list.showDisabled}
-          onShowDisabledChange={list.setShowDisabled}
-          panelId={panelId}
-        />
+      <ListPanel
+        toolbar={
+          <PersonasToolbar
+            tab={list.tab}
+            onTabChange={list.setTab}
+            filters={list.filters}
+            onFiltersChange={list.setFilters}
+            showDisabled={list.showDisabled}
+            onShowDisabledChange={list.setShowDisabled}
+            panelId={panelId}
+          />
+        }
+      >
         <PersonasTable
           rows={list.rows}
           docKeys={list.docKeys}
@@ -70,7 +74,7 @@ export function PersonasListView() {
           resetKey={resetKey}
           panelId={panelId}
         />
-      </section>
+      </ListPanel>
     </div>
   );
 }
