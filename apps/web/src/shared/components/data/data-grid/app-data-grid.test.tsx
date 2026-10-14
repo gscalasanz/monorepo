@@ -153,6 +153,38 @@ describe('<AppDataGrid>', () => {
       expect(screen.queryByText('Detalle Concepto 1')).not.toBeInTheDocument();
     });
 
+    it('sin onRowClick, el clic en la fila alterna la expansión (tabla)', async () => {
+      const user = userEvent.setup();
+      render(
+        <AppDataGrid
+          columns={COLUMNS}
+          data={makeRows(1)}
+          layout="table"
+          expandable={expandable}
+        />,
+      );
+      await user.click(screen.getByText('Concepto 1'));
+      expect(screen.getByText('Detalle Concepto 1')).toBeInTheDocument();
+      await user.click(screen.getByText('Concepto 1'));
+      expect(screen.queryByText('Detalle Concepto 1')).not.toBeInTheDocument();
+    });
+
+    it('lista mobile: sin onRowClick, el clic en la fila la expande', async () => {
+      const user = userEvent.setup();
+      render(
+        <AppDataGrid
+          columns={COLUMNS}
+          data={makeRows(1)}
+          layout="list"
+          ariaLabel="Lista"
+          expandable={expandable}
+          mobileRow={(row) => <span>{row.concepto}</span>}
+        />,
+      );
+      await user.click(screen.getByRole('button', { name: /Concepto 1/ }));
+      expect(screen.getByText('Detalle Concepto 1')).toBeInTheDocument();
+    });
+
     it('lista mobile: mismo toggle y el contenido aparece debajo de la fila', async () => {
       const user = userEvent.setup();
       render(

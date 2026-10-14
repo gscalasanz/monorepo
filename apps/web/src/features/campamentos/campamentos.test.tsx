@@ -458,6 +458,26 @@ describe('CampamentoDetailView', () => {
     ).toBeInTheDocument();
   });
 
+  it('clic en la fila la expande; el nombre sigue siendo el link a la ficha', async () => {
+    api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);
+    render(<CampamentoDetailView id="cam-1" />);
+    const tabla = await screen.findByRole('region', {
+      name: 'Participantes del campamento',
+    });
+    const fila = within(tabla).getByRole('row', { name: /Juan/ });
+    await userEvent.click(
+      within(fila).getByText('Inscripto el 13 mar', { exact: false }),
+    );
+    expect(
+      screen.getByRole('list', { name: 'Historial de pagos' }),
+    ).toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
+    expect(within(fila).getByRole('link', { name: 'Juan' })).toHaveAttribute(
+      'href',
+      '/personas/protagonistas/per-1',
+    );
+  });
+
   it('tab Movimientos: tabla compartida y filtro en el servidor', async () => {
     nav.search = 'tab=movimientos';
     api.fetchCampamentoDetalle.mockResolvedValue(DETALLE);

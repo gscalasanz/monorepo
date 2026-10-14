@@ -32,6 +32,22 @@ import {
   useAppTable,
 } from '@/shared/components/data/data-grid/use-app-table';
 
+/** Sin `onRowClick` propio, una grilla `expandable` abre/cierra la fila al hacer clic en ella. */
+function useRowClick<T extends object>(params: {
+  readonly table: ReturnType<typeof useAppTable<T>>;
+  readonly ownRowClick: AppDataGridProps<T>['onRowClick'];
+  readonly expandable: AppDataGridProps<T>['expandable'];
+}): AppDataGridProps<T>['onRowClick'] {
+  const { table, ownRowClick, expandable } = params;
+  if (ownRowClick || !expandable) return ownRowClick;
+  return (data) => {
+    table
+      .getRowModel()
+      .rows.find((row) => row.original === data)
+      ?.toggleExpanded();
+  };
+}
+
 function useIsList(layout: AppGridLayout): boolean {
   const isMobile = useMediaQuery(MOBILE_LIST_QUERY);
   return layout === 'list' || (layout === 'auto' && isMobile);
@@ -84,12 +100,14 @@ export function AppDataGrid<T extends object>(props: AppDataGridProps<T>) {
     data,
     isLoading = false,
     pagination,
-    onRowClick,
+    onRowClick: ownRowClick,
+    expandable,
     layout = 'auto',
     className,
   } = props;
   const table = useAppTable(props);
   const isList = useIsList(layout);
+  const onRowClick = useRowClick({ table, ownRowClick, expandable });
   const emptyState = props.emptyState ?? (
     <EmptyState title={DATA_COPY.grid.empty} />
   );

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
 import { ProgressTrack } from '@/shared/components/charts';
@@ -186,7 +185,6 @@ export function ParticipantesTable({
   participantes,
   handlers,
 }: ParticipantesTableProps) {
-  const router = useRouter();
   const columns = useMemo<readonly Column[]>(
     () => [
       ...dataColumns(),
@@ -219,7 +217,6 @@ export function ParticipantesTable({
       data={participantes}
       ariaLabel={C.TABLE_LABEL}
       getRowId={(p) => p.id}
-      onRowClick={(p) => router.push(fichaOf(p))}
       mobileRow={(p) => <MobileRow participante={p} handlers={handlers} />}
       expandable={expandable}
       initialSorting={[]}
