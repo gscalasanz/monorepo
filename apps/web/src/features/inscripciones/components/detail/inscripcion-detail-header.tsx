@@ -1,7 +1,6 @@
 'use client';
 
 import { CircleMinus, HandHeart, Pencil, Plus, Trash2 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import {
@@ -11,6 +10,7 @@ import {
   type RowAction,
 } from '@/shared/components/data';
 import { Button } from '@/shared/components/ui/button';
+import { ButtonLink } from '@/shared/components/ui/button-link';
 import { NavChevron } from '@/shared/components/ui/nav-chevron';
 import { personaHref } from '@/shared/constants/links';
 import {
@@ -28,7 +28,7 @@ interface HeaderProps {
   readonly model: InscripcionDetailModel;
 }
 
-/** Rama · tipo y año · estado · link a la ficha de la persona. */
+/** Rama · tipo y año · estado. */
 function HeaderMeta({ inscripcion }: { readonly inscripcion: Inscripcion }) {
   const { persona } = inscripcion;
   return (
@@ -41,15 +41,6 @@ function HeaderMeta({ inscripcion }: { readonly inscripcion: Inscripcion }) {
         status={inscripcion.estado}
         label={ESTADO_INSCRIPCION_LABELS[inscripcion.estado]}
       />
-      {persona && (
-        <Link
-          href={personaHref({ tipo: persona.tipo, id: persona.id })}
-          className="group inline-flex min-h-11 items-center gap-1 font-medium text-ink hover:underline focus-visible:outline-2 focus-visible:outline-focus md:min-h-0"
-        >
-          {C.VER_FICHA}
-          <NavChevron />
-        </Link>
-      )}
     </span>
   );
 }
@@ -96,6 +87,7 @@ function menuActions(
 
 function HeaderActions(props: HeaderProps) {
   const router = useRouter();
+  const { persona } = props.inscripcion;
   return (
     <>
       {props.inscripcion.saldoPendiente > 0 && (
@@ -106,6 +98,16 @@ function HeaderActions(props: HeaderProps) {
         >
           {C.REGISTRAR_PAGO}
         </Button>
+      )}
+      {persona && (
+        <ButtonLink
+          href={personaHref({ tipo: persona.tipo, id: persona.id })}
+          variant="secondary"
+          size="sm"
+        >
+          {C.VER_FICHA}
+          <NavChevron className="text-current" />
+        </ButtonLink>
       )}
       <RowActionsMenu
         ariaLabel={C.MAS_ACCIONES}

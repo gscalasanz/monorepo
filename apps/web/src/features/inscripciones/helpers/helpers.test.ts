@@ -44,6 +44,7 @@ import {
 } from '@/features/inscripciones/helpers/list';
 import {
   buildPagoDto,
+  maximoBonificable,
   summarizeBonificar,
   summarizePagoCreate,
   summarizePagoEdit,
@@ -423,6 +424,7 @@ describe('diálogos de pago y bonificación', () => {
   it('bonificar compara el delta contra el fondo', () => {
     const context = {
       montoTotal: 1000,
+      montoPagado: 0,
       bonificadoActual: 500,
       saldoFondo: 100,
     };
@@ -436,5 +438,18 @@ describe('diálogos de pago y bonificación', () => {
       summarizeBonificar(1001, { ...context, saldoFondo: 10000 }).excedeTotal,
     ).toBe(true);
     expect(summarizeBonificar(null, context).canConfirm).toBe(false);
+  });
+
+  it('con pago parcial el tope es lo que falta pagar, no el total', () => {
+    const context = {
+      montoTotal: 1000,
+      montoPagado: 400,
+      bonificadoActual: 0,
+      saldoFondo: 10000,
+    };
+    expect(maximoBonificable(context)).toBe(600);
+    expect(summarizeBonificar(600, context).canConfirm).toBe(true);
+    expect(summarizeBonificar(601, context).excedeTotal).toBe(true);
+    expect(maximoBonificable({ montoTotal: 100, montoPagado: 150 })).toBe(0);
   });
 });

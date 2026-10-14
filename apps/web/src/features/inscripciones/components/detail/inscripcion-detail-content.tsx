@@ -7,7 +7,7 @@ import type { InscripcionDetailModel } from '@/features/inscripciones/hooks/use-
 import { AutorizacionesCard } from '@/features/inscripciones/components/detail/autorizaciones-card';
 import { DetailDialogs } from '@/features/inscripciones/components/detail/detail-dialogs';
 import { InscripcionDetailHeader } from '@/features/inscripciones/components/detail/inscripcion-detail-header';
-import { InscripcionKpis } from '@/features/inscripciones/components/detail/inscripcion-kpis';
+import { PaymentStatusCard } from '@/features/inscripciones/components/detail/payment-status-card';
 import { PaymentHistory } from '@/features/inscripciones/components/detail/payment-history';
 
 interface InscripcionDetailContentProps {
@@ -15,7 +15,7 @@ interface InscripcionDetailContentProps {
   readonly model: InscripcionDetailModel;
 }
 
-/** Detalle cargado: encabezado con acciones, KPIs, historial de pagos y autorizaciones (SA). */
+/** Detalle cargado: encabezado con acciones, estado de pago, historial y autorizaciones (SA). */
 export function InscripcionDetailContent({
   inscripcion,
   model,
@@ -24,7 +24,7 @@ export function InscripcionDetailContent({
   return (
     <div className="flex flex-col gap-4 md:gap-6">
       <InscripcionDetailHeader inscripcion={inscripcion} model={model} />
-      <InscripcionKpis inscripcion={inscripcion} />
+      <PaymentStatusCard inscripcion={inscripcion} />
       <div
         className={
           isSA ? 'grid gap-4 md:gap-6 lg:grid-cols-2 lg:items-start' : 'grid'

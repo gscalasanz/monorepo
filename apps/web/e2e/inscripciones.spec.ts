@@ -69,8 +69,8 @@ test.describe.serial('inscripciones', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: nombre }),
     ).toBeVisible();
-    const kpis = page.getByLabel('Resumen de la inscripción');
-    await expect(kpis.getByText('Saldo pendiente')).toBeVisible();
+    const kpis = page.getByRole('region', { name: 'Estado de pago' });
+    await expect(kpis.getByText('Debe', { exact: true })).toBeVisible();
     await expect(kpis.getByText('0% completado')).toBeVisible();
 
     // Registrar un pago de 100
@@ -102,5 +102,11 @@ test.describe.serial('inscripciones', () => {
       .click();
     await expect(page).toHaveURL(/\/inscripciones$/);
     expect(await inscripcionIdsOf(api, personaId)).toEqual([]);
+  });
+
+  test('/inscripciones/:id/pago no existe', async ({ page }) => {
+    await loginAsAdmin(page);
+    await page.goto('/inscripciones/cualquiera/pago');
+    await expect(page.locator('#not-found-title')).toBeVisible();
   });
 });

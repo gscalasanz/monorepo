@@ -120,8 +120,16 @@ export function buildUpdatePagoDto(
 
 export interface BonificarContext {
   readonly montoTotal: number;
+  readonly montoPagado: number;
   readonly bonificadoActual: number;
   readonly saldoFondo: number;
+}
+
+/** Bonificado (total, no delta) + pagado no puede superar el monto: el tope es lo que falta pagar. */
+export function maximoBonificable(
+  context: Pick<BonificarContext, 'montoTotal' | 'montoPagado'>,
+): number {
+  return Math.max(0, context.montoTotal - context.montoPagado);
 }
 
 export interface BonificarSummary {
@@ -137,7 +145,7 @@ export function summarizeBonificar(
 ): BonificarSummary {
   const value = amount(monto);
   const adicional = Math.max(0, value - context.bonificadoActual);
-  const excedeTotal = value > context.montoTotal;
+  const excedeTotal = value > maximoBonificable(context);
   const saldoInsuficiente = adicional > context.saldoFondo;
   return {
     excedeTotal,

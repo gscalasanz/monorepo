@@ -16,7 +16,7 @@ import { inscripcionRoutes } from '@/features/inscripciones/constants/routes';
 import { useInscripcionEditForm } from '@/features/inscripciones/hooks/use-inscripcion-edit-form';
 import { InscripcionEditForm } from '@/features/inscripciones/components/form/inscripcion-edit-form';
 
-/** `/inscripciones/:id/editar` y `/inscripciones/:id/pago` (paridad: mismo form). */
+/** `/inscripciones/:id/editar`. */
 export function InscripcionEditView({ id }: { readonly id: string }) {
   const model = useInscripcionEditForm(id);
   const { inscripcion, autorizaciones } = model;

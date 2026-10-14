@@ -163,12 +163,34 @@ describe('<InscripcionDetailView>', () => {
       'href',
       '/personas/protagonistas/per-1',
     );
-    const kpis = screen.getByLabelText('Resumen de la inscripción');
-    expect(within(kpis).getByText('Saldo pendiente')).toBeInTheDocument();
-    expect(within(kpis).getByText('33% completado')).toBeInTheDocument();
+    const estado = screen.getByRole('region', { name: 'Estado de pago' });
+    expect(within(estado).getByText('Debe')).toBeInTheDocument();
+    expect(within(estado).getByText(/Pagó/)).toHaveTextContent(
+      /Pagó \$\s?10\.000 de \$\s?30\.000/,
+    );
+    expect(within(estado).getByText('33% completado')).toBeInTheDocument();
+    expect(within(estado).getByText('Inscripción')).toBeInTheDocument();
     expect(screen.getByText('Historial de pagos')).toBeInTheDocument();
     expect(screen.getByText('2 de 5')).toBeInTheDocument();
     expect(screen.getAllByText('Falta')).toHaveLength(3);
+  });
+
+  it('pagada: se ve "Pagada" de un vistazo y sin botón de registrar pago', async () => {
+    api.fetchInscripcionOrNull.mockResolvedValue({
+      ...INSCRIPCION,
+      estado: 'pagado',
+      montoPagado: 30000,
+      saldoPendiente: 0,
+    });
+    render(<InscripcionDetailView id="ins-1" />);
+    const estado = await screen.findByRole('region', {
+      name: 'Estado de pago',
+    });
+    expect(within(estado).getByText('Pagada')).toBeInTheDocument();
+    expect(within(estado).queryByText('Debe')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Registrar pago' }),
+    ).not.toBeInTheDocument();
   });
 
   it('el ⋯ del encabezado agrupa editar, bonificar y eliminar', async () => {
@@ -187,6 +209,28 @@ describe('<InscripcionDetailView>', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole('menuitem', { name: 'Eliminar' }),
+    ).toBeInTheDocument();
+  });
+
+  it('bonificar con pago parcial ofrece lo pendiente, no el total', async () => {
+    const user = userEvent.setup();
+    render(<InscripcionDetailView id="ins-1" />);
+    await user.click(
+      await screen.findByRole('button', {
+        name: 'Más acciones de la inscripción',
+      }),
+    );
+    await user.click(
+      await screen.findByRole('menuitem', { name: 'Bonificar' }),
+    );
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Bonificar Inscripción',
+    });
+    expect(
+      within(dialog).getByRole('button', { name: /Bonificar lo pendiente/ }),
+    ).toHaveTextContent(/20\.000/);
+    expect(
+      within(dialog).getByText(/Máximo: \$\s?20\.000/),
     ).toBeInTheDocument();
   });
 
@@ -268,6 +312,10 @@ describe('<InscripcionEditView>', () => {
     expect(within(datos).queryByRole('textbox')).not.toBeInTheDocument();
     const editables = screen.getByRole('region', { name: 'Autorizaciones' });
     expect(within(editables).getAllByRole('checkbox')).toHaveLength(5);
+    expect(
+      screen.getByRole('button', { name: /^Cancelar$/ }),
+    ).toBeInTheDocument();
+    expect(within(datos).getByText('Juan')).toHaveClass('text-lg');
   });
 });
 

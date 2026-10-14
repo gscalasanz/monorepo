@@ -113,7 +113,7 @@ Leyenda: ✅ hecha · 🟦 con mockup, pendiente · ⬜ sin mockup (propuesta en
 | `/cajas` | ✅ | |
 | `/inscripciones` | ✅ | |
 | `/inscripciones/dashboard` | ✅ | |
-| `/inscripciones/:id`, `/crear`, `/:id/editar`, `/:id/pago` | ✅ | §7.4: encabezado con rama, estado y «Ver ficha», «Registrar pago» + ⋯ (editar, bonificar, eliminar), `KpiStrip` de 5 cifras, historial con ⋯ por pago y autorizaciones como checklist. Formularios en dos tarjetas; `:id/pago` abre la edición (paridad Angular) |
+| `/inscripciones/:id`, `/crear`, `/:id/editar` | ✅ | §7.4 (v2, a pedido): tarjeta «Estado de pago» protagonista (✓ Pagada en verde o «Debe $X» grande + «Pagó $A de $B» y barra) con el desglose al lado; encabezado con «Registrar pago», «Ver ficha ›» y ⋯. Bonificar ofrece como máximo lo pendiente. Edición con los datos fijos en grande. `/:id/pago` eliminada (404) |
 | `/campamentos` | ✅ | §7.5 (tabla en `ListPanel`; sin barra de recaudación: la lista de la API no la trae) |
 | `/campamentos/:id` | ✅ | §7.6 (pagos en fila expandible) |
 | `/campamentos/crear`, `/:id/editar` | ✅ | §7.7 (dos tarjetas) |

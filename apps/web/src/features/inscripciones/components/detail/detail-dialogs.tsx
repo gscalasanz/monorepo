@@ -20,6 +20,7 @@ export function DetailDialogs({ inscripcion, model }: DetailDialogsProps) {
       <BonificarDialog
         onOpenChange={close}
         montoTotal={inscripcion.montoTotal}
+        montoPagado={inscripcion.montoPagado}
         bonificadoActual={inscripcion.montoBonificado}
         onSubmit={mutations.bonificar}
       />
