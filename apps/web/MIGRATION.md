@@ -193,13 +193,16 @@ Cada módulo: expandir paridad (detalle en `docs/paridad/*.md`) → implementar 
 Hacen falta una decisión de negocio o un cambio en el backend. La migración no los resuelve por su
 cuenta (scope guard):
 
-- **Campamentos, editar un pago:** `PATCH /campamentos/:id/pagos/:movimientoId` no existe (en Angular
-  siempre daba 404). React ofrece "Eliminar pago" en su lugar. Si hace falta editar, hay que agregar
-  el endpoint en el backend.
-- **Campamentos, filtro "Educadores":** el `rama` del backend no acepta `educador` (400). React no lo
-  manda y filtra `tipo === 'educador'` en el cliente. Confirmar si alcanza o sumar el soporte.
-- **Campamentos, "Eliminar" del detalle:** ahora borra de verdad (Angular solo confirmaba). Confirmar
-  con producto.
+- **Campamentos, editar un pago — PENDIENTE para la etapa de backend (decisión 2026-10-14).**
+  `PATCH /campamentos/:id/pagos/:movimientoId` no existe y nunca existió (verificado en el historial
+  de git; local y producción responden `404 Cannot PATCH`): en Angular el diálogo se cerraba sin
+  guardar nada. La migración es **solo front**, así que React mantiene "Eliminar pago" y no edita.
+  Opción relevada para después: editar vía `PATCH /movimientos/:id` (los totales del campamento se
+  derivan de los movimientos), solo para pagos en efectivo/transferencia. Los pagos con saldo
+  personal generan 2 movimientos vinculados que el `update` genérico (`Object.assign`) desincroniza.
+- **Campamentos, filtro "Educadores" — RESUELTO (2026-10-14):** queda el filtro en el cliente
+  (`tipo === 'educador'`); el `rama` del backend no acepta `educador`.
+- **Campamentos, "Eliminar" del detalle — RESUELTO (2026-10-14):** confirmado que borra de verdad.
 - **Campamentos, agregar participante con filtros activos:** el selector solo excluye a los
   participantes visibles. Si alguien ya inscripto está filtrado, el backend responde 400 "ya
   inscrita" adentro del diálogo. Angular se comporta igual.
