@@ -88,6 +88,18 @@ function PagadoCell({ participante: p }: { readonly participante: Row }) {
   );
 }
 
+function FichaLink({ participante }: { readonly participante: Row }) {
+  return (
+    <Link
+      href={fichaOf(participante)}
+      aria-label={C.abrirFicha(participante.nombre)}
+      className="group flex size-8 items-center justify-center rounded-md hover:bg-recessed focus-visible:outline-2 focus-visible:outline-focus"
+    >
+      <NavChevron />
+    </Link>
+  );
+}
+
 function RowActions({
   participante,
   handlers,
@@ -101,13 +113,7 @@ function RowActions({
       onClick={(event) => event.stopPropagation()}
     >
       <ParticipanteRowActions participante={participante} handlers={handlers} />
-      <Link
-        href={fichaOf(participante)}
-        aria-label={C.abrirFicha(participante.nombre)}
-        className="group flex size-8 items-center justify-center rounded-md hover:bg-recessed focus-visible:outline-2 focus-visible:outline-focus"
-      >
-        <NavChevron />
-      </Link>
+      <FichaLink participante={participante} />
     </div>
   );
 }
@@ -163,9 +169,12 @@ function MobileRow({
   return (
     <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
       <div className="flex min-w-0 flex-col gap-1">
-        <span className="truncate text-sm font-medium text-ink">
+        <Link
+          href={fichaOf(p)}
+          className="truncate text-sm font-medium text-ink hover:underline focus-visible:outline-2 focus-visible:outline-focus"
+        >
           {p.nombre}
-        </span>
+        </Link>
         <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-subtle">
           {p.rama && <RamaChip rama={p.rama} variant="dot" />}
           {!p.autorizacionEntregada && <AutorizacionBadge entregada={false} />}
@@ -174,7 +183,7 @@ function MobileRow({
       <div className="flex shrink-0 items-center gap-1">
         <ParticipanteEstadoBadge participante={p} />
         <ParticipanteRowActions participante={p} handlers={handlers} />
-        <NavChevron />
+        <FichaLink participante={p} />
       </div>
     </div>
   );

@@ -390,6 +390,13 @@ describe('CampamentoDetailView', () => {
     const lista = await screen.findByRole('list', {
       name: 'Participantes del campamento',
     });
+    expect(within(lista).getByRole('link', { name: 'Juan' })).toHaveAttribute(
+      'href',
+      '/personas/protagonistas/per-1',
+    );
+    expect(
+      within(lista).getByRole('link', { name: 'Abrir ficha de Juan' }),
+    ).toHaveAttribute('href', '/personas/protagonistas/per-1');
     expect(within(lista).getAllByText('Pendiente')).toHaveLength(1);
     expect(within(lista).queryByText('Entregada')).not.toBeInTheDocument();
     spy.mockRestore();
