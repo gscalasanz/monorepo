@@ -1,9 +1,24 @@
 # Prompt 2: edición inline tipo Excel en las grillas
 
-> Usalo **después** del rediseño (prompt 1), porque el rediseño cambia las grillas. Abrí una
-> sesión nueva en `~/Desktop/scout/frontend-react` y pegá todo lo que está debajo de la línea.
+> Abrí una sesión nueva **en el worktree** y pegá todo lo que está debajo de la línea:
+> `cd ~/Desktop/scout/frontend-react/.claude/worktrees/edicion-inline && claude`
+> El Paso 1 (propuesta) se puede hacer en paralelo con el rediseño. El Paso 2 (código) conviene
+> hacerlo después de que estén los pilotos del rediseño, porque el rediseño cambia las grillas.
 
 ---
+
+## Dónde trabajás
+
+- Worktree: `~/Desktop/scout/frontend-react/.claude/worktrees/edicion-inline`, rama
+  **`feat/edicion-inline`** (sale de `main`; ya tiene `node_modules` y `.env.local`). Todo el
+  trabajo y los commits van ahí. No toques `main` ni el otro worktree (`rediseno-insignia`).
+- El rediseño se está haciendo en paralelo en la rama `feat/rediseno-insignia` y cambia las
+  grillas. **Antes de empezar el Paso 2**, traé esos cambios con
+  `git merge feat/rediseno-insignia` (o `main`, si el rediseño ya se mergeó) y resolvé los
+  conflictos. Si el rediseño todavía no tiene los pilotos, hacé solo el Paso 1 y avisame.
+- `pnpm dev` usa el puerto **4201**, que es el único que acepta el CORS del backend. Si está
+  ocupado, probablemente es el dev server del otro worktree: avisame en vez de matarlo.
+- Al terminar no mergees a `main` ni hagas push: avisame y lo decido yo.
 
 Quiero que en las DataGrids de Scout se pueda editar **inline, estilo Excel**: hacer clic en una
 celda, cambiar el valor y que se guarde, sin abrir un formulario aparte.

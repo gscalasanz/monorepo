@@ -1,9 +1,19 @@
 # Prompt 1: rediseño real con la estética Insignia
 
-> Abrí una sesión nueva **en `~/Desktop/scout/frontend-react`** y pegá todo lo que está debajo de
-> la línea. Es interactivo: las primeras pantallas se hacen con vos mirando.
+> Abrí una sesión nueva **en el worktree** y pegá todo lo que está debajo de la línea:
+> `cd ~/Desktop/scout/frontend-react/.claude/worktrees/rediseno-insignia && claude`
+> Es interactivo: las primeras pantallas se hacen con vos mirando.
 
 ---
+
+## Dónde trabajás
+
+- Worktree: `~/Desktop/scout/frontend-react/.claude/worktrees/rediseno-insignia`, rama
+  **`feat/rediseno-insignia`** (sale de `main`; ya tiene `node_modules` y `.env.local`). Todo el
+  trabajo y los commits van ahí. No toques `main` ni el otro worktree (`edicion-inline`).
+- `pnpm dev` usa el puerto **4201**, que es el único que acepta el CORS del backend. Si está
+  ocupado, probablemente es el dev server del otro worktree: avisame en vez de matarlo.
+- Al terminar no mergees a `main` ni hagas push: avisame y lo decido yo.
 
 Quiero rediseñar de verdad el frontend React de Scout con la estética **Insignia**. Hoy las
 pantallas son el layout del Angular con los colores de Insignia. Eso no es lo que quiero: quiero
