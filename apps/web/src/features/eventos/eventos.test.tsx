@@ -106,18 +106,43 @@ beforeEach(() => {
 });
 
 describe('EventosListView', () => {
-  it('muestra stats, cards y filtra por nombre', async () => {
+  it('muestra stats y una tabla donde cada fila navega al detalle', async () => {
     api.fetchEventos.mockResolvedValue([evento, grupo]);
     render(<EventosListView />);
+    const table = await screen.findByRole('region', {
+      name: 'Lista de eventos',
+    });
     expect(
-      await screen.findByRole('link', { name: 'Venta de pastelitos' }),
-    ).toBeInTheDocument();
+      within(table).getByRole('link', { name: 'Venta de pastelitos' }),
+    ).toHaveAttribute('href', '/eventos/evt-1');
+    expect(
+      within(table).getByRole('link', {
+        name: 'Abrir evento Venta de pastelitos',
+      }),
+    ).toHaveAttribute('href', '/eventos/evt-1');
     const stats = screen.getByLabelText('Resumen de eventos');
     expect(within(stats).getByText('Eventos')).toBeInTheDocument();
-    expect(screen.getByText('Salida')).toBeInTheDocument();
-    expect(
-      screen.getAllByRole('link', { name: 'Editar evento' })[0],
-    ).toHaveAttribute('href', '/eventos/evt-1/editar');
+    expect(within(table).getByText('Salida')).toBeInTheDocument();
+    expect(within(table).getAllByText('En curso')).toHaveLength(2);
+  });
+
+  it('el ⋯ de cada fila ofrece editar y eliminar', async () => {
+    const user = userEvent.setup();
+    api.fetchEventos.mockResolvedValue([evento]);
+    render(<EventosListView />);
+    await user.click(
+      await screen.findByRole('button', {
+        name: 'Acciones para Venta de pastelitos',
+      }),
+    );
+    await user.click(await screen.findByRole('menuitem', { name: 'Editar' }));
+    expect(nav.push).toHaveBeenCalledWith('/eventos/evt-1/editar');
+  });
+
+  it('un evento cerrado se marca como Cerrado', async () => {
+    api.fetchEventos.mockResolvedValue([{ ...evento, estaCerrado: true }]);
+    render(<EventosListView />);
+    expect(await screen.findByText('Cerrado')).toBeInTheDocument();
   });
 
   it('vacío: "No hay eventos registrados" + Crear Evento', async () => {
@@ -133,6 +158,15 @@ describe('EventosListView', () => {
 });
 
 describe('EventoCreateView', () => {
+  it('agrupa los campos en dos tarjetas: datos y detalle', () => {
+    render(<EventoCreateView />);
+    const datos = screen.getByRole('region', { name: 'Datos del evento' });
+    const detalle = screen.getByRole('region', { name: 'Detalle' });
+    expect(within(datos).getByLabelText(/Nombre/)).toBeInTheDocument();
+    expect(within(datos).getByText(/Fecha/)).toBeInTheDocument();
+    expect(within(detalle).getByLabelText('Descripción')).toBeInTheDocument();
+  });
+
   it('valida requeridos y crea el evento', async () => {
     const user = userEvent.setup();
     api.createEvento.mockResolvedValue({ ...grupo, id: 'nuevo' });

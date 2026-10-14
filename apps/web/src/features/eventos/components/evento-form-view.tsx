@@ -40,7 +40,7 @@ function EventoForm({ evento }: EventoFormProps) {
       id={formId}
       noValidate
       onSubmit={(event) => void form.submit(event)}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 md:gap-6"
     >
       {form.error && (
         <p

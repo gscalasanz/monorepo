@@ -109,23 +109,23 @@ Leyenda: ✅ hecha · 🟦 con mockup, pendiente · ⬜ sin mockup (propuesta en
 | `/movimientos/nuevo` | ✅ | Sin cambios de composición (a pedido) |
 | `/movimientos/:id/editar` | ✅ | |
 | `/personas/protagonistas/:id` | ✅ | |
-| `/eventos/:id` | 🟦 | Mockup `screen-evento` (ecuación recaudación − gastos = ganancia, tabs con contadores, productos, ventas por vendedor, gastos) |
-| `/cajas` | ⬜ | §7.1 |
-| `/inscripciones` | ⬜ | §7.2 |
-| `/inscripciones/dashboard` | ⬜ | §7.3 |
+| `/eventos/:id` | ✅ | Los 6 KPIs con ⓘ (`KpiStrip hint`), encabezado con estado y menú ⋯, 4 pestañas como tablas en `ListPanel`. El ranking/gastos del mockup viven en el reporte |
+| `/cajas` | ✅ | |
+| `/inscripciones` | ✅ | |
+| `/inscripciones/dashboard` | ✅ | |
 | `/inscripciones/:id`, `/crear`, `/:id/editar`, `/:id/pago` | ⬜ | §7.4 |
 | `/campamentos` | ⬜ | §7.5 |
 | `/campamentos/:id` | ⬜ | §7.6 |
 | `/campamentos/crear`, `/:id/editar` | ⬜ | §7.7 (formularios) |
-| `/eventos` | ⬜ | §7.8 |
-| `/eventos/crear`, `/:id/editar`, `/:id/ventas/registrar` | ⬜ | §7.7 (formularios) |
+| `/eventos` | ✅ | Tabla en `ListPanel`, fila navegable con chevron y ⋯ |
+| `/eventos/crear`, `/:id/editar`, `/:id/ventas/registrar` | ✅ | `FormCard`; el alta/edición mantienen su ancho, la venta en lote va en dos tarjetas |
 | `/reportes`, `/reportes/deudas`, `/reportes/:report` | ⬜ | §7.9 |
 | `/personas` (listado), `/personas/educadores`, `/personas/personas-externas` | ⬜ | §7.10 |
 | `/personas/educadores/:id`, `/personas/personas-externas/:id` | ⬜ | §7.10 (fichas) |
 | Formularios de persona (`crear`, `editar`) | ⬜ | §7.7 |
 | `/configuracion` | ⬜ | §7.11 |
 | `/login` | ⬜ | §7.12 |
-| `/eventos/:id/reporte` (público) | ⬜ | §7.13 |
+| `/eventos/:id/reporte` (público) | ✅ | Ya usa paneles, `KpiStrip` y tablas; sin cambios |
 
 ## 7. Propuestas para las pantallas sin mockup
 

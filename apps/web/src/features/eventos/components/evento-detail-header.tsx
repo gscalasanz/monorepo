@@ -1,13 +1,13 @@
 'use client';
 
-import { BarChart3, Lock, Wallet } from 'lucide-react';
+import { BarChart3, Wallet } from 'lucide-react';
 
-import { StatusBadge } from '@/shared/components/data';
 import { Button } from '@/shared/components/ui/button';
 import { DESTINO_GANANCIA_LABELS, type Evento } from '@/shared/domain';
 import { PageHeader } from '@/shared/layout';
 import { DATE_FORMATS, formatDate } from '@/shared/time';
 import { ButtonLink } from '@/features/eventos/components/button-link';
+import { EventoEstadoBadge } from '@/features/eventos/components/evento-estado-badge';
 import { EventoHeaderMenu } from '@/features/eventos/components/evento-header-menu';
 import { EventoTipoBadge } from '@/features/eventos/components/evento-tipo-badge';
 import { EVENTOS_COPY } from '@/features/eventos/constants/copy';
@@ -23,14 +23,6 @@ interface HeaderProps {
   readonly data: EventoDetailData;
 }
 
-function EstadoBadge({ evento }: { readonly evento: Evento }) {
-  return evento.estaCerrado ? (
-    <StatusBadge label={C.cerrado} tone="neutral" icon={Lock} />
-  ) : (
-    <StatusBadge label={C.enCurso} tone="brand" />
-  );
-}
-
 /** Tipo · fecha · tipo de evento · destino de la ganancia · estado. */
 function HeaderMeta({ evento }: { readonly evento: Evento }) {
   return (
@@ -43,7 +35,7 @@ function HeaderMeta({ evento }: { readonly evento: Evento }) {
       {evento.destinoGanancia && (
         <span>{DESTINO_GANANCIA_LABELS[evento.destinoGanancia]}</span>
       )}
-      <EstadoBadge evento={evento} />
+      <EventoEstadoBadge evento={evento} />
     </span>
   );
 }

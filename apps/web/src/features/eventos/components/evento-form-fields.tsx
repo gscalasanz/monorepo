@@ -2,6 +2,7 @@
 
 import {
   DateField,
+  FormCard,
   SelectField,
   TextField,
   TextareaField,
@@ -86,34 +87,38 @@ function BaseFields({ form }: { readonly form: EventoFormState }) {
   );
 }
 
-/** Campos del form de evento (orden y condiciones de Angular). */
+/** Dos tarjetas: datos del evento (nombre, tipo, fecha, actividad) y detalle (venta + descripción). */
 export function EventoFormFields({ form, isEditing }: FieldsProps) {
   const { values, errors } = form;
   return (
-    <div className="flex flex-col gap-4">
-      <BaseFields form={form} />
-      {values.tipo === TIPO_EVENTO.GRUPO && (
-        <TextField
-          label={C.tipoEvento}
-          placeholder={C.tipoEventoPlaceholder}
-          maxLength={L.TIPO_EVENTO_MAX}
-          value={values.tipoEvento}
-          onChange={(value) => form.update('tipoEvento', value)}
-          onBlur={() => form.blur('tipoEvento')}
-          error={errors.tipoEvento}
+    <div className="flex flex-col gap-4 md:gap-6">
+      <FormCard title={C.sectionDatos}>
+        <BaseFields form={form} />
+        {values.tipo === TIPO_EVENTO.GRUPO && (
+          <TextField
+            label={C.tipoEvento}
+            placeholder={C.tipoEventoPlaceholder}
+            maxLength={L.TIPO_EVENTO_MAX}
+            value={values.tipoEvento}
+            onChange={(value) => form.update('tipoEvento', value)}
+            onBlur={() => form.blur('tipoEvento')}
+            error={errors.tipoEvento}
+          />
+        )}
+      </FormCard>
+      <FormCard title={C.sectionDetalle}>
+        <VentaFields form={form} isEditing={isEditing} />
+        <TextareaField
+          label={C.descripcion}
+          placeholder={C.descripcionPlaceholder}
+          rows={3}
+          maxLength={L.DESCRIPCION_MAX}
+          value={values.descripcion}
+          onChange={(value) => form.update('descripcion', value)}
+          onBlur={() => form.blur('descripcion')}
+          error={errors.descripcion}
         />
-      )}
-      <VentaFields form={form} isEditing={isEditing} />
-      <TextareaField
-        label={C.descripcion}
-        placeholder={C.descripcionPlaceholder}
-        rows={3}
-        maxLength={L.DESCRIPCION_MAX}
-        value={values.descripcion}
-        onChange={(value) => form.update('descripcion', value)}
-        onBlur={() => form.blur('descripcion')}
-        error={errors.descripcion}
-      />
+      </FormCard>
     </div>
   );
 }

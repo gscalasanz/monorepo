@@ -133,6 +133,10 @@ Cableado a11y automático (label↔control, `aria-invalid`, `aria-describedby` a
 
 `{ className? }`: chevron decorativo (`aria-hidden`) que indica "esto navega". Se desplaza y oscurece con `group-hover:` (el link padre lleva `group`). Lo usan el `action` de `Panel`, `KpiStrip`, `ChartLegend` y las filas navegables del dashboard.
 
+## `FormCard` — `shared/components/ui/form/form-card.tsx`
+
+`{ title, description?, children }`: tarjeta de sección de un formulario (región nombrada por su `h2`). Dos `FormCard` lado a lado desde `lg`, o apiladas en formularios angostos.
+
 ## `InfoHint` — `shared/components/ui/info-hint.tsx`
 
 `{ label, text }`: ⓘ que explica un dato (Popover con `openOnHover`: hover en desktop, tap en mobile, teclado). Botón con nombre "Qué significa {label}". Lo usa `KpiStrip` vía `hint`.

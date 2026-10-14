@@ -3,7 +3,7 @@
 import { CalendarX, Plus, SearchX } from 'lucide-react';
 
 import { KpiStrip } from '@/shared/components/charts';
-import { FilterBar } from '@/shared/components/data';
+import { FilterBar, ListPanel, ListToolbar } from '@/shared/components/data';
 import {
   EmptyState,
   ErrorState,
@@ -11,7 +11,7 @@ import {
 } from '@/shared/components/feedback';
 import { PageHeader } from '@/shared/layout';
 import { ButtonLink } from '@/features/eventos/components/button-link';
-import { EventoCard } from '@/features/eventos/components/evento-card';
+import { EventosTable } from '@/features/eventos/components/eventos-table';
 import { EVENTOS_COPY } from '@/features/eventos/constants/copy';
 import { EVENTOS_ROUTES } from '@/features/eventos/constants/eventos';
 import { EVENTO_FILTER_FIELDS } from '@/features/eventos/helpers/evento-list';
@@ -34,18 +34,10 @@ function EventosGrid({ state }: { readonly state: ListState }) {
     return <EmptyState icon={SearchX} title={C.filteredEmpty} />;
   }
   return (
-    <section
-      aria-label={C.gridAria}
-      className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 md:gap-4"
-    >
-      {state.filtered.map((evento) => (
-        <EventoCard
-          key={evento.id}
-          evento={evento}
-          onDelete={(e) => void state.remove(e)}
-        />
-      ))}
-    </section>
+    <EventosTable
+      eventos={state.filtered}
+      onDelete={(e) => void state.remove(e)}
+    />
   );
 }
 
@@ -81,12 +73,20 @@ function EventosBody({ state }: { readonly state: ListState }) {
           { id: 'grupo', label: C.statsGrupo, value: state.stats.grupo },
         ]}
       />
-      <FilterBar
-        fields={EVENTO_FILTER_FIELDS}
-        value={state.values}
-        onChange={state.setValues}
-      />
-      <EventosGrid state={state} />
+      <ListPanel
+        toolbar={
+          <ListToolbar>
+            <FilterBar
+              fields={EVENTO_FILTER_FIELDS}
+              value={state.values}
+              onChange={state.setValues}
+              className="min-w-0 flex-1"
+            />
+          </ListToolbar>
+        }
+      >
+        <EventosGrid state={state} />
+      </ListPanel>
     </>
   );
 }
