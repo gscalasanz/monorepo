@@ -24,15 +24,20 @@ export function LoginHero() {
           <p className="text-[22px] leading-7 font-semibold tracking-[-0.02em] md:text-[26px] md:leading-8">
             {C.HERO_TITLE}
           </p>
-          <p className="text-sm text-sidebar-ink/80">{C.HERO_TAGLINE}</p>
+          <p className="text-sm text-sidebar-ink/90">{C.HERO_TAGLINE}</p>
         </div>
       </div>
       <div className="hidden max-w-md flex-col gap-5 md:flex">
-        <p className="text-[15px] leading-6 text-sidebar-ink/85">{C.HERO_DESCRIPTION}</p>
+        <p className="text-[15px] leading-6 text-sidebar-ink">
+          {C.HERO_DESCRIPTION}
+        </p>
         <ul className="flex flex-col gap-2.5">
           {C.HERO_FEATURES.map((feature) => (
             <li key={feature} className="flex items-center gap-2.5 text-sm">
-              <Check className="size-4 shrink-0 text-sidebar-ink/70" aria-hidden />
+              <Check
+                className="size-4 shrink-0 text-sidebar-ink/80"
+                aria-hidden
+              />
               {feature}
             </li>
           ))}

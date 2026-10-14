@@ -124,7 +124,7 @@ Leyenda: ✅ hecha · 🟦 con mockup, pendiente · ⬜ sin mockup (propuesta en
 | `/personas/educadores/:id`, `/personas/personas-externas/:id` | ✅ | Educador: misma ficha que protagonista (sin chip de cargo repetido). Externa: mismo encabezado (`PersonaHeaderCard`) con Editar + ⋯ (Eliminar) y panel «Datos de contacto» |
 | Formularios de persona (`crear`, `editar`) | ✅ | §7.7: a todo el ancho en dos tarjetas (datos | documentación · acceso · notas) con `FormActions` sticky |
 | `/configuracion` | ✅ | §7.11: 880px con índice lateral (Perfil · Seguridad · Backup · Inscripciones) desde `lg`; «Mi Perfil» solo lectura; «Seguridad» con email y contraseña en dos columnas y botones del mismo ancho a la derecha; backup como filas que descargan al tocar |
-| `/login` | ⬜ | §7.12 |
+| `/login` | ✅ | §7.12: sin cambios de estructura; copy del panel más corto (beneficios honestos: «Reportes de deudas»), más contraste en el texto del panel y en mobile el formulario arriba, sin hueco |
 | `/eventos/:id/reporte` (público) | ✅ | Ya usa paneles, `KpiStrip` y tablas; sin cambios |
 
 ## 7. Propuestas para las pantallas sin mockup

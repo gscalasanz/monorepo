@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ApiError } from '@/shared/api';
@@ -108,6 +108,19 @@ describe('LoginView', () => {
     replace.mockReset();
     loginMock.mockReset();
     sessionStorage.clear();
+  });
+
+  it('panel institucional con copy corto: una línea y cuatro beneficios breves', async () => {
+    render(<LoginView />);
+    const hero = await screen.findByRole('banner');
+    const items = within(hero).getAllByRole('listitem');
+    expect(items).toHaveLength(4);
+    items.forEach((item) =>
+      expect(item.textContent?.length ?? 0).toBeLessThanOrEqual(32),
+    );
+    expect(
+      within(hero).getByText(/finanzas del grupo/).textContent?.length ?? 0,
+    ).toBeLessThanOrEqual(80);
   });
 
   it('valida antes de enviar', async () => {

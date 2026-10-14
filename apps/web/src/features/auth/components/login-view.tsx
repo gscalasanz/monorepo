@@ -13,7 +13,10 @@ export function LoginView() {
   const { status } = useRedirectIfAuthenticated();
   if (status !== 'allowed') {
     return (
-      <div role="status" className="flex min-h-dvh items-center justify-center bg-canvas">
+      <div
+        role="status"
+        className="flex min-h-dvh items-center justify-center bg-canvas"
+      >
         <Loader2 className="size-6 animate-spin text-ink-muted" aria-hidden />
       </div>
     );
@@ -21,7 +24,7 @@ export function LoginView() {
   return (
     <div className="grid min-h-dvh grid-rows-[auto_1fr] bg-canvas md:grid-rows-1 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <LoginHero />
-      <main className="relative flex flex-col items-center justify-center px-4 py-10 md:px-10">
+      <main className="relative flex flex-col items-center justify-start px-4 pt-16 pb-10 md:justify-center md:px-10 md:py-10">
         <ThemeToggle className="absolute top-3 right-3 text-ink-muted hover:bg-recessed hover:text-ink" />
         <div className="w-full max-w-[400px] rounded-xl border border-border bg-surface p-6 shadow-xs md:p-8">
           <h1 className="text-[22px] leading-7 font-semibold tracking-[-0.022em] text-ink">

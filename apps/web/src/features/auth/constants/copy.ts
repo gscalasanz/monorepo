@@ -3,12 +3,12 @@ export const AUTH_FEATURE_COPY = {
   HERO_TITLE: 'Scout Finanzas',
   HERO_TAGLINE: 'Sistema de Gestión Financiera',
   HERO_DESCRIPTION:
-    'Administra las finanzas de tu grupo scout de manera simple y transparente. Gestiona inscripciones, campamentos, eventos y movimientos en un solo lugar.',
+    'Las finanzas del grupo, simples y transparentes, en un solo lugar.',
   HERO_FEATURES: [
-    'Control de cajas y fondos por rama',
-    'Seguimiento de inscripciones Scout Argentina',
-    'Gestión de pagos y movimientos',
-    'Reportes financieros detallados',
+    'Cajas y fondos por rama',
+    'Inscripciones y campamentos',
+    'Pagos y movimientos',
+    'Reportes de deudas',
   ],
   FOOTER: ['Scouts de Argentina', 'Grupo Scout Santa Fe'],
   FORM_TITLE: 'Iniciar Sesión',
