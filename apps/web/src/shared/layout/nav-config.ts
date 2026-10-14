@@ -70,10 +70,9 @@ export const NEW_MOVIMIENTO_HREF = `${APP_ROUTES.MOVIMIENTOS}/nuevo`;
 
 export interface PageMeta {
   readonly title: string;
-  readonly subtitle: string;
 }
 
-/** Título/subtítulo por sección (prefijo de ruta), igual que Angular. */
+/** Título por sección (prefijo de ruta): lo usa la barra superior mobile. */
 export const PAGE_META: Readonly<Record<string, PageMeta>> = {
   [APP_ROUTES.DASHBOARD]: PAGES.DASHBOARD,
   [APP_ROUTES.PERSONAS]: PAGES.PERSONAS,

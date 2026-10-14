@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 
 import { AppShell, PageHeader, isActivePath, isFormRoute, pageMetaFor } from '@/shared/layout';
 
@@ -35,6 +35,22 @@ describe('AppShell', () => {
     expect(active.some((link) => link.textContent?.includes('Movimientos'))).toBe(true);
     expect(screen.queryByRole('link', { name: /Reportes/ })).not.toBeInTheDocument();
     expect(screen.getByText('contenido')).toBeInTheDocument();
+  });
+
+  it('el contenido ocupa todo el ancho: sin tope de ancho máximo', () => {
+    render(<AppShell>contenido</AppShell>);
+    expect(screen.getByRole('main').className).not.toMatch(/max-w-/);
+  });
+
+  it('no repite en el shell el subtítulo que ya muestra cada página', () => {
+    render(<AppShell>contenido</AppShell>);
+    expect(screen.queryByText('Visualiza y gestiona los movimientos financieros')).not.toBeInTheDocument();
+  });
+
+  it('el cambio de tema vive en la sidebar', () => {
+    render(<AppShell>contenido</AppShell>);
+    const sidebar = screen.getByRole('complementary');
+    expect(within(sidebar).getByRole('button', { name: /Cambiar a tema/ })).toBeInTheDocument();
   });
 
   it('en rutas de formulario no muestra el bottom-nav', () => {

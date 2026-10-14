@@ -25,6 +25,8 @@ export const DATE_FORMATS = {
   dateTimeCompact: 'dd/MM/yyyy HH:mm',
   /** Badge de fecha: mes abreviado → `mar` */
   monthShort: 'MMM',
+  /** Nombre del mes en minúscula → `septiembre` */
+  monthLong: 'LLLL',
   /** Badge de fecha: día del mes → `13` */
   dayOfMonth: 'd',
   /** `date:'d MMM'` → `13 mar` */

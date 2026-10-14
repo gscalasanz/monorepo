@@ -1,6 +1,6 @@
 /** Constantes de la lista y los forms de movimientos. */
 import { pathSegment } from '@/shared/api';
-import { APP_ROUTES } from '@/shared/constants';
+import { APP_ROUTES, MOVIMIENTOS_LIST_PARAMS } from '@/shared/constants';
 import { ESTADO_PAGO, MEDIO_PAGO, TIPO_MOVIMIENTO } from '@/shared/domain';
 
 /** Paridad: `MovimientosStateService._pageSize = signal(25)`. */
@@ -16,14 +16,7 @@ export const TIPO_TAB = {
 export type TipoTab = (typeof TIPO_TAB)[keyof typeof TIPO_TAB];
 
 /** Query params de la URL que respeta la lista al cargar. */
-export const LIST_URL_PARAMS = {
-  CAJA_ID: 'cajaId',
-  TIPO_CAJA: 'tipoCaja',
-  TIPO: 'tipo',
-  CONCEPTO: 'concepto',
-  FECHA_INICIO: 'fechaInicio',
-  FECHA_FIN: 'fechaFin',
-} as const;
+export const LIST_URL_PARAMS = MOVIMIENTOS_LIST_PARAMS;
 
 /** Claves de la FilterBar. */
 export const FILTER_KEYS = {

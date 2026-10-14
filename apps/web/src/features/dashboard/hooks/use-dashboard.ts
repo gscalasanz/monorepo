@@ -3,11 +3,13 @@
 import { useMemo } from 'react';
 
 import { useAsyncData } from '@/shared/hooks';
-import { todayBsAs } from '@/shared/time';
+import { currentYearBsAs, todayBsAs } from '@/shared/time';
 import { fetchDashboardData } from '@/features/dashboard/services/dashboard-api';
+import { buildDebtors } from '@/features/dashboard/helpers/debtors';
+import { buildInscripcionesSummary } from '@/features/dashboard/helpers/inscripciones-summary';
 import {
   buildFondosRama,
-  buildKpis,
+  buildTreasury,
   recentMovimientos,
   upcomingEventos,
 } from '@/features/dashboard/helpers/view-model';
@@ -20,10 +22,16 @@ export function useDashboard() {
   return useMemo(
     () => ({
       isLoading: isLoading && !data,
-      kpis: buildKpis(data?.consolidado ?? null),
+      /** `undefined` hasta que carga: el gráfico espera este total para anclar el saldo. */
+      hasConsolidado: Boolean(data?.consolidado),
+      treasury: buildTreasury(data?.consolidado ?? null),
       fondos: buildFondosRama(data?.consolidado ?? null),
       eventos: upcomingEventos(data?.eventos ?? [], todayBsAs()),
       movimientos: recentMovimientos(data?.recientes ?? []),
+      lastMovimientoAt: data?.recientes[0]?.fecha,
+      debtors: buildDebtors(data?.deudas ?? []),
+      inscripciones: buildInscripcionesSummary(data?.inscripciones ?? []),
+      inscripcionesAno: currentYearBsAs(),
     }),
     [data, isLoading],
   );

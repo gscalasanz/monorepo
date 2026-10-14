@@ -37,33 +37,26 @@ export const NAV_COPY = {
   PAGES: {
     DASHBOARD: {
       title: 'Dashboard',
-      subtitle: 'Bienvenido al Sistema de Gestión Financiera Scout',
     },
     PERSONAS: {
       title: 'Gestión de Personas',
-      subtitle: 'Administra protagonistas, educadores y personas externas',
     },
     CAJAS: {
       title: 'Gestión Financiera',
-      subtitle: 'Administra cajas, fondos de rama y cuentas personales',
     },
     MOVIMIENTOS: {
       title: 'Movimientos',
-      subtitle: 'Visualiza y gestiona los movimientos financieros',
     },
     INSCRIPCIONES: {
       title: 'Inscripciones',
-      subtitle: 'Gestión de inscripciones Scout Argentina y de grupo',
     },
-    EVENTOS: { title: 'Eventos', subtitle: 'Organiza los eventos del grupo' },
+    EVENTOS: { title: 'Eventos' },
     CAMPAMENTOS: {
       title: 'Campamentos',
-      subtitle: 'Planifica y gestiona los campamentos del grupo',
     },
-    REPORTES: { title: 'Reportes', subtitle: 'Genera y visualiza reportes del grupo' },
+    REPORTES: { title: 'Reportes' },
     CONFIGURACION: {
       title: 'Configuración',
-      subtitle: 'Configura los parámetros del sistema',
     },
   },
 } as const;

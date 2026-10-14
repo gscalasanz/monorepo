@@ -6,3 +6,9 @@ export {
   type ReporteSeveridad,
   type ReporteVariante,
 } from './schemas';
+export {
+  personaDeudaSchema,
+  personasDeudaSchema,
+  type DocInscripcion,
+  type PersonaDeuda,
+} from './deudas';

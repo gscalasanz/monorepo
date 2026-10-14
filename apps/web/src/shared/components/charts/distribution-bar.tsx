@@ -10,6 +10,8 @@ export interface DistributionSegment {
   readonly value: number;
   /** Color CSS (token). Default: serie en orden fijo. */
   readonly color?: string;
+  /** Pantalla de esa parte: su fila de la leyenda pasa a ser un link con chevron. */
+  readonly href?: string;
 }
 
 export interface DistributionBarProps {
@@ -18,13 +20,15 @@ export interface DistributionBarProps {
   /** Conclusión para lectores; default enumera las partes. */
   readonly ariaLabel?: string;
   readonly showLegend?: boolean;
+  /** Clases extra de la leyenda (p. ej. `grid-cols-2` para 2×2). */
+  readonly legendClassName?: string;
   readonly className?: string;
 }
 
 const defaultFormat = (value: number) => formatMoney(value);
 
 /** Barra segmentada (2px de separación) + leyenda con montos alineados (DESIGN §Panel). */
-export function DistributionBar({ segments, format = defaultFormat, ariaLabel, showLegend = true, className }: DistributionBarProps) {
+export function DistributionBar({ segments, format = defaultFormat, ariaLabel, showLegend = true, legendClassName, className }: DistributionBarProps) {
   const colored = segments.map((segment, index) => ({ ...segment, color: segment.color ?? seriesColor(index) }));
   const visible = colored.filter((segment) => segment.value > 0);
   const label =
@@ -38,7 +42,7 @@ export function DistributionBar({ segments, format = defaultFormat, ariaLabel, s
         ))}
       </div>
       {showLegend ? (
-        <ChartLegend items={colored.map((segment) => ({ label: segment.label, color: segment.color, value: format(segment.value) }))} />
+        <ChartLegend className={legendClassName} items={colored.map((segment) => ({ label: segment.label, color: segment.color, value: format(segment.value), href: segment.href }))} />
       ) : null}
     </div>
   );

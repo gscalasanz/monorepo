@@ -74,11 +74,12 @@ Importar de `@/shared/components/charts`. Colores solo `var(--color-data-n)` (`S
 
 - `BarChartCard` — `{ title, ariaLabel, data: { label, values: Record<key, number> }[], series: { key, label, color? }[], orientation?: 'vertical'|'horizontal', format?, height?, action? }` (recharts; serie única o pareada con leyenda).
 - `DonutChart` — `{ data: { label, value, color? }[], ariaLabel, format? (default `formatMoney`), centerLabel?, size? }` con total al centro + leyenda con montos.
+- `ProgressTrack` — `{ value, max, color?, ariaLabel? }` pista de 4px (fondos de rama, obligaciones, desglose de deuda); decorativa sin `ariaLabel`, con él es `progressbar`. Acota 0–100 % y tolera `max` 0.
 - `Sparkline` — `{ values, color?, ariaLabel? }` SVG 96×32 (decorativa si no hay `ariaLabel`).
-- `KpiStrip` — `{ items: { id, label, value, delta?: { direction, value, comparison?, tone? }, sparkline?, sparklineColor? }[], ariaLabel? }`: un panel, celdas con hairlines. `KpiDelta` suelto.
+- `KpiStrip` — `{ items: { id, label, value, delta?: { direction, value, comparison?, tone? }, sparkline?, sparklineColor?, footer?, href? }[], ariaLabel? }`: un panel, celdas con hairlines (`footer` = contenido bajo la cifra, p. ej. barra apilada; `href` = la celda entera navega, con chevron). `KpiDelta` suelto.
 - `StatCard` — `{ icon, title, value, variant?, format?: 'number'|'currency' }` (paridad `stat-card`).
-- `DistributionBar` — `{ segments: { label, value, color? }[], format?, ariaLabel?, showLegend? }` barra segmentada 2px + leyenda.
-- `ChartLegend`, `ChartTooltip` — piezas reutilizables para gráficos propios.
+- `DistributionBar` — `{ segments: { label, value, color?, href? }[], format?, ariaLabel?, showLegend?, legendClassName? }` barra segmentada 2px + leyenda.
+- `ChartLegend`, `ChartTooltip` — piezas reutilizables para gráficos propios. `LegendItem.href?`: la fila entera pasa a ser un link con chevron (los `href` de `DistributionBar` llegan acá).
 
 ## Feedback — `shared/components/feedback/`
 
@@ -123,6 +124,10 @@ Cableado a11y automático (label↔control, `aria-invalid`, `aria-describedby` a
 - `FormActions` — `{ onCancel?, onSave?, saveLabel?, cancelLabel?, saving?, saveDisabled?, form?, extra? }`: barra fija abajo en mobile, estática desde `md`. Sin `onSave` el botón es `type="submit"`.
 - Piezas: `InputControl` (input de marca con `prefix`/`suffix`/`size`), `FieldMessage`, `FieldLabelText`, `ControlStatusIcon`, `ChoiceRow`, `RadioCard`, `DayToggle`, `PasswordToggle`, `CONTROL_SURFACE`/`CONTROL_SIZE`.
 
+## `NavChevron` — `shared/components/ui/nav-chevron.tsx`
+
+`{ className? }`: chevron decorativo (`aria-hidden`) que indica "esto navega". Se desplaza y oscurece con `group-hover:` (el link padre lleva `group`). Lo usan el `action` de `Panel`, `KpiStrip`, `ChartLegend` y las filas navegables del dashboard.
+
 ## `Panel` — `shared/components/ui/panel.tsx`
 
 Panel de contenido con header (título + `meta` + link `action` o `headerExtra`). `flush` quita el
@@ -151,6 +156,12 @@ Piezas de dinero que comparten campamentos y eventos (port de los componentes co
   - `toIngresoDto`.
 - Schemas: `gastoFormSchema` e `ingresoFormSchema`, más las listas de opciones de medio y estado de pago.
 - `FormDialogShell({ …, footerExtra?, submitDisabled? })` + `useDialogSubmit`: el armazón de diálogo de formulario que usan los diálogos de gasto e ingreso. Muestra el error inline y no se cierra mientras guarda. Lo reutilizan los diálogos de pago y bonificación de inscripciones y campamentos.
+
+### `ActionsMenu` — `shared/components/data/actions-menu.tsx`
+- `{ label, items: { key, label, href, icon? }[], variant?: 'primary' | 'secondary', className? }`: botón (`primary` = CTA de la vista) con etiqueta + chevron que abre un menú de **links reales** (Base UI Menu, `render={<Link/>}`). Para accesos directos a rutas; para acciones por fila usar `RowActionsMenu`.
+
+### `InitialsAvatar` — `shared/components/data/initials-avatar.tsx`
+- `{ name, size?: 'sm' | 'lg', className? }`: círculo con iniciales (`initialsOf`), decorativo (`aria-hidden`). `sm` = 32px sobre `recessed` (listas densas); `lg` = 56px tono de marca (cabeceras).
 
 ### `RowActionsMenu` — `shared/components/data/row-actions-menu.tsx`
 

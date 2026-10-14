@@ -86,6 +86,15 @@ describe('list-params', () => {
     });
   });
 
+  it('respeta estadoPago de la URL (los links de pendientes del dashboard)', () => {
+    const state = listStateFromParams(params('tipo=egreso&estadoPago=pendiente_reembolso'));
+    expect(listQuery(state)).toMatchObject({ tipo: 'egreso', estadoPago: 'pendiente_reembolso' });
+  });
+
+  it('descarta un estadoPago inválido de la URL', () => {
+    expect(listStateFromParams(params('estadoPago=otro')).filters).toEqual({});
+  });
+
   it('descarta valores inválidos de la URL', () => {
     const state = listStateFromParams(
       params(

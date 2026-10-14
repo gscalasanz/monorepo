@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
+import { NavChevron } from '@/shared/components/ui/nav-chevron';
 
 import { KpiDelta, type KpiDeltaValue } from '@/shared/components/charts/kpi-delta';
 import { Sparkline } from '@/shared/components/charts/sparkline';
@@ -14,6 +16,10 @@ export interface KpiItem {
   readonly sparkline?: readonly number[];
   /** Color de la sparkline (variable CSS de token). */
   readonly sparklineColor?: string;
+  /** Contenido extra bajo la cifra (p. ej. barra apilada con leyenda). */
+  readonly footer?: ReactNode;
+  /** Si está, la celda entera navega ahí (link con chevron en la etiqueta). */
+  readonly href?: string;
 }
 
 export interface KpiStripProps {
@@ -32,10 +38,25 @@ const COLUMN_CLASSES: Readonly<Record<number, string>> = {
   6: 'sm:grid-cols-2 md:grid-cols-3',
 };
 
+const LINKED_CELL = 'group relative transition-colors hover:bg-recessed has-[a:focus-visible]:outline-2 has-[a:focus-visible]:-outline-offset-2 has-[a:focus-visible]:outline-focus';
+
+/** Etiqueta; con `href` es un link "estirado" que cubre toda la celda. */
+function KpiLabel({ item }: { readonly item: KpiItem }) {
+  if (!item.href) return <dt className="text-[13px] leading-[18px] text-ink-muted">{item.label}</dt>;
+  return (
+    <dt className="text-[13px] leading-[18px] text-ink-muted">
+      <Link href={item.href} className="inline-flex items-center gap-1 outline-none after:absolute after:inset-0 group-hover:text-ink">
+        {item.label}
+        <NavChevron />
+      </Link>
+    </dt>
+  );
+}
+
 function KpiCell({ item }: { readonly item: KpiItem }) {
   return (
-    <div className="grid min-w-0 content-start gap-1.5 bg-surface px-4 py-4 md:px-[18px]">
-      <dt className="text-[13px] leading-[18px] text-ink-muted">{item.label}</dt>
+    <div className={cn('grid min-w-0 content-start gap-1.5 bg-surface px-4 py-4 md:px-[18px]', item.href && LINKED_CELL)}>
+      <KpiLabel item={item} />
       <dd className="flex items-end justify-between gap-3">
         <div className="grid min-w-0 gap-1.5">
           <span className="text-2xl leading-[30px] font-semibold tracking-[-0.025em] whitespace-nowrap text-ink tabular-nums">
@@ -45,6 +66,7 @@ function KpiCell({ item }: { readonly item: KpiItem }) {
         </div>
         {item.sparkline ? <Sparkline values={item.sparkline} color={item.sparklineColor} /> : null}
       </dd>
+      {item.footer ? <dd className="min-w-0">{item.footer}</dd> : null}
     </div>
   );
 }

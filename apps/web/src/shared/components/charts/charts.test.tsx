@@ -56,6 +56,51 @@ describe('<KpiStrip>', () => {
   });
 });
 
+describe('navegación en métricas', () => {
+  it('KpiStrip: una métrica con href es un link con el nombre de la métrica; sin href no lo es', () => {
+    render(
+      <KpiStrip
+        items={[
+          { id: 'a', label: 'Deuda a cobrar', value: '1', href: '/reportes/deudas' },
+          { id: 'b', label: 'Otra', value: '2' },
+        ]}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'Deuda a cobrar' })).toHaveAttribute('href', '/reportes/deudas');
+    expect(screen.queryByRole('link', { name: 'Otra' })).not.toBeInTheDocument();
+  });
+
+  it('DistributionBar: los tramos con href hacen links en la leyenda (con monto en el nombre)', () => {
+    render(
+      <DistributionBar
+        format={String}
+        segments={[
+          { label: 'Caja de Grupo', value: 10, href: '/cajas?tab=grupo' },
+          { label: 'Fondos de Rama', value: 5, href: '/cajas?tab=rama' },
+        ]}
+      />,
+    );
+    expect(screen.getByRole('link', { name: /Caja de Grupo/ })).toHaveAttribute('href', '/cajas?tab=grupo');
+    expect(screen.getByRole('link', { name: /Fondos de Rama/ })).toHaveAttribute('href', '/cajas?tab=rama');
+  });
+
+  it('DistributionBar sin href mantiene la leyenda como texto', () => {
+    render(<DistributionBar segments={[{ label: 'A', value: 1 }]} />);
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+});
+
+describe('<KpiStrip> footer', () => {
+  it('renderiza el contenido extra de la celda (p. ej. barra apilada)', () => {
+    render(
+      <KpiStrip
+        items={[{ id: 'a', label: 'Inscripciones', value: '112', footer: <p>de 148 al día</p> }]}
+      />,
+    );
+    expect(screen.getByText('de 148 al día')).toBeInTheDocument();
+  });
+});
+
 describe('gráficos accesibles (role="img" + conclusión)', () => {
   it('BarChartCard', () => {
     render(

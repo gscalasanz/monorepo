@@ -71,6 +71,7 @@ function validTipoCaja(value: string | null): string | undefined {
 
 function initialFilters(params: SearchParamsReader): FilterValues {
   const concepto = params.get(P.CONCEPTO);
+  const estadoPago = params.get(P.ESTADO_PAGO);
   const from = validDate(params.get(P.FECHA_INICIO));
   const to = validDate(params.get(P.FECHA_FIN));
   const fecha: DateRangeValue | undefined =
@@ -79,11 +80,14 @@ function initialFilters(params: SearchParamsReader): FilterValues {
     ...(concepto && isConcepto(concepto)
       ? { [FILTER_KEYS.CONCEPTO]: concepto }
       : {}),
+    ...(estadoPago && isEstadoPago(estadoPago)
+      ? { [FILTER_KEYS.ESTADO_PAGO]: estadoPago }
+      : {}),
     ...(fecha ? { [FILTER_KEYS.FECHA]: fecha } : {}),
   };
 }
 
-/** Estado inicial a partir de `cajaId`, `tipoCaja`, `tipo`, `concepto`, `fechaInicio`, `fechaFin`. */
+/** Estado inicial a partir de `cajaId`, `tipoCaja`, `tipo`, `concepto`, `estadoPago`, `fechaInicio`, `fechaFin`. */
 export function listStateFromParams(
   params: SearchParamsReader,
 ): MovimientosListState {
