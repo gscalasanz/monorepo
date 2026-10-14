@@ -52,3 +52,15 @@ export const MOVIMIENTO_ROUTES = {
   edit: (id: string): string =>
     `${APP_ROUTES.MOVIMIENTOS}/${pathSegment(id)}/editar`,
 } as const;
+
+/** Anchos (px) de las columnas de la tabla: el Concepto lleva el espacio de sobra. */
+export const COLUMN_SIZE = {
+  fecha: 80,
+  concepto: 300,
+  caja: 150,
+  medio: 120,
+  estado: 125,
+  responsable: 170,
+  monto: 115,
+  acciones: 48,
+} as const;

@@ -1,8 +1,8 @@
 'use client';
 
 import { DirectionTile, Money } from '@/shared/components/data';
-import type { Movimiento } from '@/shared/domain';
-import { formatDate } from '@/shared/time';
+import { ESTADO_PAGO, type Movimiento } from '@/shared/domain';
+import { DATE_FORMATS, formatDate } from '@/shared/time';
 import { EstadoPagoBadge } from '@/shared/components/finanzas';
 import { MOVIMIENTOS_COPY as C } from '@/features/movimientos/constants/copy';
 import { MONEY_DECIMALS } from '@/features/movimientos/constants/movimientos';
@@ -10,7 +10,6 @@ import {
   conceptoLabel,
   toCardData,
   isIngreso,
-  responsableText,
 } from '@/features/movimientos/helpers/view-model';
 import { MovimientoRowActions } from '@/features/movimientos/components/movimiento-row-actions';
 
@@ -20,13 +19,13 @@ interface MovimientoMobileRowProps {
 }
 
 function detailOf(m: Movimiento): string {
-  const parts = [m.descripcion, formatDate(m.fecha), responsableText(m)];
+  const parts = [formatDate(m.fecha, DATE_FORMATS.dayMonthPadded), m.descripcion];
   return parts
     .filter((part) => part && part !== C.EMPTY_CELL)
     .join(C.DETAIL_SEPARATOR);
 }
 
-/** Fila de la lista mobile (DESIGN §Tabla densa): concepto + detalle, monto y estado, acciones. */
+/** Fila mobile del mockup: concepto + «fecha · descripción», monto; el estado solo si no está pagado. */
 export function MovimientoMobileRow({
   movimiento,
   onDelete,
@@ -50,9 +49,15 @@ export function MovimientoMobileRow({
           decimals={MONEY_DECIMALS}
           className="tabular-nums"
         />
-        <EstadoPagoBadge movimiento={toCardData(movimiento)} />
+        {movimiento.estadoPago !== ESTADO_PAGO.PAGADO ? (
+          <EstadoPagoBadge movimiento={toCardData(movimiento)} />
+        ) : null}
       </div>
-      <MovimientoRowActions id={movimiento.id} onDelete={onDelete} />
+      <MovimientoRowActions
+        id={movimiento.id}
+        label={conceptoLabel(movimiento)}
+        onDelete={onDelete}
+      />
     </div>
   );
 }

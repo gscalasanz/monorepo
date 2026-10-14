@@ -1,27 +1,24 @@
 'use client';
 
 import {
-  DirectionTile,
   MONEY_CELL_CLASS,
   Money,
   type AppColumnDef,
 } from '@/shared/components/data';
 import type { Movimiento } from '@/shared/domain';
-import { formatDate } from '@/shared/time';
+import { DATE_FORMATS, formatDate } from '@/shared/time';
 import { EstadoPagoBadge } from '@/shared/components/finanzas';
 import { MOVIMIENTOS_COPY as C } from '@/features/movimientos/constants/copy';
-import { MONEY_DECIMALS } from '@/features/movimientos/constants/movimientos';
+import { COLUMN_SIZE, MONEY_DECIMALS } from '@/features/movimientos/constants/movimientos';
 import {
   cajaText,
-  comprobanteText,
   conceptoLabel,
-  descripcionText,
   toCardData,
   isIngreso,
   medioPagoLabel,
   responsableText,
-  tipoLabel,
 } from '@/features/movimientos/helpers/view-model';
+import { ConceptoCell } from '@/features/movimientos/components/concepto-cell';
 import { MovimientoRowActions } from '@/features/movimientos/components/movimiento-row-actions';
 
 type Column = AppColumnDef<Movimiento>;
@@ -30,37 +27,29 @@ const NOWRAP = { cellClassName: 'whitespace-nowrap' } as const;
 
 const fechaColumn: Column = {
   id: 'fecha',
+  size: COLUMN_SIZE.fecha,
   header: C.COL_FECHA,
   meta: NOWRAP,
   cell: ({ row }) => (
-    <span className="tabular-nums">{formatDate(row.original.fecha)}</span>
+    <span
+      className="tabular-nums"
+      title={formatDate(row.original.fecha)}
+    >
+      {formatDate(row.original.fecha, DATE_FORMATS.dayMonthPadded)}
+    </span>
   ),
-};
-
-const tipoColumn: Column = {
-  id: 'tipo',
-  header: C.COL_TIPO,
-  cell: ({ row }) => tipoLabel(row.original),
 };
 
 const conceptoColumn: Column = {
   id: 'concepto',
   header: C.COL_CONCEPTO,
-  cell: ({ row }) => (
-    <span className="flex items-center gap-2.5">
-      <DirectionTile
-        direction={isIngreso(row.original) ? 'in' : 'out'}
-        decorative
-      />
-      <span className="font-medium text-ink">
-        {conceptoLabel(row.original)}
-      </span>
-    </span>
-  ),
+  size: COLUMN_SIZE.concepto,
+  cell: ({ row }) => <ConceptoCell movimiento={row.original} />,
 };
 
 const montoColumn: Column = {
   id: 'monto',
+  size: COLUMN_SIZE.monto,
   header: C.COL_MONTO,
   meta: { cellClassName: MONEY_CELL_CLASS, headerClassName: MONEY_CELL_CLASS },
   cell: ({ row }) => (
@@ -74,6 +63,7 @@ const montoColumn: Column = {
 
 const estadoColumn: Column = {
   id: 'estadoPago',
+  size: COLUMN_SIZE.estado,
   header: C.COL_ESTADO,
   meta: NOWRAP,
   cell: ({ row }) => <EstadoPagoBadge movimiento={toCardData(row.original)} />,
@@ -81,39 +71,42 @@ const estadoColumn: Column = {
 
 interface TextColumnSpec {
   readonly id: string;
+  readonly size: number;
   readonly header: string;
   readonly text: (m: Movimiento) => string;
 }
 
-const textColumn = ({ id, header, text }: TextColumnSpec): Column => ({
+const textColumn = ({ id, size, header, text }: TextColumnSpec): Column => ({
   id,
+  size,
   header,
   cell: ({ row }) => text(row.original),
 });
 
-/** Columnas (paridad): Tipo solo en el tab "Todos". */
+/** Columnas del mockup Insignia: Tipo y Descripción viven dentro del Concepto. */
 export function movimientoColumns(params: {
-  readonly showTipo: boolean;
   readonly onDelete: (id: string) => void;
 }): readonly Column[] {
   const actions: Column = {
     id: 'actions',
-    header: C.COL_ACCIONES,
+    header: () => <span className="sr-only">{C.COL_ACCIONES}</span>,
+    size: COLUMN_SIZE.acciones,
     cell: ({ row }) => (
-      <MovimientoRowActions id={row.original.id} onDelete={params.onDelete} />
+      <MovimientoRowActions
+        id={row.original.id}
+        label={conceptoLabel(row.original)}
+        onDelete={params.onDelete}
+      />
     ),
   };
   return [
     fechaColumn,
-    ...(params.showTipo ? [tipoColumn] : []),
     conceptoColumn,
-    textColumn({ id: 'descripcion', header: C.COL_DESCRIPCION, text: descripcionText }),
-    montoColumn,
-    textColumn({ id: 'medioPago', header: C.COL_MEDIO, text: medioPagoLabel }),
+    textColumn({ id: 'caja', size: COLUMN_SIZE.caja, header: C.COL_CAJA, text: cajaText }),
+    textColumn({ id: 'medioPago', size: COLUMN_SIZE.medio, header: C.COL_MEDIO, text: medioPagoLabel }),
     estadoColumn,
-    textColumn({ id: 'caja', header: C.COL_CAJA, text: cajaText }),
-    textColumn({ id: 'responsable', header: C.COL_RESPONSABLE, text: responsableText }),
-    textColumn({ id: 'comprobante', header: C.COL_COMPROBANTE, text: comprobanteText }),
+    textColumn({ id: 'responsable', size: COLUMN_SIZE.responsable, header: C.COL_RESPONSABLE, text: responsableText }),
+    montoColumn,
     actions,
   ];
 }

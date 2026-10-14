@@ -22,9 +22,10 @@ export interface FormActionsProps {
 }
 
 /**
- * Pie de formulario Cancelar / Guardar. En mobile es una barra fija abajo
- * (DESIGN.md: reemplaza al bottom-nav) con un espaciador para no tapar el
- * contenido; desde `md` queda estático alineado a la derecha.
+ * Pie de formulario Cancelar / Guardar. Es `sticky` abajo (en mobile a todo el ancho y
+ * por encima del bottom-nav, DESIGN.md: lo reemplaza): se pega al borde mientras el
+ * formulario es más alto que la pantalla y, al llegar al final, queda en el flujo de la
+ * página, así que nunca depende del alto del viewport. Desde `md` va alineado a la derecha.
  */
 export function FormActions({
   onCancel,
@@ -38,38 +39,35 @@ export function FormActions({
   className,
 }: FormActionsProps) {
   return (
-    <>
-      <div aria-hidden className="h-20 md:hidden" />
-      <div
-        className={cn(
-          'fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-border bg-surface px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]',
-          'md:static md:z-auto md:justify-end md:border-t md:bg-transparent md:px-0 md:pt-4 md:pb-0',
-          className,
-        )}
-      >
-        {extra && <div className="mr-auto flex gap-2">{extra}</div>}
-        <div className="flex flex-1 gap-2 md:flex-none md:justify-end [&>*]:flex-1 md:[&>*]:flex-none">
-          {onCancel && (
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onCancel}
-              disabled={saving}
-            >
-              {cancelLabel}
-            </Button>
-          )}
+    <div
+      className={cn(
+        'sticky bottom-0 z-40 -mx-4 flex items-center gap-2 border-t border-border bg-surface px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]',
+        'md:z-10 md:mx-0 md:justify-end md:bg-canvas md:px-0 md:pt-4 md:pb-4',
+        className,
+      )}
+    >
+      {extra && <div className="mr-auto flex gap-2">{extra}</div>}
+      <div className="flex flex-1 gap-2 md:flex-none md:justify-end [&>*]:flex-1 md:[&>*]:flex-none">
+        {onCancel && (
           <Button
-            type={onSave ? 'button' : 'submit'}
-            form={form}
-            onClick={onSave}
-            loading={saving}
-            disabled={saveDisabled}
+            type="button"
+            variant="secondary"
+            onClick={onCancel}
+            disabled={saving}
           >
-            {saveLabel}
+            {cancelLabel}
           </Button>
-        </div>
+        )}
+        <Button
+          type={onSave ? 'button' : 'submit'}
+          form={form}
+          onClick={onSave}
+          loading={saving}
+          disabled={saveDisabled}
+        >
+          {saveLabel}
+        </Button>
       </div>
-    </>
+    </div>
   );
 }

@@ -31,6 +31,8 @@ export const DATE_FORMATS = {
   dayOfMonth: 'd',
   /** `date:'d MMM'` → `13 mar` */
   dayMonth: 'd MMM',
+  /** Fecha corta con día de 2 dígitos → `06 oct` */
+  dayMonthPadded: 'dd MMM',
   /** `date:'d MMM yyyy'` / `mediumDate` → `13 mar 2026` */
   dayMonthYear: 'd MMM yyyy',
   /** `date:'d/M'` → `13/3` */
