@@ -29,9 +29,9 @@ export const CONFIG_COPY = {
 /** Índice lateral: anclas de cada sección (el perfil y la seguridad los aporta el feature auth). */
 export const CONFIG_SECTIONS = [
   { id: 'perfil', label: 'Perfil' },
-  { id: 'seguridad', label: 'Seguridad' },
-  { id: 'backup', label: 'Backup' },
   { id: 'inscripciones', label: 'Inscripciones' },
+  { id: 'backup', label: 'Backup' },
+  { id: 'seguridad', label: 'Seguridad' },
 ] as const;
 
 export type ConfigSectionId = (typeof CONFIG_SECTIONS)[number]['id'];

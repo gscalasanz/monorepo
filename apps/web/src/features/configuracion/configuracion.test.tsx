@@ -102,6 +102,24 @@ describe('ConfiguracionView', () => {
     expect(document.getElementById('seguridad')).toHaveTextContent('seguridad');
   });
 
+  it('orden: Perfil, Inscripciones, Backup y Seguridad al final (índice y secciones)', () => {
+    const { container } = render(
+      <ConfiguracionView profileSlot={null} securitySlot={null} />,
+    );
+    const index = screen.getByRole('navigation', {
+      name: 'Secciones de configuración',
+    });
+    const order = ['Perfil', 'Inscripciones', 'Backup', 'Seguridad'];
+    expect(
+      within(index)
+        .getAllByRole('link')
+        .map((link) => link.textContent),
+    ).toEqual(order);
+    expect(
+      Array.from(container.querySelectorAll('.scroll-mt-6')).map((el) => el.id),
+    ).toEqual(['perfil', 'inscripciones', 'backup', 'seguridad']);
+  });
+
   it('error de descarga muestra el mensaje de Angular', async () => {
     fetchXlsxExport.mockRejectedValue(new Error('500'));
     render(<ConfiguracionView profileSlot={null} securitySlot={null} />);
