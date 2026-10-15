@@ -1,5 +1,5 @@
 /**
- * Base URL de la API desde `NEXT_PUBLIC_API_URL`, validada al cargar el módulo
+ * Base URL de la API desde `API_URL`, validada al cargar el módulo
  * (fail fast: sin URL válida la app no arranca con requests a `undefined/...`).
  * Next inlinea `process.env.NEXT_PUBLIC_*` en build: el acceso debe ser literal.
  */
@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 const TRAILING_SLASHES = /\/+$/;
 const ENV_ERROR =
-  'NEXT_PUBLIC_API_URL inválida o ausente: debe ser una URL http(s) (ver .env.example).';
+  'API_URL inválida o ausente: debe ser una URL http(s) (ver .env.example).';
 
 const apiUrlSchema = z
   .string()
@@ -22,4 +22,4 @@ export function parseApiBaseUrl(raw: unknown): string {
   return result.data.replace(TRAILING_SLASHES, '');
 }
 
-export const API_BASE_URL = parseApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+export const API_BASE_URL = parseApiBaseUrl(process.env.API_URL);

@@ -28,7 +28,7 @@ pnpm dev                     # http://localhost:4201 (puerto fijo: es el origin 
 
 | Variable | Uso |
 | --- | --- |
-| `NEXT_PUBLIC_API_URL` | Base de la API. Local: `http://localhost:3001/api/v1`. **Nunca producción desde dev/e2e.** |
+| `API_URL` | Base de la API. Local: `http://localhost:3001/api/v1`. **Nunca producción desde dev/e2e.** |
 | `E2E_EMAIL` · `E2E_PASSWORD` | Credenciales para los e2e (solo backend local; no se commitean). |
 
 ## Calidad
@@ -45,7 +45,7 @@ y commitlint valida los mensajes (conventional commits).
 
 `vercel.json` configura Vercel para Next.js con pnpm y cabeceras de seguridad. Antes de publicar:
 
-1. Definir `NEXT_PUBLIC_API_URL` con la URL del backend productivo en el proyecto de Vercel.
+1. Definir `API_URL` con la URL del backend productivo en el proyecto de Vercel.
 2. El backend acepta un único origin CORS (`FRONTEND_URL`, default `http://localhost:4201`): apuntarlo
    al dominio del frontend React es configuración del deploy del backend, fuera de esta migración.
 3. Las sesiones (tokens en `localStorage`) y la config de inscripción (`scout_inscripcion_config`) usan

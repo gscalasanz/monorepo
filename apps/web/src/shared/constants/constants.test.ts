@@ -23,14 +23,14 @@ describe('rutas de la app', () => {
   });
 });
 
-describe('carga sin NEXT_PUBLIC_API_URL', () => {
+describe('carga sin API_URL', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.resetModules();
   });
 
   it('las constantes de rutas no dependen de la config de la API', async () => {
-    vi.stubEnv('NEXT_PUBLIC_API_URL', '');
+    vi.stubEnv('API_URL', '');
     vi.resetModules();
     const constants = await import('@/shared/constants');
     expect(constants.APP_ROUTES.eventoReportePublico('e 1')).toBe(

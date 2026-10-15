@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
 
-// Credenciales E2E_EMAIL/E2E_PASSWORD y NEXT_PUBLIC_API_URL viven en .env.local.
+// Credenciales E2E_EMAIL/E2E_PASSWORD y API_URL viven en .env.local.
 const ENV_FILE = '.env.local';
 if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
 

@@ -111,7 +111,7 @@ El detalle está en [`MIGRATION.md §Bloqueos`](../MIGRATION.md#bloqueos). En re
   queda para el primer deploy. La accesibilidad sí se auditó con axe, que es el mismo motor que usa
   Lighthouse.
 - **Deploy:**
-  - Definir `NEXT_PUBLIC_API_URL` en Vercel.
+  - Definir `API_URL` en Vercel.
   - Apuntar el `FRONTEND_URL` (CORS) del backend al dominio nuevo.
   - Como `localStorage` es por origin, con el dominio nuevo los usuarios inician sesión de nuevo y
     recargan los montos de inscripción.

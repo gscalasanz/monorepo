@@ -8,7 +8,7 @@ function required(name: string): string {
 }
 
 export function e2eEnv(): { apiUrl: string; email: string; password: string } {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1';
+  const apiUrl = process.env.API_URL ?? 'http://localhost:3001/api/v1';
   if (!LOCAL_API.test(apiUrl)) {
     throw new Error(`Los e2e solo corren contra el backend local (recibido: ${apiUrl})`);
   }

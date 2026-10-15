@@ -340,7 +340,7 @@ describe('apiClient (instancia de la app)', () => {
     globalErrorStore.setState({ errors: [] });
   });
 
-  it('usa fetch global, la base de NEXT_PUBLIC_API_URL y el AuthBridge registrado', async () => {
+  it('usa fetch global, la base de API_URL y el AuthBridge registrado', async () => {
     const fake = createFakeFetch();
     vi.stubGlobal('fetch', fake.fetchFn);
     registerAuthBridge(bridgeWith({ getAccessToken: () => 'tok' }));

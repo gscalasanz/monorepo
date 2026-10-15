@@ -1,5 +1,5 @@
 /**
- * Endpoints del backend, relativos a `NEXT_PUBLIC_API_URL` (`.../api/v1`).
+ * Endpoints del backend, relativos a `API_URL` (`.../api/v1`).
  * Port de `shared/constants/api.constants.ts` + builders de las rutas con id que
  * hoy arman a mano los services de Angular (verificadas contra los controllers).
  */
