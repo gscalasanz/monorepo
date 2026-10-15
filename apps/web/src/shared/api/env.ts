@@ -1,7 +1,7 @@
 /**
  * Base URL de la API desde `API_URL`, validada al cargar el módulo
  * (fail fast: sin URL válida la app no arranca con requests a `undefined/...`).
- * Next inlinea `process.env.NEXT_PUBLIC_*` en build: el acceso debe ser literal.
+ * Next inlinea `process.env.API_URL` en build vía `env` de next.config: el acceso debe ser literal.
  */
 import { z } from 'zod';
 
