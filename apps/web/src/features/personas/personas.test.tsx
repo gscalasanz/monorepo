@@ -18,10 +18,14 @@ import {
 import { personaDashboardSchema } from '@/features/personas/models/dashboard-schema';
 
 const push = vi.fn();
-const router = { push, replace: vi.fn() };
+const replace = vi.fn();
+const router = { push, replace };
+let currentTab: string | null = null;
 vi.mock('next/navigation', () => ({
   useRouter: () => router,
   usePathname: () => '/personas',
+  useSearchParams: () =>
+    new URLSearchParams(currentTab ? { tab: currentTab } : {}),
 }));
 
 const api = {
@@ -46,6 +50,7 @@ vi.mock('@/features/personas/services/personas-api', () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  currentTab = null;
 });
 
 describe('<PersonasListView>', () => {
@@ -65,8 +70,7 @@ describe('<PersonasListView>', () => {
     );
   });
 
-  it('muestra stats, la tab Manada por defecto y cambia de tab', async () => {
-    const user = userEvent.setup();
+  it('muestra stats y la tab Manada por defecto', async () => {
     render(<PersonasListView />);
     expect(
       await screen.findByRole('link', { name: 'Juan' }),
@@ -79,22 +83,43 @@ describe('<PersonasListView>', () => {
     expect(
       screen.getByRole('columnheader', { name: 'DNI Padres' }),
     ).toBeInTheDocument();
+  });
 
-    await user.click(screen.getByRole('tab', { name: 'Educadores' }));
+  it('la tab vive en ?tab= (sobrevive al volver) y un valor desconocido cae en Manada', async () => {
+    currentTab = 'educadores';
+    const { unmount } = render(<PersonasListView />);
     expect(
       await screen.findByRole('link', { name: 'Laura' }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole('columnheader', { name: 'DNI' }),
     ).not.toBeInTheDocument();
+    unmount();
+
+    currentTab = 'cualquiera';
+    render(<PersonasListView />);
+    expect(
+      await screen.findByRole('link', { name: 'Juan' }),
+    ).toBeInTheDocument();
+  });
+
+  it('cambiar de tab escribe ?tab= en la URL', async () => {
+    const user = userEvent.setup();
+    render(<PersonasListView />);
+    await screen.findByRole('link', { name: 'Juan' });
+    await user.click(screen.getByRole('tab', { name: 'Educadores' }));
+    expect(replace).toHaveBeenCalledWith('/personas?tab=educadores', {
+      scroll: false,
+    });
   });
 
   it('externos deshabilitados solo con "Mostrar deshabilitados" (y aparece la columna Estado)', async () => {
     const user = userEvent.setup();
+    currentTab = 'externos';
     render(<PersonasListView />);
-    await screen.findByRole('link', { name: 'Juan' });
-    await user.click(screen.getByRole('tab', { name: 'Externos' }));
-    expect(screen.getByText('No se encontraron personas')).toBeInTheDocument();
+    expect(
+      await screen.findByText('No se encontraron personas'),
+    ).toBeInTheDocument();
     await user.click(
       screen.getByRole('switch', { name: 'Mostrar deshabilitados' }),
     );
@@ -106,7 +131,7 @@ describe('<PersonasListView>', () => {
     ).toBeInTheDocument();
   });
 
-  it('fila navegable: nombre y chevron a la ficha, ⋯ con acciones y cargo como sub-línea', async () => {
+  it('fila navegable: nombre y chevron a la ficha, ⋯ con acciones', async () => {
     const user = userEvent.setup();
     render(<PersonasListView />);
     expect(await screen.findByRole('link', { name: 'Juan' })).toHaveAttribute(
@@ -121,16 +146,30 @@ describe('<PersonasListView>', () => {
     ).toBeInTheDocument();
     await user.click(screen.getByText('Manada', { selector: 'td *' }));
     expect(push).toHaveBeenCalledWith('/personas/protagonistas/per-1');
-    await user.click(screen.getByRole('tab', { name: 'Educadores' }));
+  });
+
+  it('educadores: cargo como sub-línea', async () => {
+    currentTab = 'educadores';
+    render(<PersonasListView />);
     expect(await screen.findByText('Jefe de Grupo')).toBeInTheDocument();
   });
 
-  it('"Nuevo Miembro" navega al alta según la tab', async () => {
+  it('"Nuevo miembro" abre un menú con los tres altas, sin depender de la tab', async () => {
     const user = userEvent.setup();
+    currentTab = 'educadores';
     render(<PersonasListView />);
-    await screen.findByRole('link', { name: 'Juan' });
-    await user.click(screen.getByRole('button', { name: 'Nuevo Miembro' }));
-    expect(push).toHaveBeenCalledWith('/personas/protagonistas/crear');
+    await screen.findByRole('link', { name: 'Laura' });
+    await user.click(screen.getByRole('button', { name: 'Nuevo miembro' }));
+    expect(
+      await screen.findByRole('menuitem', { name: 'Protagonista' }),
+    ).toHaveAttribute('href', '/personas/protagonistas/crear');
+    expect(screen.getByRole('menuitem', { name: 'Educador' })).toHaveAttribute(
+      'href',
+      '/personas/educadores/crear',
+    );
+    expect(
+      screen.getByRole('menuitem', { name: 'Persona externa' }),
+    ).toHaveAttribute('href', '/personas/personas-externas/crear');
   });
 
   it('error de carga sin datos', async () => {

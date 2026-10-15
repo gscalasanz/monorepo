@@ -5,17 +5,14 @@ import { useMemo, useState } from 'react';
 import type { FilterValues } from '@/shared/components/data';
 import type { Persona } from '@/shared/domain';
 import { useAsyncData } from '@/shared/hooks';
-import {
-  DEFAULT_TAB,
-  SEARCH_FILTER_KEY,
-  type PersonasTab,
-} from '@/features/personas/constants/personas';
+import { SEARCH_FILTER_KEY } from '@/features/personas/constants/personas';
 import {
   buildStats,
   docKeysForTab,
   filterPersonas,
   splitByTipo,
 } from '@/features/personas/helpers/list';
+import { usePersonasTab } from '@/features/personas/hooks/use-personas-tab';
 import { fetchPersonas } from '@/features/personas/services/personas-api';
 
 const PERSONAS_KEY = 'personas';
@@ -25,13 +22,13 @@ function searchOf(filters: FilterValues): string {
   return typeof value === 'string' ? value : '';
 }
 
-/** Estado del listado: carga, tab, filtros y datos derivados (stats, filas, columnas). */
+/** Estado del listado: carga, tab (en la URL), filtros y datos derivados (stats, filas, columnas). */
 export function usePersonasList() {
   const { data, error, isLoading, setData } = useAsyncData<readonly Persona[]>({
     key: PERSONAS_KEY,
     load: fetchPersonas,
   });
-  const [tab, setTab] = useState<PersonasTab>(DEFAULT_TAB);
+  const { tab, setTab } = usePersonasTab();
   const [filters, setFilters] = useState<FilterValues>({});
   const [showDisabled, setShowDisabled] = useState(false);
 

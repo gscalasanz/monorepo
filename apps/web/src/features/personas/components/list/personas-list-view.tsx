@@ -1,37 +1,40 @@
 'use client';
 
-import { Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { GraduationCap, UserPlus, UserRound } from 'lucide-react';
 import { useId } from 'react';
 
-import { ListPanel } from '@/shared/components/data';
-import { Button } from '@/shared/components/ui/button';
+import {
+  ActionsMenu,
+  ListPanel,
+  type ActionLink,
+} from '@/shared/components/data';
 import { PERSONA_TYPE } from '@/shared/domain';
 import { PageHeader } from '@/shared/layout';
 import { PERSONAS_COPY as C } from '@/features/personas/constants/copy';
-import {
-  PERSONA_ROUTES,
-  PERSONA_TAB,
-  type PersonasTab,
-} from '@/features/personas/constants/personas';
+import { PERSONA_ROUTES } from '@/features/personas/constants/personas';
 import { usePersonaRowActions } from '@/features/personas/hooks/use-persona-row-actions';
 import { usePersonasList } from '@/features/personas/hooks/use-personas-list';
 import { PersonasStats } from '@/features/personas/components/list/personas-stats';
 import { PersonasTable } from '@/features/personas/components/list/personas-table';
 import { PersonasToolbar } from '@/features/personas/components/list/personas-toolbar';
 
-/** "Nuevo Miembro" según tab: educador, externa o protagonista (sin preselección de rama). */
-function createRouteFor(tab: PersonasTab): string {
-  if (tab === PERSONA_TAB.EDUCADORES)
-    return PERSONA_ROUTES.create(PERSONA_TYPE.EDUCADOR);
-  if (tab === PERSONA_TAB.EXTERNOS)
-    return PERSONA_ROUTES.create(PERSONA_TYPE.EXTERNA);
-  return PERSONA_ROUTES.create(PERSONA_TYPE.PROTAGONISTA);
-}
+/** Altas independientes de la tab activa: protagonista, educador o persona externa. */
+const CREATE_ITEMS: readonly ActionLink[] = [
+  {
+    tipo: PERSONA_TYPE.PROTAGONISTA,
+    label: C.NEW_PROTAGONISTA,
+    icon: UserPlus,
+  },
+  { tipo: PERSONA_TYPE.EDUCADOR, label: C.NEW_EDUCADOR, icon: GraduationCap },
+  { tipo: PERSONA_TYPE.EXTERNA, label: C.NEW_EXTERNA, icon: UserRound },
+].map(({ tipo, ...item }) => ({
+  ...item,
+  key: tipo,
+  href: PERSONA_ROUTES.create(tipo),
+}));
 
 /** `/personas`: stats, tabs por rama/educadores/externos, filtros y tabla con acciones. */
 export function PersonasListView() {
-  const router = useRouter();
   const panelId = useId();
   const list = usePersonasList();
   const actions = usePersonaRowActions(list.setData);
@@ -42,12 +45,12 @@ export function PersonasListView() {
         title={C.TITLE}
         subtitle={C.SUBTITLE}
         actions={
-          <Button
-            icon={<Plus aria-hidden className="size-4" />}
-            onClick={() => router.push(createRouteFor(list.tab))}
-          >
-            {C.NEW_MEMBER}
-          </Button>
+          <ActionsMenu
+            variant="primary"
+            label={C.NEW_MEMBER}
+            items={CREATE_ITEMS}
+            className="flex-1 justify-center md:flex-none"
+          />
         }
       />
       <PersonasStats stats={list.stats} />

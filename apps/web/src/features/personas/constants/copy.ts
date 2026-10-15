@@ -2,7 +2,10 @@
 export const PERSONAS_COPY = {
   TITLE: 'Personas',
   SUBTITLE: 'Administra protagonistas, educadores y personas externas',
-  NEW_MEMBER: 'Nuevo Miembro',
+  NEW_MEMBER: 'Nuevo miembro',
+  NEW_PROTAGONISTA: 'Protagonista',
+  NEW_EDUCADOR: 'Educador',
+  NEW_EXTERNA: 'Persona externa',
   STATS_LABEL: 'Resumen de personas',
   STAT_PROTAGONISTAS: 'Protagonistas',
   STAT_EDUCADORES: 'Educadores',
