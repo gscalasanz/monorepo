@@ -85,7 +85,7 @@ Grilla de 2 columnas; check para lo entregado (con texto solo para lectores de p
 | Brecha | Motivo |
 |---|---|
 | Buscador ⌘K, campana, «Exportar» | No existen como funcionalidad |
-| Sidebar: «Dashboard», «Gestión Financiera», «Gestión de Personas» en vez de «Inicio», «Cajas», «Personas» | Nombres que ya usa el grupo; cambiarlos es decisión de producto |
+| Sidebar: «Dashboard» en vez de «Inicio» | Nombre que ya usa el grupo. «Cajas» y «Personas» ya reemplazaron a «Gestión Financiera» y «Gestión de Personas» (a pedido) |
 | Dashboard: sin días de mora por deudor, sin nota mensual por rama, sin toggle «Ciclo», sin sparkline en «Deuda a cobrar» | El backend no devuelve esos datos |
 | Dashboard: KPI strip en una columna en mobile | Legibilidad |
 | Movimientos: sin barra de totales ni buscador de texto | `GET /movimientos` devuelve solo la lista, sin totales ni búsqueda; un neto de la página engaña |

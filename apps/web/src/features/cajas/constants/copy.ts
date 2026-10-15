@@ -1,6 +1,6 @@
 /** Copy del módulo cajas (paridad con `modules/cajas` y `TransferenciaDialog` de Angular). */
 export const CAJAS_COPY = {
-  TITLE: 'Gestión Financiera',
+  TITLE: 'Cajas',
   SUBTITLE: 'Administra cajas, fondos de rama y cuentas personales',
   TABS_LABEL: 'Secciones de cajas',
   TAB_GRUPO: 'Caja de Grupo',

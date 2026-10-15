@@ -1,6 +1,6 @@
 /** Copy del módulo personas (paridad exacta con `modules/personas` de Angular). */
 export const PERSONAS_COPY = {
-  TITLE: 'Gestión de Personas',
+  TITLE: 'Personas',
   SUBTITLE: 'Administra protagonistas, educadores y personas externas',
   NEW_MEMBER: 'Nuevo Miembro',
   STATS_LABEL: 'Resumen de personas',

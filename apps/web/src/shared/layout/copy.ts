@@ -22,8 +22,8 @@ export const NAV_COPY = {
   LABELS: {
     DASHBOARD: 'Dashboard',
     MOVIMIENTOS: 'Movimientos',
-    CAJAS: 'Gestión Financiera',
-    PERSONAS: 'Gestión de Personas',
+    CAJAS: 'Cajas',
+    PERSONAS: 'Personas',
     INSCRIPCIONES: 'Inscripciones',
     CAMPAMENTOS: 'Campamentos',
     EVENTOS: 'Eventos',
@@ -39,10 +39,10 @@ export const NAV_COPY = {
       title: 'Dashboard',
     },
     PERSONAS: {
-      title: 'Gestión de Personas',
+      title: 'Personas',
     },
     CAJAS: {
-      title: 'Gestión Financiera',
+      title: 'Cajas',
     },
     MOVIMIENTOS: {
       title: 'Movimientos',
