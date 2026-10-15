@@ -1,85 +1,24 @@
-import { TriangleAlert } from 'lucide-react';
-import type { ReactNode } from 'react';
-
-import { Money, StatusBadge } from '@/shared/components/data';
-import { REPORTES_COPY as C } from '@/features/reportes/constants/copy';
-import { DocChip } from '@/features/reportes/components/doc-chip';
-import {
-  debtCards,
-  hasDocDeuda,
-  inscripcionDocItems,
-  missingAutorizaciones,
-  personalDocItems,
-} from '@/features/reportes/helpers/deudas';
+import { cn } from '@/shared/lib/utils';
+import { DeudasMonetarias } from '@/features/reportes/components/deudas-monetarias';
+import { DocumentacionGroups } from '@/features/reportes/components/documentacion-groups';
+import { debtCards, docGroups } from '@/features/reportes/helpers/deudas';
 import type { PersonaDeuda } from '@/features/reportes/models/deudas';
 
-function Section({
-  title,
-  children,
-}: {
-  readonly title: string;
-  readonly children: ReactNode;
-}) {
-  return (
-    <section className="flex flex-col gap-2">
-      <h3 className="text-xs font-semibold text-ink-muted">{title}</h3>
-      <div className="flex flex-wrap gap-2">{children}</div>
-    </section>
-  );
-}
-
-function MonetarySection({ persona }: { readonly persona: PersonaDeuda }) {
-  const cards = debtCards(persona);
-  if (cards.length === 0) return null;
-  return (
-    <Section title={C.SECTION_MONETARIAS}>
-      {cards.map((card) => (
-        <div
-          key={`${card.label}-${card.ano}-${card.name}`}
-          className="flex min-w-28 flex-col gap-1 rounded-lg border border-border bg-surface px-3 py-2.5"
-        >
-          <span className="text-xs font-semibold text-ink">
-            {card.label} <span className="font-medium">{card.ano}</span>
-          </span>
-          <span className="max-w-36 truncate text-xs text-ink-muted">
-            {card.name}
-          </span>
-          <Money amount={card.saldo} tone="debt" className="text-sm" />
-        </div>
-      ))}
-    </Section>
-  );
-}
-
-/** Detalle expandido de una persona (en mobile también lleva los chips): deudas, autorizaciones y documentación. */
+/** Desglose de la fila: deudas de dinero (si hay) y documentación agrupada. */
 export function DeudaDetail({ persona }: { readonly persona: PersonaDeuda }) {
-  const autorizaciones = missingAutorizaciones(persona);
+  const cards = debtCards(persona);
+  const groups = docGroups(persona);
   return (
-    <div className="flex flex-col gap-4 px-4 py-3 md:pl-14">
-      <MonetarySection persona={persona} />
-      {autorizaciones.length > 0 ? (
-        <Section title={C.SECTION_AUTORIZACIONES}>
-          {autorizaciones.map((camp) => (
-            <StatusBadge
-              key={camp.campamentoId}
-              tone="warning"
-              icon={TriangleAlert}
-              label={C.AUT_CAMPAMENTO(camp.nombre, camp.ano)}
-              className="h-auto max-w-full whitespace-normal"
-            />
-          ))}
-        </Section>
+    <div
+      className={cn(
+        'grid gap-4 px-4 py-4 md:pl-14 lg:items-start',
+        cards.length > 0 ? 'lg:grid-cols-2' : 'lg:max-w-4xl',
+      )}
+    >
+      {cards.length > 0 ? (
+        <DeudasMonetarias persona={persona} cards={cards} />
       ) : null}
-      {hasDocDeuda(persona) ? (
-        <Section title={C.SECTION_DOCUMENTACION}>
-          {[
-            ...personalDocItems(persona),
-            ...persona.documentacionInscripcion.flatMap(inscripcionDocItems),
-          ].map((doc, index) => (
-            <DocChip key={`${index}-${doc.label}`} doc={doc} />
-          ))}
-        </Section>
-      ) : null}
+      <DocumentacionGroups persona={persona} groups={groups} />
     </div>
   );
 }

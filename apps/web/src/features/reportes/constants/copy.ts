@@ -21,10 +21,13 @@ export const REPORTES_COPY = {
   DOCS: (n: number): string => `${n} docs`,
   SIN_DEUDA_MONETARIA: 'Solo documentación',
   SECTION_MONETARIAS: 'Deudas monetarias',
-  SECTION_AUTORIZACIONES: 'Autorizaciones faltantes',
+  deudasDe: (nombre: string): string => `Deudas monetarias de ${nombre}`,
+  docsDe: (nombre: string): string => `Documentación de ${nombre}`,
+  TOTAL_DEUDA: 'Total adeudado',
+  PAGO_PREFIX: 'Pagó',
+  PAGO_DE: 'de',
+  SIN_FALTANTES: 'Documentación completa',
   SECTION_DOCUMENTACION: 'Documentación',
-  AUT_CAMPAMENTO: (nombre: string, ano: number): string =>
-    `Aut. ${nombre} ${ano}`,
   EXPAND: (nombre: string): string => `Ver detalle de ${nombre}`,
   DOC_OK: 'Entregado',
   DOC_FALTA: 'Falta',
@@ -39,6 +42,9 @@ export const DEBT_LABELS = {
   SCOUT: 'Scout AR',
   GRUPO: 'Grupo',
   INSCRIPCION: 'Inscripción',
+  INSCRIPCION_SCOUT: 'Inscripción Scout AR',
+  INSCRIPCION_GRUPO: 'Inscripción Grupo',
+  campamento: (nombre: string): string => `Campamento ${nombre}`,
 } as const;
 
 export const DOC_LABELS = {
@@ -51,6 +57,9 @@ export const DOC_LABELS = {
   SALIDAS: 'Salidas',
   INGRESO: 'Aut. ingreso',
   APTITUD: 'Apt. física',
+  GROUP_PERSONAL: 'Personal',
+  GROUP_AUTORIZACIONES: 'Autorizaciones de campamento',
+  groupInscripcion: (ano: number): string => `Inscripción ${ano}`,
 } as const;
 
 export const TIPO_DEUDA_LABELS = {

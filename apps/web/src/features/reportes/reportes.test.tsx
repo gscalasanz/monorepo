@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 import {
   countDocsFaltantes,
+  docGroups,
   debtCards,
   hasDocDeuda,
   personalDocItems,
@@ -52,13 +53,17 @@ const camp = (ano: number, saldo: number, autorizacionEntregada = true) => ({
   saldo,
   autorizacionEntregada,
 });
-const insc = (ano: number, saldo: number) => ({
+const insc = (
+  ano: number,
+  saldo: number,
+  extra: { montoBonificado?: number; montoPagado?: number } = {},
+) => ({
   inscripcionId: `i${ano}`,
   tipo: 'x',
   ano,
-  montoTotal: saldo,
-  montoBonificado: 0,
-  montoPagado: 0,
+  montoTotal: saldo + (extra.montoBonificado ?? 0) + (extra.montoPagado ?? 0),
+  montoBonificado: extra.montoBonificado ?? 0,
+  montoPagado: extra.montoPagado ?? 0,
   saldo,
 });
 const docInsc = {
@@ -83,6 +88,34 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
       'Camp. 2026',
       'Grupo 2026',
     ]);
+  });
+
+  it('debtCards: lo que había que pagar (sin bonificación) y lo pagado', () => {
+    const [card] = debtCards(
+      persona({
+        inscripcionesScout: [
+          insc(2026, 600, { montoBonificado: 100, montoPagado: 300 }),
+        ],
+      }),
+    );
+    expect(card).toMatchObject({ aPagar: 900, pagado: 300, saldo: 600 });
+  });
+
+  it('docGroups: personal, una por inscripción y autorizaciones de campamento', () => {
+    const groups = docGroups(
+      persona({
+        documentacionPersonal: { ...DOCS_OK, dni: false },
+        documentacionInscripcion: [docInsc],
+        campamentos: [camp(2026, 0, false)],
+      }),
+    );
+    expect(groups.map((g) => g.title)).toEqual([
+      'Personal',
+      'Inscripción 2026',
+      'Autorizaciones de campamento',
+    ]);
+    expect(groups[0]?.items.find((i) => i.label === 'DNI')?.ok).toBe(false);
+    expect(groups[2]?.items).toEqual([{ ok: false, label: 'Camp 2026 2026' }]);
   });
 
   it('personalDocItems: sin doc → []; mayor de edad sin "DNI padres"', () => {
@@ -177,11 +210,23 @@ describe('<DeudasView>', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Ver detalle de Ana Pérez' }),
     );
-    expect(screen.getByText('Aut. Camp 2026 2026')).toBeInTheDocument();
+    const deudas = screen.getByRole('list', {
+      name: 'Deudas monetarias de Ana Pérez',
+    });
+    expect(
+      within(deudas).getByText('Campamento Camp 2026'),
+    ).toBeInTheDocument();
+    expect(within(deudas).getByText(/Pagó/)).toHaveTextContent(
+      /Pagó \$\s?0 de \$\s?500/,
+    );
+    expect(
+      screen.getByText('Autorizaciones de campamento'),
+    ).toBeInTheDocument();
     await userEvent.click(
       screen.getByRole('button', { name: 'Ver detalle de Beto Gómez' }),
     );
-    expect(screen.getByText('Decl. salud 2026')).toBeInTheDocument();
+    expect(screen.getByText('Inscripción 2026')).toBeInTheDocument();
+    expect(screen.getAllByText('Decl. salud').length).toBeGreaterThan(0);
   });
 
   it('vacío y error con reintento', async () => {
