@@ -18,6 +18,16 @@ export type PersonaTabKey = (typeof PERSONA_TAB)[keyof typeof PERSONA_TAB];
 /** Tab del listado: una por rama + educadores + externos. */
 export type PersonasTab = RamaTabKey | PersonaTabKey;
 
+/** Todas las tabs del listado, en orden. */
+export const PERSONAS_TABS: readonly PersonasTab[] = [
+  ...Object.values(RAMA_TAB_KEYS),
+  PERSONA_TAB.EDUCADORES,
+  PERSONA_TAB.EXTERNOS,
+];
+
+/** Query param de la tab activa (`/personas?tab=educadores`). */
+export const TAB_QUERY_PARAM = 'tab';
+
 /** Paridad: la pestaña inicial es Manada. */
 export const DEFAULT_TAB: PersonasTab = RAMA_TAB_KEYS[RAMA.MANADA];
 

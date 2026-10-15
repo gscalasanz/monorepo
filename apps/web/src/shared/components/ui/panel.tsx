@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
+import { NavChevron } from '@/shared/components/ui/nav-chevron';
 
 export interface PanelProps {
   readonly title: string;
@@ -30,9 +31,10 @@ export function Panel({ title, meta, action, headerExtra, children, className, f
           (action && (
             <Link
               href={action.href}
-              className="inline-flex min-h-11 shrink-0 items-center text-[13px] font-medium text-brand hover:underline md:min-h-0"
+              className="group inline-flex min-h-11 shrink-0 items-center gap-0.5 text-[13px] font-medium text-brand hover:underline md:min-h-0"
             >
               {action.label}
+              <NavChevron className="size-3.5 text-brand group-hover:text-brand" />
             </Link>
           ))}
       </header>

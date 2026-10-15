@@ -2,6 +2,7 @@
 
 import {
   DateField,
+  FormCard,
   MoneyField,
   NumberField,
   TextField,
@@ -37,11 +38,7 @@ function FechasFields({ form }: { readonly form: Form }) {
         required
         {...bind(form, 'fechaInicio')}
       />
-      <DateField
-        label={C.FECHA_FIN}
-        required
-        {...bind(form, 'fechaFin')}
-      />
+      <DateField label={C.FECHA_FIN} required {...bind(form, 'fechaFin')} />
     </div>
   );
 }
@@ -80,27 +77,31 @@ function CostosFields({ form }: { readonly form: Form }) {
   );
 }
 
-/** Campos en el orden de Angular: nombre, fechas, costo + cuotas, aporte educadores, descripción. */
+/** Dos tarjetas como el resto de los formularios: datos (nombre, fechas, descripción) y costos. */
 export function CampamentoFormFields({ form }: { readonly form: Form }) {
   return (
-    <div className="flex flex-col gap-4">
-      <TextField
-        label={C.NOMBRE}
-        required
-        maxLength={L.NOMBRE_MAX}
-        placeholder={C.NOMBRE_PLACEHOLDER}
-        {...bind(form, 'nombre')}
-        valid={form.valid.nombre}
-      />
-      <FechasFields form={form} />
-      <CostosFields form={form} />
-      <TextareaField
-        label={C.DESCRIPCION}
-        rows={DESCRIPCION_ROWS}
-        maxLength={L.DESCRIPCION_MAX}
-        placeholder={C.DESCRIPCION_PLACEHOLDER}
-        {...bind(form, 'descripcion')}
-      />
+    <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:items-start">
+      <FormCard label={C.SECTION_DATOS}>
+        <TextField
+          label={C.NOMBRE}
+          required
+          maxLength={L.NOMBRE_MAX}
+          placeholder={C.NOMBRE_PLACEHOLDER}
+          {...bind(form, 'nombre')}
+          valid={form.valid.nombre}
+        />
+        <FechasFields form={form} />
+        <TextareaField
+          label={C.DESCRIPCION}
+          rows={DESCRIPCION_ROWS}
+          maxLength={L.DESCRIPCION_MAX}
+          placeholder={C.DESCRIPCION_PLACEHOLDER}
+          {...bind(form, 'descripcion')}
+        />
+      </FormCard>
+      <FormCard label={C.SECTION_COSTOS}>
+        <CostosFields form={form} />
+      </FormCard>
     </div>
   );
 }

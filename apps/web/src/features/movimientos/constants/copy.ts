@@ -33,6 +33,7 @@ export const MOVIMIENTOS_COPY = {
   EMPTY_CELL: '-',
   YES: 'Sí',
   NO: 'No',
+  rowActions: (concepto: string): string => `Acciones para ${concepto}`,
   EDIT: 'Editar',
   DELETE: 'Eliminar',
   ENTITY: 'movimiento',

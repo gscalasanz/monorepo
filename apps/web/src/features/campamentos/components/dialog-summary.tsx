@@ -23,19 +23,11 @@ export function DialogSummary({
 }) {
   return (
     <div className="flex flex-col gap-3 rounded-lg bg-recessed p-3">
-      <div className="flex items-center gap-3">
-        <span
-          aria-hidden
-          className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand"
-        >
-          {nombre.charAt(0).toUpperCase()}
+      <div className="flex min-w-0 flex-col">
+        <span className="truncate text-sm font-semibold text-ink">
+          {nombre}
         </span>
-        <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-semibold text-ink">
-            {nombre}
-          </span>
-          <span className="text-xs text-ink-subtle">{caption}</span>
-        </div>
+        <span className="text-xs text-ink-subtle">{caption}</span>
       </div>
       <dl className="flex flex-col gap-1.5 text-[13px]">
         {rows.map((row) => (

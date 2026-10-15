@@ -1,6 +1,6 @@
 'use client';
 
-import { SelectField } from '@/shared/components/ui/form';
+import { FormCard, SelectField } from '@/shared/components/ui/form';
 import {
   CARGO_EDUCADOR_LABELS,
   CARGOS_EDUCADOR,
@@ -18,6 +18,7 @@ import { useEducadorForm } from '@/features/personas/hooks/use-educador-form';
 import type { EducadorFormValues } from '@/features/personas/models/form-schemas';
 import { EducadorCredentialsFields } from '@/features/personas/components/forms/educador-credentials-fields';
 import { PersonaFormActions } from '@/features/personas/components/forms/persona-form-actions';
+import { PersonaFormLayout } from '@/features/personas/components/forms/persona-form-layout';
 import { NombreField } from '@/features/personas/components/forms/nombre-field';
 
 /** Opción "Sin rama específica" (el backend recibe `rama` ausente). */
@@ -46,15 +47,12 @@ export interface EducadorFormProps {
   readonly editId?: string;
 }
 
-/** Form de educador: nombre, rama opcional, cargo y (solo al crear) credenciales de acceso. */
-export function EducadorForm({ initial, editId }: EducadorFormProps) {
-  const form = useEducadorForm({ initial, editId });
+type Form = ReturnType<typeof useEducadorForm>;
+
+/** Nombre, rama opcional y cargo. */
+function DatosCard({ form }: { readonly form: Form }) {
   return (
-    <form
-      noValidate
-      onSubmit={(event) => void form.submit(event)}
-      className="flex flex-col gap-5"
-    >
+    <FormCard label={F.CARD_DATOS}>
       <NombreField
         value={form.values.nombre}
         error={form.errors.nombre}
@@ -80,15 +78,35 @@ export function EducadorForm({ initial, editId }: EducadorFormProps) {
         onChange={(value) => form.update('cargo', value)}
         onBlur={() => form.blur('cargo')}
       />
-      {editId ? null : (
-        <EducadorCredentialsFields
-          values={form.values}
-          errors={form.errors}
-          onChange={form.updateCredencial}
-          onBlur={form.blurCredencial}
+    </FormCard>
+  );
+}
+
+/** Form de educador: datos | (solo al crear) credenciales de acceso. */
+export function EducadorForm({ initial, editId }: EducadorFormProps) {
+  const form = useEducadorForm({ initial, editId });
+  return (
+    <PersonaFormLayout
+      onSubmit={(event) => void form.submit(event)}
+      actions={
+        <PersonaFormActions
+          editing={editId !== undefined}
+          saving={form.saving}
+          createLabel={E.CREATE}
         />
+      }
+    >
+      <DatosCard form={form} />
+      {editId ? null : (
+        <FormCard label={F.CARD_ACCESO}>
+          <EducadorCredentialsFields
+            values={form.values}
+            errors={form.errors}
+            onChange={form.updateCredencial}
+            onBlur={form.blurCredencial}
+          />
+        </FormCard>
       )}
-      <PersonaFormActions editing={editId !== undefined} saving={form.saving} createLabel={E.CREATE} />
-    </form>
+    </PersonaFormLayout>
   );
 }

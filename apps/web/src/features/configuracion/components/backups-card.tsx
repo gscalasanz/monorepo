@@ -3,12 +3,18 @@
 import { Database, Sheet } from 'lucide-react';
 
 import { Panel } from '@/shared/components/ui/panel';
-import { CONFIG_COPY as C, DOWNLOADS } from '@/features/configuracion/constants/copy';
+import {
+  CONFIG_COPY as C,
+  DOWNLOADS,
+} from '@/features/configuracion/constants/copy';
 import { DownloadAction } from '@/features/configuracion/components/download-action';
 import { useDownload } from '@/features/configuracion/hooks/use-download';
-import { fetchSqlBackup, fetchXlsxExport } from '@/features/configuracion/services/backups-api';
+import {
+  fetchSqlBackup,
+  fetchXlsxExport,
+} from '@/features/configuracion/services/backups-api';
 
-/** Card "Backup y Exportación": Excel (.xlsx) y backup SQL (.sql.gz). */
+/** Panel "Backup y Exportación": dos filas que descargan Excel (.xlsx) y backup SQL (.sql.gz). */
 export function BackupsCard() {
   const xlsx = useDownload({
     fetchBlob: fetchXlsxExport,
@@ -23,9 +29,11 @@ export function BackupsCard() {
     errorMessage: C.SQL_ERROR,
   });
   return (
-    <Panel title={C.BACKUP_TITLE}>
-      <p className="mb-4 text-sm text-ink-muted">{C.BACKUP_DESCRIPTION}</p>
-      <div className="grid gap-3 md:grid-cols-2">
+    <Panel title={C.BACKUP_TITLE} flush>
+      <p className="border-b border-border px-4 py-3 text-sm text-ink-muted md:px-[18px]">
+        {C.BACKUP_DESCRIPTION}
+      </p>
+      <div className="flex flex-col divide-y divide-border">
         <DownloadAction
           icon={Sheet}
           title={C.XLSX_TITLE}

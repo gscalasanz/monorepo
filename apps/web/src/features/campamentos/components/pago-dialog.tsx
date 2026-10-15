@@ -3,6 +3,7 @@
 import { Wallet } from 'lucide-react';
 import { useId, useState, type FormEvent } from 'react';
 
+import { ProgressTrack } from '@/shared/components/charts';
 import { Money } from '@/shared/components/data';
 import { FormDialogShell, useDialogSubmit } from '@/shared/components/finanzas';
 import type {
@@ -11,7 +12,6 @@ import type {
 } from '@/shared/domain';
 import { DialogSummary } from '@/features/campamentos/components/dialog-summary';
 import { PagoFields } from '@/features/campamentos/components/pago-fields';
-import { ProgressBar } from '@/features/campamentos/components/progress-bar';
 import { PAGO_COPY as C } from '@/features/campamentos/constants/copy';
 import { pagoContextOf } from '@/features/campamentos/helpers/detalle';
 import {
@@ -21,6 +21,9 @@ import {
   type PagoContext,
   type PagoDraft,
 } from '@/features/campamentos/helpers/pago';
+
+/** `summary.progress` ya es un porcentaje (0–100). */
+const FULL_PERCENT = 100;
 
 export interface PagoDialogProps {
   readonly participante: ParticipantePago;
@@ -57,7 +60,12 @@ function summaryRows(ctx: PagoContext) {
   ];
 }
 
-function usePagoForm({ participante, saldoCuentaPersonal, onOpenChange, onSubmit }: PagoDialogProps) {
+function usePagoForm({
+  participante,
+  saldoCuentaPersonal,
+  onOpenChange,
+  onSubmit,
+}: PagoDialogProps) {
   const ctx = pagoContextOf(participante, saldoCuentaPersonal);
   const [draft, setDraft] = useState<PagoDraft>(INITIAL_PAGO_DRAFT);
   const summary = pagoSummary(ctx, draft);
@@ -65,16 +73,21 @@ function usePagoForm({ participante, saldoCuentaPersonal, onOpenChange, onSubmit
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (summary.invalid) return;
-    void dialog.submit({ personaId: participante.id, dto: toPagoDto(ctx, draft) });
+    void dialog.submit({
+      personaId: participante.id,
+      dto: toPagoDto(ctx, draft),
+    });
   };
-  const patch = (next: Partial<PagoDraft>) => setDraft((current) => ({ ...current, ...next }));
+  const patch = (next: Partial<PagoDraft>) =>
+    setDraft((current) => ({ ...current, ...next }));
   return { ctx, draft, summary, dialog, onFormSubmit, patch };
 }
 
 /** "Registrar Pago" (pago mixto: efectivo/transferencia + saldo de la cuenta personal). */
 export function PagoDialog(props: PagoDialogProps) {
   const formId = useId();
-  const { ctx, draft, summary, dialog, onFormSubmit, patch } = usePagoForm(props);
+  const { ctx, draft, summary, dialog, onFormSubmit, patch } =
+    usePagoForm(props);
   return (
     <FormDialogShell
       open
@@ -88,9 +101,27 @@ export function PagoDialog(props: PagoDialogProps) {
       error={dialog.error}
       submitDisabled={summary.invalid}
     >
-      <form id={formId} noValidate className="flex flex-col gap-4" onSubmit={onFormSubmit}>
-        <DialogSummary nombre={props.participante.nombre} caption={C.PARTICIPANTE} rows={summaryRows(ctx)}>
-          <ProgressBar label={C.completado(summary.progress)} valueText="" percent={summary.progress} />
+      <form
+        id={formId}
+        noValidate
+        className="flex flex-col gap-4"
+        onSubmit={onFormSubmit}
+      >
+        <DialogSummary
+          nombre={props.participante.nombre}
+          caption={C.PARTICIPANTE}
+          rows={summaryRows(ctx)}
+        >
+          <span className="flex items-center gap-2 text-xs text-ink-muted tabular-nums">
+            <ProgressTrack
+              value={summary.progress}
+              max={FULL_PERCENT}
+              ariaLabel={C.completado(summary.progress)}
+              color="var(--color-success)"
+              className="flex-1"
+            />
+            {C.completado(summary.progress)}
+          </span>
         </DialogSummary>
         <PagoFields ctx={ctx} draft={draft} summary={summary} onPatch={patch} />
       </form>

@@ -1,16 +1,23 @@
 'use client';
 
-import { Button } from '@/shared/components/ui/button';
 import { PasswordField } from '@/shared/components/ui/form';
 import { AUTH_FEATURE_COPY as C } from '@/features/auth/constants/copy';
+import { FormSubmitRow } from '@/features/auth/components/form-submit-row';
 import { useChangePassword } from '@/features/auth/hooks/use-change-password';
 
 /** Sección "Cambiar contraseña" de Mi Perfil (invalida las sesiones). */
 export function ChangePasswordForm() {
-  const { values, errors, validation, update, submit, saving, checkMatch } = useChangePassword();
+  const { values, errors, validation, update, submit, saving, checkMatch } =
+    useChangePassword();
   return (
-    <form noValidate onSubmit={(event) => void submit(event)} className="flex flex-col gap-4">
-      <h3 className="text-sm font-semibold text-ink">{C.CHANGE_PASSWORD_TITLE}</h3>
+    <form
+      noValidate
+      onSubmit={(event) => void submit(event)}
+      className="flex h-full flex-col gap-4"
+    >
+      <h3 className="text-sm font-semibold text-ink">
+        {C.CHANGE_PASSWORD_TITLE}
+      </h3>
       <PasswordField
         label={C.CURRENT_PASSWORD_LABEL}
         autoComplete="current-password"
@@ -18,7 +25,9 @@ export function ChangePasswordForm() {
         value={values.currentPassword}
         error={errors.currentPassword}
         onChange={(value) => update('currentPassword', value)}
-        onBlur={() => validation.onBlur('currentPassword', values.currentPassword)}
+        onBlur={() =>
+          validation.onBlur('currentPassword', values.currentPassword)
+        }
       />
       <PasswordField
         label={C.NEW_PASSWORD_LABEL}
@@ -41,11 +50,7 @@ export function ChangePasswordForm() {
           checkMatch();
         }}
       />
-      <div className="flex justify-end">
-        <Button type="submit" loading={saving}>
-          {saving ? C.SAVING : C.SAVE_PASSWORD}
-        </Button>
-      </div>
+      <FormSubmitRow label={C.SAVE_PASSWORD} saving={saving} />
     </form>
   );
 }

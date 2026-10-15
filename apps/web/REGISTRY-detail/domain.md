@@ -27,7 +27,7 @@
 `z.infer`) y `dtos.ts` (bodies/queries como interfaces). Todo se importa de `@/shared/domain`.
 Los nombres de entidades/enums respetan el vocabulario del backend (`Movimiento`,
 `CONCEPTO_MOVIMIENTO`); las funciones, en inglés. Los modelos que usa **un solo** feature
-(p. ej. `persona-dashboard`, `deuda` de reportes) no viven acá: se portan con su feature.
+(p. ej. `persona-dashboard`) no viven acá: se portan con su feature. Si dos features lo necesitan se promueve: `personaDeudaSchema`/`personasDeudaSchema`/`PersonaDeuda` (`GET /reportes/deudas`) viven en `reporte/deudas.ts` porque los usan reportes y dashboard (los filtros y constantes de deuda siguen en `features/reportes`).
 
 ### Contrato real del backend (verificado contra `../backend`, no contra el Angular)
 
@@ -58,10 +58,22 @@ Los nombres de entidades/enums respetan el vocabulario del backend (`Movimiento`
 | `paginatedSchema(item)` · `PaginatedResponse<T>` · `PaginationMeta` · `PAGINATION_DEFAULTS` | `{ data, meta }` del backend. |
 | `DAY_OF_WEEK` · `DAY_OF_WEEK_LABELS` · `DAYS_OF_WEEK_IN_ORDER` | Días (solo UI). |
 
+## Links entre pantallas
+
+`src/shared/constants/links.ts` — el contrato de URLs entre pantallas, para que quien enlaza y quien lee los query params no se desincronicen.
+
+| Símbolo | Qué hace |
+| --- | --- |
+| `cajasHref(tab?)` | `/cajas` o `/cajas?tab=<grupo\|rama\|personal\|fondo-solidario>` (`CAJAS_TAB`, `CAJAS_TAB_PARAM`). |
+| `movimientosHref({ tipo?, estadoPago?, concepto?, fechaInicio?, fechaFin?, cajaId? })` | `/movimientos` con solo los filtros presentes (`MOVIMIENTOS_LIST_PARAMS` = nombres que lee la lista). `estadoPago` también se lee desde la URL. |
+| `personaHref({ tipo, id })` | Ficha según `PERSONA_TYPE_ROUTES`; una agrupación va a `/personas`. |
+| `movimientoEditHref(id)` | `/movimientos/:id/editar` (no hay detalle ruteado). |
+
 ## format
 
 | Símbolo | Para qué |
 | --- | --- |
+| `initialsOf(nombre)` | `"Valentina Ríos"` → `"VR"` (2 palabras máx., mayúscula es-AR); una palabra → su inicial; vacío → `''`. |
 | `formatMoney(value, { decimals?: 0 \| 2, placeholder? })` | Pipe `money`: `$ 1.234` (es-AR, ARS, U+00A0 tras `$`), 0 decimales por defecto, `-` si null/undefined/NaN; `0` → `$ 0`. |
 | `humanize(value, 'title' \| 'sentence' \| 'none')` | Pipe `humanize`: `scout_argentina` → `Scout Argentina`. |
 | `resolveStatusTone(status)` → `STATUS_TONE` | Datos de `StatusConfigService`: estado (es/en, cualquier caja) → `success`/`info`/`warning`/`danger`/`default`. El color lo pone el design system. |

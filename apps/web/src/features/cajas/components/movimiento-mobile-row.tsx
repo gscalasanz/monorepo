@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { DirectionTile, Money } from '@/shared/components/data';
+import { NavChevron } from '@/shared/components/ui/nav-chevron';
 import type { Movimiento } from '@/shared/domain';
 import { DATE_FORMATS, formatDate } from '@/shared/time';
 import { CAJAS_LINKS } from '@/features/cajas/constants/cajas';
@@ -12,7 +13,7 @@ export interface MovimientoMobileRowProps {
   readonly detail?: string;
 }
 
-/** Fila mobile de un movimiento: link al detalle con flecha, concepto, fecha y monto con signo. */
+/** Fila mobile de un movimiento: link a su edición con chevron, concepto, fecha y monto con signo. */
 export function MovimientoMobileRow({
   movimiento,
   detail,
@@ -21,8 +22,8 @@ export function MovimientoMobileRow({
   const fecha = formatDate(movimiento.fecha, DATE_FORMATS.date);
   return (
     <Link
-      href={CAJAS_LINKS.movimiento(movimiento.id)}
-      className="-mx-4 -my-2.5 flex min-h-14 w-[calc(100%+2rem)] items-center gap-3 px-4 py-2.5 hover:bg-recessed/70 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
+      href={CAJAS_LINKS.movimientoEditar(movimiento.id)}
+      className="group -mx-4 -my-2.5 flex min-h-14 w-[calc(100%+2rem)] items-center gap-3 px-4 py-2.5 hover:bg-recessed/70 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
     >
       <DirectionTile direction={ingreso ? 'in' : 'out'} />
       <span className="min-w-0 flex-1">
@@ -38,6 +39,7 @@ export function MovimientoMobileRow({
         sign={ingreso ? 'in' : 'out'}
         className="shrink-0 text-sm"
       />
+      <NavChevron />
     </Link>
   );
 }

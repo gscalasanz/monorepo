@@ -140,7 +140,10 @@ export function quitarBonificacion(id: string): Promise<Inscripcion> {
 const HTTP_NOT_FOUND = 404;
 
 /** Detalle: `null` si no existe (404 → "Inscripción no encontrada", sin romper la vista). */
-export async function fetchInscripcionOrNull(id: string, signal?: AbortSignal): Promise<Inscripcion | null> {
+export async function fetchInscripcionOrNull(
+  id: string,
+  signal?: AbortSignal,
+): Promise<Inscripcion | null> {
   try {
     return await fetchInscripcion(id, signal);
   } catch (cause) {

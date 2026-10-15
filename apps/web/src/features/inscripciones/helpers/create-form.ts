@@ -113,7 +113,9 @@ export function withSaldoPersonalVisible(
   values: CreateFormValues,
   saldoPersonal: number,
 ): CreateFormValues {
-  return saldoPersonal > 0 ? values : { ...values, montoConSaldoPersonal: null };
+  return saldoPersonal > 0
+    ? values
+    : { ...values, montoConSaldoPersonal: null };
 }
 
 export function saldoPersonalExcedido(

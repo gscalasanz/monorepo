@@ -3,11 +3,12 @@
 import { Info, Package, Plus } from 'lucide-react';
 import { useState } from 'react';
 
+import { ListPanel, ListToolbar } from '@/shared/components/data';
 import { EmptyState } from '@/shared/components/feedback';
 import { Button } from '@/shared/components/ui/button';
 import { TIPO_EVENTO, type Evento } from '@/shared/domain';
 import { notify } from '@/shared/notifications';
-import { ProductoCard } from '@/features/eventos/components/producto-card';
+import { ProductosTable } from '@/features/eventos/components/productos-table';
 import { ProductoDialog } from '@/features/eventos/components/producto-dialog';
 import { EVENTOS_COPY } from '@/features/eventos/constants/copy';
 import { productosSinCosto } from '@/features/eventos/helpers/evento-detail';
@@ -44,59 +45,64 @@ function PendientesBanner({
 }
 
 function useProductoDelete(onChanged: () => Promise<void>) {
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const remove = async (producto: ProductoConVentas): Promise<void> => {
-    setDeletingId(producto.id);
     try {
       await deleteProducto(producto.id);
       notify.success(C.deleted);
       await onChanged();
     } catch {
       // El error del backend ya lo muestra el toast global.
-    } finally {
-      setDeletingId(null);
     }
   };
-  return { deletingId, remove };
+  return { remove };
 }
 
-/** Tab Productos: banner de movimientos pendientes, alta/edición y borrado (sin confirmación, como Angular). */
+function AddProductoBar({ onAdd }: { readonly onAdd: () => void }) {
+  return (
+    <ListToolbar>
+      <Button
+        className="md:ml-auto"
+        icon={<Plus aria-hidden />}
+        onClick={onAdd}
+      >
+        {C.gestionar}
+      </Button>
+    </ListToolbar>
+  );
+}
+
+/** Tab Productos: banner de movimientos pendientes y un card con alta + tabla (editar / eliminar sin confirmación, como Angular). */
 export function ProductosTab({
   evento,
   productos,
   onChanged,
 }: ProductosTabProps) {
   const [target, setTarget] = useState<DialogTarget>(undefined);
-  const { deletingId, remove } = useProductoDelete(onChanged);
+  const { remove } = useProductoDelete(onChanged);
   const readonly = evento.estaCerrado;
   return (
     <div className="flex flex-col gap-4">
       {evento.tipo === TIPO_EVENTO.VENTA && !evento.movimientosHabilitados && (
         <PendientesBanner productos={productos} />
       )}
-      {!readonly && (
-        <div>
-          <Button icon={<Plus aria-hidden />} onClick={() => setTarget(null)}>
-            {C.gestionar}
-          </Button>
-        </div>
-      )}
-      {productos.length === 0 ? (
-        <EmptyState icon={Package} title={C.emptyTitle} hint={C.emptyHint} />
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {productos.map((producto) => (
-            <ProductoCard
-              key={producto.id}
-              producto={producto}
-              readonly={readonly}
-              deleting={deletingId === producto.id}
-              onEdit={setTarget}
-              onDelete={(p) => void remove(p)}
-            />
-          ))}
-        </div>
-      )}
+      <ListPanel
+        toolbar={
+          readonly ? undefined : (
+            <AddProductoBar onAdd={() => setTarget(null)} />
+          )
+        }
+      >
+        {productos.length === 0 ? (
+          <EmptyState icon={Package} title={C.emptyTitle} hint={C.emptyHint} />
+        ) : (
+          <ProductosTable
+            productos={productos}
+            readonly={readonly}
+            onEdit={setTarget}
+            onDelete={(p) => void remove(p)}
+          />
+        )}
+      </ListPanel>
       <ProductoDialog
         key={target === undefined ? 'closed' : (target?.id ?? 'new')}
         open={target !== undefined}

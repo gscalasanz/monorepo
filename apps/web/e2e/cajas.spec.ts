@@ -70,7 +70,7 @@ async function openCajas(page: Page): Promise<void> {
   await loginAsAdmin(page);
   await page.goto('/cajas');
   await expect(
-    page.getByRole('heading', { level: 1, name: 'Gestión Financiera' }),
+    page.getByRole('heading', { level: 1, name: 'Cajas' }),
   ).toBeVisible();
 }
 

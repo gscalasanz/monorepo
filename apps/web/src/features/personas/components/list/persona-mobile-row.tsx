@@ -26,9 +26,7 @@ export function PersonaMobileRow({
   return (
     <div className="flex w-full min-w-0 items-center gap-3">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="truncate">
-          <PersonaNameLink persona={persona} />
-        </span>
+        <PersonaNameLink persona={persona} />
         <span className="flex flex-wrap items-center gap-2 text-xs text-ink-subtle">
           {isPersonaDisabled(persona) ? (
             <StatusBadge status={ESTADO_PERSONA_LABELS[persona.estado]} />

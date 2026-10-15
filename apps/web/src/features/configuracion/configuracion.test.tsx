@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ConfiguracionView, downloadBlob } from '@/features/configuracion';
@@ -10,15 +10,26 @@ vi.mock('@/features/configuracion/services/backups-api', () => ({
   fetchSqlBackup: () => fetchSqlBackup(),
 }));
 
-const notifyMock = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn() }));
+const notifyMock = vi.hoisted(() => ({
+  success: vi.fn(),
+  error: vi.fn(),
+  warning: vi.fn(),
+  info: vi.fn(),
+}));
 vi.mock('@/shared/notifications', () => ({ notify: notifyMock }));
 
 describe('downloadBlob', () => {
   it('crea un link temporal y revoca la URL', () => {
     const create = vi.fn(() => 'blob:x');
     const revoke = vi.fn();
-    vi.stubGlobal('URL', { ...URL, createObjectURL: create, revokeObjectURL: revoke });
-    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    vi.stubGlobal('URL', {
+      ...URL,
+      createObjectURL: create,
+      revokeObjectURL: revoke,
+    });
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined);
     downloadBlob(new Blob(['abc']), 'scout-export.xlsx');
     expect(create).toHaveBeenCalled();
     expect(click).toHaveBeenCalled();
@@ -38,25 +49,87 @@ describe('ConfiguracionView', () => {
   });
 
   it('carga y guarda los montos de inscripción en localStorage', async () => {
-    localStorage.setItem('scout_inscripcion_config', JSON.stringify({ montoScoutArgentina: 1500, montoGrupo: 800 }));
-    render(<ConfiguracionView profileSlot={<p>perfil</p>} />);
-    expect(screen.getByRole('heading', { level: 1, name: 'Configuración' })).toBeInTheDocument();
+    localStorage.setItem(
+      'scout_inscripcion_config',
+      JSON.stringify({ montoScoutArgentina: 1500, montoGrupo: 800 }),
+    );
+    render(
+      <ConfiguracionView profileSlot={<p>perfil</p>} securitySlot={null} />,
+    );
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Configuración' }),
+    ).toBeInTheDocument();
     const grupo = screen.getByLabelText(/Monto Inscripción de Grupo/);
     await waitFor(() => expect(grupo).toHaveValue('800'));
     await userEvent.clear(grupo);
     await userEvent.type(grupo, '900');
     await userEvent.click(screen.getByRole('button', { name: 'Guardar' }));
-    expect(JSON.parse(localStorage.getItem('scout_inscripcion_config') ?? '{}')).toEqual({
+    expect(
+      JSON.parse(localStorage.getItem('scout_inscripcion_config') ?? '{}'),
+    ).toEqual({
       montoScoutArgentina: 1500,
       montoGrupo: 900,
     });
-    expect(notifyMock.success).toHaveBeenCalledWith('Configuración guardada exitosamente');
+    expect(notifyMock.success).toHaveBeenCalledWith(
+      'Configuración guardada exitosamente',
+    );
+  });
+
+  it('índice lateral con links a cada sección', () => {
+    render(
+      <ConfiguracionView
+        profileSlot={<p>perfil</p>}
+        securitySlot={<p>seguridad</p>}
+      />,
+    );
+    const index = screen.getByRole('navigation', {
+      name: 'Secciones de configuración',
+    });
+    expect(within(index).getByRole('link', { name: 'Perfil' })).toHaveAttribute(
+      'href',
+      '#perfil',
+    );
+    expect(
+      within(index).getByRole('link', { name: 'Seguridad' }),
+    ).toHaveAttribute('href', '#seguridad');
+    expect(within(index).getByRole('link', { name: 'Backup' })).toHaveAttribute(
+      'href',
+      '#backup',
+    );
+    expect(
+      within(index).getByRole('link', { name: 'Inscripciones' }),
+    ).toHaveAttribute('href', '#inscripciones');
+    expect(document.getElementById('seguridad')).toHaveTextContent('seguridad');
+  });
+
+  it('orden: Perfil, Inscripciones, Backup y Seguridad al final (índice y secciones)', () => {
+    const { container } = render(
+      <ConfiguracionView profileSlot={null} securitySlot={null} />,
+    );
+    const index = screen.getByRole('navigation', {
+      name: 'Secciones de configuración',
+    });
+    const order = ['Perfil', 'Inscripciones', 'Backup', 'Seguridad'];
+    expect(
+      within(index)
+        .getAllByRole('link')
+        .map((link) => link.textContent),
+    ).toEqual(order);
+    expect(
+      Array.from(container.querySelectorAll('.scroll-mt-6')).map((el) => el.id),
+    ).toEqual(['perfil', 'inscripciones', 'backup', 'seguridad']);
   });
 
   it('error de descarga muestra el mensaje de Angular', async () => {
     fetchXlsxExport.mockRejectedValue(new Error('500'));
-    render(<ConfiguracionView profileSlot={null} />);
-    await userEvent.click(screen.getByRole('button', { name: /Exportar a Excel/ }));
-    await waitFor(() => expect(notifyMock.error).toHaveBeenCalledWith('Error al exportar a Excel'));
+    render(<ConfiguracionView profileSlot={null} securitySlot={null} />);
+    await userEvent.click(
+      screen.getByRole('button', { name: /Exportar a Excel/ }),
+    );
+    await waitFor(() =>
+      expect(notifyMock.error).toHaveBeenCalledWith(
+        'Error al exportar a Excel',
+      ),
+    );
   });
 });

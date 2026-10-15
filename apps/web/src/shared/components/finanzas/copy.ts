@@ -8,6 +8,18 @@ export const FINANZAS_COPY = {
     sinDescripcion: 'Sin descripción',
     marcarComoPagado: 'Marcar como pagado',
     eliminar: 'Eliminar movimiento',
+    comprobanteEntregado: 'Comprobante entregado',
+  },
+  table: {
+    colFecha: 'Fecha',
+    colConcepto: 'Concepto',
+    colResponsable: 'Responsable',
+    colMedio: 'Medio de Pago',
+    colEstado: 'Estado',
+    colMonto: 'Monto',
+    colAcciones: 'Acciones',
+    eliminar: 'Eliminar',
+    acciones: (nombre: string): string => `Acciones para ${nombre}`,
   },
   filters: {
     ariaLabel: 'Filtrar movimientos',

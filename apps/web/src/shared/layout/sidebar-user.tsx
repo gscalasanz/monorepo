@@ -5,6 +5,7 @@ import { LogOut } from 'lucide-react';
 import { logout, useSession } from '@/shared/auth';
 import { PERSONA_TYPE_LABELS } from '@/shared/domain';
 import { LAYOUT_COPY } from '@/shared/layout/copy';
+import { SIDEBAR_ICON_BUTTON } from '@/shared/layout/sidebar-styles';
 import { cn } from '@/shared/lib/utils';
 
 const INITIALS_LENGTH = 2;
@@ -46,7 +47,7 @@ export function SidebarUser({ collapsed }: { collapsed: boolean }) {
         onClick={logout}
         aria-label={LAYOUT_COPY.LOGOUT}
         title={LAYOUT_COPY.LOGOUT}
-        className="inline-flex size-11 shrink-0 items-center justify-center rounded-md text-sidebar-ink/85 hover:bg-sidebar-hover hover:text-sidebar-ink focus-visible:outline-2 focus-visible:outline-sidebar-ink md:size-9"
+        className={cn('inline-flex size-11 shrink-0 items-center justify-center rounded-md md:size-9', SIDEBAR_ICON_BUTTON)}
       >
         <LogOut className="size-[18px]" aria-hidden />
       </button>

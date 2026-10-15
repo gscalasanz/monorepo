@@ -10,12 +10,15 @@ import type { DocumentacionPersonal } from '@/features/personas/models/dashboard
 export interface DocumentacionPanelProps {
   readonly documentacion: DocumentacionPersonal;
   readonly rama: Rama | null;
+  /** Ruta de edición de la persona (donde se actualizan los papeles). */
+  readonly editHref: string;
 }
 
-/** Checklist de documentación personal (solo protagonistas; Rovers sin "DNI Padres"). */
+/** Checklist de documentación personal en grilla: solo lo que falta lleva texto visible (solo protagonistas; Rovers sin "DNI Padres"). */
 export function DocumentacionPanel({
   documentacion,
   rama,
+  editHref,
 }: DocumentacionPanelProps) {
   const items = docItems({ documentacion, rama });
   const entregados = items.filter((item) => item.delivered).length;
@@ -23,6 +26,7 @@ export function DocumentacionPanel({
     <Panel
       title={C.DOCUMENTACION}
       meta={C.DOC_COUNT(entregados, items.length)}
+      action={{ label: C.DOC_UPDATE, href: editHref }}
       flush
     >
       <ul className="grid grid-cols-1 sm:grid-cols-2">
@@ -45,14 +49,11 @@ export function DocumentacionPanel({
                 <Icon className="size-3" strokeWidth={2.5} />
               </span>
               <span className="flex-1">{item.label}</span>
-              <span
-                className={cn(
-                  'text-xs',
-                  item.delivered ? 'text-ink-subtle' : 'text-warning',
-                )}
-              >
-                {item.delivered ? C.DOC_DELIVERED : C.DOC_PENDING}
-              </span>
+              {item.delivered ? (
+                <span className="sr-only">{C.DOC_DELIVERED}</span>
+              ) : (
+                <span className="text-xs text-warning">{C.DOC_PENDING}</span>
+              )}
             </li>
           );
         })}

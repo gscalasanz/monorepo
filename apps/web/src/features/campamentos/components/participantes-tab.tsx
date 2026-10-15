@@ -2,12 +2,10 @@
 
 import { SearchX, UserPlus } from 'lucide-react';
 
-import { FilterBar } from '@/shared/components/data';
+import { FilterBar, ListPanel, ListToolbar } from '@/shared/components/data';
 import { EmptyState, LoadingState } from '@/shared/components/feedback';
-import {
-  ParticipanteCard,
-  type ParticipanteHandlers,
-} from '@/features/campamentos/components/participante-card';
+import type { ParticipanteHandlers } from '@/features/campamentos/components/participante-row-actions';
+import { ParticipantesTable } from '@/features/campamentos/components/participantes-table';
 import { PARTICIPANTES_COPY as C } from '@/features/campamentos/constants/copy';
 import { PARTICIPANTES_FILTER_FIELDS } from '@/features/campamentos/constants/filters';
 import type { CampamentoDetalleState } from '@/features/campamentos/hooks/use-campamento-detalle';
@@ -17,14 +15,13 @@ export interface ParticipantesTabProps {
   readonly handlers: ParticipanteHandlers;
 }
 
-function ParticipantesList({ state, handlers }: ParticipantesTabProps) {
+function ParticipantesBody({ state, handlers }: ParticipantesTabProps) {
   if (state.participantes.length > 0) {
     return (
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        {state.participantes.map((p) => (
-          <ParticipanteCard key={p.id} participante={p} handlers={handlers} />
-        ))}
-      </div>
+      <ParticipantesTable
+        participantes={state.participantes}
+        handlers={handlers}
+      />
     );
   }
   if (state.hasFilter)
@@ -38,17 +35,23 @@ function ParticipantesList({ state, handlers }: ParticipantesTabProps) {
   return <EmptyState icon={UserPlus} title={C.EMPTY} hint={C.EMPTY_HINT} />;
 }
 
-/** Tab "Participantes": filtros auto-aplicados + cards. */
+/** Tab "Participantes": un card con filtros (auto-aplicados) y la tabla. */
 export function ParticipantesTab({ state, handlers }: ParticipantesTabProps) {
   return (
-    <div className="flex flex-col gap-3">
-      <FilterBar
-        fields={PARTICIPANTES_FILTER_FIELDS}
-        value={state.filterValues}
-        onChange={state.onFilterChange}
-      />
+    <ListPanel
+      toolbar={
+        <ListToolbar>
+          <FilterBar
+            fields={PARTICIPANTES_FILTER_FIELDS}
+            value={state.filterValues}
+            onChange={state.onFilterChange}
+            className="min-w-0 flex-1"
+          />
+        </ListToolbar>
+      }
+    >
       {state.refreshing && <LoadingState label={C.SEARCHING} />}
-      <ParticipantesList state={state} handlers={handlers} />
-    </div>
+      <ParticipantesBody state={state} handlers={handlers} />
+    </ListPanel>
   );
 }

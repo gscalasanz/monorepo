@@ -16,7 +16,7 @@
 | `filterMovimientos` · `CONCEPTOS_MANUALES_POR_TIPO` | domain (movimiento) | `src/shared/domain/movimiento/helpers.ts` |
 | `isPersonaDisabled` · `onlyEnabled` · `ramaFromTabKey` | domain (persona) | `src/shared/domain/persona/` |
 | `calculateEventProfit` · `calculateProfitBySeller` | domain (evento) | `src/shared/domain/evento/profit.ts` |
-| `APP_ROUTES` · `PERSONA_TYPE_ROUTES` · `UI_CONFIG` · `LOCALE` · `CURRENCY` | constants | `src/shared/constants/` |
+| `APP_ROUTES` · `PERSONA_TYPE_ROUTES` · `cajasHref` · `movimientosHref` · `personaHref` · `movimientoEditHref` · `CAJAS_TAB` · `MOVIMIENTOS_LIST_PARAMS` · `UI_CONFIG` · `LOCALE` · `CURRENCY` | constants | `src/shared/constants/` → [domain](./REGISTRY-detail/domain.md#links-entre-pantallas) |
 | `MESSAGES` | copy | `src/shared/copy/` |
 | `apiClient` (`get`/`post`/`patch`/`delete`/`getBlob`/`getText`) · `createApiClient` | api | `src/shared/api/api-client.ts` → [api](./REGISTRY-detail/api.md#cliente) |
 | `ApiError` · `isApiError` · `extractErrorMessage` · `nestMessageOf` | api | `src/shared/api/api-error.ts` → [api](./REGISTRY-detail/api.md#errores) |
@@ -33,7 +33,7 @@
 | `evaluateAuthGuard` · `evaluateNoAuthGuard` · `saveRedirectUrl` · `consumeRedirectUrl` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |
 | `decodeJwt` · `isTokenValid` · `getAccessToken` · `setTokens` · `clearTokens` · `sessionStore` · `createSingleFlight` | api (auth) | `src/shared/auth/` → [api](./REGISTRY-detail/api.md#auth) |
 | `makeJwt` · `tokenExpiringIn` | testing | `src/shared/auth/testing/jwt.ts` |
-| `formatMoney` · `humanize` · `resolveStatusTone` · `STATUS_TONE` | domain (format) | `src/shared/format/` → [domain](./REGISTRY-detail/domain.md#format) |
+| `formatMoney` · `humanize` · `initialsOf` · `resolveStatusTone` · `STATUS_TONE` | domain (format) | `src/shared/format/` → [domain](./REGISTRY-detail/domain.md#format) |
 | `@/shared/validators` (`positiveNumber`, `decimalPlaces`, `safeText`, `dateRange`, `saldoSuficiente`, `personaAReembolsar*`, `refineWith`, `VALIDATION_MESSAGES`…) | domain (validators) | `src/shared/validators/` → [domain](./REGISTRY-detail/domain.md#validators) |
 | `loadInscripcionConfig` · `updateInscripcionConfig` · `saveInscripcionConfig` · `montoByTipo` | domain (settings) | `src/shared/settings/` → [domain](./REGISTRY-detail/domain.md#settings) |
 | `readItem` · `writeItem` · `removeItem` | storage | `src/shared/storage/` (Web Storage SSR-safe) |
@@ -44,13 +44,13 @@
 | `confirmDialog` · `ConfirmDialogHost` · `errorHintFor` | ui (feedback) | `src/shared/confirm/` → [ui](./REGISTRY-detail/ui.md#confirmación--sharedconfirm) |
 | `AppShell` · `SessionGate` · `PageHeader` · `ThemeToggle` · `NAV_GROUPS` · `pageMetaFor` · `isFormRoute` | ui (layout) | `src/shared/layout/` → [ui](./REGISTRY-detail/ui.md#layout--sharedlayout) |
 | `RowActionsMenu` · `RowAction` | ui (datos) | `src/shared/components/data/row-actions-menu.tsx` → [ui](./REGISTRY-detail/ui.md#datos--sharedcomponentsdata) |
-| `AppDataGrid` · `sortableHeader` · `Money` · `StatusBadge` · `RamaChip` · `DirectionTile` · `KeyValueList` · `SegmentedTabs`/`ButtonTabs` · `FilterBar` · `TotalsBar` · `useMediaQuery` | ui (datos) | `src/shared/components/data/` → [ui](./REGISTRY-detail/ui.md#datos--sharedcomponentsdata) |
-| `BarChartCard` · `DonutChart` · `Sparkline` · `KpiStrip` · `StatCard` · `DistributionBar` · `ChartLegend` · `SERIES_COLORS` | ui (gráficos) | `src/shared/components/charts/` → [ui](./REGISTRY-detail/ui.md#gráficos--sharedcomponentscharts) |
+| `AppDataGrid` (`expandable`/`ExpandToggle`) · `ActionsMenu` · `InitialsAvatar` · `sortableHeader` · `Money` · `StatusBadge` · `RamaChip` · `DirectionTile` · `KeyValueList` · `SegmentedTabs`/`ButtonTabs` · `FilterBar` · `ListPanel`/`ListToolbar` · `TotalsBar` · `useMediaQuery` | ui (datos) | `src/shared/components/data/` → [ui](./REGISTRY-detail/ui.md#datos--sharedcomponentsdata) |
+| `BarChartCard` · `DonutChart` · `Sparkline` · `KpiStrip` · `ProgressTrack` · `StatCard` · `DistributionBar` · `ChartLegend` · `SERIES_COLORS` | ui (gráficos) | `src/shared/components/charts/` → [ui](./REGISTRY-detail/ui.md#gráficos--sharedcomponentscharts) |
 | `EmptyState` · `LoadingState` · `ErrorState` · `NotFoundView` | ui (feedback) | `src/shared/components/feedback/` → [ui](./REGISTRY-detail/ui.md#feedback--sharedcomponentsfeedback) |
 | `useFieldValidation` · `collectFieldErrors` · `SaveResult` · `useFormState` · `useNumericDraft` · `parseMoneyInput` · `formatMoneyInput` · `maskPhone` · `phoneValueFromInput` · `toggleDay` | ui (formularios) | `src/shared/forms/` → [ui](./REGISTRY-detail/ui.md#formularios--sharedforms--sharedcomponentsuiform) |
 | `FormField` · `TextField` · `PasswordField` · `PhoneField` · `NumberField` · `MoneyField` · `TextareaField` · `SelectField` · `ComboboxField` · `CheckboxField` · `SwitchField` · `RadioCardsField` · `DateField` · `DateTimeField` · `TimeField` · `DaysOfWeekField` · `FormActions` · `InputControl` · `useFieldChrome` | ui (formularios) | `src/shared/components/ui/form/` → [ui](./REGISTRY-detail/ui.md#formularios--sharedforms--sharedcomponentsuiform) |
-| `Panel` | ui | `src/shared/components/ui/panel.tsx` → [ui](./REGISTRY-detail/ui.md#panel--sharedcomponentsuipaneltsx) |
+| `Panel` · `NavChevron` · `InfoHint` · `FormCard` · `ButtonLink` | ui | `src/shared/components/ui/panel.tsx` → [ui](./REGISTRY-detail/ui.md#panel--sharedcomponentsuipaneltsx) |
 | `useAsyncData` | hooks (datos) | `src/shared/hooks/use-async-data.ts` → [ui](./REGISTRY-detail/ui.md#useasyncdata--sharedhooksuse-async-datats) |
 | `FormDialogShell` · `useDialogSubmit` | ui (finanzas) | `src/shared/components/finanzas/` → [ui](./REGISTRY-detail/ui.md#finanzas--sharedcomponentsfinanzas) |
-| `MovimientoCard` · `EstadoPagoBadge` · `MovimientoFilterTabs` · `filterMovimientosBy` · `confirmPagarReembolso` · `GastoFormDialog` · `IngresoFormDialog` · `toGastoDto`/`toGastoEventoDto`/`toIngresoDto` | ui (finanzas) | `src/shared/components/finanzas/` → [ui](./REGISTRY-detail/ui.md#finanzas--sharedcomponentsfinanzas) |
+| `MovimientoCard` · `MovimientosTable` · `MovimientoConcepto` · `EstadoPagoBadge` · `MovimientoFilterTabs` · `filterMovimientosBy` · `confirmPagarReembolso` · `GastoFormDialog` · `IngresoFormDialog` · `toGastoDto`/`toGastoEventoDto`/`toIngresoDto` | ui (finanzas) | `src/shared/components/finanzas/` → [ui](./REGISTRY-detail/ui.md#finanzas--sharedcomponentsfinanzas) |
 | `fetchPersonasActivas` · `fetchCajas` · `fetchFondoSolidario` · `fetchSaldoPersonal` · `cajaLabel` · `personaOptions` | api (lecturas) | `src/shared/queries/` → [api](./REGISTRY-detail/api.md#lecturas-transversales--sharedqueries) |

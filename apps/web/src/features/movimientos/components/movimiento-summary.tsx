@@ -54,7 +54,7 @@ export function MovimientoSummary({
         >
           {C.SUMMARY_TITLE}
         </h2>
-        <KeyValueList items={items} columns={3} />
+        <KeyValueList items={items} columns={2} />
       </section>
     </div>
   );

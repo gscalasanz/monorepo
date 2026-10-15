@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeftRight, Info, ListOrdered, Plus } from 'lucide-react';
+import { ArrowLeftRight, Info, Plus } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 import { CAJAS_LINKS } from '@/features/cajas/constants/cajas';
@@ -13,14 +13,14 @@ export interface CajaGrupoActionsProps {
   readonly onVerDetalles: () => void;
 }
 
-/** Acciones de la caja de grupo: registrar, transferir a rama, detalles y ver todos. */
+/** Acciones de la caja de grupo: registrar, transferir a rama y detalles («ver todos» es el link del panel). */
 export function CajaGrupoActions({
   cajaId,
   onTransferir,
   onVerDetalles,
 }: CajaGrupoActionsProps) {
   return (
-    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:justify-end">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:flex lg:flex-wrap lg:justify-end">
       <LinkButton
         href={CAJAS_LINKS.movimientoNuevo(cajaId)}
         icon={<Plus aria-hidden />}
@@ -41,13 +41,6 @@ export function CajaGrupoActions({
       >
         {C.VER_DETALLES}
       </Button>
-      <LinkButton
-        href={CAJAS_LINKS.movimientosDeCaja(cajaId)}
-        variant="secondary"
-        icon={<ListOrdered aria-hidden />}
-      >
-        {C.VER_TODOS_MOVIMIENTOS}
-      </LinkButton>
     </div>
   );
 }

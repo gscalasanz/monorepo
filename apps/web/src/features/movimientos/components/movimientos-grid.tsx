@@ -6,7 +6,6 @@ import { AppDataGrid, type PageChange } from '@/shared/components/data';
 import { EmptyState } from '@/shared/components/feedback';
 import type { Movimiento } from '@/shared/domain';
 import { MOVIMIENTOS_COPY as C } from '@/features/movimientos/constants/copy';
-import { TIPO_TAB } from '@/features/movimientos/constants/movimientos';
 import type { MovimientosListState } from '@/features/movimientos/helpers/list-params';
 import { emptyHint } from '@/features/movimientos/helpers/view-model';
 import { movimientoColumns } from '@/features/movimientos/components/movimiento-columns';
@@ -32,11 +31,7 @@ export function MovimientosGrid({
   onPageChange,
   onDelete,
 }: MovimientosGridProps) {
-  const showTipo = state.tab === TIPO_TAB.TODOS;
-  const columns = useMemo(
-    () => movimientoColumns({ showTipo, onDelete }),
-    [showTipo, onDelete],
-  );
+  const columns = useMemo(() => movimientoColumns({ onDelete }), [onDelete]);
   return (
     <AppDataGrid
       columns={columns}

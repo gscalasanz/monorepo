@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import {
   FilterBar,
+  ListToolbar,
   SegmentedTabs,
   type FilterValues,
 } from '@/shared/components/data';
@@ -20,6 +21,8 @@ interface InscripcionesToolbarProps {
   readonly currentYear: number;
   /** La lista agrega "Buscar" (filtro local por nombre). */
   readonly withSearch?: boolean;
+  /** Sin hairline ni padding: la barra va suelta sobre el fondo (dashboard). */
+  readonly bare?: boolean;
 }
 
 /** Tabs Scout Argentina / Grupo + filtros Año / Tipo de Deuda / Rama. */
@@ -30,13 +33,14 @@ export function InscripcionesToolbar({
   onFiltersChange,
   currentYear,
   withSearch = false,
+  bare = false,
 }: InscripcionesToolbarProps) {
   const fields = useMemo(
     () => buildFilterFields({ currentYear, withSearch }),
     [currentYear, withSearch],
   );
   return (
-    <div className="flex flex-col gap-3">
+    <ListToolbar bare={bare}>
       <SegmentedTabs
         items={TIPO_TABS}
         value={tipo}
@@ -48,7 +52,8 @@ export function InscripcionesToolbar({
         fields={fields}
         value={filterValues}
         onChange={onFiltersChange}
+        className="min-w-0 basis-full md:basis-0 md:flex-1"
       />
-    </div>
+    </ListToolbar>
   );
 }

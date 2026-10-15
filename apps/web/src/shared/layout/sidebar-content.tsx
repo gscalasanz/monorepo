@@ -6,7 +6,10 @@ import { NAV_FOOTER_ITEM, isActivePath } from '@/shared/layout/nav-config';
 import { SidebarBrand } from '@/shared/layout/sidebar-brand';
 import { SidebarLink } from '@/shared/layout/sidebar-link';
 import { SidebarNav } from '@/shared/layout/sidebar-nav';
+import { SIDEBAR_ICON_BUTTON } from '@/shared/layout/sidebar-styles';
 import { SidebarUser } from '@/shared/layout/sidebar-user';
+import { ThemeToggle } from '@/shared/layout/theme-toggle';
+import { cn } from '@/shared/lib/utils';
 
 interface SidebarContentProps {
   readonly collapsed: boolean;
@@ -21,12 +24,17 @@ export function SidebarContent({ collapsed, onNavigate }: SidebarContentProps) {
       <SidebarBrand collapsed={collapsed} />
       <SidebarNav collapsed={collapsed} onNavigate={onNavigate} />
       <div className="flex flex-col gap-3 border-t border-sidebar-ink/15 pt-3">
-        <SidebarLink
-          item={NAV_FOOTER_ITEM}
-          collapsed={collapsed}
-          active={isActivePath(pathname, NAV_FOOTER_ITEM.href)}
-          onNavigate={onNavigate}
-        />
+        <div className={cn('flex items-center gap-1', collapsed && 'flex-col')}>
+          <div className="min-w-0 flex-1">
+            <SidebarLink
+              item={NAV_FOOTER_ITEM}
+              collapsed={collapsed}
+              active={isActivePath(pathname, NAV_FOOTER_ITEM.href)}
+              onNavigate={onNavigate}
+            />
+          </div>
+          <ThemeToggle className={SIDEBAR_ICON_BUTTON} />
+        </div>
         <SidebarUser collapsed={collapsed} />
       </div>
     </div>

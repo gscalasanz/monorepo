@@ -1,6 +1,6 @@
 import { CircleCheck } from 'lucide-react';
 
-import { KpiStrip } from '@/shared/components/charts';
+import { KpiStrip, ProgressTrack } from '@/shared/components/charts';
 import { Money } from '@/shared/components/data';
 import { Panel } from '@/shared/components/ui/panel';
 import type { Evento, EventoKpis as Kpis, StockEntrega } from '@/shared/domain';
@@ -27,6 +27,7 @@ export function EventoKpis({
       items={kpiConfigsFor(evento).map((config) => ({
         id: config.id,
         label: config.label,
+        hint: config.hint,
         value: <Money amount={kpis?.[config.id] ?? 0} size="figure-md" />,
       }))}
     />
@@ -43,23 +44,25 @@ export function EntregasPorProducto({
   if (kpis.length === 0) return null;
   return (
     <Panel title={C.entregasPorProducto}>
-      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+      <ul className="grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
         {kpis.map((kpi) => (
-          <li
-            key={kpi.productoId}
-            className="flex flex-col gap-1 rounded-lg border border-border p-3"
-          >
-            <span className="truncate text-[13px] text-ink-muted">
-              {kpi.productoNombre}
+          <li key={kpi.productoId} className="flex flex-col gap-2">
+            <span className="flex items-baseline justify-between gap-3 text-sm">
+              <span className="truncate text-ink">{kpi.productoNombre}</span>
+              <span className="flex shrink-0 items-center gap-1.5 font-medium text-ink tabular-nums">
+                {kpi.cantidadEntregada}
+                <span className="text-ink-subtle">/</span>
+                {kpi.cantidadVendida}
+                {isEntregaCompleta(kpi) && kpi.cantidadVendida > 0 && (
+                  <CircleCheck aria-hidden className="size-4 text-success" />
+                )}
+              </span>
             </span>
-            <span className="flex items-center gap-1.5 text-lg font-semibold text-ink tabular-nums">
-              {kpi.cantidadEntregada}
-              <span className="text-ink-subtle">/</span>
-              {kpi.cantidadVendida}
-              {isEntregaCompleta(kpi) && kpi.cantidadVendida > 0 && (
-                <CircleCheck aria-hidden className="size-4 text-success" />
-              )}
-            </span>
+            <ProgressTrack
+              value={kpi.cantidadEntregada}
+              max={kpi.cantidadVendida}
+              color="var(--color-success)"
+            />
           </li>
         ))}
       </ul>

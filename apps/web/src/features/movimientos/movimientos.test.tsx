@@ -88,14 +88,12 @@ describe('MovimientosListView', () => {
     expect(screen.getByText('1 registros')).toBeInTheDocument();
     for (const header of [
       'Fecha',
-      'Tipo',
       'Concepto',
-      'Monto',
+      'Caja',
       'Medio de Pago',
       'Estado',
-      'Caja',
       'Responsable',
-      'Comprobante',
+      'Monto',
     ]) {
       expect(
         screen.getByRole('columnheader', { name: header }),
@@ -105,7 +103,31 @@ describe('MovimientosListView', () => {
     expect(screen.getByText('Laura')).toBeInTheDocument();
   });
 
-  it('respeta los query params iniciales y oculta "Tipo" fuera de Todos', async () => {
+  it('Tipo y Descripción ya no son columnas: el tile dice la dirección y la descripción es la sub-línea', async () => {
+    api.fetchMovimientosPage.mockResolvedValue({ data: [MOV], meta: META });
+    render(<MovimientosListView />);
+    await screen.findByText('Garrafa');
+    for (const header of ['Tipo', 'Descripción', 'Comprobante']) {
+      expect(
+        screen.queryByRole('columnheader', { name: header }),
+      ).not.toBeInTheDocument();
+    }
+    const row = screen.getByText('Garrafa').closest('tr') as HTMLElement;
+    expect(within(row).getByRole('img', { name: /Egreso|Ingreso/ })).toBeInTheDocument();
+  });
+
+  it('Editar y Eliminar viven en el menú ⋯ de la fila', async () => {
+    const user = userEvent.setup();
+    api.fetchMovimientosPage.mockResolvedValue({ data: [MOV], meta: META });
+    render(<MovimientosListView />);
+    const row = (await screen.findByText('Garrafa')).closest('tr') as HTMLElement;
+    expect(within(row).queryByRole('button', { name: 'Eliminar' })).not.toBeInTheDocument();
+    await user.click(within(row).getByRole('button', { name: /^Acciones para/ }));
+    expect(await screen.findByRole('menuitem', { name: 'Editar' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Eliminar' })).toBeInTheDocument();
+  });
+
+  it('respeta los query params iniciales', async () => {
     searchParams = new URLSearchParams('cajaId=c1&tipo=egreso');
     api.fetchMovimientosPage.mockResolvedValue({ data: [MOV], meta: META });
     render(<MovimientosListView />);
@@ -115,9 +137,6 @@ describe('MovimientosListView', () => {
         query: expect.objectContaining({ cajaId: 'c1', tipo: 'egreso' }),
       }),
     );
-    expect(
-      screen.queryByRole('columnheader', { name: 'Tipo' }),
-    ).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Egresos' })).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -169,8 +188,9 @@ describe('MovimientosListView', () => {
     const row = (await screen.findByText('Garrafa')).closest('tr');
     expect(row).not.toBeNull();
     await user.click(
-      within(row as HTMLElement).getByRole('button', { name: 'Eliminar' }),
+      within(row as HTMLElement).getByRole('button', { name: /^Acciones para/ }),
     );
+    await user.click(await screen.findByRole('menuitem', { name: 'Eliminar' }));
     await waitFor(() =>
       expect(notifySuccess).toHaveBeenCalledWith(
         'Movimiento eliminado exitosamente',

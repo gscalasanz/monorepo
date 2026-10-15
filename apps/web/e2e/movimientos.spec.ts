@@ -74,7 +74,8 @@ test.describe('movimientos', () => {
     await expect(row).toBeVisible();
 
     // Editar descripción y estado
-    await row.getByRole('button', { name: 'Editar' }).click();
+    await row.getByRole('button', { name: /^Acciones para/ }).click();
+    await page.getByRole('menuitem', { name: 'Editar' }).click();
     await expect(page).toHaveURL(/\/movimientos\/[^/]+\/editar$/);
     await expect(page.getByText('Datos del Movimiento')).toBeVisible();
     const editado = `${descripcion} editado`;
@@ -92,7 +93,8 @@ test.describe('movimientos', () => {
     await expect(editedRow.getByText('Pendiente de Reembolso')).toBeVisible();
 
     // Eliminar
-    await editedRow.getByRole('button', { name: 'Eliminar' }).click();
+    await editedRow.getByRole('button', { name: /^Acciones para/ }).click();
+    await page.getByRole('menuitem', { name: 'Eliminar' }).click();
     await page
       .getByRole('alertdialog')
       .getByRole('button', { name: 'Eliminar' })

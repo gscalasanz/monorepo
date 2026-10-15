@@ -9,27 +9,23 @@ import {
 } from '@/shared/domain';
 import type { PersonaDashboard } from '@/features/personas/models/dashboard-schema';
 
-/** Rama · tipo · cargo · estado (Activo / Deshabilitado con ícono). */
+/** Rama · tipo · cargo (si no repite el tipo) · estado (Activo / Deshabilitado con ícono). */
 export function PersonaBadges({
   persona,
 }: {
   readonly persona: PersonaDashboard['persona'];
 }) {
   const disabled = isPersonaDisabled(persona);
+  const tipoLabel = PERSONA_TYPE_LABELS[persona.tipo];
+  const cargoLabel = persona.cargo
+    ? CARGO_EDUCADOR_LABELS[persona.cargo]
+    : null;
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {persona.rama ? <RamaChip rama={persona.rama} /> : null}
-      <StatusBadge
-        label={PERSONA_TYPE_LABELS[persona.tipo]}
-        tone="neutral"
-        hideIcon
-      />
-      {persona.cargo ? (
-        <StatusBadge
-          label={CARGO_EDUCADOR_LABELS[persona.cargo]}
-          tone="neutral"
-          hideIcon
-        />
+      <StatusBadge label={tipoLabel} tone="neutral" hideIcon />
+      {cargoLabel && cargoLabel !== tipoLabel ? (
+        <StatusBadge label={cargoLabel} tone="neutral" hideIcon />
       ) : null}
       <StatusBadge
         label={ESTADO_PERSONA_LABELS[persona.estado]}

@@ -40,7 +40,7 @@ function EventoForm({ evento }: EventoFormProps) {
       id={formId}
       noValidate
       onSubmit={(event) => void form.submit(event)}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 md:gap-6"
     >
       {form.error && (
         <p
@@ -77,7 +77,7 @@ function DestinoMeta({ evento }: { readonly evento: Evento }) {
 /** `/eventos/crear` */
 export function EventoCreateView() {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       <PageHeader
         title={C.newTitle}
         subtitle={C.newSubtitle}
@@ -96,7 +96,7 @@ export function EventoEditView({ id }: { readonly id: string }) {
   });
   const evento = query.data;
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       <PageHeader
         title={C.editTitle}
         subtitle={C.editSubtitle}

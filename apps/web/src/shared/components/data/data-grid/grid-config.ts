@@ -36,10 +36,14 @@ export const DATA_GRID_I18N_ES: DataGridI18nOverrides = {
 
 /** Tabla densa (DESIGN §Tabla densa): header 12px ink-subtle, filas 48px, hover recessed 70%. */
 export const DENSE_TABLE_CLASSES = {
-  headerRow: '[&>th]:h-9 [&>th]:text-xs [&>th]:font-medium [&>th]:text-ink-subtle [&>th]:whitespace-nowrap',
+  headerRow:
+    '[&>th]:h-9 [&>th]:text-xs [&>th]:font-medium [&>th]:text-ink-subtle [&>th]:whitespace-nowrap',
   bodyRow:
     'h-12 text-[13px] text-ink transition-colors hover:bg-recessed/70 data-[state=selected]:bg-brand-soft/70 [&>td]:border-border',
   edgeCell: 'first:pl-[18px] last:pr-[18px]',
 } as const;
 
 export const MONEY_CELL_CLASS = 'text-right tabular-nums';
+
+/** Id de la columna ▸ que agrega `expandable` (la lista mobile la omite). */
+export const EXPAND_COLUMN_ID = '__expand';

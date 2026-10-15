@@ -1,9 +1,12 @@
 /** `@/shared/components/data` — tabla, badges, montos, filtros y listas de datos. */
+export { ActionsMenu, type ActionLink, type ActionsMenuProps } from './actions-menu';
 export { DATA_COPY } from './copy';
 export * from './data-grid';
 export { DirectionTile, type DirectionTileProps } from './direction-tile';
 export * from './filter-bar';
+export { InitialsAvatar, type InitialsAvatarProps } from './initials-avatar';
 export { KeyValueList, type KeyValueItem, type KeyValueListProps } from './key-value-list';
+export { ListPanel, ListToolbar, type ListPanelProps } from './list-panel';
 export { Money, type MoneyProps, type MoneySize } from './money';
 export {
   MINUS_SIGN,

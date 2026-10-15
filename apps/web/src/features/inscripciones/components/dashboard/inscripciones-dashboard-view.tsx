@@ -39,6 +39,7 @@ export function InscripcionesDashboardView() {
         filterValues={dashboard.filterValues}
         onFiltersChange={dashboard.onFiltersChange}
         currentYear={dashboard.currentYear}
+        bare
       />
       {isLoading && !consolidado ? (
         <LoadingState variant="skeleton" rows={6} label={C.LOADING} />

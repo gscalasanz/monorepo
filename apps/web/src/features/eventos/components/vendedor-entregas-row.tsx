@@ -61,7 +61,7 @@ function EntregaItem({
 }) {
   const fecha = entregaFechaLabel(entrega);
   return (
-    <li className="flex items-start justify-between gap-2 rounded-lg bg-recessed p-3">
+    <li className="flex items-start justify-between gap-2 rounded-lg border border-border bg-surface p-3">
       <div className="flex min-w-0 flex-col gap-1 text-sm">
         <span className="text-xs text-ink-subtle tabular-nums">{fecha}</span>
         <ul>
@@ -122,7 +122,10 @@ function EntregasHistorial({
   onDelete,
 }: VendedorEntregasRowProps & { readonly id: string }) {
   return (
-    <div id={id} className="border-t border-border p-3">
+    <div
+      id={id}
+      className="border-t border-border bg-canvas px-4 py-3 md:px-[18px]"
+    >
       {row.entregas.length === 0 ? (
         <p className="text-sm text-ink-muted">{C.sinEntregas}</p>
       ) : (
@@ -147,8 +150,8 @@ export function VendedorEntregasRowItem(props: VendedorEntregasRowProps) {
   const [expanded, setExpanded] = useState(false);
   const detailsId = useId();
   return (
-    <li className="rounded-xl border border-border bg-surface shadow-xs">
-      <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between">
+    <li>
+      <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-[18px]">
         <button
           type="button"
           aria-expanded={expanded}

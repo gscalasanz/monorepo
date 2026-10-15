@@ -25,6 +25,7 @@ export {
   CONTROL_SURFACE,
   type ControlSize,
 } from './field-styles';
+export { FormCard, type FormCardProps } from './form-card';
 export { FormActions, type FormActionsProps } from './form-actions';
 export { FormField, type FormFieldProps } from './form-field';
 export { InputControl, type InputControlProps } from './input-control';

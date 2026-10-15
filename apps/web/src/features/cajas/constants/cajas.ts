@@ -1,21 +1,14 @@
 /** Constantes del módulo cajas (tabs, límites, rutas de navegación). */
 import { pathSegment } from '@/shared/api';
-import { APP_ROUTES, PERSONA_TYPE_ROUTES } from '@/shared/constants';
+import { APP_ROUTES, CAJAS_TAB, CAJAS_TAB_PARAM, PERSONA_TYPE_ROUTES, type CajasTab } from '@/shared/constants';
 import { CAJA_TYPE, PERSONA_TYPE } from '@/shared/domain';
 
-export const CAJAS_TAB = {
-  GRUPO: 'grupo',
-  RAMA: 'rama',
-  PERSONAL: 'personal',
-  FONDO_SOLIDARIO: 'fondo-solidario',
-} as const;
-
-export type CajasTab = (typeof CAJAS_TAB)[keyof typeof CAJAS_TAB];
+export { CAJAS_TAB, type CajasTab } from '@/shared/constants';
 
 export const CAJAS_TABS: readonly CajasTab[] = Object.values(CAJAS_TAB);
 
 /** Query param de la tab activa (`/cajas?tab=rama`). */
-export const TAB_QUERY_PARAM = 'tab';
+export const TAB_QUERY_PARAM = CAJAS_TAB_PARAM;
 
 /** "Últimos Movimientos" de la caja de grupo: primeros N. */
 export const ULTIMOS_MOVIMIENTOS_LIMIT = 10;

@@ -33,7 +33,11 @@ export function BonificarDialog(props: BonificarDialogOptions) {
         className="flex flex-col gap-4"
         onSubmit={state.submit}
       >
-        <BonificarFields state={state} montoTotal={props.montoTotal} />
+        <BonificarFields
+          state={state}
+          montoTotal={props.montoTotal}
+          montoPagado={props.montoPagado}
+        />
       </form>
     </FormDialogShell>
   );

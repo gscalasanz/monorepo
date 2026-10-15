@@ -9,9 +9,14 @@ import { useLoginForm } from '@/features/auth/hooks/use-login-form';
 
 /** Form de login: email + contraseña, error inline y redirección post-login. */
 export function LoginForm() {
-  const { values, validation, update, submit, submitting, error } = useLoginForm();
+  const { values, validation, update, submit, submitting, error } =
+    useLoginForm();
   return (
-    <form noValidate onSubmit={(event) => void submit(event)} className="flex flex-col gap-5">
+    <form
+      noValidate
+      onSubmit={(event) => void submit(event)}
+      className="flex flex-col gap-5"
+    >
       {error && (
         <p
           role="alert"

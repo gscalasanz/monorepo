@@ -8,7 +8,7 @@ import {
   LoadingState,
 } from '@/shared/components/feedback';
 import { TIPO_EVENTO, type Evento } from '@/shared/domain';
-import { ButtonLink } from '@/features/eventos/components/button-link';
+import { ButtonLink } from '@/shared/components/ui/button-link';
 import { EventoDetailHeader } from '@/features/eventos/components/evento-detail-header';
 import {
   EntregasPorProducto,

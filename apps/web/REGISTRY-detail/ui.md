@@ -57,7 +57,7 @@ movimiento en mobile; el bottom-nav se oculta en rutas de formulario, `isFormRou
 
 Importar de `@/shared/components/data`.
 
-- `AppDataGrid<T>` — tabla densa (DataGrid ReUI, TanStack v9): `{ columns: AppColumnDef<T>[], data, isLoading?, emptyState?, pagination?: 'client' (default, `UI_CONFIG.PAGINATION`) | 'none' | { pageIndex, pageSize, total, onChange }, sorting?: { state, onChange, manual? }, initialSorting?, onRowClick?, getRowId?, mobileRow?: (row) => ReactNode, layout?: 'auto'|'table'|'list', ariaLabel? }`. <860px → lista (`mobileRow` o primeras dos columnas). Labels en español (`DATA_GRID_I18N_ES`). `sortableHeader('Fecha')` para headers ordenables; `MONEY_CELL_CLASS` en `meta.cellClassName`/`headerClassName` para montos.
+- `AppDataGrid<T>` — tabla densa (DataGrid ReUI, TanStack v9): `{ columns: AppColumnDef<T>[], data, isLoading?, emptyState?, pagination?: 'client' (default, `UI_CONFIG.PAGINATION`) | 'none' | { pageIndex, pageSize, total, onChange }, sorting?: { state, onChange, manual? }, initialSorting?, onRowClick?, getRowId?, mobileRow?: (row) => ReactNode, layout?: 'auto'|'table'|'list', expandable?: { label: (row) => string, render: (row) => ReactNode }, ariaLabel? }`. `expandable` agrega un ▸ (`ExpandToggle`, columna `__expand`) que abre `render(row)` debajo de la fila, en tabla y en lista mobile (sin `onRowClick`, el clic en la fila también la alterna) (campamentos: pagos del participante). <860px → lista (`mobileRow` o primeras dos columnas). Labels en español (`DATA_GRID_I18N_ES`). `sortableHeader('Fecha')` para headers ordenables; `MONEY_CELL_CLASS` en `meta.cellClassName`/`headerClassName` para montos.
 - `Money` — `{ amount, sign?: 'in'|'out'|'auto', tone?: 'debt', size?: 'inline'|'figure-md'|'figure', decimals?, placeholder? }`. `+`/`−` (U+2212), `$` subordinado. Helpers puros `toMoneyParts`, `formatSignedMoney`.
 - `StatusBadge` — `{ status?, label?, tone?, icon?, hideIcon? }`; tono vía `resolveStatusTone` + estados de pago de DESIGN (parcial, bonificado, a reembolsar, a cobrar); siempre ícono + texto. `resolveBadgeTone`, `BADGE_TONE`.
 - `RamaChip` — `{ rama, variant?: 'chip'|'dot' }` (fuera de las 4 ramas: punto burgundy).
@@ -65,6 +65,7 @@ Importar de `@/shared/components/data`.
 - `KeyValueList` — `{ items: { label, value, id? }[], columns?: 1|2|3|4 }` (equivale a `readonly-card`).
 - `SegmentedTabs` / `ButtonTabs` — `{ items, value, onValueChange, ariaLabel, semantics?: 'tabs'|'toggle', getPanelId? }` (tablist con flechas).
 - `FilterBar` — `{ fields: FilterField[], value: FilterValues, onChange, trailing?, debounceMs? }`; campos `search` (debounce `UI_CONFIG.DEBOUNCE_TIME_MS`), `select` (chip "+ Label" → popover), `chips` (segmentado con "Todos"), `date-range` (`{ from?, to? }` `yyyy-MM-dd`). "Limpiar filtros" emite `{}`. Helpers `setFilterValue`, `hasActiveFilters`, `useDebouncedCommit`.
+- `ListPanel` / `ListToolbar` — `{ toolbar?, ariaLabel?, children }` card ÚNICO de toda lista (filtros arriba, tabla/lista mobile y paginador adentro); `ListToolbar` = fila de tabs + `FilterBar` en una línea (`bare` = suelta sobre el fondo, p. ej. dashboard). Movimientos e Inscripciones lo usan: toda lista nueva debe usarlo.
 - `TotalsBar` — `{ count, ingresos, egresos, neto?, countLabel? }` barra hundida con `aria-live="polite"`.
 - `useMediaQuery(query)` · `MOBILE_LIST_QUERY` — media query SSR-safe.
 
@@ -74,11 +75,12 @@ Importar de `@/shared/components/charts`. Colores solo `var(--color-data-n)` (`S
 
 - `BarChartCard` — `{ title, ariaLabel, data: { label, values: Record<key, number> }[], series: { key, label, color? }[], orientation?: 'vertical'|'horizontal', format?, height?, action? }` (recharts; serie única o pareada con leyenda).
 - `DonutChart` — `{ data: { label, value, color? }[], ariaLabel, format? (default `formatMoney`), centerLabel?, size? }` con total al centro + leyenda con montos.
+- `ProgressTrack` — `{ value, max, color?, ariaLabel? }` pista de 4px (fondos de rama, obligaciones, desglose de deuda); decorativa sin `ariaLabel`, con él es `progressbar`. Acota 0–100 % y tolera `max` 0.
 - `Sparkline` — `{ values, color?, ariaLabel? }` SVG 96×32 (decorativa si no hay `ariaLabel`).
-- `KpiStrip` — `{ items: { id, label, value, delta?: { direction, value, comparison?, tone? }, sparkline?, sparklineColor? }[], ariaLabel? }`: un panel, celdas con hairlines. `KpiDelta` suelto.
+- `KpiStrip` — `{ items: { id, label, value, delta?: { direction, value, comparison?, tone? }, sparkline?, sparklineColor?, footer?, href?, hint? }[], ariaLabel? }`: un panel, celdas con hairlines (`footer` = contenido bajo la cifra, p. ej. barra apilada; `href` = la celda entera navega, con chevron; `hint` = texto que explica el número, con ⓘ `InfoHint`). `KpiDelta` suelto.
 - `StatCard` — `{ icon, title, value, variant?, format?: 'number'|'currency' }` (paridad `stat-card`).
-- `DistributionBar` — `{ segments: { label, value, color? }[], format?, ariaLabel?, showLegend? }` barra segmentada 2px + leyenda.
-- `ChartLegend`, `ChartTooltip` — piezas reutilizables para gráficos propios.
+- `DistributionBar` — `{ segments: { label, value, color?, href? }[], format?, ariaLabel?, showLegend?, legendClassName? }` barra segmentada 2px + leyenda.
+- `ChartLegend`, `ChartTooltip` — piezas reutilizables para gráficos propios. `LegendItem.href?`: la fila entera pasa a ser un link con chevron (los `href` de `DistributionBar` llegan acá).
 
 ## Feedback — `shared/components/feedback/`
 
@@ -123,6 +125,26 @@ Cableado a11y automático (label↔control, `aria-invalid`, `aria-describedby` a
 - `FormActions` — `{ onCancel?, onSave?, saveLabel?, cancelLabel?, saving?, saveDisabled?, form?, extra? }`: barra fija abajo en mobile, estática desde `md`. Sin `onSave` el botón es `type="submit"`.
 - Piezas: `InputControl` (input de marca con `prefix`/`suffix`/`size`), `FieldMessage`, `FieldLabelText`, `ControlStatusIcon`, `ChoiceRow`, `RadioCard`, `DayToggle`, `PasswordToggle`, `CONTROL_SURFACE`/`CONTROL_SIZE`.
 
+## `MovimientoConcepto` — `shared/components/finanzas/movimiento-concepto.tsx`
+
+`{ movimiento: { tipo, concepto, descripcion, comprobanteEntregado } }`: primera columna rica de una tabla de movimientos: `DirectionTile` + nombre del concepto + descripción como sub-línea (reemplaza las columnas «Tipo» y «Descripción») + clip si el comprobante está entregado. La usan Movimientos y Cajas.
+
+## `NavChevron` — `shared/components/ui/nav-chevron.tsx`
+
+`{ className? }`: chevron decorativo (`aria-hidden`) que indica "esto navega". Se desplaza y oscurece con `group-hover:` (el link padre lleva `group`). Lo usan el `action` de `Panel`, `KpiStrip`, `ChartLegend` y las filas navegables del dashboard.
+
+## `FormCard` — `shared/components/ui/form/form-card.tsx`
+
+`{ label, children }`: tarjeta de formulario con la misma superficie que las de movimientos, sin título visible (`label` es el nombre accesible). Siempre dos `FormCard` lado a lado desde `lg` (`grid lg:grid-cols-2 lg:items-start`), página a todo el ancho y `FormActions` sticky: es el patrón de TODOS los formularios.
+
+## `ButtonLink` — `shared/components/ui/button-link.tsx`
+
+- `{ href, children, icon?, variant?: 'primary'|'secondary', size?: 'md'|'sm', className? }`: link con la apariencia de `Button` (navega, no acciona). Usado en eventos y campamentos (alta, "Ver reporte").
+
+## `InfoHint` — `shared/components/ui/info-hint.tsx`
+
+`{ label, text }`: ⓘ que explica un dato (Popover con `openOnHover`: hover en desktop, tap en mobile, teclado). Botón con nombre "Qué significa {label}". Lo usa `KpiStrip` vía `hint`.
+
 ## `Panel` — `shared/components/ui/panel.tsx`
 
 Panel de contenido con header (título + `meta` + link `action` o `headerExtra`). `flush` quita el
@@ -138,6 +160,7 @@ efectos). Patrón de carga de todas las pantallas (no hay react-query).
 
 Piezas de dinero que comparten campamentos y eventos (port de los componentes compartidos de Angular). Copy exacto en `copy.ts`.
 
+- `MovimientosTable({ movimientos: MovimientoCardData[], ariaLabel, deletable?, onDelete?, onPagarReembolso? })`: tabla densa (Fecha · Concepto con tile · Responsable · Medio · Estado · Monto · ⋯ Eliminar), lista en mobile. Reemplaza a las cards en pantallas nuevas (eventos y campamentos). En mobile la fila muestra el estado solo si no es "Pagado" y conserva el ⋯ si es `deletable`.
 - `MovimientoCard({ movimiento: MovimientoCardData, deletable?, deleting?, onDelete?, onPagarReembolso? })`: tarjeta de un movimiento con badge de estado de pago.
 - `EstadoPagoBadge({ movimiento, onPagarReembolso? })`: muestra "Pagado", "Pendiente de Reembolso" o "A cobrar". El de reembolso es un botón ("Marcar como pagado") solo cuando se pasa `onPagarReembolso`.
 - `MovimientoFilterTabs({ value, onValueChange })`: Todos / Ingresos / Egresos / Gastos. `filterMovimientosBy({ movimientos, filtro, isGasto })` devuelve una lista nueva.
@@ -151,6 +174,12 @@ Piezas de dinero que comparten campamentos y eventos (port de los componentes co
   - `toIngresoDto`.
 - Schemas: `gastoFormSchema` e `ingresoFormSchema`, más las listas de opciones de medio y estado de pago.
 - `FormDialogShell({ …, footerExtra?, submitDisabled? })` + `useDialogSubmit`: el armazón de diálogo de formulario que usan los diálogos de gasto e ingreso. Muestra el error inline y no se cierra mientras guarda. Lo reutilizan los diálogos de pago y bonificación de inscripciones y campamentos.
+
+### `ActionsMenu` — `shared/components/data/actions-menu.tsx`
+- `{ label, items: { key, label, href, icon? }[], variant?: 'primary' | 'secondary', className? }`: botón (`primary` = CTA de la vista) con etiqueta + chevron que abre un menú de **links reales** (Base UI Menu, `render={<Link/>}`). Para accesos directos a rutas; para acciones por fila usar `RowActionsMenu`.
+
+### `InitialsAvatar` — `shared/components/data/initials-avatar.tsx`
+- `{ name, size?: 'sm' | 'lg', className? }`: círculo con iniciales (`initialsOf`), decorativo (`aria-hidden`). `sm` = 32px sobre `recessed` (listas densas); `lg` = 56px tono de marca (cabeceras).
 
 ### `RowActionsMenu` — `shared/components/data/row-actions-menu.tsx`
 

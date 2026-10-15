@@ -7,23 +7,28 @@ export const REPORTES_COPY = {
   KPI_TOTAL: 'Deuda total',
   KPI_DOCS: 'Con docs faltantes',
   LOADING: 'Cargando reporte...',
-  ERROR: 'Error al cargar el reporte. Verifique su conexión e intente nuevamente.',
+  ERROR:
+    'Error al cargar el reporte. Verifique su conexión e intente nuevamente.',
   RETRY: 'Reintentar',
   EMPTY: 'No hay deudas pendientes con los filtros seleccionados',
-  COL_NOMBRE: 'Nombre',
-  COL_RAMA: 'Rama',
+  TABLE_LABEL: 'Personas con deuda',
+  LIST_LABEL: 'Reporte de deudas',
+  COL_PERSONA: 'Persona',
+  COL_ACCIONES: 'Acciones',
   COL_DEUDAS: 'Deudas',
   COL_TOTAL: 'Total',
   VER_FICHA: (nombre: string): string => `Ver ficha de ${nombre}`,
   DOCS: (n: number): string => `${n} docs`,
+  SIN_DEUDA_MONETARIA: 'Solo documentación',
   SECTION_MONETARIAS: 'Deudas monetarias',
-  SECTION_AUTORIZACIONES: 'Autorizaciones faltantes',
+  deudasDe: (nombre: string): string => `Deudas monetarias de ${nombre}`,
+  docsDe: (nombre: string): string => `Documentación de ${nombre}`,
+  TOTAL_DEUDA: 'Total adeudado',
+  PAGO_PREFIX: 'Pagó',
+  PAGO_DE: 'de',
+  SIN_FALTANTES: 'Documentación completa',
   SECTION_DOCUMENTACION: 'Documentación',
-  AUT_CAMPAMENTO: (nombre: string, ano: number): string => `Aut. ${nombre} ${ano}`,
   EXPAND: (nombre: string): string => `Ver detalle de ${nombre}`,
-  COLLAPSE: (nombre: string): string => `Ocultar detalle de ${nombre}`,
-  EXPAND_SHORT: 'Ver detalle',
-  COLLAPSE_SHORT: 'Ocultar detalle',
   DOC_OK: 'Entregado',
   DOC_FALTA: 'Falta',
   FILTER_RAMA: 'Rama',
@@ -37,6 +42,9 @@ export const DEBT_LABELS = {
   SCOUT: 'Scout AR',
   GRUPO: 'Grupo',
   INSCRIPCION: 'Inscripción',
+  INSCRIPCION_SCOUT: 'Inscripción Scout AR',
+  INSCRIPCION_GRUPO: 'Inscripción Grupo',
+  campamento: (nombre: string): string => `Campamento ${nombre}`,
 } as const;
 
 export const DOC_LABELS = {
@@ -49,6 +57,9 @@ export const DOC_LABELS = {
   SALIDAS: 'Salidas',
   INGRESO: 'Aut. ingreso',
   APTITUD: 'Apt. física',
+  GROUP_PERSONAL: 'Personal',
+  GROUP_AUTORIZACIONES: 'Autorizaciones de campamento',
+  groupInscripcion: (ano: number): string => `Inscripción ${ano}`,
 } as const;
 
 export const TIPO_DEUDA_LABELS = {
@@ -61,9 +72,15 @@ export const TIPO_DEUDA_LABELS = {
 
 /** Placeholders de Angular (sin API): se mantienen igual. */
 export const PLACEHOLDER_REPORTS = {
-  reembolsos: { title: 'Reporte de Reembolsos Pendientes', body: 'Reporte de reembolsos pendientes' },
+  reembolsos: {
+    title: 'Reporte de Reembolsos Pendientes',
+    body: 'Reporte de reembolsos pendientes',
+  },
   caja: { title: 'Reporte de Caja', body: 'Reporte de movimientos de caja' },
-  eventos: { title: 'Reporte de Eventos', body: 'Reporte de resultados de eventos' },
+  eventos: {
+    title: 'Reporte de Eventos',
+    body: 'Reporte de resultados de eventos',
+  },
   comprobantes: {
     title: 'Reporte de Comprobantes Pendientes',
     body: 'Reporte de comprobantes pendientes',

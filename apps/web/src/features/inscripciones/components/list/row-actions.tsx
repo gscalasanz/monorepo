@@ -1,7 +1,11 @@
-import { Eye, Pencil, Trash2 } from 'lucide-react';
-import Link from 'next/link';
+'use client';
 
-import { Button } from '@/shared/components/ui/button';
+import { Pencil, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import { RowActionsMenu, type RowAction } from '@/shared/components/data';
+import { NavChevron } from '@/shared/components/ui/nav-chevron';
 import { LIST_COPY as C } from '@/features/inscripciones/constants/copy';
 import { inscripcionRoutes } from '@/features/inscripciones/constants/routes';
 
@@ -11,46 +15,38 @@ interface RowActionsProps {
   readonly onDelete: (id: string) => void;
 }
 
-/** Ver / Editar / Eliminar de una fila (íconos con nombre accesible). */
+/** ⋯ con Editar / Eliminar y chevron-link al detalle (la fila entera también navega). */
 export function RowActions({ id, persona, onDelete }: RowActionsProps) {
+  const router = useRouter();
+  const actions: readonly RowAction[] = [
+    {
+      key: 'edit',
+      label: C.EDIT,
+      icon: Pencil,
+      onSelect: () => router.push(inscripcionRoutes.edit(id)),
+    },
+    {
+      key: 'delete',
+      label: C.DELETE,
+      icon: Trash2,
+      destructive: true,
+      onSelect: () => onDelete(id),
+    },
+  ];
   return (
-    // La fila es clickeable (abre el detalle): las acciones no deben propagar el click.
+    // La fila es clickeable: las acciones no deben propagar el click.
     <div
-      role="group"
-      aria-label={C.COL_ACCIONES}
-      className="flex items-center gap-1"
+      className="flex items-center justify-end gap-1"
       onClick={(event) => event.stopPropagation()}
     >
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label={C.actionLabel(C.VIEW, persona)}
-        title={C.VIEW}
-        nativeButton={false}
-        render={<Link href={inscripcionRoutes.detail(id)} />}
+      <RowActionsMenu actions={actions} ariaLabel={C.rowActions(persona)} />
+      <Link
+        href={inscripcionRoutes.detail(id)}
+        aria-label={C.abrir(persona)}
+        className="group flex size-8 items-center justify-center rounded-md hover:bg-recessed focus-visible:outline-2 focus-visible:outline-focus"
       >
-        <Eye aria-hidden />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label={C.actionLabel(C.EDIT, persona)}
-        title={C.EDIT}
-        nativeButton={false}
-        render={<Link href={inscripcionRoutes.edit(id)} />}
-      >
-        <Pencil aria-hidden />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label={C.actionLabel(C.DELETE, persona)}
-        title={C.DELETE}
-        className="hover:text-danger"
-        onClick={() => onDelete(id)}
-      >
-        <Trash2 aria-hidden />
-      </Button>
+        <NavChevron />
+      </Link>
     </div>
   );
 }

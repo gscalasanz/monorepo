@@ -1,5 +1,8 @@
 'use client';
 
+import Link from 'next/link';
+
+import { NavChevron } from '@/shared/components/ui/nav-chevron';
 import {
   MONEY_CELL_CLASS,
   Money,
@@ -7,6 +10,7 @@ import {
   sortableHeader,
   type AppColumnDef,
 } from '@/shared/components/data';
+import { CAJAS_LINKS } from '@/features/cajas/constants/cajas';
 import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
 import { CuentaActions } from '@/features/cajas/components/cuenta-actions';
 import type { CuentaRow } from '@/features/cajas/helpers/cuentas';
@@ -18,6 +22,18 @@ export const CUENTAS_COLUMNS: readonly AppColumnDef<CuentaRow>[] = [
     id: 'nombre',
     accessorFn: (row) => row.nombre,
     header: sortableHeader(C.COL_NOMBRE),
+    cell: ({ row }) =>
+      row.original.propietarioId ? (
+        <Link
+          href={CAJAS_LINKS.fichaPropietario(row.original.propietarioId)}
+          className="group inline-flex items-center gap-1 font-medium text-ink hover:underline"
+        >
+          {row.original.nombre}
+          <NavChevron />
+        </Link>
+      ) : (
+        row.original.nombre
+      ),
   },
   {
     id: 'rama',

@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useId } from 'react';
 
 import { ErrorState, LoadingState } from '@/shared/components/feedback';
-import { FormActions } from '@/shared/components/ui/form';
-import { Panel } from '@/shared/components/ui/panel';
+import { FormActions, FormCard } from '@/shared/components/ui/form';
 import { PageHeader } from '@/shared/layout';
 import { CantidadesTable } from '@/features/eventos/components/cantidades-table';
 import {
@@ -28,23 +27,23 @@ function LoteForm({ state }: { readonly state: VentasLoteState }) {
       id={formId}
       noValidate
       onSubmit={(event) => void state.submit(event)}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 md:gap-6"
     >
-      <Panel title={C.vendedorSection}>
-        <VendedorFields state={state} />
-      </Panel>
-      <Panel title={C.medioSection}>
-        <PagoFields state={state} />
-      </Panel>
-      <Panel title={C.cantidadesSection}>
-        <CantidadesTable
-          productos={state.productos}
-          cantidades={state.form.values.cantidades}
-          onChange={(cantidades) =>
-            state.form.setField('cantidades', cantidades)
-          }
-        />
-      </Panel>
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:items-start">
+        <FormCard label={C.ventaSection}>
+          <VendedorFields state={state} />
+          <PagoFields state={state} />
+        </FormCard>
+        <FormCard label={C.cantidadesSection}>
+          <CantidadesTable
+            productos={state.productos}
+            cantidades={state.form.values.cantidades}
+            onChange={(cantidades) =>
+              state.form.setField('cantidades', cantidades)
+            }
+          />
+        </FormCard>
+      </div>
       <FormActions
         onCancel={() => router.push(state.backHref)}
         cancelLabel={C.cancelar}
@@ -74,7 +73,7 @@ function LoteBody({ state }: { readonly state: VentasLoteState }) {
 export function VentasLoteView({ id }: { readonly id: string }) {
   const state = useVentasLote(id);
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       <PageHeader
         title={C.title}
         subtitle={C.subtitle}

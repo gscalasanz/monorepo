@@ -16,22 +16,18 @@ export const LIST_COPY = {
   COL_PAGADO: 'Pagado',
   COL_PENDIENTE: 'Pendiente',
   COL_ESTADO: 'Estado',
-  COL_SALUD: 'Declaración de Salud',
-  COL_IMAGEN: 'Autorización de Imagen',
-  COL_SALIDAS: 'Salidas Cercanas',
-  COL_INGRESO: 'Autorización de Ingreso',
-  COL_APTITUD: 'Cert. Aptitud Física',
+  COL_PAPELES: 'Papeles',
   COL_ACCIONES: 'Acciones',
-  COL_FECHA: 'Fecha de inscripción',
-  VIEW: 'Ver',
+  COL_FECHA: 'Fecha',
+  PAPELES_COMPLETOS: 'Completos',
+  papelesFaltan: (faltan: readonly string[]): string =>
+    `Falta: ${faltan.join(', ')}`,
+  abrir: (persona: string): string => `Abrir inscripción de ${persona}`,
+  rowActions: (persona: string): string => `Acciones para ${persona}`,
   EDIT: 'Editar',
   DELETE: 'Eliminar',
-  YES: 'Sí',
-  NO: 'No',
   ENTITY: 'inscripción',
   ramaTooltip: (rama: string, count: number): string => `${rama}: ${count}`,
-  actionLabel: (action: string, persona: string): string =>
-    `${action} inscripción de ${persona}`,
 } as const;
 
 export const FILTER_COPY = {
@@ -51,17 +47,20 @@ export const DASHBOARD_COPY = {
   TITLE: 'Dashboard',
   SUBTITLE: 'Inscripciones',
   VIEW_LIST: 'Ver lista',
-  TOTAL: 'Total Inscripciones',
   ALL_YEARS: 'Todos los años',
   DISTRIBUTION: 'Distribución por Rama',
-  FINANCIAL: 'Resumen Financiero',
   ESPERADO: 'Monto Esperado',
   PAGADO: 'Monto Pagado',
   ADEUDADO: 'Monto Adeudado',
   BONIFICADO: 'Bonificado',
   COBRADO: 'Cobrado',
   COBRADO_TITLE: '% Cobrado',
-  ESPERADO_SHORT: 'Esperado',
+  KPIS_LABEL: 'Resumen de inscripciones',
+  COBRADO_DEL_ESPERADO: 'cobrado del monto esperado',
+  VER_DEUDORES: 'Ver deudores',
+  INSCRIPTOS: 'Inscriptos',
+  cobroLabel: (detail: string): string =>
+    `Cobro de las inscripciones: ${detail}`,
   PENDIENTE: 'Pendiente',
   DEUDORES: 'Deudores',
   DEUDA_DINERO: 'Deuda de Dinero',
@@ -71,7 +70,6 @@ export const DASHBOARD_COPY = {
   AMBOS: 'Dinero + Docs',
   AMBOS_DESC: 'Ambos tipos de deuda',
   PERSONAS: 'personas',
-  MONTO_TOTAL: 'Monto total',
   LOADING: 'Cargando dashboard...',
   updated: (fecha: string): string => `Actualizado: ${fecha}`,
   ramaShare: (params: {
@@ -79,7 +77,6 @@ export const DASHBOARD_COPY = {
     readonly count: number;
     readonly pct: string;
   }): string => `${params.rama}: ${params.count} (${params.pct}%)`,
-  cobradoLabel: (pct: string): string => `${pct}% cobrado del monto esperado`,
 } as const;
 
 export const FORM_COPY = {
@@ -95,6 +92,8 @@ export const FORM_COPY = {
   AUTORIZACIONES_DESC:
     'Documentos firmados por el responsable del protagonista',
   PERSONA: 'Persona a inscribir',
+  PERSONA_LABEL: 'Persona',
+  EDIT_READONLY: 'No se modifican una vez creada la inscripción',
   PERSONA_PLACEHOLDER: 'Seleccionar persona',
   PERSONA_EMPTY: 'No hay personas disponibles',
   PERSONA_REQUIRED: 'Selecciona una persona',
@@ -115,7 +114,8 @@ export const FORM_COPY = {
   CUENTA_PERSONAL: 'Cuenta Personal',
   CONSULTANDO_SALDO: 'Consultando saldo...',
   SALDO_DISPONIBLE: 'Saldo disponible',
-  SALDO_PERSONAL_EXCEDIDO: 'El monto supera el saldo disponible de la cuenta personal',
+  SALDO_PERSONAL_EXCEDIDO:
+    'El monto supera el saldo disponible de la cuenta personal',
   USAR_TODO: 'Usar todo →',
   USAR_CUENTA: 'Usar de cuenta personal',
   MONTOS_EXCEDEN:
@@ -124,7 +124,7 @@ export const FORM_COPY = {
   TOTAL: 'Total',
   SALDO_PERSONAL: 'Saldo Personal',
   A_PAGAR: 'A pagar',
-  CANCEL: '← Cancelar',
+  CANCEL: 'Cancelar',
   CREATE: 'Crear inscripción',
   SAVE: 'Guardar cambios',
   CREATED: 'Inscripción creada exitosamente',
@@ -153,13 +153,8 @@ export const AUTH_COPY = {
   SHORT_SALIDAS: 'Salidas',
   SHORT_INGRESO: 'Ingreso',
   SHORT_APTITUD: 'Apto Físico',
-  COMPLETE_TITLE: 'Listo para actividades',
-  COMPLETE_DESC: 'Todo completado',
-  PENDING_TITLE: 'Pendientes',
   PRESENTED: 'Presentada',
   MISSING: 'Falta',
-  pendingCount: (pending: number, total: number): string =>
-    `${pending} de ${total}`,
 } as const;
 
 export const DETAIL_COPY = {
@@ -169,20 +164,18 @@ export const DETAIL_COPY = {
   NOT_FOUND: 'Inscripción no encontrada',
   BACK_TO_LIST: 'Volver al listado',
   SIN_NOMBRE: 'Sin nombre',
-  SALDO_PENDIENTE: 'Saldo pendiente',
   ESTADO_PAGO: 'Estado de pago',
-  AL_DIA: 'Al día',
-  PAGADO: 'pagado',
+  PAGADA: 'Pagada',
+  DEBE: 'Debe',
+  PAGO_PREFIX: 'Pagó',
+  PAGO_DE: 'de',
   INSCRIPCION: 'Inscripción',
   BONIFICACION: 'Bonificación',
-  TOTAL: 'Total',
   PAGADO_LABEL: 'Pagado',
   BONIFICAR: 'Bonificar',
   AJUSTAR_BONIFICACION: 'Ajustar bonificación',
   QUITAR_BONIFICACION: 'Quitar bonificación',
   HISTORIAL: 'Historial de pagos',
-  ADD_PAGO: 'Pago',
-  ADD_PAGO_LABEL: 'Registrar nuevo pago para esta inscripción',
   SIN_PAGOS: 'Sin pagos',
   PRIMER_PAGO: 'Registrá el primer pago',
   DELETE: 'Eliminar',
@@ -190,16 +183,25 @@ export const DETAIL_COPY = {
   DELETED: 'Inscripción eliminada exitosamente',
   BONIFICADA: 'Bonificación otorgada exitosamente',
   BONIFICACION_QUITADA: 'Bonificación quitada exitosamente',
-  ACTIONS: 'Acciones',
   PAGOS_LABEL: 'Lista de pagos realizados',
   subtitle: (tipo: string, ano: number): string => `${tipo} · ${ano}`,
-  pagadoDe: (pagado: string, total: string): string =>
-    `${pagado} pagado de ${total}`,
   progress: (pct: number): string => `${pct}% completado`,
   progressLabel: (pct: number): string => `${pct}% del pago completado`,
   pagosCount: (count: number): string =>
     `${count} ${count === 1 ? 'pago' : 'pagos'}`,
-  editPagoLabel: (monto: string): string => `Editar pago de ${monto}`,
+  pagoActions: (monto: string): string => `Acciones para pago de ${monto}`,
+  EDIT_PAGO: 'Editar pago',
+  REGISTRAR_PAGO: 'Registrar pago',
+  MAS_ACCIONES: 'Más acciones de la inscripción',
+  VER_FICHA: 'Ver ficha',
+  A_PAGAR: 'A pagar',
+  HINT_INSCRIPCION: 'Monto de la inscripción antes de la bonificación',
+  HINT_BONIFICACION: 'Lo que cubre el Fondo Solidario',
+  HINT_A_PAGAR: 'Inscripción menos bonificación',
+  HINT_PAGADO: 'Pagos registrados (efectivo, transferencia o saldo personal)',
+  AUT_COUNT: (entregadas: number, total: number): string =>
+    `${entregadas} de ${total}`,
+  AUT_UPDATE: 'Actualizar',
 } as const;
 
 export const PAGO_COPY = {
@@ -247,11 +249,12 @@ export const BONIFICAR_COPY = {
   MONTO_TOTAL: 'Monto total:',
   SALDO_FONDO: 'Saldo Fondo Solidario:',
   MONTO: 'Monto a Bonificar',
-  EXCEDE_TOTAL: 'No puede exceder el monto total',
+  PAGADO: 'Pagado:',
+  EXCEDE_TOTAL: 'No puede exceder lo que falta pagar',
   FONDO_INSUFICIENTE: 'El fondo solidario no tiene saldo suficiente',
   CANCEL: 'Cancelar',
   CONFIRM: 'Confirmar',
   maximo: (total: number): string => `Máximo: ${formatMoney(total)}`,
-  bonificarTodo: (total: number): string =>
-    `Bonificar el 100% (${formatMoney(total)})`,
+  bonificarPendiente: (pendiente: number): string =>
+    `Bonificar lo pendiente (${formatMoney(pendiente)})`,
 } as const;

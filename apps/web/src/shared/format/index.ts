@@ -2,3 +2,4 @@
 export { formatMoney, type MoneyDecimals, type MoneyOptions } from './money';
 export { humanize, type HumanizeMode } from './humanize';
 export { STATUS_TONE, resolveStatusTone, type StatusTone } from './status';
+export { initialsOf } from './initials';

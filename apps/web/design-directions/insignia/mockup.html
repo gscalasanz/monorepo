@@ -552,10 +552,20 @@ table { border-collapse: collapse; width: 100%; }
 .equation { display: grid; grid-template-columns: 1fr auto 1fr auto 1.15fr; align-items: stretch; }
 .eq-cell { padding: 18px 22px; display: grid; gap: 6px; align-content: start; }
 .eq-op { display: grid; place-items: center; width: 36px; color: var(--color-ink-subtle); font-size: 20px; font-weight: 300; border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); background: var(--color-recessed); }
-.eq-cell.result { background: color-mix(in oklch, var(--color-success-soft) 60%, var(--color-surface)); border-radius: 0 calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px) 0; }
+.eq-cell.result { background: color-mix(in oklch, var(--color-success-soft) 60%, var(--color-surface)); border-radius: 0 calc(var(--radius-xl) - 1px) 0 0; }
+.figure-md.bal { color: var(--color-money-in); }
+.figure-md.bal .cur { color: inherit; opacity: .75; }
 .eq-cell.result .figure-md { color: var(--color-money-in); }
 .eq-cell.result .figure-md .cur { color: inherit; opacity: .75; }
 .eq-note { font-size: 12px; color: var(--color-ink-subtle); }
+.metric { position: relative; }
+.metrics.m6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.metric .label { flex-wrap: nowrap; }
+.info { display: inline-grid; place-items: center; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--color-ink-subtle); cursor: help; }
+.info:hover, .info:focus-visible { color: var(--color-ink); background: var(--color-recessed); outline: none; }
+.info .lucide { width: 14px; height: 14px; }
+.info-tip { position: absolute; z-index: 5; left: 12px; right: 12px; top: 40px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--color-ink); color: var(--color-canvas); font-size: 12px; line-height: 17px; box-shadow: var(--shadow-md, 0 6px 16px rgb(0 0 0 / .18)); opacity: 0; visibility: hidden; transform: translateY(-2px); transition: opacity .12s, transform .12s; pointer-events: none; }
+.metric:has(.info:hover) .info-tip, .metric:has(.info:focus-visible) .info-tip { opacity: 1; visibility: visible; transform: none; }
 .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--color-border); margin: 24px 0 16px; overflow-x: auto; scrollbar-width: none; }
 .tab { height: 40px; padding: 0 12px; display: inline-flex; align-items: center; gap: 8px; color: var(--color-ink-muted); font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
 .tab:hover { color: var(--color-ink); }
@@ -651,7 +661,7 @@ table { border-collapse: collapse; width: 100%; }
 }
 @media (max-width: 1024px) {
   .span-8, .span-4, .span-7, .span-5, .span-6 { grid-column: span 12; }
-  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .metrics, .metrics.m6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .metric:nth-child(3) { border-left: 0; }
   .metric:nth-child(n+3) { border-top: 1px solid var(--color-border); }
 }
@@ -749,7 +759,7 @@ table { border-collapse: collapse; width: 100%; }
   .event-head { flex-direction: column; }
   .equation { grid-template-columns: 1fr; }
   .eq-op { width: auto; height: 28px; border: 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); font-size: 16px; }
-  .eq-cell.result { border-radius: 0 0 calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px); }
+  .eq-cell.result { border-radius: 0; }
 
   /* Formulario mobile */
   .screen-form .page-head { display: none; }
@@ -1138,25 +1148,44 @@ table { border-collapse: collapse; width: 100%; }
         </div>
 
         <article class="panel">
-          <div class="equation">
-            <div class="eq-cell">
-              <div class="label">Recaudación</div>
-              <div class="figure-md"><span class="cur">$</span>458.000</div>
-              <div class="eq-note num">47 docenas y 7 medias docenas</div>
+            <div class="metrics m6" aria-label="KPIs financieros">
+              <div class="metric">
+                <div class="label">Recaudado<button type="button" class="info" aria-label="Qué significa Recaudado" aria-describedby="t-rec"><i data-lucide="info"></i></button></div>
+                <div class="info-tip" role="tooltip" id="t-rec">Plata cobrada a los clientes: precio de venta × cantidad vendida de cada producto.</div>
+                <div><div class="figure-md"><span class="cur">$</span>458.000</div></div>
+                <div class="eq-note">47 docenas y 7 medias docenas</div>
+              </div>
+              <div class="metric">
+                <div class="label">Ganancia Ventas<button type="button" class="info" aria-label="Qué significa Ganancia Ventas" aria-describedby="t-gan"><i data-lucide="info"></i></button></div>
+                <div class="info-tip" role="tooltip" id="t-gan">Ingresos que registró el evento sin contar el costo recuperado. En una venta es el margen: precio de venta menos costo.</div>
+                <div><div class="figure-md"><span class="cur">$</span>301.100</div></div>
+                <div class="eq-note">Se reparte en 14 cuentas personales</div>
+              </div>
+              <div class="metric">
+                <div class="label">Gastado<button type="button" class="info" aria-label="Qué significa Gastado" aria-describedby="t-gas"><i data-lucide="info"></i></button></div>
+                <div class="info-tip" role="tooltip" id="t-gas">Gastos del evento ya pagados. No incluye los que están pendientes de reembolso.</div>
+                <div><div class="figure-md"><span class="cur">$</span>138.100</div></div>
+                <div class="eq-note">4 gastos pagados</div>
+              </div>
+              <div class="metric">
+                <div class="label">Reembolsos Pendientes<button type="button" class="info" aria-label="Qué significa Reembolsos Pendientes" aria-describedby="t-reem"><i data-lucide="info"></i></button></div>
+                <div class="info-tip" role="tooltip" id="t-reem">Gastos que alguien pagó de su bolsillo y todavía no se le devolvieron. Aún no restan del Balance.</div>
+                <div><div class="figure-md"><span class="cur">$</span>33.200</div></div>
+                <div class="eq-note">2 gastos a reembolsar</div>
+              </div>
+              <div class="metric">
+                <div class="label">Balance<button type="button" class="info" aria-label="Qué significa Balance" aria-describedby="t-bal"><i data-lucide="info"></i></button></div>
+                <div class="info-tip" role="tooltip" id="t-bal">Recaudado menos Gastado: lo que le queda al evento hoy. Los reembolsos pendientes todavía no se restan.</div>
+                <div><div class="figure-md bal"><span class="cur">$</span>319.900</div></div>
+                <div class="eq-note">Sin contar reembolsos pendientes</div>
+              </div>
+              <div class="metric">
+                <div class="label">Costo recuperado (grupo)<button type="button" class="info" aria-label="Qué significa Costo recuperado (grupo)" aria-describedby="t-rec2"><i data-lucide="info"></i></button></div>
+                <div class="info-tip" role="tooltip" id="t-rec2">Parte de lo vendido que vuelve a la caja del grupo para cubrir el costo de los productos. No es ganancia. Solo aplica si la ganancia va a cuentas personales.</div>
+                <div><div class="figure-md"><span class="cur">$</span>156.900</div></div>
+                <div class="eq-note">Vuelve a la caja del grupo</div>
+              </div>
             </div>
-            <div class="eq-op" aria-hidden="true">−</div>
-            <div class="eq-cell">
-              <div class="label">Costos y gastos</div>
-              <div class="figure-md"><span class="cur">$</span>171.300</div>
-              <div class="eq-note">Insumos, gas y alquiler de freidora</div>
-            </div>
-            <div class="eq-op" aria-hidden="true">=</div>
-            <div class="eq-cell result">
-              <div class="label">Ganancia neta <span class="badge b-ok" style="margin-left:4px">62,6 % margen</span></div>
-              <div class="figure-md"><span class="cur">$</span>286.700</div>
-              <div class="eq-note">Se reparte en 14 cuentas personales según lo vendido</div>
-            </div>
-          </div>
         </article>
 
         <div class="tabs" role="tablist">

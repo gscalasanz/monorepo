@@ -104,7 +104,7 @@ test.describe('eventos', () => {
 
     await page.goto('/eventos');
     await page.getByRole('searchbox').first().fill(nombre);
-    await expect(page.getByRole('link', { name: nombre })).toBeVisible();
+    await expect(page.getByText(nombre).first()).toBeVisible();
 
     await page.goto(`/eventos/${id}`);
     await expect(
@@ -125,7 +125,7 @@ test.describe('eventos', () => {
     await page.getByRole('button', { name: 'Registrar Ventas' }).click();
 
     await expect(page).toHaveURL(new RegExp(`/eventos/${id}\\?tab=ventas`));
-    await expect(page.getByText('Ventas registradas')).toBeVisible();
+    await expect(page.getByLabel('Ventas registradas')).toBeVisible();
     await expect(page.getByText('Grupo Scout')).toBeVisible();
   });
 });

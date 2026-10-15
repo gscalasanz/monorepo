@@ -2,6 +2,7 @@
 
 import {
   FilterBar,
+  ListToolbar,
   SegmentedTabs,
   type FilterValues,
 } from '@/shared/components/data';
@@ -19,7 +20,7 @@ interface MovimientosToolbarProps {
   readonly onFiltersChange: (filters: FilterValues) => void;
 }
 
-/** Tabs Todos / Ingresos / Egresos + filtros (Concepto, Estado de Pago, Rango de Fechas). */
+/** Una sola línea: tabs Todos / Ingresos / Egresos + filtros (Concepto, Estado de Pago, Rango de Fechas). */
 export function MovimientosToolbar({
   tab,
   onTabChange,
@@ -27,7 +28,7 @@ export function MovimientosToolbar({
   onFiltersChange,
 }: MovimientosToolbarProps) {
   return (
-    <div className="flex flex-col gap-3 border-b border-border p-4 md:px-[18px]">
+    <ListToolbar>
       <SegmentedTabs
         items={TIPO_TABS}
         value={tab}
@@ -40,7 +41,8 @@ export function MovimientosToolbar({
         fields={LIST_FILTER_FIELDS}
         value={filters}
         onChange={onFiltersChange}
+        className="min-w-0 basis-full md:basis-0 md:flex-1"
       />
-    </div>
+    </ListToolbar>
   );
 }

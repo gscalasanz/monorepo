@@ -1,7 +1,11 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { AppDataGrid, Money, type AppColumnDef } from '@/shared/components/data';
+import {
+  AppDataGrid,
+  Money,
+  type AppColumnDef,
+} from '@/shared/components/data';
 import { EmptyState } from '@/shared/components/feedback';
 
 interface Mov {
@@ -12,34 +16,69 @@ interface Mov {
 
 const COLUMNS: readonly AppColumnDef<Mov>[] = [
   { accessorKey: 'concepto', header: 'Concepto' },
-  { accessorKey: 'monto', header: 'Monto', cell: ({ row }) => <Money amount={row.original.monto} sign="auto" /> },
+  {
+    accessorKey: 'monto',
+    header: 'Monto',
+    cell: ({ row }) => <Money amount={row.original.monto} sign="auto" />,
+  },
 ];
 
 const makeRows = (count: number): Mov[] =>
-  Array.from({ length: count }, (_, index) => ({ id: `m${index + 1}`, concepto: `Concepto ${index + 1}`, monto: (index + 1) * 100 }));
+  Array.from({ length: count }, (_, index) => ({
+    id: `m${index + 1}`,
+    concepto: `Concepto ${index + 1}`,
+    monto: (index + 1) * 100,
+  }));
 
 describe('<AppDataGrid>', () => {
   it('renderiza encabezados y filas', () => {
-    render(<AppDataGrid columns={COLUMNS} data={makeRows(2)} layout="table" getRowId={(row) => row.id} />);
-    expect(screen.getByRole('columnheader', { name: 'Concepto' })).toBeInTheDocument();
-    expect(screen.getByRole('cell', { name: 'Concepto 1' })).toBeInTheDocument();
+    render(
+      <AppDataGrid
+        columns={COLUMNS}
+        data={makeRows(2)}
+        layout="table"
+        getRowId={(row) => row.id}
+      />,
+    );
+    expect(
+      screen.getByRole('columnheader', { name: 'Concepto' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('cell', { name: 'Concepto 1' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Concepto 2')).toBeInTheDocument();
   });
 
   it('muestra el empty state si no hay datos', () => {
-    render(<AppDataGrid columns={COLUMNS} data={[]} layout="table" emptyState={<EmptyState title="Sin movimientos" />} />);
+    render(
+      <AppDataGrid
+        columns={COLUMNS}
+        data={[]}
+        layout="table"
+        emptyState={<EmptyState title="Sin movimientos" />}
+      />,
+    );
     expect(screen.getByText('Sin movimientos')).toBeInTheDocument();
   });
 
   it('loading: anuncia "Cargando…" y no muestra filas', () => {
-    render(<AppDataGrid columns={COLUMNS} data={makeRows(3)} isLoading layout="table" />);
+    render(
+      <AppDataGrid
+        columns={COLUMNS}
+        data={makeRows(3)}
+        isLoading
+        layout="table"
+      />,
+    );
     expect(screen.getByRole('status')).toHaveTextContent('Cargando…');
     expect(screen.queryByText('Concepto 1')).not.toBeInTheDocument();
   });
 
   it('paginación cliente: 10 por página (UI_CONFIG) y página siguiente', async () => {
     const user = userEvent.setup();
-    render(<AppDataGrid columns={COLUMNS} data={makeRows(12)} layout="table" />);
+    render(
+      <AppDataGrid columns={COLUMNS} data={makeRows(12)} layout="table" />,
+    );
     expect(screen.getByText('Concepto 10')).toBeInTheDocument();
     expect(screen.queryByText('Concepto 11')).not.toBeInTheDocument();
     expect(screen.getByText('Mostrando 1–10 de 12')).toBeInTheDocument();
@@ -68,9 +107,101 @@ describe('<AppDataGrid>', () => {
   it('onRowClick recibe la fila', async () => {
     const user = userEvent.setup();
     const onRowClick = vi.fn();
-    render(<AppDataGrid columns={COLUMNS} data={makeRows(1)} layout="table" onRowClick={onRowClick} />);
+    render(
+      <AppDataGrid
+        columns={COLUMNS}
+        data={makeRows(1)}
+        layout="table"
+        onRowClick={onRowClick}
+      />,
+    );
     await user.click(screen.getByText('Concepto 1'));
-    expect(onRowClick).toHaveBeenCalledWith(expect.objectContaining({ id: 'm1' }));
+    expect(onRowClick).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'm1' }),
+    );
+  });
+
+  describe('filas expandibles', () => {
+    const expandable = {
+      label: (row: Mov) => `Ver detalle de ${row.concepto}`,
+      render: (row: Mov) => <p>{`Detalle ${row.concepto}`}</p>,
+    };
+
+    it('tabla: el toggle abre y cierra el contenido sin disparar onRowClick', async () => {
+      const user = userEvent.setup();
+      const onRowClick = vi.fn();
+      render(
+        <AppDataGrid
+          columns={COLUMNS}
+          data={makeRows(2)}
+          layout="table"
+          onRowClick={onRowClick}
+          expandable={expandable}
+        />,
+      );
+      const toggle = screen.getByRole('button', {
+        name: 'Ver detalle de Concepto 1',
+      });
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.queryByText('Detalle Concepto 1')).not.toBeInTheDocument();
+      await user.click(toggle);
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      expect(screen.getByText('Detalle Concepto 1')).toBeInTheDocument();
+      expect(screen.queryByText('Detalle Concepto 2')).not.toBeInTheDocument();
+      expect(onRowClick).not.toHaveBeenCalled();
+      await user.click(toggle);
+      expect(screen.queryByText('Detalle Concepto 1')).not.toBeInTheDocument();
+    });
+
+    it('sin onRowClick, el clic en la fila alterna la expansión (tabla)', async () => {
+      const user = userEvent.setup();
+      render(
+        <AppDataGrid
+          columns={COLUMNS}
+          data={makeRows(1)}
+          layout="table"
+          expandable={expandable}
+        />,
+      );
+      await user.click(screen.getByText('Concepto 1'));
+      expect(screen.getByText('Detalle Concepto 1')).toBeInTheDocument();
+      await user.click(screen.getByText('Concepto 1'));
+      expect(screen.queryByText('Detalle Concepto 1')).not.toBeInTheDocument();
+    });
+
+    it('lista mobile: sin onRowClick, el clic en la fila la expande', async () => {
+      const user = userEvent.setup();
+      render(
+        <AppDataGrid
+          columns={COLUMNS}
+          data={makeRows(1)}
+          layout="list"
+          ariaLabel="Lista"
+          expandable={expandable}
+          mobileRow={(row) => <span>{row.concepto}</span>}
+        />,
+      );
+      await user.click(screen.getByRole('button', { name: /Concepto 1/ }));
+      expect(screen.getByText('Detalle Concepto 1')).toBeInTheDocument();
+    });
+
+    it('lista mobile: mismo toggle y el contenido aparece debajo de la fila', async () => {
+      const user = userEvent.setup();
+      render(
+        <AppDataGrid
+          columns={COLUMNS}
+          data={makeRows(1)}
+          layout="list"
+          ariaLabel="Movimientos"
+          expandable={expandable}
+        />,
+      );
+      await user.click(
+        screen.getByRole('button', { name: 'Ver detalle de Concepto 1' }),
+      );
+      const item = screen.getByRole('listitem');
+      expect(within(item).getByText('Detalle Concepto 1')).toBeInTheDocument();
+    });
   });
 
   describe('lista mobile', () => {
@@ -90,8 +221,12 @@ describe('<AppDataGrid>', () => {
       expect(screen.queryByRole('table')).not.toBeInTheDocument();
       const list = screen.getByRole('list', { name: 'Movimientos' });
       expect(within(list).getAllByRole('listitem')).toHaveLength(2);
-      await user.click(screen.getByRole('button', { name: 'móvil Concepto 2' }));
-      expect(onRowClick).toHaveBeenCalledWith(expect.objectContaining({ id: 'm2' }));
+      await user.click(
+        screen.getByRole('button', { name: 'móvil Concepto 2' }),
+      );
+      expect(onRowClick).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'm2' }),
+      );
     });
 
     it('con onRowClick no anida interactivos: el botón de fila es un overlay hermano', async () => {
@@ -121,22 +256,34 @@ describe('<AppDataGrid>', () => {
       expect(onInner).toHaveBeenCalledTimes(1);
       expect(onRowClick).not.toHaveBeenCalled();
       await user.click(screen.getByRole('button', { name: /Concepto 1/ }));
-      expect(onRowClick).toHaveBeenCalledWith(expect.objectContaining({ id: 'm1' }));
+      expect(onRowClick).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'm1' }),
+      );
     });
 
     it('layout="auto" pasa a lista cuando matchMedia matchea (<860px)', () => {
-      const spy = vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
-        matches: true,
-        media: query,
-        onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      }));
-      render(<AppDataGrid columns={COLUMNS} data={makeRows(1)} ariaLabel="Movimientos" />);
-      expect(screen.getByRole('list', { name: 'Movimientos' })).toHaveTextContent('Concepto 1');
+      const spy = vi
+        .spyOn(window, 'matchMedia')
+        .mockImplementation((query: string) => ({
+          matches: true,
+          media: query,
+          onchange: null,
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
+        }));
+      render(
+        <AppDataGrid
+          columns={COLUMNS}
+          data={makeRows(1)}
+          ariaLabel="Movimientos"
+        />,
+      );
+      expect(
+        screen.getByRole('list', { name: 'Movimientos' }),
+      ).toHaveTextContent('Concepto 1');
       expect(screen.queryByRole('table')).not.toBeInTheDocument();
       spy.mockRestore();
     });

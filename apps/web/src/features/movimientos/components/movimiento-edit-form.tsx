@@ -14,7 +14,7 @@ import { MovimientoSummary } from '@/features/movimientos/components/movimiento-
 const CARD =
   'flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-xs md:p-6';
 
-/** Form de edición: resumen de solo lectura + campos editables. */
+/** Form de edición: dos bloques (datos de solo lectura y campos editables), como el alta. */
 export function MovimientoEditForm({
   data,
 }: {
@@ -31,18 +31,20 @@ export function MovimientoEditForm({
     <form
       noValidate
       onSubmit={(event) => void form.submit(event)}
-      className="mx-auto flex w-full max-w-3xl flex-col gap-4 md:gap-6"
+      className="flex flex-col gap-4 md:gap-6"
     >
-      <div className={CARD}>
-        <MovimientoSummary movimiento={movimiento} />
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:items-start">
+        <div className={CARD}>
+          <MovimientoSummary movimiento={movimiento} />
+        </div>
+        <section aria-labelledby="movimiento-editable-title" className={CARD}>
+          <EditEditableFields
+            form={form}
+            personaOptions={options}
+            originalEstado={movimiento.estadoPago}
+          />
+        </section>
       </div>
-      <section aria-labelledby="movimiento-editable-title" className={CARD}>
-        <EditEditableFields
-          form={form}
-          personaOptions={options}
-          originalEstado={movimiento.estadoPago}
-        />
-      </section>
       <FormActions
         onCancel={form.cancel}
         cancelLabel={C.CANCEL}

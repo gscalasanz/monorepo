@@ -106,18 +106,43 @@ beforeEach(() => {
 });
 
 describe('EventosListView', () => {
-  it('muestra stats, cards y filtra por nombre', async () => {
+  it('muestra stats y una tabla donde cada fila navega al detalle', async () => {
     api.fetchEventos.mockResolvedValue([evento, grupo]);
     render(<EventosListView />);
+    const table = await screen.findByRole('region', {
+      name: 'Lista de eventos',
+    });
     expect(
-      await screen.findByRole('link', { name: 'Venta de pastelitos' }),
-    ).toBeInTheDocument();
+      within(table).getByRole('link', { name: 'Venta de pastelitos' }),
+    ).toHaveAttribute('href', '/eventos/evt-1');
+    expect(
+      within(table).getByRole('link', {
+        name: 'Abrir evento Venta de pastelitos',
+      }),
+    ).toHaveAttribute('href', '/eventos/evt-1');
     const stats = screen.getByLabelText('Resumen de eventos');
     expect(within(stats).getByText('Eventos')).toBeInTheDocument();
-    expect(screen.getByText('Salida')).toBeInTheDocument();
-    expect(
-      screen.getAllByRole('link', { name: 'Editar evento' })[0],
-    ).toHaveAttribute('href', '/eventos/evt-1/editar');
+    expect(within(table).getByText('Salida')).toBeInTheDocument();
+    expect(within(table).getAllByText('En curso')).toHaveLength(2);
+  });
+
+  it('el ⋯ de cada fila ofrece editar y eliminar', async () => {
+    const user = userEvent.setup();
+    api.fetchEventos.mockResolvedValue([evento]);
+    render(<EventosListView />);
+    await user.click(
+      await screen.findByRole('button', {
+        name: 'Acciones para Venta de pastelitos',
+      }),
+    );
+    await user.click(await screen.findByRole('menuitem', { name: 'Editar' }));
+    expect(nav.push).toHaveBeenCalledWith('/eventos/evt-1/editar');
+  });
+
+  it('un evento cerrado se marca como Cerrado', async () => {
+    api.fetchEventos.mockResolvedValue([{ ...evento, estaCerrado: true }]);
+    render(<EventosListView />);
+    expect(await screen.findByText('Cerrado')).toBeInTheDocument();
   });
 
   it('vacío: "No hay eventos registrados" + Crear Evento', async () => {
@@ -133,6 +158,15 @@ describe('EventosListView', () => {
 });
 
 describe('EventoCreateView', () => {
+  it('agrupa los campos en dos tarjetas: datos y detalle', () => {
+    render(<EventoCreateView />);
+    const datos = screen.getByRole('region', { name: 'Datos del evento' });
+    const detalle = screen.getByRole('region', { name: 'Detalle' });
+    expect(within(datos).getByLabelText(/Nombre/)).toBeInTheDocument();
+    expect(within(datos).getByText(/Fecha/)).toBeInTheDocument();
+    expect(within(detalle).getByLabelText('Descripción')).toBeInTheDocument();
+  });
+
   it('valida requeridos y crea el evento', async () => {
     const user = userEvent.setup();
     api.createEvento.mockResolvedValue({ ...grupo, id: 'nuevo' });
@@ -184,15 +218,126 @@ describe('EventoDetailView', () => {
     expect(api.habilitarMovimientos).not.toHaveBeenCalled();
   });
 
+  it('cada KPI explica qué representa con su ⓘ', async () => {
+    const user = userEvent.setup();
+    api.fetchEvento.mockResolvedValue(evento);
+    render(<EventoDetailView id="evt-1" />);
+    const strip = await screen.findByLabelText('KPIs financieros');
+    for (const label of [
+      'Recaudado',
+      'Ganancia Ventas',
+      'Gastado',
+      'Reembolsos Pendientes',
+      'Balance',
+      'Costo recuperado (grupo)',
+    ]) {
+      expect(
+        within(strip).getByRole('button', { name: `Qué significa ${label}` }),
+      ).toBeInTheDocument();
+    }
+    await user.click(
+      within(strip).getByRole('button', { name: 'Qué significa Gastado' }),
+    );
+    expect(
+      await screen.findByText(/Gastos del evento ya pagados/),
+    ).toBeInTheDocument();
+  });
+
+  it('encabezado: estado, destino de la ganancia y acciones agrupadas en ⋯', async () => {
+    const user = userEvent.setup();
+    api.fetchEvento.mockResolvedValue(evento);
+    render(<EventoDetailView id="evt-1" />);
+    expect(await screen.findByText('En curso')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Ver reporte' }),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole('button', { name: 'Más acciones del evento' }),
+    );
+    expect(
+      await screen.findByRole('menuitem', { name: 'Hacer privado' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Copiar link' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Editar evento' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('menuitem', { name: 'Cerrar evento' }),
+    ).toBeInTheDocument();
+  });
+
+  it('reporte privado: el menú ofrece hacerlo público y no hay link para copiar', async () => {
+    const user = userEvent.setup();
+    api.fetchEvento.mockResolvedValue({ ...evento, reportePublico: false });
+    render(<EventoDetailView id="evt-1" />);
+    await user.click(
+      await screen.findByRole('button', { name: 'Más acciones del evento' }),
+    );
+    expect(
+      await screen.findByRole('menuitem', { name: 'Hacer público' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: 'Copiar link' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('evento cerrado: sin acciones de edición', async () => {
+    const user = userEvent.setup();
     api.fetchEvento.mockResolvedValue({ ...evento, estaCerrado: true });
     render(<EventoDetailView id="evt-1" />);
     expect(await screen.findByText('Cerrado')).toBeInTheDocument();
+    expect(screen.queryByText('En curso')).not.toBeInTheDocument();
+    await user.click(
+      screen.getByRole('button', { name: 'Más acciones del evento' }),
+    );
     expect(
-      screen.queryByRole('button', { name: 'Cerrar evento' }),
+      await screen.findByRole('menuitem', { name: 'Hacer privado' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: 'Cerrar evento' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('menuitem', { name: 'Editar evento' }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Gestionar Productos' }),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe('tab Productos', () => {
+  it('tabla con costo, ganancia y vendidas; el ⋯ edita y elimina', async () => {
+    const user = userEvent.setup();
+    api.fetchEvento.mockResolvedValue(evento);
+    ventasApi.fetchProductos.mockResolvedValue([
+      { ...productoSinCosto, precioCosto: 200 },
+    ]);
+    ventasApi.deleteProducto.mockResolvedValue(undefined);
+    render(<EventoDetailView id="evt-1" />);
+    const table = await screen.findByRole('region', {
+      name: 'Productos del evento',
+    });
+    expect(within(table).getByText('Pastelitos')).toBeInTheDocument();
+    expect(within(table).getByText('3 vendidas')).toBeInTheDocument();
+    await user.click(
+      within(table).getByRole('button', { name: 'Acciones para Pastelitos' }),
+    );
+    await user.click(await screen.findByRole('menuitem', { name: 'Eliminar' }));
+    await waitFor(() =>
+      expect(ventasApi.deleteProducto).toHaveBeenCalledWith('prod-1'),
+    );
+  });
+
+  it('evento cerrado: la tabla no ofrece acciones', async () => {
+    api.fetchEvento.mockResolvedValue({ ...evento, estaCerrado: true });
+    render(<EventoDetailView id="evt-1" />);
+    const table = await screen.findByRole('region', {
+      name: 'Productos del evento',
+    });
+    expect(
+      within(table).queryByRole('button', { name: /Acciones para/ }),
     ).not.toBeInTheDocument();
   });
 });
@@ -285,7 +430,9 @@ describe('tab Ventas', () => {
       { ...base, id: 'v2', cantidad: 1, estadoCobro: 'cobrado' },
     ]);
     render(<EventoDetailView id="evt-1" />);
-    expect(await screen.findByText('Ventas registradas')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('region', { name: 'Ventas registradas' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('A cobrar')).toBeInTheDocument();
     expect(screen.getByText('3 u')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Registrar cobro/ }));
