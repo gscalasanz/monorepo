@@ -5,12 +5,22 @@ import { useTheme } from "@/shared/theme"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
+/** Variables de sonner (`--{type}-bg/-text/-border`) mapeadas a un token de estado. */
+function statusColors(type: string, token: string): Record<string, string> {
+  return {
+    [`--${type}-bg`]: `var(--color-${token})`,
+    [`--${type}-border`]: `var(--color-${token})`,
+    [`--${type}-text`]: "var(--color-surface)",
+  }
+}
+
 const Toaster = ({ ...props }: ToasterProps) => {
   const { mode: theme } = useTheme()
 
   return (
     <Sonner
       theme={theme}
+      richColors
       className="toaster group"
       icons={{
         success: (
@@ -36,6 +46,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--color-ink)",
           "--normal-border": "var(--color-border)",
           "--border-radius": "var(--radius-lg)",
+          // PATCH Scout: richColors con fondo sólido de estado; `surface` como tinta contrasta en claro y oscuro.
+          ...statusColors("success", "success"),
+          ...statusColors("error", "danger"),
+          ...statusColors("warning", "warning"),
+          ...statusColors("info", "info"),
         } as React.CSSProperties
       }
       toastOptions={{
