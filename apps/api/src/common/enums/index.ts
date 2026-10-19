@@ -1,62 +1,20 @@
 /**
- * Enum definitions for the application
- * All enums centralized - SIN magic strings
- * Based on TRD v2.0 + PRD v1.3
- * Values in lowercase as per TRD specification
+ * Enums de la aplicación — punto de import histórico del api (`common/enums`).
+ *
+ * El vocabulario de dominio que cruza el cable vive en `@scout/shared/enums` y acá solo se
+ * re-exporta (adaptador): así no se tocan los imports existentes y la definición es una sola.
  */
 
 // ============================================================================
-// PERSONAS
+// PERSONAS — definidos en @scout/shared (única definición para api y web)
 // ============================================================================
 
-/**
- * Types of people in the system (Single Table Inheritance discriminator)
- * From PRD §2.1: Protagonista, Educador, Persona Externa
- *
- * AGRUPACION is not a person: it represents the group itself (or any future
- * collective, e.g. a rama) acting as a seller. It exists so that a sale made
- * "by the group" at a park stand has a real vendedor instead of a stand-in
- * member, which used to distort the participation blocks of the event report.
- *
- * An AGRUPACION never has a caja personal, never appears in member listings and
- * is never part of the deudores report. See CajasService.getOrCreateCajaPersonal.
- */
-export enum PersonaType {
-  PROTAGONISTA = 'protagonista',
-  EDUCADOR = 'educador',
-  EXTERNA = 'externo',
-  AGRUPACION = 'agrupacion',
-}
-
-/**
- * States of a persona
- * From PRD §3.1 (F1, F2): active/inactive state
- */
-export enum EstadoPersona {
-  ACTIVO = 'activo',
-  INACTIVO = 'inactivo',
-}
-
-/**
- * Scout branches (Ramas)
- * From PRD §2.2: Manada, Unidad, Caminantes, Rovers
- */
-export enum Rama {
-  MANADA = 'Manada',
-  UNIDAD = 'Unidad',
-  CAMINANTES = 'Caminantes',
-  ROVERS = 'Rovers',
-}
-
-/**
- * Cargos de educadores
- * Rol que desempeña el educador en el grupo scout
- */
-export enum CargoEducador {
-  EDUCADOR = 'Educador',
-  JEFE_DE_RAMA = 'Jefe de Rama',
-  JEFE_DE_GRUPO = 'Jefe de Grupo',
-}
+export {
+  CargoEducador,
+  EstadoPersona,
+  PersonaType,
+  Rama,
+} from '@scout/shared/enums';
 
 // ============================================================================
 // CAJAS Y MOVIMIENTOS

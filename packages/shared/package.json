@@ -1,0 +1,44 @@
+{
+  "name": "@scout/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./enums": {
+      "types": "./dist/enums/index.d.ts",
+      "default": "./dist/enums/index.js"
+    },
+    "./time": {
+      "types": "./dist/time/index.d.ts",
+      "default": "./dist/time/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint \"{src,test}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "date-fns": "^4.4.0",
+    "date-fns-tz": "^3.2.0"
+  },
+  "devDependencies": {
+    "@scout/config": "workspace:*",
+    "@types/node": "^24.19.1",
+    "eslint": "^9.39.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8",
+    "vitest": "^3.2.7"
+  }
+}
