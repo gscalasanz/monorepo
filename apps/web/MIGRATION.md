@@ -3,7 +3,7 @@
 > **Fuente de verdad del avance.** `/goal` trabaja tachando ítems de acá. Si la sesión se corta,
 > la próxima retoma leyendo este archivo + `git log`. Reglas en `CLAUDE.md`.
 >
-> Referencia funcional: `../frontend` (Angular, solo lectura). API: `../backend` (solo lectura).
+> Referencia funcional: `../frontend-deprecated` (Angular, solo lectura). API: `../backend` (solo lectura).
 
 ## Cómo trabajar este archivo
 

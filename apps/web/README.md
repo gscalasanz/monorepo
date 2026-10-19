@@ -2,7 +2,7 @@
 
 Gestión financiera del grupo scout: personas, cajas, movimientos, inscripciones, campamentos,
 eventos (con reporte público), reportes y configuración. Migración del frontend Angular
-(`../frontend`) con paridad funcional y rediseño visual.
+(`../frontend-deprecated`) con paridad funcional y rediseño visual.
 
 - Reglas del repo y del agente: [`CLAUDE.md`](./CLAUDE.md)
 - Estado de la migración: [`MIGRATION.md`](./MIGRATION.md) · reporte final: [`docs/MIGRATION-REPORT.md`](./docs/MIGRATION-REPORT.md)

@@ -15,11 +15,11 @@ resuelva, se resuelve como lo resuelve mi-tienda (`docs/principios-ingenieria.md
 | Catálogo offline de ReUI (fallback del MCP) | `docs/reui/` |
 | Design system de Scout (tokens, componentes, estados) | `docs/DESIGN.md` · `src/app/globals.css` |
 | Índice de lo reutilizable | `REGISTRY.md` + `REGISTRY-detail/<categoría>.md` |
-| Comportamiento de referencia (paridad funcional) | `../frontend/` (Angular 21, **solo lectura**) |
+| Comportamiento de referencia (paridad funcional) | `../frontend-deprecated/` (Angular 21, **solo lectura**) |
 | Contrato de la API | `../backend/` (NestJS, **solo lectura**) + Swagger en `http://localhost:3001/api` |
 
 > **Scope guard:** esto es una **migración con paridad funcional + rediseño visual**. No se agregan
-> features, no se cambian reglas de negocio y **no se toca `../backend` ni `../frontend`**. Si algo
+> features, no se cambian reglas de negocio y **no se toca `../backend` ni `../frontend-deprecated`**. Si algo
 > parece requerir un cambio de backend → anotarlo en `MIGRATION.md §Bloqueos` y seguir con otra cosa.
 
 ---
@@ -183,5 +183,5 @@ la pantalla) → backend (qué devuelve exactamente el endpoint) → tipos/schem
       (`feat(<modulo>): migrar <modulo> a React`).
 
 Herramientas de descubrimiento: **codebase-memory** para entender el código Angular/NestJS (indexar
-`../frontend` y `../backend` si no están), Grep/Glob para texto, subagente Explore para barridos
+`../frontend-deprecated` y `../backend` si no están), Grep/Glob para texto, subagente Explore para barridos
 amplios. **context7** para docs al día de Next/React/Tailwind. **Playwright MCP** para verificar en navegador.
