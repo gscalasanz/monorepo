@@ -10,11 +10,24 @@
       // declarada y la deja fuera del hash de cache, así que sin esta lista un
       // cambio de valor en Vercel devolvería un build viejo apuntando a otra API.
       "env": ["API_URL", "NEXT_PUBLIC_*"],
+      // `.env.local` está gitignoreado y turbo no lo hashea por defecto: sin esto, cambiar
+      // `API_URL` en `apps/web/.env.local` devolvería un build cacheado con la URL vieja.
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": { "dependsOn": ["^build"] },
     "typecheck": { "dependsOn": ["^build"] },
-    "test": { "dependsOn": ["^build"] },
-    "dev": { "cache": false, "persistent": true }
+    // Variables de RUNTIME (no cambian el artefacto, quedan fuera del hash): sin
+    // `passThroughEnv`, el modo estricto las filtra y `PORT=… pnpm dev` o un
+    // `DATABASE_URL` exportado en la shell/CI se perderían en silencio.
+    "test": {
+      "dependsOn": ["^build"],
+      "passThroughEnv": ["CI", "DATABASE_URL", "TEST_DATABASE_URL", "JWT_*", "E2E_*"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["PORT", "FRONTEND_URL", "DATABASE_URL", "JWT_*", "API_URL"]
+    }
   }
 }
