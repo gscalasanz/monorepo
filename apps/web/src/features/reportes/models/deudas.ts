@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 /** Filtros y constantes de `GET /reportes/deudas`; el contrato (schema) vive en `@/shared/domain`. */
 import { RAMAS, type Rama } from '@/shared/domain';
 
@@ -22,6 +24,7 @@ export const TIPO_DEUDA_FILTER = {
   DOCUMENTACION: 'documentacion',
 } as const;
 export type TipoDeudaFilter = (typeof TIPO_DEUDA_FILTER)[keyof typeof TIPO_DEUDA_FILTER];
+export const tipoDeudaFilterSchema = z.nativeEnum(TIPO_DEUDA_FILTER);
 
 const TIPO_VALUES: readonly string[] = Object.values(TIPO_DEUDA_FILTER);
 const RAMA_VALUES: readonly string[] = DEUDA_RAMA_FILTERS;
@@ -33,4 +36,13 @@ export interface DeudaFilters {
   readonly rama?: DeudaRamaFilter;
   readonly ano?: number;
   readonly tipo?: TipoDeudaFilter;
+  /** Texto a buscar en el nombre de la persona. */
+  readonly q?: string;
+  /** Solo la deuda de este campamento. */
+  readonly campamentoId?: string;
+}
+
+/** El consolidado solo se acota por rama (los años y orígenes son lo que ofrece como filtros). */
+export interface ConsolidadoFilters {
+  readonly rama?: DeudaRamaFilter;
 }

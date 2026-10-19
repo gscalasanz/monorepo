@@ -13,10 +13,19 @@ import {
 import { ESTADO_PERSONA, PERSONA_TYPE } from '@/shared/domain';
 import { isPlaceholderReport } from '@/features/reportes/constants/copy';
 import { yearOptions } from '@/features/reportes/constants/filters';
+import type { ConsolidadoDeudas } from '@/features/reportes/models/consolidado';
 import type { PersonaDeuda } from '@/features/reportes/models/deudas';
+import {
+  isInscripcionSelected,
+  toggleInscripcion,
+  withoutTipo,
+} from '@/features/reportes/helpers/origen';
 import { DeudasView, PlaceholderReportView } from '@/features/reportes';
 
-const mocks = vi.hoisted(() => ({ fetchDeudas: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  fetchDeudas: vi.fn(),
+  fetchConsolidado: vi.fn(),
+}));
 vi.mock('@/features/reportes/services/reportes-api', () => mocks);
 
 const DOCS_OK = {
@@ -167,6 +176,23 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
     expect(toDeudaFilters({})).toEqual({});
   });
 
+  it('toDeudaFilters: búsqueda recortada y campamento elegido', () => {
+    expect(toDeudaFilters({ q: '  ana ' }, 'camp-1')).toEqual({
+      q: 'ana',
+      campamentoId: 'camp-1',
+    });
+    expect(toDeudaFilters({ q: '   ' })).toEqual({});
+  });
+
+  it('origen: elegir una inscripción setea tipo + año, y volver a elegirla los quita', () => {
+    const item = { tipo: 'inscripcionesGrupo', ano: 2026, deudaTotal: 1, personasConDeuda: 1 } as const;
+    const elegido = toggleInscripcion({ rama: 'Manada' }, item);
+    expect(elegido).toEqual({ rama: 'Manada', tipo: 'inscripcionesGrupo', ano: '2026' });
+    expect(isInscripcionSelected(elegido, item)).toBe(true);
+    expect(toggleInscripcion(elegido, item)).toEqual({ rama: 'Manada' });
+    expect(withoutTipo(elegido)).toEqual({ rama: 'Manada', ano: '2026' });
+  });
+
   it('yearOptions del año actual hasta 2020 y guard de placeholders', () => {
     expect(yearOptions(2022).map((o) => o.value)).toEqual([
       '2022',
@@ -178,8 +204,78 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
   });
 });
 
+const CONSOLIDADO: ConsolidadoDeudas = {
+  personasConDeuda: 3,
+  deudaTotal: 62000,
+  deudaCampamentos: 52000,
+  deudaInscripcionesScout: 0,
+  deudaInscripcionesGrupo: 10000,
+  campamentos: [
+    { campamentoId: 'camp-inicio', nombre: 'Campamento de Inicio', ano: 2026, deudaTotal: 52000, personasConDeuda: 2 },
+  ],
+  inscripciones: [
+    { tipo: 'inscripcionesGrupo', ano: 2026, deudaTotal: 10000, personasConDeuda: 1 },
+  ],
+};
+
 describe('<DeudasView>', () => {
-  beforeEach(() => mocks.fetchDeudas.mockReset());
+  beforeEach(() => {
+    mocks.fetchDeudas.mockReset();
+    mocks.fetchConsolidado.mockReset();
+    mocks.fetchConsolidado.mockResolvedValue(CONSOLIDADO);
+  });
+
+  it('consolidado del backend: elegir un campamento filtra el listado y se puede quitar', async () => {
+    mocks.fetchDeudas.mockResolvedValue([persona({ deudaTotal: 500 })]);
+    render(<DeudasView />);
+    const boton = await screen.findByRole('button', {
+      name: /Campamento de Inicio 2026/,
+    });
+    expect(boton).toHaveAttribute('aria-pressed', 'false');
+    await userEvent.click(boton);
+    await waitFor(() =>
+      expect(mocks.fetchDeudas).toHaveBeenLastCalledWith(
+        { campamentoId: 'camp-inicio' },
+        expect.anything(),
+      ),
+    );
+    expect(
+      screen.getByRole('button', { name: /Campamento de Inicio 2026/ }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    await userEvent.click(screen.getByRole('button', { name: 'Quitar filtro' }));
+    await waitFor(() =>
+      expect(mocks.fetchDeudas).toHaveBeenLastCalledWith({}, expect.anything()),
+    );
+  });
+
+  it('elegir una inscripción filtra por tipo + año', async () => {
+    mocks.fetchDeudas.mockResolvedValue([persona({ deudaTotal: 500 })]);
+    render(<DeudasView />);
+    await userEvent.click(
+      await screen.findByRole('button', { name: /Inscripciones Grupo 2026/ }),
+    );
+    await waitFor(() =>
+      expect(mocks.fetchDeudas).toHaveBeenLastCalledWith(
+        { tipo: 'inscripcionesGrupo', ano: 2026 },
+        expect.anything(),
+      ),
+    );
+  });
+
+  it('escribir en el buscador consulta al backend con q', async () => {
+    mocks.fetchDeudas.mockResolvedValue([persona({ deudaTotal: 500 })]);
+    render(<DeudasView />);
+    await userEvent.type(
+      await screen.findByRole('searchbox', { name: 'Buscar persona' }),
+      'ana',
+    );
+    await waitFor(() =>
+      expect(mocks.fetchDeudas).toHaveBeenLastCalledWith(
+        { q: 'ana' },
+        expect.anything(),
+      ),
+    );
+  });
 
   it('KPIs, tabla con nombre y chevron a la ficha, chips neutros y filas expandibles', async () => {
     mocks.fetchDeudas.mockResolvedValue([

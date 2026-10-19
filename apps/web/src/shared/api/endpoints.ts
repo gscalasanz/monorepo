@@ -115,6 +115,8 @@ export const API_ENDPOINTS = {
 
   /** Público (sin auth) en el backend. */
   REPORTES_DEUDAS: 'reportes/deudas',
+  /** Autenticado: deuda agrupada por campamento e inscripción (solo orígenes con saldo). */
+  REPORTES_DEUDAS_CONSOLIDADO: 'reportes/deudas/consolidado',
   EXPORTS_XLSX: 'exports/xlsx',
   BACKUPS_DOWNLOAD: 'backups/download',
 } as const;

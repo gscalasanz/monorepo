@@ -31,9 +31,30 @@ export const REPORTES_COPY = {
   EXPAND: (nombre: string): string => `Ver detalle de ${nombre}`,
   DOC_OK: 'Entregado',
   DOC_FALTA: 'Falta',
+  FILTER_SEARCH: 'Buscar persona',
+  FILTER_SEARCH_PLACEHOLDER: 'Buscar persona por nombre...',
   FILTER_RAMA: 'Rama',
   FILTER_ANO: 'Año',
   FILTER_TIPO: 'Tipo de deuda',
+} as const;
+
+/** Consolidado de deuda por origen (campamentos e inscripciones). */
+export const CONSOLIDADO_COPY = {
+  TITLE: 'Consolidado de deudas',
+  META: (personas: number): string =>
+    personas === 1 ? '1 persona con deuda' : `${personas} personas con deuda`,
+  LOADING: 'Cargando consolidado...',
+  ERROR: 'No se pudo cargar el consolidado de deudas.',
+  TOTAL: 'Deuda total',
+  CAMPAMENTOS: 'Campamentos',
+  INSCRIPCIONES_SCOUT: 'Inscripciones Scout AR',
+  INSCRIPCIONES_GRUPO: 'Inscripciones Grupo',
+  FILTER_HINT: 'Tocá un origen para ver solo sus deudas',
+  CLEAR: 'Quitar filtro',
+  EMPTY: 'No hay deudas de plata pendientes',
+  campamento: (nombre: string, ano: number): string => `${nombre} ${ano}`,
+  inscripcion: (tipo: string, ano: number): string => `${tipo} ${ano}`,
+  personas: (n: number): string => (n === 1 ? '1 persona' : `${n} personas`),
 } as const;
 
 /** Etiquetas de deudas y documentos (exactas a Angular). */

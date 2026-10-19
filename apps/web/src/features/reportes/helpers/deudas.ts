@@ -158,12 +158,18 @@ export function summarize(deudas: readonly PersonaDeuda[]): DeudasSummary {
 const asText = (value: FilterValues[string]): string =>
   typeof value === 'string' ? value : '';
 
-/** Valores de la FilterBar → query del backend (vacío = sin filtrar). */
-export function toDeudaFilters(values: FilterValues): DeudaFilters {
+/** Valores de la FilterBar (+ campamento elegido en el consolidado) → query del backend (vacío = sin filtrar). */
+export function toDeudaFilters(
+  values: FilterValues,
+  campamentoId?: string,
+): DeudaFilters {
   const rama = asText(values[FILTER_KEYS.RAMA]);
   const ano = asText(values[FILTER_KEYS.ANO]);
   const tipo = asText(values[FILTER_KEYS.TIPO]);
+  const q = asText(values[FILTER_KEYS.SEARCH]).trim();
   return {
+    ...(q ? { q } : {}),
+    ...(campamentoId ? { campamentoId } : {}),
     ...(isDeudaRamaFilter(rama) ? { rama } : {}),
     ...(ano ? { ano: Number(ano) } : {}),
     ...(isTipoDeudaFilter(tipo) ? { tipo } : {}),
