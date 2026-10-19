@@ -55,10 +55,11 @@ test.describe('movimientos', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Nuevo Movimiento' }),
     ).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Ingreso' })).toHaveAttribute(
+    await expect(page.getByRole('button', { name: 'Egreso' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
+    await page.getByRole('button', { name: 'Ingreso' }).click();
     await page.getByLabel(/^Monto/).fill('1');
     await page.getByRole('combobox', { name: /^Concepto/ }).click();
     await page.getByRole('option', { name: 'Ajuste Inicial' }).click();

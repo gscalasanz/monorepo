@@ -328,7 +328,7 @@ describe('movimiento rápido', () => {
     };
     expect(buildQuickMovimientoDto(values, 'c')).toEqual({
       cajaId: 'c',
-      tipo: 'ingreso',
+      tipo: 'egreso',
       monto: 1,
       concepto: 'ajuste_inicial',
       responsableId: 'u',

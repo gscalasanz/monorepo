@@ -27,10 +27,24 @@ export interface SegmentedTabsProps<TValue extends string = string> {
   readonly semantics?: 'tabs' | 'toggle';
   /** Id del panel que controla cada tab (`aria-controls`). */
   readonly getPanelId?: (value: TValue) => string;
+  /** `subtle` (default) = pill elevada; `solid` = opción activa en color de marca (selector de alta). */
+  readonly variant?: SegmentedVariant;
   readonly className?: string;
 }
 
-const NEXT_KEYS: Readonly<Record<string, number>> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+export type SegmentedVariant = 'subtle' | 'solid';
+
+const SELECTED_CLASS: Readonly<Record<SegmentedVariant, string>> = {
+  subtle: 'bg-surface-raised text-ink shadow-sm',
+  solid: 'bg-brand text-on-brand shadow-sm hover:text-on-brand',
+};
+
+const NEXT_KEYS: Readonly<Record<string, number>> = {
+  ArrowRight: 1,
+  ArrowDown: 1,
+  ArrowLeft: -1,
+  ArrowUp: -1,
+};
 
 function nextEnabledIndex<TValue extends string>(params: {
   readonly items: readonly SegmentedTabItem<TValue>[];
@@ -65,13 +79,17 @@ export function SegmentedTabs<TValue extends string = string>({
   ariaLabel,
   semantics = 'tabs',
   getPanelId,
+  variant = 'subtle',
   className,
 }: SegmentedTabsProps<TValue>) {
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
   const isTabs = semantics === 'tabs';
   const tabStopValue = resolveTabStop(items, value);
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+  const handleKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
     const step = NEXT_KEYS[event.key];
     if (!isTabs || step === undefined) return;
     event.preventDefault();
@@ -86,7 +104,10 @@ export function SegmentedTabs<TValue extends string = string>({
     <div
       role={isTabs ? 'tablist' : 'group'}
       aria-label={ariaLabel}
-      className={cn('inline-flex max-w-full overflow-x-auto rounded-md bg-recessed p-0.5 ring-1 ring-border ring-inset', className)}
+      className={cn(
+        'inline-flex max-w-full overflow-x-auto rounded-md bg-recessed p-0.5 ring-1 ring-border ring-inset',
+        className,
+      )}
     >
       {items.map((item, index) => (
         <SegmentButton
@@ -95,8 +116,11 @@ export function SegmentedTabs<TValue extends string = string>({
           selected={item.value === value}
           tabStop={item.value === tabStopValue}
           isTabs={isTabs}
+          variant={variant}
           panelId={getPanelId?.(item.value)}
-          buttonRef={(node) => { refs.current[index] = node; }}
+          buttonRef={(node) => {
+            refs.current[index] = node;
+          }}
           onSelect={() => onValueChange(item.value)}
           onKeyDown={(event) => handleKeyDown(event, index)}
         />
@@ -111,6 +135,7 @@ interface SegmentButtonProps<TValue extends string> {
   /** Único tab con `tabIndex=0` en el roving focus. */
   readonly tabStop: boolean;
   readonly isTabs: boolean;
+  readonly variant: SegmentedVariant;
   readonly panelId?: string;
   readonly buttonRef: (node: HTMLButtonElement | null) => void;
   readonly onSelect: () => void;
@@ -122,6 +147,7 @@ function SegmentButton<TValue extends string>({
   selected,
   tabStop,
   isTabs,
+  variant,
   panelId,
   buttonRef,
   onSelect,
@@ -142,7 +168,7 @@ function SegmentButton<TValue extends string>({
       className={cn(
         'inline-flex h-10 shrink-0 items-center gap-1.5 rounded-sm px-3 text-sm font-medium whitespace-nowrap text-ink-muted transition-colors md:h-7 md:px-2.5 md:text-xs',
         'hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-45',
-        selected && 'bg-surface-raised text-ink shadow-sm',
+        selected && SELECTED_CLASS[variant],
       )}
     >
       {item.icon}

@@ -3,6 +3,7 @@ import type { FieldOption } from '@/shared/components/ui/form';
 import {
   CAJA_TYPE_LABELS,
   CONCEPTOS_MANUALES_POR_TIPO,
+  CONCEPTO_MOVIMIENTO,
   CONCEPTO_MOVIMIENTO_LABELS,
   ESTADO_PAGO,
   ESTADO_PAGO_LABELS,
@@ -30,8 +31,8 @@ import {
 const SHORT_ID_LENGTH = 8;
 
 export const QUICK_MOVIMIENTO_INITIAL: QuickMovimientoFormValues = {
-  tipo: TIPO_MOVIMIENTO.INGRESO,
-  concepto: null,
+  tipo: TIPO_MOVIMIENTO.EGRESO,
+  concepto: CONCEPTO_MOVIMIENTO.GASTO_GENERAL,
   monto: null,
   responsableId: null,
   medioPago: MEDIO_PAGO.EFECTIVO,

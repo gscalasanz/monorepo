@@ -140,7 +140,7 @@ describe('view-model', () => {
 });
 
 describe('form-mappers', () => {
-  it('valores iniciales: defaults de Angular y ?cajaId solo si existe', () => {
+  it('valores iniciales: egreso + gasto general y ?cajaId solo si existe', () => {
     const values = initialCreateValues({
       cajas: [CAJA],
       cajaId: 'caja-1',
@@ -148,7 +148,8 @@ describe('form-mappers', () => {
     });
     expect(values).toMatchObject({
       cajaId: 'caja-1',
-      tipo: 'ingreso',
+      tipo: 'egreso',
+      concepto: 'gasto_general',
       medioPago: 'efectivo',
       estadoPago: 'pagado',
       fecha: '2026-10-06',
@@ -179,6 +180,7 @@ describe('form-mappers', () => {
         today: '2026-10-06',
       }),
       monto: 1,
+      tipo: 'ingreso' as const,
       concepto: 'ajuste_inicial' as const,
       responsableId: 'per-1',
       descripcion: '  ',
@@ -201,11 +203,14 @@ describe('form-mappers', () => {
   });
 
   it('schema de alta: requeridos con el copy de Angular', () => {
-    const values = initialCreateValues({
-      cajas: [],
-      cajaId: null,
-      today: '2026-10-06',
-    });
+    const values = {
+      ...initialCreateValues({
+        cajas: [],
+        cajaId: null,
+        today: '2026-10-06',
+      }),
+      concepto: null,
+    };
     const result = movimientoCreateSchema.safeParse(values);
     const messages = result.success
       ? []

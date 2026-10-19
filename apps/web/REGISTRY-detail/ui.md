@@ -72,7 +72,7 @@ Importar de `@/shared/components/data`.
 - `RamaChip` — `{ rama, variant?: 'chip'|'dot' }` (fuera de las 4 ramas: punto burgundy).
 - `DirectionTile` — `{ direction: 'in'|'out', decorative? }` tile 28px con flecha.
 - `KeyValueList` — `{ items: { label, value, id? }[], columns?: 1|2|3|4 }` (equivale a `readonly-card`).
-- `SegmentedTabs` / `ButtonTabs` — `{ items, value, onValueChange, ariaLabel, semantics?: 'tabs'|'toggle', getPanelId? }` (tablist con flechas).
+- `SegmentedTabs` / `ButtonTabs` — `{ items, value, onValueChange, ariaLabel, semantics?: 'tabs'|'toggle', variant?: 'subtle'|'solid', getPanelId? }` (tablist con flechas). `solid` = opción activa en `bg-brand` (selector Ingreso/Egreso del alta).
 - `FilterBar` — `{ fields: FilterField[], value: FilterValues, onChange, trailing?, debounceMs? }`; campos `search` (debounce `UI_CONFIG.DEBOUNCE_TIME_MS`), `select` (chip "+ Label" → popover), `chips` (segmentado con "Todos"), `date-range` (`{ from?, to? }` `yyyy-MM-dd`). "Limpiar filtros" emite `{}`. Helpers `setFilterValue`, `hasActiveFilters`, `useDebouncedCommit`.
 - `ListPanel` / `ListToolbar` — `{ toolbar?, ariaLabel?, children }` card ÚNICO de toda lista (filtros arriba, tabla/lista mobile y paginador adentro); `ListToolbar` = fila de tabs + `FilterBar` en una línea (`bare` = suelta sobre el fondo, p. ej. dashboard). Movimientos e Inscripciones lo usan: toda lista nueva debe usarlo.
 - `TotalsBar` — `{ count, ingresos, egresos, neto?, countLabel? }` barra hundida con `aria-live="polite"`.

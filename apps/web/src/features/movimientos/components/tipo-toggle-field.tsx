@@ -39,6 +39,7 @@ export function TipoToggleField({ value, onChange }: TipoToggleFieldProps) {
         onValueChange={onChange}
         ariaLabel={C.TIPO}
         semantics="toggle"
+        variant="solid"
         className="w-full [&>*]:flex-1 [&>*]:justify-center"
       />
     </fieldset>

@@ -12,15 +12,14 @@ import {
  * siempre van en pareja ligada (transferencias, bonificaciones, uso de saldo:
  * cargar una sola pata rompe el saldo de la otra caja) y los pagos de
  * inscripción/campamento (el back solo permite borrarlos desde su flujo).
+ * También quedan afuera reembolso, asignación a fondo de rama y recupero de costo.
  */
 export const CONCEPTOS_MANUALES_POR_TIPO: Readonly<
   Record<TipoMovimiento, readonly ConceptoMovimiento[]>
 > = {
   ingreso: [
     CONCEPTO_MOVIMIENTO.EVENTO_VENTA_INGRESO,
-    CONCEPTO_MOVIMIENTO.EVENTO_VENTA_RECUPERO_COSTO,
     CONCEPTO_MOVIMIENTO.EVENTO_GRUPO_INGRESO,
-    CONCEPTO_MOVIMIENTO.ASIGNACION_FONDO_RAMA,
     CONCEPTO_MOVIMIENTO.AJUSTE_INICIAL,
   ],
   egreso: [
@@ -28,7 +27,6 @@ export const CONCEPTOS_MANUALES_POR_TIPO: Readonly<
     CONCEPTO_MOVIMIENTO.EVENTO_VENTA_GASTO,
     CONCEPTO_MOVIMIENTO.EVENTO_GRUPO_GASTO,
     CONCEPTO_MOVIMIENTO.GASTO_GENERAL,
-    CONCEPTO_MOVIMIENTO.REEMBOLSO,
     CONCEPTO_MOVIMIENTO.AJUSTE_INICIAL,
   ],
 };

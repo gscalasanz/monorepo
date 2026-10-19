@@ -1,6 +1,7 @@
 /** Valores iniciales, transiciones y DTOs de los forms (port de `MovimientosFormBuilder`). */
 import {
   CONCEPTOS_MANUALES_POR_TIPO,
+  CONCEPTO_MOVIMIENTO,
   ESTADO_PAGO,
   MEDIO_PAGO,
   TIPO_MOVIMIENTO,
@@ -18,7 +19,7 @@ import type {
   MovimientoEditValues,
 } from '@/features/movimientos/models/form-schemas';
 
-/** Defaults de Angular: ingreso, efectivo, pagado, fecha de hoy; `?cajaId` si existe. */
+/** Defaults: egreso + gasto general, efectivo, pagado, fecha de hoy; `?cajaId` si existe. */
 export function initialCreateValues(params: {
   readonly cajas: readonly CajaConSaldo[];
   readonly cajaId: string | null;
@@ -27,9 +28,9 @@ export function initialCreateValues(params: {
   const cajaExists = params.cajas.some((caja) => caja.id === params.cajaId);
   return {
     cajaId: cajaExists ? params.cajaId : null,
-    tipo: TIPO_MOVIMIENTO.INGRESO,
+    tipo: TIPO_MOVIMIENTO.EGRESO,
     monto: null,
-    concepto: null,
+    concepto: CONCEPTO_MOVIMIENTO.GASTO_GENERAL,
     categoria: null,
     responsableId: null,
     medioPago: MEDIO_PAGO.EFECTIVO,

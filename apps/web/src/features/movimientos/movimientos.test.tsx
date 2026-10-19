@@ -222,7 +222,7 @@ describe('MovimientoCreateView', () => {
     nombre: 'Caja de Grupo',
   });
 
-  it('precarga ?cajaId y valida requeridos al enviar', async () => {
+  it('precarga ?cajaId, egreso/gasto general y valida requeridos al enviar', async () => {
     const user = userEvent.setup();
     searchParams = new URLSearchParams('cajaId=caja-1');
     api.fetchCreateFormData.mockResolvedValue({
@@ -243,7 +243,9 @@ describe('MovimientoCreateView', () => {
     expect(
       await screen.findByText('El monto es requerido'),
     ).toBeInTheDocument();
-    expect(screen.getByText('El concepto es requerido')).toBeInTheDocument();
+    expect(
+      screen.queryByText('El concepto es requerido'),
+    ).not.toBeInTheDocument();
     expect(screen.getByText('El responsable es requerido')).toBeInTheDocument();
     expect(screen.queryByText('La caja es requerida')).not.toBeInTheDocument();
     expect(api.createMovimiento).not.toHaveBeenCalled();

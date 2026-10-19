@@ -76,9 +76,7 @@ describe('CONCEPTOS_MANUALES_POR_TIPO', () => {
   it('ofrece todos los conceptos de ingreso manuales', () => {
     expect(ingresos).toEqual([
       'evento_venta_ingreso',
-      'evento_venta_recupero_costo',
       'evento_grupo_ingreso',
-      'asignacion_fondo_rama',
       'ajuste_inicial',
     ]);
   });
@@ -89,7 +87,6 @@ describe('CONCEPTOS_MANUALES_POR_TIPO', () => {
       'evento_venta_gasto',
       'evento_grupo_gasto',
       'gasto_general',
-      'reembolso',
       'ajuste_inicial',
     ]);
   });
@@ -105,6 +102,9 @@ describe('CONCEPTOS_MANUALES_POR_TIPO', () => {
       'inscripcion_scout_argentina',
       'inscripcion_pago_scout_argentina',
       'campamento_pago',
+      'reembolso',
+      'asignacion_fondo_rama',
+      'evento_venta_recupero_costo',
     ];
     for (const concepto of excluidos) {
       expect([...ingresos, ...egresos]).not.toContain(concepto);
