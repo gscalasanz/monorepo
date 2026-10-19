@@ -16,27 +16,14 @@ export {
   Rama,
 } from '@scout/shared/enums';
 
+// CAJA — definidos en @scout/shared
+export {
+  CajaType,
+} from '@scout/shared/enums';
+
 // ============================================================================
 // CAJAS Y MOVIMIENTOS
 // ============================================================================
-
-/**
- * Types of "cajas" (financial accounts)
- * From PRD §2.3: Caja de Grupo, Fondos de Rama (x4), Cuentas Personales
- */
-export enum CajaType {
-  GRUPO = 'grupo',
-  RAMA_MANADA = 'rama_manada',
-  RAMA_UNIDAD = 'rama_unidad',
-  RAMA_CAMINANTES = 'rama_caminantes',
-  RAMA_ROVERS = 'rama_rovers',
-  PERSONAL = 'personal',
-  /**
-   * Caja que financia las bonificaciones. Su plata NO es parte de la caja
-   * grupo: sólo entra a la caja grupo en el momento de otorgar una bonificación.
-   */
-  FONDO_SOLIDARIO = 'fondo_solidario',
-}
 
 /**
  * Types of movements (income/expense)

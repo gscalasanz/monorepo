@@ -439,7 +439,7 @@ export class CajasService {
     const cajaGrupo = cajas.find((c) => c.tipo === CajaType.GRUPO) ?? null;
     const cajaFondoSolidario =
       cajas.find((c) => c.tipo === CajaType.FONDO_SOLIDARIO) ?? null;
-    const ramaTipos = new Set([
+    const ramaTipos = new Set<CajaType>([
       CajaType.RAMA_MANADA,
       CajaType.RAMA_UNIDAD,
       CajaType.RAMA_CAMINANTES,

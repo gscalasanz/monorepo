@@ -1,18 +1,16 @@
-/** Enums de caja — espejo de `backend/src/common/enums/index.ts`. */
+/**
+ * Enums de caja. La definición vive en `@scout/shared/enums` (única para web y api);
+ * acá se re-exporta con el nombre histórico del front (adaptador). Los `*_LABELS` son copy
+ * de UI y se quedan en web.
+ */
+import {
+  CajaType as CAJA_TYPE,
+  type CajaType,
+} from '@scout/shared/enums';
+
+export { CAJA_TYPE };
+export type { CajaType };
 import type { Rama } from '@/shared/domain/persona';
-
-export const CAJA_TYPE = {
-  GRUPO: 'grupo',
-  RAMA_MANADA: 'rama_manada',
-  RAMA_UNIDAD: 'rama_unidad',
-  RAMA_CAMINANTES: 'rama_caminantes',
-  RAMA_ROVERS: 'rama_rovers',
-  PERSONAL: 'personal',
-  /** Financia las bonificaciones. Su plata NO es parte de la caja grupo. */
-  FONDO_SOLIDARIO: 'fondo_solidario',
-} as const;
-
-export type CajaType = (typeof CAJA_TYPE)[keyof typeof CAJA_TYPE];
 
 export const CAJA_TYPE_LABELS: Readonly<Record<CajaType, string>> = {
   grupo: 'Caja de Grupo',
