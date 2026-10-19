@@ -8,7 +8,8 @@ import {
   LoadingState,
 } from '@/shared/components/feedback';
 import { TIPO_EVENTO, type Evento } from '@/shared/domain';
-import { ButtonLink } from '@/shared/components/ui/button-link';
+import { Button } from '@/shared/components/ui/button';
+import { useGoBack } from '@/shared/navigation';
 import { EventoDetailHeader } from '@/features/eventos/components/evento-detail-header';
 import {
   EntregasPorProducto,
@@ -25,10 +26,11 @@ import {
 const C = EVENTOS_COPY.detail;
 
 function BackLink() {
+  const goBack = useGoBack(EVENTOS_ROUTES.list);
   return (
-    <ButtonLink href={EVENTOS_ROUTES.list} variant="secondary">
+    <Button variant="secondary" onClick={goBack}>
       {C.back}
-    </ButtonLink>
+    </Button>
   );
 }
 

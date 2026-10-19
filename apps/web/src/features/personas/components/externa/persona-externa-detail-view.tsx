@@ -1,9 +1,9 @@
 'use client';
 
 import { ArrowLeft, CircleAlert, UserX } from 'lucide-react';
-import Link from 'next/link';
 
 import { LoadingState } from '@/shared/components/feedback';
+import { BackLink } from '@/shared/navigation';
 import { EXTERNA_DETAIL_COPY as C } from '@/features/personas/constants/copy';
 import { PERSONA_ROUTES } from '@/features/personas/constants/personas';
 import { usePersonaExternaDetail } from '@/features/personas/hooks/use-persona-externa-detail';
@@ -17,13 +17,13 @@ export function PersonaExternaDetailView({ id }: { readonly id: string }) {
   const settled = !isLoading && !persona;
   return (
     <div className="flex w-full max-w-6xl flex-col gap-4 md:gap-6">
-      <Link
-        href={PERSONA_ROUTES.LIST}
+      <BackLink
+        fallbackHref={PERSONA_ROUTES.LIST}
         className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm text-ink-muted hover:text-ink md:min-h-0"
       >
         <ArrowLeft className="size-4" aria-hidden />
         {C.BACK}
-      </Link>
+      </BackLink>
       {isLoading ? <LoadingState label={C.LOADING} /> : null}
       {settled && error ? (
         <BackToListState

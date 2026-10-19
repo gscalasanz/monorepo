@@ -11,10 +11,15 @@ import {
 } from '@/shared/components/feedback';
 import { PageHeader } from '@/shared/layout';
 import { currentYearBsAs } from '@/shared/time';
-import { REPORTES_COPY as C } from '@/features/reportes/constants/copy';
+import {
+  CONSOLIDADO_COPY as CC,
+  REPORTES_COPY as C,
+} from '@/features/reportes/constants/copy';
 import { deudaFilterFields } from '@/features/reportes/constants/filters';
+import { DeudasConsolidado } from '@/features/reportes/components/deudas-consolidado';
 import { DeudasKpis } from '@/features/reportes/components/deudas-kpis';
 import { DeudasTable } from '@/features/reportes/components/deudas-table';
+import { useConsolidado } from '@/features/reportes/hooks/use-consolidado';
 import { useDeudas } from '@/features/reportes/hooks/use-deudas';
 
 function DeudasBody({
@@ -37,7 +42,38 @@ function DeudasBody({
   return <DeudasTable deudas={state.deudas} />;
 }
 
-/** Reporte de deudas: KPIs + un card con filtros (rama/año/tipo, consultan al backend) y la tabla. */
+function ConsolidadoSection({
+  state,
+}: {
+  readonly state: ReturnType<typeof useDeudas>;
+}) {
+  const consolidado = useConsolidado(state.rama);
+  if (consolidado.error)
+    return (
+      <ErrorState
+        message={CC.ERROR}
+        onRetry={consolidado.reload}
+        retryLabel={C.RETRY}
+      />
+    );
+  if (!consolidado.data)
+    return <LoadingState variant="skeleton" rows={2} label={CC.LOADING} />;
+  return (
+    <DeudasConsolidado
+      consolidado={consolidado.data}
+      campamentoId={state.campamentoId}
+      isInscripcionSelected={state.isInscripcionSelected}
+      onToggleCampamento={state.toggleCampamento}
+      onToggleInscripcion={state.toggleInscripcion}
+      onClear={state.clearOrigen}
+    />
+  );
+}
+
+/**
+ * Reporte de deudas: consolidado por origen (backend, hace de filtro) + KPIs + un card con
+ * búsqueda y filtros (persona/rama/año/tipo, consultan al backend) y la tabla.
+ */
 export function DeudasView() {
   const state = useDeudas();
   const fields = useMemo(() => deudaFilterFields(currentYearBsAs()), []);
@@ -45,6 +81,7 @@ export function DeudasView() {
   return (
     <div className="flex flex-col gap-4 md:gap-6">
       <PageHeader title={C.TITLE} subtitle={C.SUBTITLE} />
+      <ConsolidadoSection state={state} />
       {showKpis ? <DeudasKpis summary={state.summary} /> : null}
       <ListPanel
         ariaLabel={C.LIST_LABEL}

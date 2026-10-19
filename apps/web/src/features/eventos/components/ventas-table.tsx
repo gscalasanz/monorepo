@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, Trash2, Wallet } from 'lucide-react';
+import { CircleCheck, Clock, Trash2, Wallet } from 'lucide-react';
 import { useMemo } from 'react';
 
 import {
@@ -48,7 +48,9 @@ function Detalle({ group }: { readonly group: VentaGroup }) {
 
 function CobroCell(props: VentasTableProps & { readonly group: VentaGroup }) {
   const { group, readonly, cobrandoId, onCobrar } = props;
-  if (!group.aCobrar) return null;
+  if (!group.aCobrar) {
+    return <StatusBadge label={C.cobrado} tone="success" icon={CircleCheck} />;
+  }
   return (
     <span className="flex items-center gap-2">
       <StatusBadge label={C.aCobrar} tone="warning" icon={Clock} />
@@ -66,6 +68,21 @@ function CobroCell(props: VentasTableProps & { readonly group: VentaGroup }) {
     </span>
   );
 }
+
+const moneyColumns: readonly Column[] = [
+  {
+    id: 'monto',
+    header: C.colMonto,
+    meta: MONEY_META,
+    cell: ({ row }) => <Money amount={row.original.montoTotal} />,
+  },
+  {
+    id: 'ganancia',
+    header: C.colGanancia,
+    meta: MONEY_META,
+    cell: ({ row }) => <Money amount={row.original.gananciaTotal} />,
+  },
+];
 
 function dataColumns(props: VentasTableProps): readonly Column[] {
   return [
@@ -99,12 +116,7 @@ function dataColumns(props: VentasTableProps): readonly Column[] {
       meta: MONEY_META,
       cell: ({ row }) => C.unidades(row.original.totalUnidades),
     },
-    {
-      id: 'ganancia',
-      header: C.colGanancia,
-      meta: MONEY_META,
-      cell: ({ row }) => <Money amount={row.original.gananciaTotal} />,
-    },
+    ...moneyColumns,
     {
       id: 'cobro',
       header: C.colEstado,

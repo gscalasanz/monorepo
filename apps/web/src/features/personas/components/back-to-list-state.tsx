@@ -1,7 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
-import Link from 'next/link';
-
 import { EmptyState } from '@/shared/components/feedback';
+import { BackLink } from '@/shared/navigation';
 import { PERSONA_ROUTES } from '@/features/personas/constants/personas';
 
 export interface BackToListStateProps {
@@ -12,7 +11,7 @@ export interface BackToListStateProps {
   readonly role?: 'alert';
 }
 
-/** Estado de error / no encontrado con link de vuelta al listado de personas. */
+/** Estado de error / no encontrado con link de vuelta (historial; respaldo: listado de personas). */
 export function BackToListState({
   icon,
   title,
@@ -28,12 +27,12 @@ export function BackToListState({
         icon={icon}
         title={title}
         action={
-          <Link
-            href={PERSONA_ROUTES.LIST}
+          <BackLink
+            fallbackHref={PERSONA_ROUTES.LIST}
             className="inline-flex min-h-11 items-center rounded-md border border-border-strong bg-surface px-4 text-sm font-medium text-ink hover:bg-recessed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus md:min-h-[38px]"
           >
             {actionLabel}
-          </Link>
+          </BackLink>
         }
       />
     </div>

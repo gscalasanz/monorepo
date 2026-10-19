@@ -5,7 +5,7 @@ import { DEUDA_RAMA_FILTERS, TIPO_DEUDA_FILTER } from '@/features/reportes/model
 /** Primer año del filtro (paridad: del año actual hacia atrás hasta 2020). */
 export const FIRST_REPORT_YEAR = 2020;
 
-export const FILTER_KEYS = { RAMA: 'rama', ANO: 'ano', TIPO: 'tipo' } as const;
+export const FILTER_KEYS = { SEARCH: 'q', RAMA: 'rama', ANO: 'ano', TIPO: 'tipo' } as const;
 
 const TIPO_OPTIONS = Object.values(TIPO_DEUDA_FILTER).map((value) => ({ value, label: TIPO_DEUDA_LABELS[value] }));
 
@@ -19,6 +19,12 @@ export function yearOptions(currentYear: number): readonly { value: string; labe
 
 export function deudaFilterFields(currentYear: number): readonly FilterField[] {
   return [
+    {
+      key: FILTER_KEYS.SEARCH,
+      type: 'search',
+      label: C.FILTER_SEARCH,
+      placeholder: C.FILTER_SEARCH_PLACEHOLDER,
+    },
     {
       key: FILTER_KEYS.RAMA,
       type: 'select',

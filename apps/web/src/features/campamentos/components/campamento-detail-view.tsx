@@ -1,7 +1,6 @@
 'use client';
 
 import { Mountain } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
 import {
@@ -10,6 +9,7 @@ import {
   LoadingState,
 } from '@/shared/components/feedback';
 import { Button } from '@/shared/components/ui/button';
+import { useGoBack } from '@/shared/navigation';
 import type { CampamentoDetalle, ParticipantePago } from '@/shared/domain';
 import { CampamentoDetailHeader } from '@/features/campamentos/components/campamento-detail-header';
 import { CampamentoKpis } from '@/features/campamentos/components/campamento-kpis';
@@ -65,9 +65,8 @@ function DetailContent({
 
 /** `/campamentos/:id`: encabezado con acciones, KPIs y pestañas participantes / movimientos. */
 export function CampamentoDetailView({ id }: { readonly id: string }) {
-  const router = useRouter();
   const state = useCampamentoDetalle(id);
-  const back = () => router.push(CAMPAMENTO_ROUTES.LIST);
+  const back = useGoBack(CAMPAMENTO_ROUTES.LIST);
   if (state.initialLoading) return <LoadingState label={C.LOADING} />;
   if (state.detalle)
     return <DetailContent id={id} detalle={state.detalle} state={state} />;

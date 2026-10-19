@@ -443,4 +443,32 @@ describe('tab Ventas', () => {
       }),
     );
   });
+
+  it('muestra el chip "Cobrado" y el monto total cuando todo el lote se cobró', async () => {
+    nav.search = 'tab=ventas';
+    api.fetchEvento.mockResolvedValue(evento);
+    ventasApi.fetchVentas.mockResolvedValue([
+      {
+        id: 'v1',
+        eventoId: 'evt-1',
+        productoId: 'prod-1',
+        vendedorId: 'per-1',
+        cantidad: 2,
+        destinoGanancia: 'caja_grupo',
+        estadoCobro: 'cobrado',
+        movimientoId: 'mov-1',
+        movimientoRecuperoId: null,
+        createdAt: '2026-05-25T15:00:00.000Z',
+        updatedAt: '2026-05-25T15:00:00.000Z',
+        deletedAt: null,
+        producto: { ...productoSinCosto, precioCosto: 200 },
+        vendedor: { id: 'per-1', nombre: 'Juan' },
+      },
+    ]);
+    render(<EventoDetailView id="evt-1" />);
+    await screen.findByRole('region', { name: 'Ventas registradas' });
+    expect(screen.getByText('Monto total')).toBeInTheDocument();
+    expect(screen.getByText('Cobrado')).toBeInTheDocument();
+    expect(screen.queryByText('A cobrar')).not.toBeInTheDocument();
+  });
 });

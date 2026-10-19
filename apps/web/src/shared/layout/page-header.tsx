@@ -1,16 +1,16 @@
 import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { LAYOUT_COPY } from '@/shared/layout/copy';
 import { cn } from '@/shared/lib/utils';
+import { BackLink } from '@/shared/navigation';
 
 interface PageHeaderProps {
   readonly title: string;
   readonly subtitle?: ReactNode;
   /** Acciones a la derecha (un CTA primario por vista). */
   readonly actions?: ReactNode;
-  /** Link "Volver" arriba del título. */
+  /** Destino de respaldo del "Volver" (arriba del título): normalmente retrocede en el historial. */
   readonly backHref?: string;
   readonly backLabel?: string;
   readonly className?: string;
@@ -29,13 +29,13 @@ export function PageHeader({
     <header className={cn('flex flex-col gap-4 md:flex-row md:items-end md:justify-between', className)}>
       <div className="flex min-w-0 flex-col gap-1">
         {backHref && (
-          <Link
-            href={backHref}
+          <BackLink
+            fallbackHref={backHref}
             className="mb-1 inline-flex min-h-11 w-fit items-center gap-1.5 text-sm text-ink-muted hover:text-ink md:min-h-0"
           >
             <ArrowLeft className="size-4" aria-hidden />
             {backLabel ?? LAYOUT_COPY.BACK}
-          </Link>
+          </BackLink>
         )}
         <h1 className="text-[22px] leading-7 font-semibold tracking-[-0.022em] text-ink md:text-[26px] md:leading-8">
           {title}

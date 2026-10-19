@@ -1,7 +1,6 @@
 'use client';
 
 import { ReceiptText } from 'lucide-react';
-import Link from 'next/link';
 
 import {
   EmptyState,
@@ -9,20 +8,20 @@ import {
   LoadingState,
 } from '@/shared/components/feedback';
 import { Button } from '@/shared/components/ui/button';
+import { useGoBack } from '@/shared/navigation';
 import { DETAIL_COPY as C } from '@/features/inscripciones/constants/copy';
 import { inscripcionRoutes } from '@/features/inscripciones/constants/routes';
 import { useInscripcionDetail } from '@/features/inscripciones/hooks/use-inscripcion-detail';
 import { InscripcionDetailContent } from '@/features/inscripciones/components/detail/inscripcion-detail-content';
 
-const backToList = (label: string) => (
-  <Button
-    variant="secondary"
-    nativeButton={false}
-    render={<Link href={inscripcionRoutes.list} />}
-  >
-    {label}
-  </Button>
-);
+function BackButton({ label }: { readonly label: string }) {
+  const goBack = useGoBack(inscripcionRoutes.list);
+  return (
+    <Button variant="secondary" onClick={goBack}>
+      {label}
+    </Button>
+  );
+}
 
 /** `/inscripciones/:id`: carga → error ("Volver") → no encontrada → detalle. */
 export function InscripcionDetailView({ id }: { readonly id: string }) {
@@ -33,7 +32,7 @@ export function InscripcionDetailView({ id }: { readonly id: string }) {
     return (
       <div className="flex flex-col items-center gap-4">
         <ErrorState message={model.error} onRetry={() => void model.reload()} />
-        {backToList(C.BACK)}
+        <BackButton label={C.BACK} />
       </div>
     );
   }
@@ -42,7 +41,7 @@ export function InscripcionDetailView({ id }: { readonly id: string }) {
       <EmptyState
         icon={ReceiptText}
         title={C.NOT_FOUND}
-        action={backToList(C.BACK_TO_LIST)}
+        action={<BackButton label={C.BACK_TO_LIST} />}
       />
     );
   }

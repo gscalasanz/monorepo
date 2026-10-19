@@ -177,6 +177,7 @@ describe('ventas agrupadas por lote', () => {
     expect(groups[0]).toMatchObject({
       primaryVentaId: 'a',
       totalUnidades: 4,
+      montoTotal: 4800,
       gananciaTotal: 4000,
       isSingleton: false,
       aCobrar: true,
