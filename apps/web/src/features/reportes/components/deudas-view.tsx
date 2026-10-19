@@ -1,0 +1,99 @@
+'use client';
+
+import { CircleCheck } from 'lucide-react';
+import { useMemo } from 'react';
+
+import { FilterBar, ListPanel, ListToolbar } from '@/shared/components/data';
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+} from '@/shared/components/feedback';
+import { PageHeader } from '@/shared/layout';
+import { currentYearBsAs } from '@/shared/time';
+import {
+  CONSOLIDADO_COPY as CC,
+  REPORTES_COPY as C,
+} from '@/features/reportes/constants/copy';
+import { deudaFilterFields } from '@/features/reportes/constants/filters';
+import { DeudasConsolidado } from '@/features/reportes/components/deudas-consolidado';
+import { DeudasTable } from '@/features/reportes/components/deudas-table';
+import { origenOptions } from '@/features/reportes/helpers/origen';
+import { useConsolidado } from '@/features/reportes/hooks/use-consolidado';
+import { useDeudas } from '@/features/reportes/hooks/use-deudas';
+
+function DeudasBody({
+  state,
+}: {
+  readonly state: ReturnType<typeof useDeudas>;
+}) {
+  if (state.isLoading)
+    return <LoadingState variant="skeleton" rows={6} label={C.LOADING} />;
+  if (state.error)
+    return (
+      <ErrorState
+        message={C.ERROR}
+        onRetry={state.reload}
+        retryLabel={C.RETRY}
+      />
+    );
+  if (state.deudas.length === 0)
+    return <EmptyState icon={CircleCheck} title={C.EMPTY} />;
+  return <DeudasTable deudas={state.deudas} />;
+}
+
+function ConsolidadoSection({
+  consolidado,
+}: {
+  readonly consolidado: ReturnType<typeof useConsolidado>;
+}) {
+  if (consolidado.error)
+    return (
+      <ErrorState
+        message={CC.ERROR}
+        onRetry={consolidado.reload}
+        retryLabel={C.RETRY}
+      />
+    );
+  if (!consolidado.data)
+    return <LoadingState variant="skeleton" rows={2} label={CC.LOADING} />;
+  return <DeudasConsolidado consolidado={consolidado.data} />;
+}
+
+/**
+ * Reporte de deudas: consolidado por origen (backend) + un card con búsqueda y filtros
+ * (persona/rama/año/tipo/origen, consultan al backend) y la tabla.
+ */
+export function DeudasView() {
+  const state = useDeudas();
+  const consolidado = useConsolidado(state.rama);
+  const origenes = useMemo(
+    () => (consolidado.data ? origenOptions(consolidado.data) : []),
+    [consolidado.data],
+  );
+  const fields = useMemo(
+    () => deudaFilterFields({ currentYear: currentYearBsAs(), origenes }),
+    [origenes],
+  );
+  return (
+    <div className="flex flex-col gap-4 md:gap-6">
+      <PageHeader title={C.TITLE} subtitle={C.SUBTITLE} />
+      <ConsolidadoSection consolidado={consolidado} />
+      <ListPanel
+        ariaLabel={C.LIST_LABEL}
+        toolbar={
+          <ListToolbar>
+            <FilterBar
+              fields={fields}
+              value={state.values}
+              onChange={state.setValues}
+              className="min-w-0 flex-1"
+            />
+          </ListToolbar>
+        }
+      >
+        <DeudasBody state={state} />
+      </ListPanel>
+    </div>
+  );
+}

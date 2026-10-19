@@ -1,0 +1,153 @@
+/*
+ * Dirección "INSIGNIA" — precisión fintech con identidad scout.
+ * Neutros fríos (hue 276, chroma ≤ 0.02), indigo SAAC #242167 como estructura
+ * (sidebar, marca), burgundy #812128 solo como acento de identidad, y un indigo
+ * de acción derivado con contraste AA. Una sola familia (Geist) + Geist Mono para IDs.
+ * Contrato: src/shared/styles/TOKENS-CONTRACT.md · Ratios: DESIGN.md §Accesibilidad.
+ */
+@theme {
+  /* Superficies — el lienzo es apenas más frío/oscuro que la card: lift por contraste, no por sombra */
+  --color-canvas: oklch(97.9% 0.004 276);
+  --color-surface: oklch(100% 0 0);
+  --color-surface-raised: oklch(100% 0 0);
+  --color-recessed: oklch(96.4% 0.005 276);
+
+  /* Texto */
+  --color-ink: oklch(21% 0.028 278);
+  --color-ink-muted: oklch(44% 0.02 277);
+  --color-ink-subtle: oklch(52.5% 0.016 277);
+
+  /* Bordes / foco — border es hairline decorativa; border-strong es el borde de campos (≥3:1) */
+  --color-border: oklch(91.8% 0.006 276);
+  --color-border-strong: oklch(61% 0.016 277);
+  --color-focus: oklch(50% 0.2 276);
+
+  /* Marca / acción — indigo de acción derivado de #242167 (más luz y croma para leerse como "tocable") */
+  --color-brand: oklch(44% 0.18 276);
+  --color-brand-hover: oklch(38.5% 0.165 277);
+  --color-on-brand: oklch(100% 0 0);
+  --color-brand-soft: oklch(95.6% 0.022 278);
+  --color-accent-2: oklch(40.5% 0.135 22); /* burgundy #812128: identidad, nunca acción */
+
+  /* Estados */
+  --color-success: oklch(48% 0.115 158);
+  --color-success-soft: oklch(96.2% 0.03 160);
+  --color-danger: oklch(51% 0.19 27);
+  --color-danger-soft: oklch(96.3% 0.022 25);
+  --color-warning: oklch(52% 0.115 62);
+  --color-warning-soft: oklch(96.4% 0.042 85);
+  --color-info: oklch(49% 0.13 250);
+  --color-info-soft: oklch(96.2% 0.022 250);
+
+  /* Dinero — egreso NO es rojo: es tinta. El rojo queda para deuda/error. Siempre con signo + ícono. */
+  --color-money-in: oklch(48% 0.115 158);
+  --color-money-out: oklch(34% 0.02 277);
+
+  /* Ramas — significado heredado: Manada amarillo-naranja, Unidad verde, Caminantes azul, Rovers violeta-rojizo */
+  --color-rama-manada: oklch(67.5% 0.16 58);
+  --color-rama-manada-soft: oklch(95.5% 0.045 80);
+  --color-rama-unidad: oklch(60% 0.15 148);
+  --color-rama-unidad-soft: oklch(95.5% 0.04 150);
+  --color-rama-caminantes: oklch(56% 0.15 252);
+  --color-rama-caminantes-soft: oklch(95.5% 0.025 252);
+  --color-rama-rovers: oklch(50% 0.17 338);
+  --color-rama-rovers-soft: oklch(95.5% 0.025 338);
+
+  /* Datos — secuencia ordenada por luminancia para que también funcione en gris */
+  --color-data-1: oklch(44% 0.18 276);
+  --color-data-2: oklch(72% 0.1 276);
+  --color-data-3: oklch(40.5% 0.135 22);
+  --color-data-4: oklch(62% 0.13 158);
+  --color-data-5: oklch(78% 0.12 75);
+
+  /* Sidebar — la "insignia": el indigo institucional como banda estructural */
+  --color-sidebar-bg: oklch(26.5% 0.105 280);
+  --color-sidebar-ink: oklch(91% 0.025 280);
+  --color-sidebar-hover: oklch(32% 0.11 280);
+
+  /* Tipografía (cargar con next/font: Geist 400/500/600 + Geist Mono 400/500) */
+  --font-sans: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-features: 'tnum' 1, 'ss01' 1, 'cv11' 1;
+
+  /* Radios — contenidos: la precisión vive en esquinas chicas */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-pill: 999px;
+
+  /* Elevación — mínima. Las superficies se separan por hairline; la sombra es para lo que flota */
+  --shadow-xs: 0 1px 0 oklch(21% 0.03 278 / 0.04);
+  --shadow-sm: 0 1px 2px oklch(21% 0.03 278 / 0.06), 0 0 0 1px oklch(21% 0.03 278 / 0.02);
+  --shadow-md: 0 6px 16px -6px oklch(21% 0.03 278 / 0.14), 0 2px 4px -2px oklch(21% 0.03 278 / 0.06);
+  --shadow-lg: 0 24px 48px -16px oklch(21% 0.03 278 / 0.24), 0 4px 12px -4px oklch(21% 0.03 278 / 0.08);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+}
+
+/*
+ * Dark: no es un invertido. El lienzo es un azul-noche casi negro tomado del indigo,
+ * las superficies SUBEN de luz con la elevación, y los acentos se re-tonan más claros
+ * y algo menos saturados para no vibrar.
+ */
+[data-theme='dark'] {
+  --color-canvas: oklch(15.5% 0.012 278);
+  --color-surface: oklch(19% 0.014 278);
+  --color-surface-raised: oklch(22.5% 0.016 278);
+  --color-recessed: oklch(13.5% 0.011 278);
+
+  --color-ink: oklch(95.5% 0.006 278);
+  --color-ink-muted: oklch(77% 0.014 278);
+  --color-ink-subtle: oklch(66% 0.014 278);
+
+  --color-border: oklch(27% 0.016 278);
+  --color-border-strong: oklch(52% 0.018 278);
+  --color-focus: oklch(74% 0.14 278);
+
+  --color-brand: oklch(72% 0.135 278);
+  --color-brand-hover: oklch(78% 0.115 278);
+  --color-on-brand: oklch(17% 0.04 280);
+  --color-brand-soft: oklch(27% 0.06 278);
+  --color-accent-2: oklch(69% 0.13 18);
+
+  --color-success: oklch(76% 0.13 158);
+  --color-success-soft: oklch(26% 0.045 160);
+  --color-danger: oklch(71% 0.16 25);
+  --color-danger-soft: oklch(27% 0.06 25);
+  --color-warning: oklch(80% 0.12 75);
+  --color-warning-soft: oklch(28% 0.05 70);
+  --color-info: oklch(75% 0.11 250);
+  --color-info-soft: oklch(26% 0.045 250);
+
+  --color-money-in: oklch(76% 0.13 158);
+  --color-money-out: oklch(86% 0.01 278);
+
+  --color-rama-manada: oklch(80% 0.14 72);
+  --color-rama-manada-soft: oklch(28% 0.05 72);
+  --color-rama-unidad: oklch(72% 0.14 150);
+  --color-rama-unidad-soft: oklch(26% 0.045 150);
+  --color-rama-caminantes: oklch(70% 0.13 252);
+  --color-rama-caminantes-soft: oklch(26% 0.05 252);
+  --color-rama-rovers: oklch(70% 0.15 340);
+  --color-rama-rovers-soft: oklch(27% 0.055 340);
+
+  --color-data-1: oklch(72% 0.135 278);
+  --color-data-2: oklch(48% 0.09 278);
+  --color-data-3: oklch(69% 0.13 18);
+  --color-data-4: oklch(74% 0.12 158);
+  --color-data-5: oklch(82% 0.11 78);
+
+  --color-sidebar-bg: oklch(13% 0.03 280);
+  --color-sidebar-ink: oklch(86% 0.018 280);
+  --color-sidebar-hover: oklch(20% 0.035 280);
+
+  --shadow-xs: 0 1px 0 oklch(0% 0 0 / 0.3);
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.4), 0 0 0 1px oklch(100% 0 0 / 0.03);
+  --shadow-md: 0 8px 20px -6px oklch(0% 0 0 / 0.55), 0 0 0 1px oklch(100% 0 0 / 0.04);
+  --shadow-lg: 0 24px 56px -12px oklch(0% 0 0 / 0.7), 0 0 0 1px oklch(100% 0 0 / 0.05);
+}
