@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PasswordService } from './password.service';
 
+// bcrypt con 12 rounds es CPU-bound: bajo `turbo run test build` (Next build y vitest en
+// paralelo) un hash puede pasar los 5 s por defecto de jest.
+const BCRYPT_TEST_TIMEOUT_MS = 30_000;
+jest.setTimeout(BCRYPT_TEST_TIMEOUT_MS);
+
 describe('PasswordService', () => {
   let service: PasswordService;
 

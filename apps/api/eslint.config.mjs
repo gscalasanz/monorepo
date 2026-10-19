@@ -1,5 +1,7 @@
 // @ts-check
 import eslint from '@eslint/js';
+import { apiPreset } from '@scout/config/eslint/monorepo-boundaries';
+import { createNoNewDate, NO_NEW_DATE_OPTIONS } from '@scout/config/eslint/no-new-date';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -32,4 +34,9 @@ export default tseslint.config(
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },
+  // Fronteras (@scout/config): api ↛ web.
+  apiPreset,
+  // Regla de timezone en `warn` mientras se migran los usos existentes (MONOREPO.md
+  // Fase 8). Al cerrar la Fase 8 pasa a `noNewDatePresets.api` (error).
+  ...createNoNewDate({ ...NO_NEW_DATE_OPTIONS.api, severity: 'warn' }),
 );

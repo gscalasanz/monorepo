@@ -1,5 +1,6 @@
-import featureBoundaries from './eslint/feature-boundaries.mjs';
-import noNewDate from './eslint/no-new-date.mjs';
+import featureBoundaries from '@scout/config/eslint/feature-boundaries';
+import { webPreset } from '@scout/config/eslint/monorepo-boundaries';
+import { noNewDatePresets } from '@scout/config/eslint/no-new-date';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
@@ -35,9 +36,10 @@ const eslintConfig = defineConfig([
       'max-lines': 'off',
     },
   },
-  // Fronteras (copiadas de mi-tienda): regla de timezone + features aisladas.
-  ...noNewDate,
+  // Fronteras (@scout/config): regla de timezone, features aisladas y web ↛ api.
+  ...noNewDatePresets.web,
   ...featureBoundaries,
+  webPreset,
   globalIgnores([
     '.next/**',
     'out/**',

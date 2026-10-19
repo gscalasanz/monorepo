@@ -1,0 +1,31 @@
+{
+  "name": "@scout/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/nextjs.json": "./tsconfig/nextjs.json",
+    "./tsconfig/nestjs.json": "./tsconfig/nestjs.json",
+    "./eslint/base": "./eslint/base.mjs",
+    "./eslint/no-new-date": "./eslint/no-new-date.mjs",
+    "./eslint/monorepo-boundaries": "./eslint/monorepo-boundaries.mjs",
+    "./eslint/feature-boundaries": "./eslint/feature-boundaries.mjs"
+  },
+  "scripts": {
+    "test": "node --test \"eslint/__tests__/*.test.mjs\""
+  },
+  "dependencies": {
+    "@eslint/js": "^9",
+    "eslint-plugin-boundaries": "^5.4.0",
+    "typescript-eslint": "^8"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.5",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "eslint": "^9",
+    "typescript": "^5"
+  }
+}

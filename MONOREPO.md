@@ -29,10 +29,10 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 - [ ] code-reviewer de la fase
 
 ### Fase 3 — `packages/config`
-- [ ] tsconfig `base`/`nextjs`/`nestjs`
-- [ ] eslint `base`, `no-new-date`, `feature-boundaries`, `monorepo-boundaries` con tests
-- [ ] `apps/web` consume presets sin cambio de reglas
-- [ ] `apps/api` adopta `monorepo-boundaries` + `no-new-date` (warn) + tsconfig `nestjs` con `dist/src/main.js` intacto
+- [x] tsconfig `base`/`nextjs`/`nestjs` (nextjs con `jsx: react-jsx` de Next 16; nestjs con `nodenext` como el api, necesario para los subpaths `exports` de `@scout/shared`)
+- [x] eslint `base`, `no-new-date` (presets web/api/packages), `feature-boundaries`, `monorepo-boundaries` con tests — `node --test`: 22/22
+- [x] `apps/web` consume presets sin cambio de reglas — `tsc --showConfig` idéntico; `eslint --print-config` en 5 archivos: única diferencia = `no-restricted-imports` (frontera nueva web ↛ api)
+- [x] `apps/api` adopta `monorepo-boundaries` + `no-new-date` (warn) + tsconfig `nestjs` con `dist/src/main.js` intacto — `dist/` byte a byte idéntico (`diff -rq`, sin contar tsbuildinfo); `--print-config`: solo se suman `no-restricted-imports` y `no-restricted-syntax` (warn en src, off en specs/e2e/migraciones); 30 warnings de no-new-date
 
 ### Fase 4 — `packages/shared`
 - [ ] Paquete CJS con `exports` `.`, `./enums`, `./time`
@@ -139,6 +139,9 @@ _(ninguno por ahora)_
 - api: `package-lock.json` estaba ignorado (versiones no reproducibles). Resuelto: `pnpm-lock.yaml` versionado.
 - api: 51 errores de tipos preexistentes en 7 specs (`tsc -p tsconfig.json`; idéntico en el original). `nest build` y ts-jest no los ven. `typecheck` cubre por ahora la superficie de build (`tsconfig.build.json`); se resuelve en Fase 6.
 - api: scripts con `ts-node` ahora pasan `-P tsconfig.json`. Con pnpm, `node_modules/typeorm/cli.js` es un symlink al store y ts-node (script mode) no encontraba el tsconfig del api; Node 24 cargaba `data-source.ts` como ESM (`__dirname is not defined`). Sin cambio funcional.
+- api lint con las versiones nuevas: 465 errores (baseline 462): +4 `no-unnecessary-type-assertion` (regla nueva del recommended de typescript-eslint 8.71) y −1 `prettier` (prettier 3.9). Se resuelve en Fase 6.
+- api: `password.service.spec.ts` (bcrypt 12 rounds real) pasaba el timeout de 5 s de jest bajo `turbo run test build` en paralelo. Se fijó `jest.setTimeout(30s)` en ese spec (solo test).
+- web: `feature-boundaries` resuelve imports con el resolver `node`, así que los imports `@/features/...` (alias) no se chequean; solo los relativos. Igual que antes de la migración. Activar `eslint-import-resolver-typescript` destaparía violaciones existentes: queda como deuda.
 - api: el peer `webpack@^5.112` de `schema-utils` (vía `@nestjs/cli`) queda sin satisfacer (5.106.2). Solo afecta al CLI en dev; existía igual con npm.
 
 ## §Pendientes del usuario
