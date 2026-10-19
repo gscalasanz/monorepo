@@ -15,9 +15,9 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 - [x] Snapshot de contrato `packages/shared/test/fixtures/wire-values.snapshot.json`
 
 ### Fase 1 — Consolidación git con historial
-- [ ] `apps/api` importado con historial (filter-repo, clon fresco)
-- [ ] `apps/web` importado con historial (filter-repo, clon fresco)
-- [ ] Verificación: conteo de commits, `log --follow`, `blame`
+- [x] `apps/api` importado con historial (filter-repo, clon fresco)
+- [x] `apps/web` importado con historial (filter-repo, clon fresco)
+- [x] Verificación: conteo de commits, `log --follow`, `blame` — `rev-list --count` de cada padre importado: api **175**, web **110** (= originales). `git log -- apps/api` muestra 168 por simplificación de historial (merges TREESAME); con `--full-history` da 177 (175 + 2 merges de importación). `log --follow apps/api/src/main.ts` llega a `0b52d45 first commit`; `blame` conserva autor y fecha originales.
 
 ### Fase 2 — Workspace pnpm + Turborepo
 - [ ] Raíz: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.nvmrc` 24.19
@@ -147,4 +147,5 @@ Consolidado solo lo commiteado en `main` de cada repo. Quedó afuera, sin tocar:
 
 | Fecha | Fase | Hash | Nota |
 |---|---|---|---|
-| 2026-10-19 | 0 | (este commit) | Baseline, inventario y snapshot de wire |
+| 2026-10-19 | 0 | `0229a4f` | Baseline, inventario y snapshot de wire |
+| 2026-10-19 | 1 | `4cbf312` | Historial importado con filter-repo desde clones frescos; cero cambios de código |
