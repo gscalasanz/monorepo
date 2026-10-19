@@ -1,8 +1,7 @@
 {
-  "name": "scout-frontend-react",
+  "name": "@scout/web",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": ">=24.15"
   },
@@ -16,7 +15,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "design:apply": "node scripts/apply-design.mjs",
-    "prepare": "husky"
+    "lint:fix": "eslint --fix"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",

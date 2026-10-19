@@ -20,12 +20,12 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 - [x] Verificación: conteo de commits, `log --follow`, `blame` — `rev-list --count` de cada padre importado: api **175**, web **110** (= originales). `git log -- apps/api` muestra 168 por simplificación de historial (merges TREESAME); con `--full-history` da 177 (175 + 2 merges de importación). `log --follow apps/api/src/main.ts` llega a `0b52d45 first commit`; `blame` conserva autor y fecha originales.
 
 ### Fase 2 — Workspace pnpm + Turborepo
-- [ ] Raíz: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.nvmrc` 24.19
-- [ ] Paquetes renombrados `@scout/api`, `@scout/web`
-- [ ] `apps/api` de npm a pnpm (versiones efectivas anotadas, sin `shamefully-hoist`)
-- [ ] Scripts uniformes (`dev`, `build`, `lint`, `lint:fix`, `typecheck`, `test`, `test:e2e`)
-- [ ] api buildea y testea con Node 24
-- [ ] `pnpm dev` levanta web:4201 y api:3001
+- [x] Raíz: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.nvmrc` 24.19
+- [x] Paquetes renombrados `@scout/api`, `@scout/web`
+- [x] `apps/api` de npm a pnpm (versiones efectivas anotadas en §Baseline, sin `shamefully-hoist`; ninguna dependencia fantasma)
+- [x] Scripts uniformes (`dev`, `build`, `lint`, `lint:fix`, `typecheck`, `test`, `test:e2e`)
+- [x] api buildea y testea con Node 24 — `turbo run build typecheck test --filter=@scout/api`: 34 suites / 593 tests ✓, `dist/src/main.js` ✓
+- [x] `pnpm dev` levanta web:4201 y api:3001 — verificado en puertos alternativos (3101/4301) porque 3001/4201 los ocupaban los dev servers del usuario (`scout/backend`, `scout/frontend`): `GET /api/v1` = `Hello World!` (igual al original), `/personas` sin token 401 en ambos, preflight CORS idéntico, `/login` 200
 - [ ] code-reviewer de la fase
 
 ### Fase 3 — `packages/config`
@@ -84,6 +84,8 @@ Corrido el 2026-10-19 con Node 24.19.0 en clones de los repos originales (scratc
 Detalle de lint del backend: 426 errores en specs, 36 en `src` (cajas.service 24, filter-movimientos.dto 6, eventos.controller 2, 2 migraciones, sql-data-export 1, get-inscripciones-query.dto 1).
 Por regla: unbound-method 231 · no-unsafe-member-access 119 · no-unsafe-argument (warn) 93 · no-unsafe-assignment 44 · require-await 20 · no-unsafe-return 18 · no-unsafe-call 15 · prettier 8 · no-unused-vars 6 · no-floating-promises (warn) 1 · no-base-to-string 1.
 
+Versiones efectivas del api al pasar a pnpm (rangos intactos; resolución nueva dentro del rango, igual a lo que hacía Render sin lockfile): 26 de 47 dependencias directas subieron de minor/patch respecto del lock local del usuario — `@nestjs/common|core|platform-express|testing` 11.1.x→11.2.7, `@nestjs/swagger` 11.2.7→11.4.7, `@nestjs/typeorm` 11.0.0→11.0.3, `typeorm` 0.3.28→0.3.31, `pg` 8.18.0→8.23.1, `class-validator` 0.14.3→0.14.4, `dotenv` 17.4.1→17.4.2, `jest` 30.2→30.5.2, `ts-jest` 29.4.6→29.4.15, `typescript-eslint`/`@typescript-eslint/*` 8.55→8.71.1, `eslint` 9.39.2→9.39.5, `prettier` 3.8.1→3.9.9, `supertest` 7.2.2→7.3.1, `@nestjs/cli` 11.0.19→11.0.24, `@nestjs/schematics` 11.0.10→11.1.0, `ts-loader` 9.5.4→9.6.2, `@types/node` 22.19.10→22.20.5, `@eslint/js` 9.39.2→9.39.5, `@eslint/eslintrc` 3.3.3→3.3.7, `eslint-plugin-prettier` 5.5.5→5.5.7, `globals` 16.5.0→16.4.0. Tests y build idénticos al baseline. Web: 0 cambios en dependencias directas (lockfile original reubicado con importer `apps/web`).
+
 Hallazgo: `backend/package-lock.json` está en `.gitignore`. El repo del back no fija versiones y cada deploy resuelve los rangos de nuevo. El baseline usó el lockfile local del usuario.
 
 ## §Inventario
@@ -134,7 +136,10 @@ _(ninguno por ahora)_
 - Web: `TIPO_DEUDA_LABELS` (features/reportes/constants/copy.ts) cubre los valores de `TipoDeudaFilter`, pero el nombre colisiona con el `TIPO_DEUDA` del dominio.
 - api: `CLAUDE.MD` decía que no había auth (falso: `APP_GUARD` JWT).
 - api: `railway.json` / `railpack.json` son restos sin uso (el deploy es Render).
-- api: `package-lock.json` estaba ignorado (versiones no reproducibles).
+- api: `package-lock.json` estaba ignorado (versiones no reproducibles). Resuelto: `pnpm-lock.yaml` versionado.
+- api: 51 errores de tipos preexistentes en 7 specs (`tsc -p tsconfig.json`; idéntico en el original). `nest build` y ts-jest no los ven. `typecheck` cubre por ahora la superficie de build (`tsconfig.build.json`); se resuelve en Fase 6.
+- api: scripts con `ts-node` ahora pasan `-P tsconfig.json`. Con pnpm, `node_modules/typeorm/cli.js` es un symlink al store y ts-node (script mode) no encontraba el tsconfig del api; Node 24 cargaba `data-source.ts` como ESM (`__dirname is not defined`). Sin cambio funcional.
+- api: el peer `webpack@^5.112` de `schema-utils` (vía `@nestjs/cli`) queda sin satisfacer (5.106.2). Solo afecta al CLI en dev; existía igual con npm.
 
 ## §Pendientes del usuario
 

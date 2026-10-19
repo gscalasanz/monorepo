@@ -1,0 +1,20 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["NODE_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      // Variables que cambian el ARTEFACTO, no solo el runtime: `next.config.ts`
+      // inlinea `API_URL` en el bundle (`env: { API_URL }`) y Next inlinea las
+      // `NEXT_PUBLIC_*`. Turborepo corre en modo estricto: filtra toda variable no
+      // declarada y la deja fuera del hash de cache, así que sin esta lista un
+      // cambio de valor en Vercel devolvería un build viejo apuntando a otra API.
+      "env": ["API_URL", "NEXT_PUBLIC_*"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "lint": { "dependsOn": ["^build"] },
+    "typecheck": { "dependsOn": ["^build"] },
+    "test": { "dependsOn": ["^build"] },
+    "dev": { "cache": false, "persistent": true }
+  }
+}
