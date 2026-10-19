@@ -1,46 +1,49 @@
-/** Selección de "origen de deuda" desde el consolidado (campamento o inscripción de un año). */
-import type { FilterValues } from '@/shared/components/data';
-import { FILTER_KEYS } from '@/features/reportes/constants/filters';
-import type { InscripcionConsolidada } from '@/features/reportes/models/consolidado';
+/** Filtro "Origen de deuda": un campamento o una inscripción (tipo + año) que todavía registra deuda. */
+import { formatMoney } from '@/shared/format';
+import type { FilterOption } from '@/shared/components/data';
+import { CONSOLIDADO_COPY as C, TIPO_DEUDA_LABELS } from '@/features/reportes/constants/copy';
+import type { ConsolidadoDeudas } from '@/features/reportes/models/consolidado';
+import {
+  isTipoDeudaFilter,
+  type DeudaFilters,
+} from '@/features/reportes/models/deudas';
 
-const omitKeys = (
-  values: FilterValues,
-  keys: readonly string[],
-): FilterValues =>
-  Object.fromEntries(Object.entries(values).filter(([key]) => !keys.includes(key)));
+const SEPARATOR = ':';
+const KIND = { CAMPAMENTO: 'campamento', INSCRIPCION: 'inscripcion' } as const;
 
-/** La inscripción elegida vive en los filtros `tipo` + `ano` (visibles en la barra de filtros). */
-export function isInscripcionSelected(
-  values: FilterValues,
-  item: InscripcionConsolidada,
-): boolean {
-  return (
-    values[FILTER_KEYS.TIPO] === item.tipo &&
-    values[FILTER_KEYS.ANO] === String(item.ano)
-  );
+const encodeCampamento = (campamentoId: string): string =>
+  [KIND.CAMPAMENTO, campamentoId].join(SEPARATOR);
+
+const encodeInscripcion = (tipo: string, ano: number): string =>
+  [KIND.INSCRIPCION, tipo, ano].join(SEPARATOR);
+
+const optionLabel = (name: string, amount: number): string =>
+  `${name} · ${formatMoney(amount)}`;
+
+/** Opciones del filtro, salidas del consolidado del backend (solo orígenes con deuda). */
+export function origenOptions(consolidado: ConsolidadoDeudas): readonly FilterOption[] {
+  return [
+    ...consolidado.campamentos.map((c) => ({
+      value: encodeCampamento(c.campamentoId),
+      label: optionLabel(C.campamento(c.nombre, c.ano), c.deudaTotal),
+    })),
+    ...consolidado.inscripciones.map((i) => ({
+      value: encodeInscripcion(i.tipo, i.ano),
+      label: optionLabel(C.inscripcion(TIPO_DEUDA_LABELS[i.tipo], i.ano), i.deudaTotal),
+    })),
+  ];
 }
 
-/** Elige la inscripción (tipo + año) o, si ya estaba elegida, la quita. */
-export function toggleInscripcion(
-  values: FilterValues,
-  item: InscripcionConsolidada,
-): FilterValues {
-  if (isInscripcionSelected(values, item)) {
-    return omitKeys(values, [FILTER_KEYS.TIPO, FILTER_KEYS.ANO]);
+/**
+ * Valor del filtro → parámetros del backend: un campamento (`campamentoId`) o una inscripción
+ * (`tipo` + `ano`). Un valor desconocido no filtra.
+ */
+export function parseOrigen(value: string): Pick<DeudaFilters, 'campamentoId' | 'tipo' | 'ano'> {
+  const [kind, first, second] = value.split(SEPARATOR);
+  if (kind === KIND.CAMPAMENTO && first) return { campamentoId: first };
+  const ano = Number(second);
+  if (kind === KIND.INSCRIPCION && first && isTipoDeudaFilter(first) && Number.isInteger(ano)) {
+    return { tipo: first, ano };
   }
-  return {
-    ...values,
-    [FILTER_KEYS.TIPO]: item.tipo,
-    [FILTER_KEYS.ANO]: String(item.ano),
-  };
-}
-
-/** Quita todo el origen elegido desde una inscripción (tipo + año). */
-export function withoutOrigen(values: FilterValues): FilterValues {
-  return omitKeys(values, [FILTER_KEYS.TIPO, FILTER_KEYS.ANO]);
-}
-
-/** Elegir un campamento deja sin efecto el tipo de deuda (el campamento ya es más específico). */
-export function withoutTipo(values: FilterValues): FilterValues {
-  return omitKeys(values, [FILTER_KEYS.TIPO]);
+  return {};
 }

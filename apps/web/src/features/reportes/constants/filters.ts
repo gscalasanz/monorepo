@@ -1,11 +1,11 @@
-import type { FilterField } from '@/shared/components/data';
+import type { FilterField, FilterOption } from '@/shared/components/data';
 import { REPORTES_COPY as C, TIPO_DEUDA_LABELS } from '@/features/reportes/constants/copy';
 import { DEUDA_RAMA_FILTERS, TIPO_DEUDA_FILTER } from '@/features/reportes/models/deudas';
 
 /** Primer año del filtro (paridad: del año actual hacia atrás hasta 2020). */
 export const FIRST_REPORT_YEAR = 2020;
 
-export const FILTER_KEYS = { SEARCH: 'q', RAMA: 'rama', ANO: 'ano', TIPO: 'tipo' } as const;
+export const FILTER_KEYS = { SEARCH: 'q', RAMA: 'rama', ANO: 'ano', TIPO: 'tipo', ORIGEN: 'origen' } as const;
 
 const TIPO_OPTIONS = Object.values(TIPO_DEUDA_FILTER).map((value) => ({ value, label: TIPO_DEUDA_LABELS[value] }));
 
@@ -17,7 +17,10 @@ export function yearOptions(currentYear: number): readonly { value: string; labe
   });
 }
 
-export function deudaFilterFields(currentYear: number): readonly FilterField[] {
+export function deudaFilterFields(params: {
+  readonly currentYear: number;
+  readonly origenes: readonly FilterOption[];
+}): readonly FilterField[] {
   return [
     {
       key: FILTER_KEYS.SEARCH,
@@ -31,7 +34,10 @@ export function deudaFilterFields(currentYear: number): readonly FilterField[] {
       label: C.FILTER_RAMA,
       options: DEUDA_RAMA_FILTERS.map((r) => ({ value: r, label: r })),
     },
-    { key: FILTER_KEYS.ANO, type: 'select', label: C.FILTER_ANO, options: yearOptions(currentYear) },
+    { key: FILTER_KEYS.ANO, type: 'select', label: C.FILTER_ANO, options: yearOptions(params.currentYear) },
     { key: FILTER_KEYS.TIPO, type: 'select', label: C.FILTER_TIPO, options: TIPO_OPTIONS },
+    ...(params.origenes.length > 0
+      ? [{ key: FILTER_KEYS.ORIGEN, type: 'select', label: C.FILTER_ORIGEN, options: params.origenes } as const]
+      : []),
   ];
 }

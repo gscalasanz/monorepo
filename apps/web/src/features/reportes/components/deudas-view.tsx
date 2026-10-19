@@ -17,8 +17,8 @@ import {
 } from '@/features/reportes/constants/copy';
 import { deudaFilterFields } from '@/features/reportes/constants/filters';
 import { DeudasConsolidado } from '@/features/reportes/components/deudas-consolidado';
-import { DeudasKpis } from '@/features/reportes/components/deudas-kpis';
 import { DeudasTable } from '@/features/reportes/components/deudas-table';
+import { origenOptions } from '@/features/reportes/helpers/origen';
 import { useConsolidado } from '@/features/reportes/hooks/use-consolidado';
 import { useDeudas } from '@/features/reportes/hooks/use-deudas';
 
@@ -43,11 +43,10 @@ function DeudasBody({
 }
 
 function ConsolidadoSection({
-  state,
+  consolidado,
 }: {
-  readonly state: ReturnType<typeof useDeudas>;
+  readonly consolidado: ReturnType<typeof useConsolidado>;
 }) {
-  const consolidado = useConsolidado(state.rama);
   if (consolidado.error)
     return (
       <ErrorState
@@ -58,31 +57,28 @@ function ConsolidadoSection({
     );
   if (!consolidado.data)
     return <LoadingState variant="skeleton" rows={2} label={CC.LOADING} />;
-  return (
-    <DeudasConsolidado
-      consolidado={consolidado.data}
-      campamentoId={state.campamentoId}
-      isInscripcionSelected={state.isInscripcionSelected}
-      onToggleCampamento={state.toggleCampamento}
-      onToggleInscripcion={state.toggleInscripcion}
-      onClear={state.clearOrigen}
-    />
-  );
+  return <DeudasConsolidado consolidado={consolidado.data} />;
 }
 
 /**
- * Reporte de deudas: consolidado por origen (backend, hace de filtro) + KPIs + un card con
- * búsqueda y filtros (persona/rama/año/tipo, consultan al backend) y la tabla.
+ * Reporte de deudas: consolidado por origen (backend) + un card con búsqueda y filtros
+ * (persona/rama/año/tipo/origen, consultan al backend) y la tabla.
  */
 export function DeudasView() {
   const state = useDeudas();
-  const fields = useMemo(() => deudaFilterFields(currentYearBsAs()), []);
-  const showKpis = !state.isLoading && !state.error && state.deudas.length > 0;
+  const consolidado = useConsolidado(state.rama);
+  const origenes = useMemo(
+    () => (consolidado.data ? origenOptions(consolidado.data) : []),
+    [consolidado.data],
+  );
+  const fields = useMemo(
+    () => deudaFilterFields({ currentYear: currentYearBsAs(), origenes }),
+    [origenes],
+  );
   return (
     <div className="flex flex-col gap-4 md:gap-6">
       <PageHeader title={C.TITLE} subtitle={C.SUBTITLE} />
-      <ConsolidadoSection state={state} />
-      {showKpis ? <DeudasKpis summary={state.summary} /> : null}
+      <ConsolidadoSection consolidado={consolidado} />
       <ListPanel
         ariaLabel={C.LIST_LABEL}
         toolbar={

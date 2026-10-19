@@ -7,7 +7,6 @@ import {
   debtCards,
   hasDocDeuda,
   personalDocItems,
-  summarize,
   toDeudaFilters,
 } from '@/features/reportes/helpers/deudas';
 import { ESTADO_PERSONA, PERSONA_TYPE } from '@/shared/domain';
@@ -15,11 +14,7 @@ import { isPlaceholderReport } from '@/features/reportes/constants/copy';
 import { yearOptions } from '@/features/reportes/constants/filters';
 import type { ConsolidadoDeudas } from '@/features/reportes/models/consolidado';
 import type { PersonaDeuda } from '@/features/reportes/models/deudas';
-import {
-  isInscripcionSelected,
-  toggleInscripcion,
-  withoutTipo,
-} from '@/features/reportes/helpers/origen';
+import { origenOptions, parseOrigen } from '@/features/reportes/helpers/origen';
 import { DeudasView, PlaceholderReportView } from '@/features/reportes';
 
 const mocks = vi.hoisted(() => ({
@@ -83,6 +78,20 @@ const docInsc = {
   salidasCercanas: false,
   autorizacionIngreso: true,
   certificadoAptitudFisica: true,
+};
+
+const CONSOLIDADO: ConsolidadoDeudas = {
+  personasConDeuda: 3,
+  deudaTotal: 62000,
+  deudaCampamentos: 52000,
+  deudaInscripcionesScout: 0,
+  deudaInscripcionesGrupo: 10000,
+  campamentos: [
+    { campamentoId: 'camp-inicio', nombre: 'Campamento de Inicio', ano: 2026, deudaTotal: 52000, personasConDeuda: 2 },
+  ],
+  inscripciones: [
+    { tipo: 'inscripcionesGrupo', ano: 2026, deudaTotal: 10000, personasConDeuda: 1 },
+  ],
 };
 
 describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
@@ -152,20 +161,7 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
     );
   });
 
-  it('summarize y toDeudaFilters', () => {
-    const list = [
-      persona({ deudaTotal: 300 }),
-      persona({
-        personaId: 'p2',
-        deudaTotal: 200,
-        documentacionInscripcion: [docInsc],
-      }),
-    ];
-    expect(summarize(list)).toEqual({
-      personas: 2,
-      totalDeuda: 500,
-      docsFaltantes: 1,
-    });
+  it('toDeudaFilters traduce los valores de la barra de filtros', () => {
     expect(toDeudaFilters({ rama: 'Manada', ano: '2025', tipo: '' })).toEqual({
       rama: 'Manada',
       ano: 2025,
@@ -173,24 +169,25 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
     expect(toDeudaFilters({ rama: 'Otra', tipo: 'documentacion' })).toEqual({
       tipo: 'documentacion',
     });
+    expect(toDeudaFilters({ q: '  ana ' })).toEqual({ q: 'ana' });
+    expect(toDeudaFilters({ q: '   ' })).toEqual({});
     expect(toDeudaFilters({})).toEqual({});
   });
 
-  it('toDeudaFilters: búsqueda recortada y campamento elegido', () => {
-    expect(toDeudaFilters({ q: '  ana ' }, 'camp-1')).toEqual({
-      q: 'ana',
-      campamentoId: 'camp-1',
+  it('origen: las opciones salen del consolidado y el valor elegido pisa tipo y año', () => {
+    const options = origenOptions(CONSOLIDADO);
+    expect(options.map((o) => o.label)).toEqual([
+      expect.stringMatching(/^Campamento de Inicio 2026 · /),
+      expect.stringMatching(/^Inscripciones Grupo 2026 · /),
+    ]);
+    const [camp, insc] = options.map((o) => o.value);
+    expect(toDeudaFilters({ origen: camp })).toEqual({ campamentoId: 'camp-inicio' });
+    expect(toDeudaFilters({ origen: insc, tipo: 'campamentos', ano: '2020' })).toEqual({
+      tipo: 'inscripcionesGrupo',
+      ano: 2026,
     });
-    expect(toDeudaFilters({ q: '   ' })).toEqual({});
-  });
-
-  it('origen: elegir una inscripción setea tipo + año, y volver a elegirla los quita', () => {
-    const item = { tipo: 'inscripcionesGrupo', ano: 2026, deudaTotal: 1, personasConDeuda: 1 } as const;
-    const elegido = toggleInscripcion({ rama: 'Manada' }, item);
-    expect(elegido).toEqual({ rama: 'Manada', tipo: 'inscripcionesGrupo', ano: '2026' });
-    expect(isInscripcionSelected(elegido, item)).toBe(true);
-    expect(toggleInscripcion(elegido, item)).toEqual({ rama: 'Manada' });
-    expect(withoutTipo(elegido)).toEqual({ rama: 'Manada', ano: '2026' });
+    expect(parseOrigen('basura')).toEqual({});
+    expect(parseOrigen('inscripcion:inventado:2026')).toEqual({});
   });
 
   it('yearOptions del año actual hasta 2020 y guard de placeholders', () => {
@@ -204,20 +201,6 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
   });
 });
 
-const CONSOLIDADO: ConsolidadoDeudas = {
-  personasConDeuda: 3,
-  deudaTotal: 62000,
-  deudaCampamentos: 52000,
-  deudaInscripcionesScout: 0,
-  deudaInscripcionesGrupo: 10000,
-  campamentos: [
-    { campamentoId: 'camp-inicio', nombre: 'Campamento de Inicio', ano: 2026, deudaTotal: 52000, personasConDeuda: 2 },
-  ],
-  inscripciones: [
-    { tipo: 'inscripcionesGrupo', ano: 2026, deudaTotal: 10000, personasConDeuda: 1 },
-  ],
-};
-
 describe('<DeudasView>', () => {
   beforeEach(() => {
     mocks.fetchDeudas.mockReset();
@@ -225,35 +208,37 @@ describe('<DeudasView>', () => {
     mocks.fetchConsolidado.mockResolvedValue(CONSOLIDADO);
   });
 
-  it('consolidado del backend: elegir un campamento filtra el listado y se puede quitar', async () => {
+  it('muestra el consolidado del backend con los totales por tipo', async () => {
     mocks.fetchDeudas.mockResolvedValue([persona({ deudaTotal: 500 })]);
     render(<DeudasView />);
-    const boton = await screen.findByRole('button', {
-      name: /Campamento de Inicio 2026/,
-    });
-    expect(boton).toHaveAttribute('aria-pressed', 'false');
-    await userEvent.click(boton);
+    expect(await screen.findByText('Consolidado de deudas')).toBeInTheDocument();
+    expect(screen.getByText('3 personas con deuda')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Resumen de deudas')).not.toBeInTheDocument();
+  });
+
+  async function pickOrigen(name: RegExp) {
+    await userEvent.click(
+      await screen.findByRole('button', { name: /Origen de deuda/ }),
+    );
+    await userEvent.click(await screen.findByRole('button', { name }));
+  }
+
+  it('el origen es un chip más de los filtros: elegir un campamento filtra el listado', async () => {
+    mocks.fetchDeudas.mockResolvedValue([persona({ deudaTotal: 500 })]);
+    render(<DeudasView />);
+    await pickOrigen(/Campamento de Inicio 2026/);
     await waitFor(() =>
       expect(mocks.fetchDeudas).toHaveBeenLastCalledWith(
         { campamentoId: 'camp-inicio' },
         expect.anything(),
       ),
     );
-    expect(
-      screen.getByRole('button', { name: /Campamento de Inicio 2026/ }),
-    ).toHaveAttribute('aria-pressed', 'true');
-    await userEvent.click(screen.getByRole('button', { name: 'Quitar filtro' }));
-    await waitFor(() =>
-      expect(mocks.fetchDeudas).toHaveBeenLastCalledWith({}, expect.anything()),
-    );
   });
 
-  it('elegir una inscripción filtra por tipo + año', async () => {
+  it('elegir una inscripción como origen filtra por tipo + año', async () => {
     mocks.fetchDeudas.mockResolvedValue([persona({ deudaTotal: 500 })]);
     render(<DeudasView />);
-    await userEvent.click(
-      await screen.findByRole('button', { name: /Inscripciones Grupo 2026/ }),
-    );
+    await pickOrigen(/Inscripciones Grupo 2026/);
     await waitFor(() =>
       expect(mocks.fetchDeudas).toHaveBeenLastCalledWith(
         { tipo: 'inscripcionesGrupo', ano: 2026 },
@@ -277,7 +262,7 @@ describe('<DeudasView>', () => {
     );
   });
 
-  it('KPIs, tabla con nombre y chevron a la ficha, chips neutros y filas expandibles', async () => {
+  it('tabla con nombre y chevron a la ficha, chips neutros y filas expandibles', async () => {
     mocks.fetchDeudas.mockResolvedValue([
       persona({ deudaTotal: 500, campamentos: [camp(2026, 500, false)] }),
       persona({
@@ -288,9 +273,7 @@ describe('<DeudasView>', () => {
       }),
     ]);
     render(<DeudasView />);
-    expect(await screen.findByLabelText('Resumen de deudas')).toHaveTextContent(
-      'Personas con deuda2',
-    );
+    await screen.findByRole('region', { name: 'Personas con deuda' });
     const table = screen.getByRole('region', { name: 'Personas con deuda' });
     expect(
       within(table).getByRole('link', { name: 'Ana Pérez' }),

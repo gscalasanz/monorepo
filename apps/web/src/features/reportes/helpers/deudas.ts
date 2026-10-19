@@ -4,6 +4,7 @@ import {
   DEBT_LABELS as L,
   DOC_LABELS as D,
 } from '@/features/reportes/constants/copy';
+import { parseOrigen } from '@/features/reportes/helpers/origen';
 import { FILTER_KEYS } from '@/features/reportes/constants/filters';
 import {
   isDeudaRamaFilter,
@@ -141,37 +142,21 @@ export function countDocsFaltantes(p: PersonaDeuda): number {
   return personal + inscripciones + missingAutorizaciones(p).length;
 }
 
-export interface DeudasSummary {
-  readonly personas: number;
-  readonly totalDeuda: number;
-  readonly docsFaltantes: number;
-}
-
-export function summarize(deudas: readonly PersonaDeuda[]): DeudasSummary {
-  return {
-    personas: deudas.length,
-    totalDeuda: deudas.reduce((sum, p) => sum + p.deudaTotal, 0),
-    docsFaltantes: deudas.filter(hasDocDeuda).length,
-  };
-}
-
 const asText = (value: FilterValues[string]): string =>
   typeof value === 'string' ? value : '';
 
-/** Valores de la FilterBar (+ campamento elegido en el consolidado) → query del backend (vacío = sin filtrar). */
-export function toDeudaFilters(
-  values: FilterValues,
-  campamentoId?: string,
-): DeudaFilters {
+/** Valores de la FilterBar → query del backend (vacío = sin filtrar). El origen pisa tipo/año. */
+export function toDeudaFilters(values: FilterValues): DeudaFilters {
   const rama = asText(values[FILTER_KEYS.RAMA]);
   const ano = asText(values[FILTER_KEYS.ANO]);
   const tipo = asText(values[FILTER_KEYS.TIPO]);
   const q = asText(values[FILTER_KEYS.SEARCH]).trim();
+  const origen = parseOrigen(asText(values[FILTER_KEYS.ORIGEN]));
   return {
     ...(q ? { q } : {}),
-    ...(campamentoId ? { campamentoId } : {}),
     ...(isDeudaRamaFilter(rama) ? { rama } : {}),
     ...(ano ? { ano: Number(ano) } : {}),
     ...(isTipoDeudaFilter(tipo) ? { tipo } : {}),
+    ...origen,
   };
 }

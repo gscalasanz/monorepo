@@ -2,10 +2,6 @@
 export const REPORTES_COPY = {
   TITLE: 'Reportes',
   SUBTITLE: 'Genera y visualiza reportes del grupo',
-  KPIS_LABEL: 'Resumen de deudas',
-  KPI_PERSONAS: 'Personas con deuda',
-  KPI_TOTAL: 'Deuda total',
-  KPI_DOCS: 'Con docs faltantes',
   LOADING: 'Cargando reporte...',
   ERROR:
     'Error al cargar el reporte. Verifique su conexión e intente nuevamente.',
@@ -36,6 +32,7 @@ export const REPORTES_COPY = {
   FILTER_RAMA: 'Rama',
   FILTER_ANO: 'Año',
   FILTER_TIPO: 'Tipo de deuda',
+  FILTER_ORIGEN: 'Origen de deuda',
 } as const;
 
 /** Consolidado de deuda por origen (campamentos e inscripciones). */
@@ -49,12 +46,9 @@ export const CONSOLIDADO_COPY = {
   CAMPAMENTOS: 'Campamentos',
   INSCRIPCIONES_SCOUT: 'Inscripciones Scout AR',
   INSCRIPCIONES_GRUPO: 'Inscripciones Grupo',
-  FILTER_HINT: 'Tocá un origen para ver solo sus deudas',
-  CLEAR: 'Quitar filtro',
   EMPTY: 'No hay deudas de plata pendientes',
   campamento: (nombre: string, ano: number): string => `${nombre} ${ano}`,
   inscripcion: (tipo: string, ano: number): string => `${tipo} ${ano}`,
-  personas: (n: number): string => (n === 1 ? '1 persona' : `${n} personas`),
 } as const;
 
 /** Etiquetas de deudas y documentos (exactas a Angular). */
