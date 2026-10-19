@@ -16,20 +16,7 @@ export const DASHBOARD_COPY = {
   KPI_FONDO_SOLIDARIO: 'Fondo Solidario',
   KPI_REEMBOLSOS: 'Reembolsos Pendientes',
   KPI_COBROS: 'Cobros Pendientes',
-
-  EVOLUTION: 'Evolución',
-  GRANULARITY_LABEL: 'Agrupar la evolución por',
-  GRANULARITY_DIA: 'Día',
-  GRANULARITY_SEMANA: 'Semana',
-  GRANULARITY_MES: 'Mes',
-  SERIES_SALDO: 'Saldo',
-  SERIES_INGRESOS: 'Ingresos',
-  SERIES_EGRESOS: 'Egresos',
-  CHART_SUMMARY: (params: { readonly from: string; readonly to: string; readonly saldo: string }) =>
-    `Saldo del grupo de ${params.from} a ${params.to}; hoy ${params.saldo}.`,
-  CHART_LOADING: 'Cargando evolución…',
-  CHART_ERROR: 'No se pudo cargar la evolución mensual.',
-  CHART_TRUNCATED: 'Historial parcial: hay más movimientos de los que se pueden graficar.',
+  KPI_DEUDA: 'Deuda a cobrar',
 
   FONDOS: 'Fondos de rama',
   NO_FONDOS: 'No hay fondos de rama configurados',

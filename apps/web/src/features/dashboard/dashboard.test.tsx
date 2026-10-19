@@ -102,18 +102,27 @@ describe('DashboardView', () => {
     expect(within(metrics).getByText(/^Inscripciones \d{4}$/)).toBeInTheDocument();
   });
 
-  it('si falla el historial, el gráfico lo dice y el resto de la pantalla sigue', async () => {
+  it('si falla el historial, el resto de la pantalla sigue', async () => {
     fetchMovimientosSince.mockRejectedValue(new Error('boom'));
     render(<DashboardView />);
-    expect(await screen.findByText('No se pudo cargar la evolución mensual.')).toBeInTheDocument();
-    expect(screen.getByText('Dinero del grupo')).toBeInTheDocument();
+    expect(await screen.findByText('Dinero del grupo')).toBeInTheDocument();
+    expect(screen.queryByText('Evolución')).not.toBeInTheDocument();
   });
 
-  it('si no carga el consolidado, el gráfico no queda cargando para siempre', async () => {
-    fetchDashboardData.mockResolvedValue({ ...BASE_DATA, consolidado: null });
+  it('ya no muestra el gráfico de evolución', async () => {
     render(<DashboardView />);
-    expect(await screen.findByText('No se pudo cargar la evolución mensual.')).toBeInTheDocument();
-    expect(fetchMovimientosSince).not.toHaveBeenCalled();
+    await screen.findByText('Dinero del grupo');
+    expect(screen.queryByRole('heading', { name: 'Evolución' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: 'Agrupar la evolución por' })).not.toBeInTheDocument();
+  });
+
+  it('la deuda a cobrar va debajo de los cobros pendientes y lleva al reporte de deudores', async () => {
+    render(<DashboardView />);
+    const saldos = await screen.findByLabelText('Saldos del grupo');
+    const links = within(saldos).getAllByRole('link');
+    const cobros = links.findIndex((l) => /Cobros Pendientes/.test(l.textContent ?? ''));
+    expect(links[cobros + 1]).toHaveTextContent('Deuda a cobrar');
+    expect(links[cobros + 1]).toHaveAttribute('href', '/reportes/deudas');
   });
 
   describe('navegación', () => {
@@ -175,34 +184,6 @@ describe('DashboardView', () => {
       fetchDashboardData.mockResolvedValue({ ...BASE_DATA, recientes: [mov] });
       render(<DashboardView />);
       expect(await screen.findByRole('link', { name: 'Garrafa' })).toHaveAttribute('href', `/movimientos/${mov.id}/editar`);
-    });
-  });
-
-  describe('evolución por día, semana o mes', () => {
-    it('ofrece Día, Semana y Mes, con Mes elegido por defecto', async () => {
-      render(<DashboardView />);
-      const group = await screen.findByRole('group', { name: 'Agrupar la evolución por' });
-      expect(within(group).getByRole('button', { name: 'Mes' })).toHaveAttribute('aria-pressed', 'true');
-      expect(within(group).getByRole('button', { name: 'Día' })).toHaveAttribute('aria-pressed', 'false');
-      expect(within(group).getByRole('button', { name: 'Semana' })).toHaveAttribute('aria-pressed', 'false');
-    });
-
-    it('la evolución es una fila propia, separada del resumen de tesorería', async () => {
-      render(<DashboardView />);
-      const evolucion = await screen.findByRole('heading', { name: 'Evolución' });
-      const tesoreria = screen.getByRole('link', { name: 'Dinero del grupo' });
-      const panel = evolucion.closest('section');
-      expect(panel).not.toBeNull();
-      expect(panel).not.toContainElement(tesoreria);
-    });
-
-    it('cambiar la granularidad mueve la selección', async () => {
-      const user = userEvent.setup();
-      render(<DashboardView />);
-      const group = await screen.findByRole('group', { name: 'Agrupar la evolución por' });
-      await user.click(within(group).getByRole('button', { name: 'Día' }));
-      expect(within(group).getByRole('button', { name: 'Día' })).toHaveAttribute('aria-pressed', 'true');
-      expect(within(group).getByRole('button', { name: 'Mes' })).toHaveAttribute('aria-pressed', 'false');
     });
   });
 });

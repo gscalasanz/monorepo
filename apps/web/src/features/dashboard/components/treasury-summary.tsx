@@ -6,7 +6,7 @@ import { Money } from '@/shared/components/data';
 import { formatMoney } from '@/shared/format';
 import { NavChevron } from '@/shared/components/ui/nav-chevron';
 import { DASHBOARD_COPY as C } from '@/features/dashboard/constants/copy';
-import { CAJAS_HREF, PENDING_LINKS } from '@/features/dashboard/constants/dashboard';
+import { CAJAS_HREF, DEBTORS_REPORT_HREF, PENDING_LINKS } from '@/features/dashboard/constants/dashboard';
 import { monthName, type MonthFlow } from '@/features/dashboard/helpers/cash-flow';
 import type { TreasuryModel } from '@/features/dashboard/helpers/view-model';
 
@@ -72,6 +72,7 @@ export function TreasurySummary({ treasury, currentMonth }: { readonly treasury:
         <ul className="grid gap-0.5 border-t border-border pt-2">
           <PendingRow label={C.KPI_REEMBOLSOS} amount={treasury.reembolsos} href={PENDING_LINKS.reembolsos} />
           <PendingRow label={C.KPI_COBROS} amount={treasury.cobros} href={PENDING_LINKS.cobros} />
+          <PendingRow label={C.KPI_DEUDA} amount={treasury.porCobrar} href={DEBTORS_REPORT_HREF} />
         </ul>
       </div>
     </div>

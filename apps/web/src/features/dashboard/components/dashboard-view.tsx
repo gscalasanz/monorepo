@@ -8,25 +8,18 @@ import { DashboardMetrics } from '@/features/dashboard/components/dashboard-metr
 import { DebtorsPanel } from '@/features/dashboard/components/debtors-panel';
 import { FondosRamaPanel } from '@/features/dashboard/components/fondos-rama-panel';
 import { RecentMovimientosPanel } from '@/features/dashboard/components/recent-movimientos-panel';
-import { CashFlowChart } from '@/features/dashboard/components/cash-flow-chart';
 import { TreasuryPanel } from '@/features/dashboard/components/treasury-panel';
 import { UpcomingEventosStrip } from '@/features/dashboard/components/upcoming-eventos-strip';
-import { DASHBOARD_COPY as C } from '@/features/dashboard/constants/copy';
 import { buildFlowMetric } from '@/features/dashboard/helpers/cash-flow';
 import { useCashFlow } from '@/features/dashboard/hooks/use-cash-flow';
 import { useDashboard } from '@/features/dashboard/hooks/use-dashboard';
 
 const GRID = 'grid gap-3 md:gap-4 lg:grid-cols-12';
 
-/** Inicio rediseñado (Insignia): tesorería → evolución → métricas → movimientos y deudores → eventos. */
+/** Inicio rediseñado (Insignia): tesorería → métricas → movimientos y deudores → eventos. */
 export function DashboardView() {
   const dash = useDashboard();
   const cashFlow = useCashFlow(dash.hasConsolidado ? dash.treasury.total : undefined);
-  // Si el consolidado no cargó no hay ancla para el saldo: el gráfico lo dice en vez de quedar cargando.
-  const chartState = useMemo(
-    () => (!dash.isLoading && !dash.hasConsolidado ? { ...cashFlow, isLoading: false, error: C.CHART_ERROR } : cashFlow),
-    [cashFlow, dash.isLoading, dash.hasConsolidado],
-  );
   const ready = cashFlow.monthly.length > 0;
   const ingresos = useMemo(() => (ready ? buildFlowMetric({ flow: cashFlow.monthly, key: 'ingresos' }) : undefined), [ready, cashFlow.monthly]);
   const egresos = useMemo(() => (ready ? buildFlowMetric({ flow: cashFlow.monthly, key: 'egresos' }) : undefined), [ready, cashFlow.monthly]);
@@ -41,7 +34,6 @@ export function DashboardView() {
             <TreasuryPanel treasury={dash.treasury} currentMonth={cashFlow.monthly.at(-1)} className="lg:col-span-8" />
             <FondosRamaPanel rows={dash.fondos} className="lg:col-span-4" />
           </div>
-          <CashFlowChart state={chartState} />
           <DashboardMetrics
             ingresos={ingresos}
             egresos={egresos}
