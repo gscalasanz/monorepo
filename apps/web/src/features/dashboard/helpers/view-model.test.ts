@@ -1,12 +1,12 @@
-import { eventoSchema, movimientoSchema, cajaSchema } from '@/shared/domain';
-import { EVENTO_FIXTURE, MOVIMIENTO_FIXTURE } from '@/shared/domain/testing/fixtures';
+import { campamentoSchema, eventoSchema, movimientoSchema, cajaSchema } from '@/shared/domain';
+import { CAMPAMENTO_FIXTURE, EVENTO_FIXTURE, MOVIMIENTO_FIXTURE } from '@/shared/domain/testing/fixtures';
 import { asLocalDate } from '@/shared/time';
 import { CONSOLIDADO } from '@/features/dashboard/testing/fixtures';
 import {
   buildFondosRama,
   buildTreasury,
   recentMovimientos,
-  upcomingEventos,
+  upcomingItems,
 } from '@/features/dashboard/helpers/view-model';
 
 describe('buildTreasury', () => {
@@ -63,14 +63,31 @@ describe('buildFondosRama', () => {
   });
 });
 
-describe('upcomingEventos', () => {
+describe('upcomingItems', () => {
+  const today = asLocalDate('2026-10-06');
+  const evento = (fecha: string, i: number) => ({ ...eventoSchema.parse(EVENTO_FIXTURE), id: `e${i}`, fecha: asLocalDate(fecha) });
+  const campamento = (fechaInicio: string, id: string) => ({
+    ...campamentoSchema.parse(CAMPAMENTO_FIXTURE),
+    id,
+    fechaInicio: asLocalDate(fechaInicio),
+  });
+
   it('desde hoy, ascendentes, máx. 3', () => {
-    const base = eventoSchema.parse(EVENTO_FIXTURE);
-    const eventos = ['2026-10-05', '2026-12-01', '2026-10-06', '2026-11-01', '2026-10-20'].map(
-      (fecha, i) => ({ ...base, id: `e${i}`, fecha: asLocalDate(fecha) }),
-    );
-    const result = upcomingEventos(eventos, asLocalDate('2026-10-06'));
+    const eventos = ['2026-10-05', '2026-12-01', '2026-10-06', '2026-11-01', '2026-10-20'].map(evento);
+    const result = upcomingItems({ eventos, campamentos: [], today });
     expect(result.map((e) => e.fecha)).toEqual(['2026-10-06', '2026-10-20', '2026-11-01']);
+  });
+
+  it('mezcla eventos y campamentos por fecha de inicio, cada uno con su link', () => {
+    const result = upcomingItems({
+      eventos: [evento('2026-11-10', 1)],
+      campamentos: [campamento('2026-10-15', 'c1'), campamento('2026-09-01', 'c-pasado')],
+      today,
+    });
+    expect(result.map((i) => [i.kind, i.fecha, i.href])).toEqual([
+      ['campamento', '2026-10-15', '/campamentos/c1'],
+      [expect.stringMatching(/venta|grupo/), '2026-11-10', '/eventos/e1'],
+    ]);
   });
 });
 

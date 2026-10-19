@@ -1,8 +1,16 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { PERSONA_TYPE, movimientoSchema, personaDeudaSchema, type PersonaDeuda } from '@/shared/domain';
-import { MOVIMIENTO_FIXTURE } from '@/shared/domain/testing/fixtures';
+import {
+  PERSONA_TYPE,
+  campamentoSchema,
+  eventoSchema,
+  movimientoSchema,
+  personaDeudaSchema,
+  type PersonaDeuda,
+} from '@/shared/domain';
+import { CAMPAMENTO_FIXTURE, EVENTO_FIXTURE, MOVIMIENTO_FIXTURE } from '@/shared/domain/testing/fixtures';
+import { asLocalDate } from '@/shared/time';
 import { DashboardView } from '@/features/dashboard';
 import { CONSOLIDADO } from '@/features/dashboard/testing/fixtures';
 
@@ -41,6 +49,7 @@ const DEUDOR: PersonaDeuda = personaDeudaSchema.parse({
 const BASE_DATA = {
   consolidado: CONSOLIDADO,
   eventos: [],
+  campamentos: [],
   recientes: [],
   deudas: [],
   inscripciones: [],
@@ -95,11 +104,28 @@ describe('DashboardView', () => {
     expect(screen.getByText('Total adeudado')).toBeInTheDocument();
   });
 
-  it('la franja de métricas incluye la deuda a cobrar y las inscripciones al día', async () => {
+  it('la franja de métricas incluye los próximos eventos y las inscripciones al día', async () => {
     render(<DashboardView />);
     const metrics = await screen.findByLabelText('Resumen del mes');
-    expect(within(metrics).getByText('Deuda a cobrar')).toBeInTheDocument();
+    expect(within(metrics).getByText('Próximos eventos')).toBeInTheDocument();
     expect(within(metrics).getByText(/^Inscripciones \d{4}$/)).toBeInTheDocument();
+    expect(within(metrics).queryByText('Deuda a cobrar')).not.toBeInTheDocument();
+  });
+
+  it('los próximos eventos incluyen campamentos, ordenados por fecha y con su link', async () => {
+    const evento = { ...eventoSchema.parse(EVENTO_FIXTURE), id: 'e1', nombre: 'Locro', fecha: asLocalDate('2099-06-10') };
+    const campamento = {
+      ...campamentoSchema.parse(CAMPAMENTO_FIXTURE),
+      id: 'c1',
+      nombre: 'Campamento de Inicio',
+      fechaInicio: asLocalDate('2099-05-01'),
+    };
+    fetchDashboardData.mockResolvedValue({ ...BASE_DATA, eventos: [evento], campamentos: [campamento] });
+    render(<DashboardView />);
+    const metrics = await screen.findByLabelText('Resumen del mes');
+    const rows = within(metrics).getAllByRole('link', { name: /Campamento de Inicio|Locro/ });
+    expect(rows.map((r) => r.getAttribute('href'))).toEqual(['/campamentos/c1', '/eventos/e1']);
+    expect(rows[0]).toHaveTextContent('Campamento');
   });
 
   it('si falla el historial, el resto de la pantalla sigue', async () => {
@@ -148,10 +174,9 @@ describe('DashboardView', () => {
       );
     });
 
-    it('las métricas navegan: deuda a cobrar → deudores, inscripciones → inscripciones', async () => {
+    it('las métricas navegan: inscripciones → inscripciones', async () => {
       render(<DashboardView />);
       const metrics = await screen.findByLabelText('Resumen del mes');
-      expect(within(metrics).getByRole('link', { name: 'Deuda a cobrar' })).toHaveAttribute('href', '/reportes/deudas');
       expect(within(metrics).getByRole('link', { name: /^Inscripciones \d{4}$/ })).toHaveAttribute('href', '/inscripciones');
     });
 

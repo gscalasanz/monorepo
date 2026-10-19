@@ -11,7 +11,7 @@ import {
   buildFondosRama,
   buildTreasury,
   recentMovimientos,
-  upcomingEventos,
+  upcomingItems,
 } from '@/features/dashboard/helpers/view-model';
 
 const DASHBOARD_KEY = 'dashboard';
@@ -26,7 +26,7 @@ export function useDashboard() {
       hasConsolidado: Boolean(data?.consolidado),
       treasury: buildTreasury(data?.consolidado ?? null),
       fondos: buildFondosRama(data?.consolidado ?? null),
-      eventos: upcomingEventos(data?.eventos ?? [], todayBsAs()),
+      upcoming: upcomingItems({ eventos: data?.eventos ?? [], campamentos: data?.campamentos ?? [], today: todayBsAs() }),
       movimientos: recentMovimientos(data?.recientes ?? []),
       lastMovimientoAt: data?.recientes[0]?.fecha,
       debtors: buildDebtors(data?.deudas ?? []),

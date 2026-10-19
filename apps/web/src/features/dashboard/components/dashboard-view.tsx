@@ -9,14 +9,13 @@ import { DebtorsPanel } from '@/features/dashboard/components/debtors-panel';
 import { FondosRamaPanel } from '@/features/dashboard/components/fondos-rama-panel';
 import { RecentMovimientosPanel } from '@/features/dashboard/components/recent-movimientos-panel';
 import { TreasuryPanel } from '@/features/dashboard/components/treasury-panel';
-import { UpcomingEventosStrip } from '@/features/dashboard/components/upcoming-eventos-strip';
 import { buildFlowMetric } from '@/features/dashboard/helpers/cash-flow';
 import { useCashFlow } from '@/features/dashboard/hooks/use-cash-flow';
 import { useDashboard } from '@/features/dashboard/hooks/use-dashboard';
 
 const GRID = 'grid gap-3 md:gap-4 lg:grid-cols-12';
 
-/** Inicio rediseñado (Insignia): tesorería → métricas → movimientos y deudores → eventos. */
+/** Inicio rediseñado (Insignia): tesorería → métricas → movimientos y deudores. Los próximos eventos viven en la franja de métricas. */
 export function DashboardView() {
   const dash = useDashboard();
   const cashFlow = useCashFlow(dash.hasConsolidado ? dash.treasury.total : undefined);
@@ -38,7 +37,7 @@ export function DashboardView() {
             ingresos={ingresos}
             egresos={egresos}
             currentMonth={cashFlow.monthly.at(-1)?.month}
-            porCobrar={dash.treasury.porCobrar}
+            upcoming={dash.upcoming}
             inscripciones={dash.inscripciones}
             ano={dash.inscripcionesAno}
           />
@@ -46,7 +45,6 @@ export function DashboardView() {
             <RecentMovimientosPanel rows={dash.movimientos} className="lg:col-span-8" />
             <DebtorsPanel summary={dash.debtors} className="lg:col-span-4" />
           </div>
-          <UpcomingEventosStrip eventos={dash.eventos} />
         </>
       )}
     </div>

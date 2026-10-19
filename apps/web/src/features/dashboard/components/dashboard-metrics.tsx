@@ -3,8 +3,10 @@ import { movimientosHref } from '@/shared/constants';
 import { TIPO_MOVIMIENTO } from '@/shared/domain';
 import { Money } from '@/shared/components/data';
 import { DASHBOARD_COPY as C } from '@/features/dashboard/constants/copy';
-import { DEBTORS_REPORT_HREF, INSCRIPCIONES_HREF, INSCRIPCION_COLORS } from '@/features/dashboard/constants/dashboard';
+import { INSCRIPCIONES_HREF, INSCRIPCION_COLORS } from '@/features/dashboard/constants/dashboard';
 import { monthBounds, monthName, type FlowMetric } from '@/features/dashboard/helpers/cash-flow';
+import { upcomingMetric } from '@/features/dashboard/components/upcoming-metric';
+import type { UpcomingItem } from '@/features/dashboard/helpers/view-model';
 import type { InscripcionesSummary } from '@/features/dashboard/helpers/inscripciones-summary';
 
 export interface DashboardMetricsProps {
@@ -12,7 +14,7 @@ export interface DashboardMetricsProps {
   readonly ingresos: FlowMetric | undefined;
   readonly egresos: FlowMetric | undefined;
   readonly currentMonth: string | undefined;
-  readonly porCobrar: number;
+  readonly upcoming: readonly UpcomingItem[];
   readonly inscripciones: InscripcionesSummary;
   readonly ano: number;
 }
@@ -72,8 +74,8 @@ function inscripcionesItem({ summary, ano }: { readonly summary: InscripcionesSu
   };
 }
 
-/** Franja de métricas (un solo panel con hairlines): ingresos, egresos, deuda a cobrar e inscripciones. */
-export function DashboardMetrics({ ingresos, egresos, currentMonth, porCobrar, inscripciones, ano }: DashboardMetricsProps) {
+/** Franja de métricas (un solo panel con hairlines): ingresos, egresos, próximos eventos/campamentos e inscripciones. */
+export function DashboardMetrics({ ingresos, egresos, currentMonth, upcoming, inscripciones, ano }: DashboardMetricsProps) {
   const month = currentMonth ? monthName(currentMonth) : '';
   const link = (tipo: string) => (currentMonth ? movimientosHref({ tipo, ...monthBounds(currentMonth) }) : undefined);
   return (
@@ -82,7 +84,7 @@ export function DashboardMetrics({ ingresos, egresos, currentMonth, porCobrar, i
       items={[
         flowItem({ id: 'ingresos', label: C.METRIC_INGRESOS(month), metric: ingresos, tone: 'positive', color: CHART_COLORS.moneyIn, href: link(TIPO_MOVIMIENTO.INGRESO) }),
         flowItem({ id: 'egresos', label: C.METRIC_EGRESOS(month), metric: egresos, tone: 'neutral', color: CHART_COLORS.moneyOut, href: link(TIPO_MOVIMIENTO.EGRESO) }),
-        { id: 'deuda', label: C.METRIC_DEUDA, value: <Money amount={porCobrar} size="figure-md" />, href: DEBTORS_REPORT_HREF },
+        upcomingMetric(upcoming),
         inscripcionesItem({ summary: inscripciones, ano }),
       ]}
     />

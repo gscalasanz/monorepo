@@ -24,7 +24,6 @@ export const DASHBOARD_COPY = {
   METRICS_LABEL: 'Resumen del mes',
   METRIC_INGRESOS: (mes: string) => `Ingresos de ${mes}`,
   METRIC_EGRESOS: (mes: string) => `Egresos de ${mes}`,
-  METRIC_DEUDA: 'Deuda a cobrar',
   METRIC_INSCRIPCIONES: (ano: number) => `Inscripciones ${ano}`,
   VS_MONTH: (mes: string) => `vs. ${mes}`,
   INSCRIPCIONES_AL_DIA: (total: number) => `de ${total} al día`,
@@ -54,10 +53,10 @@ export const DASHBOARD_COPY = {
   DEBT_SEPARATOR: ' · ',
 
   UPCOMING: 'Próximos eventos',
-  UPCOMING_ALL: 'Ver eventos',
   NO_UPCOMING: 'No hay eventos próximos',
   EVENT_VENTA: 'Venta',
   EVENT_GRUPO: 'Grupo',
+  EVENT_CAMPAMENTO: 'Campamento',
 
   EMPTY: '—',
   SYSTEM: 'Sistema',

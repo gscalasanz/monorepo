@@ -1,12 +1,14 @@
 /** Transformaciones puras del dashboard (paridad con los `computed` de Angular). */
 import { seriesColor } from '@/shared/components/charts';
-import { CAJAS_TAB, cajasHref, movimientoEditHref } from '@/shared/constants';
+import { APP_ROUTES, CAJAS_TAB, cajasHref, movimientoEditHref } from '@/shared/constants';
 import {
   CAJA_TYPE_LABELS,
   MEDIO_PAGO_LABELS,
   RAMAS,
   RAMA_TO_CAJA_TYPE,
+  TIPO_EVENTO,
   TIPO_MOVIMIENTO,
+  type Campamento,
   type ConsolidadoSaldos,
   type Evento,
   type Movimiento,
@@ -78,10 +80,43 @@ export function buildFondosRama(consolidado: ConsolidadoSaldos | null): readonly
   }));
 }
 
-/** Eventos con fecha ≥ hoy (BsAs), ascendentes, máx. 3. */
-export function upcomingEventos(eventos: readonly Evento[], today: LocalDate): readonly Evento[] {
-  return [...eventos]
-    .filter((evento) => evento.fecha >= today)
+export const UPCOMING_KIND = { VENTA: 'venta', GRUPO: 'grupo', CAMPAMENTO: 'campamento' } as const;
+export type UpcomingKind = (typeof UPCOMING_KIND)[keyof typeof UPCOMING_KIND];
+
+/** Evento o campamento por venir, en común para mostrarlos en una sola lista. */
+export interface UpcomingItem {
+  readonly id: string;
+  readonly nombre: string;
+  readonly fecha: LocalDate;
+  readonly kind: UpcomingKind;
+  readonly href: string;
+}
+
+/** Eventos y campamentos con fecha de inicio ≥ hoy (BsAs), ascendentes, máx. `UPCOMING_EVENTS_LIMIT`. */
+export function upcomingItems(params: {
+  readonly eventos: readonly Evento[];
+  readonly campamentos: readonly Campamento[];
+  readonly today: LocalDate;
+}): readonly UpcomingItem[] {
+  const { eventos, campamentos, today } = params;
+  const items: readonly UpcomingItem[] = [
+    ...eventos.map((e) => ({
+      id: e.id,
+      nombre: e.nombre,
+      fecha: e.fecha,
+      kind: e.tipo === TIPO_EVENTO.VENTA ? UPCOMING_KIND.VENTA : UPCOMING_KIND.GRUPO,
+      href: `${APP_ROUTES.EVENTOS}/${e.id}`,
+    })),
+    ...campamentos.map((c) => ({
+      id: c.id,
+      nombre: c.nombre,
+      fecha: c.fechaInicio,
+      kind: UPCOMING_KIND.CAMPAMENTO,
+      href: `${APP_ROUTES.CAMPAMENTOS}/${c.id}`,
+    })),
+  ];
+  return items
+    .filter((item) => item.fecha >= today)
     .sort((a, b) => a.fecha.localeCompare(b.fecha))
     .slice(0, UPCOMING_EVENTS_LIMIT);
 }

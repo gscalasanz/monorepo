@@ -21,7 +21,7 @@ function respond(overrides: Readonly<Record<string, () => Promise<unknown>>> = {
 beforeEach(() => get.mockReset());
 
 describe('fetchDashboardData', () => {
-  it('trae consolidado, eventos, recientes, deudas e inscripciones del año en paralelo', async () => {
+  it('trae consolidado, eventos, campamentos, recientes, deudas e inscripciones del año en paralelo', async () => {
     respond();
     const data = await fetchDashboardData(SIGNAL);
     expect(data.consolidado).toEqual(CONSOLIDADO);
@@ -30,6 +30,7 @@ describe('fetchDashboardData', () => {
       expect.arrayContaining([
         API_ENDPOINTS.CAJAS_CONSOLIDADO,
         API_ENDPOINTS.EVENTOS,
+        API_ENDPOINTS.CAMPAMENTOS,
         API_ENDPOINTS.MOVIMIENTOS_RECIENTES,
         API_ENDPOINTS.REPORTES_DEUDAS,
         API_ENDPOINTS.INSCRIPCIONES,
@@ -48,12 +49,13 @@ describe('fetchDashboardData', () => {
     const fail = () => Promise.reject(new Error('boom'));
     respond({
       [API_ENDPOINTS.EVENTOS]: fail,
+      [API_ENDPOINTS.CAMPAMENTOS]: fail,
       [API_ENDPOINTS.MOVIMIENTOS_RECIENTES]: fail,
       [API_ENDPOINTS.REPORTES_DEUDAS]: fail,
       [API_ENDPOINTS.INSCRIPCIONES]: fail,
     });
     const data = await fetchDashboardData(SIGNAL);
-    expect(data).toMatchObject({ eventos: [], recientes: [], deudas: [], inscripciones: [] });
+    expect(data).toMatchObject({ eventos: [], campamentos: [], recientes: [], deudas: [], inscripciones: [] });
     expect(data.consolidado).toEqual(CONSOLIDADO);
   });
 
