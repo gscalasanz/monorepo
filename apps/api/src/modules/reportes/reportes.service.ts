@@ -1,0 +1,438 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import {
+  Protagonista,
+  Educador,
+  Persona,
+} from '../personas/entities/persona.entity';
+import { CampamentoParticipante } from '../campamentos/entities/campamento-participante.entity';
+import { Movimiento } from '../movimientos/entities/movimiento.entity';
+import { Inscripcion } from '../inscripciones/entities/inscripcion.entity';
+import {
+  TipoMovimiento,
+  TipoInscripcion,
+  PersonaType,
+  ConceptoMovimiento,
+  Rama,
+  EstadoPersona,
+} from '../../common/enums';
+import { esMayorDeEdad } from '../../common/utils';
+import { DeudaQueryDto } from './dtos/deuda-query.dto';
+import {
+  PersonaDeudaDto,
+  CampamentoDeudaDto,
+  InscripcionDeudaDto,
+  DocumentacionPersonalDto,
+  DocInscripcionDto,
+} from './dtos/deuda-consolidada.dto';
+import { RAMA_EDUCADORES, TipoDeudaFilter } from './constants/deuda.constants';
+import { ConsolidadoDeudasDto } from './dtos/consolidado-deudas.dto';
+import { DeudaConsolidadoQueryDto } from './dtos/deuda-consolidado-query.dto';
+import { buildConsolidado } from './helpers/deuda-consolidado';
+import { acotarAOrigen, coincideConBusqueda } from './helpers/deuda-filters';
+
+@Injectable()
+export class ReportesService {
+  constructor(
+    @InjectRepository(Protagonista)
+    private readonly protagonistaRepository: Repository<Protagonista>,
+    @InjectRepository(Educador)
+    private readonly educadorRepository: Repository<Educador>,
+    @InjectRepository(CampamentoParticipante)
+    private readonly participanteRepository: Repository<CampamentoParticipante>,
+    @InjectRepository(Movimiento)
+    private readonly movimientoRepository: Repository<Movimiento>,
+    @InjectRepository(Inscripcion)
+    private readonly inscripcionRepository: Repository<Inscripcion>,
+  ) {}
+
+  /**
+   * Deudores filtrados: búsqueda por nombre (`q`), origen de la deuda
+   * (`campamentoId` o `tipo`) y, dentro de eso, solo la plata del origen.
+   */
+  async getDeudas(query: DeudaQueryDto): Promise<PersonaDeudaDto[]> {
+    const deudas = await this.calcularDeudas(query);
+    return deudas
+      .filter((d) => coincideConBusqueda(d.nombre, query.q))
+      .map((d) => acotarAOrigen(d, query))
+      .filter((d): d is PersonaDeudaDto => d !== null)
+      .filter((d) => this.matchesTipo(d, query.tipo));
+  }
+
+  /**
+   * Deuda de plata agrupada por origen (campamentos e inscripciones). Solo
+   * considera rama y año: los orígenes saldados desaparecen solos, y el
+   * resultado sirve de menú de filtros para `getDeudas`.
+   */
+  async getConsolidado(
+    query: DeudaConsolidadoQueryDto,
+  ): Promise<ConsolidadoDeudasDto> {
+    return buildConsolidado(await this.calcularDeudas(query));
+  }
+
+  /** Deuda (plata y papeles) de todas las personas que cumplen rama/año. */
+  private async calcularDeudas(
+    query: DeudaConsolidadoQueryDto,
+  ): Promise<PersonaDeudaDto[]> {
+    const personas = await this.loadPersonas(query);
+    if (!personas.length) return [];
+
+    const personaIds = personas.map((p) => p.id);
+
+    const [participaciones, inscripciones] = await Promise.all([
+      this.loadParticipaciones(personaIds, query.ano),
+      this.loadInscripciones(personaIds, query.ano),
+    ]);
+
+    const [campPayments, inscPayments] = await Promise.all([
+      this.loadCampamentoPayments(personaIds, participaciones),
+      this.loadInscripcionPayments(inscripciones),
+    ]);
+
+    return personas
+      .map((p) =>
+        this.buildPersonaDeuda(
+          p,
+          participaciones,
+          campPayments,
+          inscripciones,
+          inscPayments,
+        ),
+      )
+      .filter((d): d is PersonaDeudaDto => d !== null);
+  }
+
+  /** Sin tipo indicado, se devuelven todas las deudas. */
+  private matchesTipo(deuda: PersonaDeudaDto, tipo?: TipoDeudaFilter): boolean {
+    switch (tipo) {
+      // Unifica toda la deuda monetaria: campamentos e inscripciones.
+      case TipoDeudaFilter.DINERO:
+        return deuda.deudaTotal > 0;
+      case TipoDeudaFilter.CAMPAMENTOS:
+        return deuda.campamentos.some((c) => c.saldo > 0);
+      case TipoDeudaFilter.INSCRIPCIONES_SCOUT:
+        return deuda.inscripcionesScout.some((i) => i.saldo > 0);
+      case TipoDeudaFilter.INSCRIPCIONES_GRUPO:
+        return deuda.inscripcionesGrupo.some((i) => i.saldo > 0);
+      case TipoDeudaFilter.DOCUMENTACION:
+        return this.hasDocDeuda(deuda);
+      default:
+        return true;
+    }
+  }
+
+  /**
+   * Papeles pendientes: documentación personal incompleta, documentación de
+   * inscripción faltante o autorizaciones de campamento sin entregar.
+   * Un deshabilitado nunca debe papeles, ni siquiera autorizaciones.
+   */
+  private hasDocDeuda(deuda: PersonaDeudaDto): boolean {
+    if (deuda.estado === EstadoPersona.INACTIVO) return false;
+
+    const doc = deuda.documentacionPersonal;
+    const personalIncompleta =
+      doc !== null &&
+      (!doc.dni ||
+        !doc.partidaNacimiento ||
+        !doc.dniPadres ||
+        !doc.carnetObraSocial);
+
+    return (
+      personalIncompleta ||
+      deuda.documentacionInscripcion.length > 0 ||
+      deuda.campamentos.some((c) => !c.autorizacionEntregada)
+    );
+  }
+
+  /**
+   * Carga protagonistas y educadores que pueden tener deuda. Los educadores se
+   * incluyen junto a los protagonistas; al filtrar por una rama concreta solo
+   * se devuelven los educadores que tengan esa rama asignada, y con el filtro
+   * `Educadores` se devuelven todos los educadores sin importar su rama.
+   */
+  private async loadPersonas(
+    query: DeudaConsolidadoQueryDto,
+  ): Promise<Persona[]> {
+    if (query.rama === RAMA_EDUCADORES) {
+      return this.loadEducadores();
+    }
+
+    const [protagonistas, educadores] = await Promise.all([
+      this.loadProtagonistas(query.rama),
+      this.loadEducadores(query.rama),
+    ]);
+    return [...protagonistas, ...educadores];
+  }
+
+  private async loadProtagonistas(rama?: Rama): Promise<Protagonista[]> {
+    const qb = this.protagonistaRepository
+      .createQueryBuilder('p')
+      .where('p.deletedAt IS NULL');
+
+    if (rama) {
+      qb.andWhere('p.rama = :rama', { rama });
+    }
+
+    return qb.getMany();
+  }
+
+  private async loadEducadores(rama?: Rama): Promise<Educador[]> {
+    const qb = this.educadorRepository
+      .createQueryBuilder('e')
+      .where('e.deletedAt IS NULL');
+
+    if (rama) {
+      qb.andWhere('e.rama = :rama', { rama });
+    }
+
+    return qb.getMany();
+  }
+
+  private async loadParticipaciones(
+    personaIds: string[],
+    ano?: number,
+  ): Promise<CampamentoParticipante[]> {
+    const participaciones = await this.participanteRepository
+      .createQueryBuilder('cp')
+      .innerJoinAndSelect('cp.campamento', 'c')
+      .where('cp.personaId IN (:...ids)', { ids: personaIds })
+      .andWhere('cp.deletedAt IS NULL')
+      .andWhere('c.deletedAt IS NULL')
+      .getMany();
+
+    if (!ano) return participaciones;
+
+    return participaciones.filter(
+      (cp) => new Date(cp.campamento.fechaInicio).getFullYear() === ano,
+    );
+  }
+
+  private async loadCampamentoPayments(
+    personaIds: string[],
+    participaciones: CampamentoParticipante[],
+  ): Promise<Movimiento[]> {
+    const campIds = [...new Set(participaciones.map((cp) => cp.campamentoId))];
+    if (!campIds.length) return [];
+
+    return this.movimientoRepository
+      .createQueryBuilder('m')
+      .where('m.campamentoId IN (:...campIds)', { campIds })
+      .andWhere('m.responsableId IN (:...personaIds)', { personaIds })
+      .andWhere('m.tipo = :tipo', { tipo: TipoMovimiento.INGRESO })
+      .andWhere('m.deletedAt IS NULL')
+      .andWhere('m.concepto = :concepto', {
+        concepto: ConceptoMovimiento.CAMPAMENTO_PAGO,
+      })
+      .getMany();
+  }
+
+  private async loadInscripciones(
+    personaIds: string[],
+    ano?: number,
+  ): Promise<Inscripcion[]> {
+    const qb = this.inscripcionRepository
+      .createQueryBuilder('i')
+      .where('i.personaId IN (:...ids)', { ids: personaIds })
+      .andWhere('i.deletedAt IS NULL');
+
+    if (ano) {
+      qb.andWhere('i.ano = :ano', { ano });
+    }
+
+    return qb.getMany();
+  }
+
+  private async loadInscripcionPayments(
+    inscripciones: Inscripcion[],
+  ): Promise<Movimiento[]> {
+    const inscIds = inscripciones.map((i) => i.id);
+    if (!inscIds.length) return [];
+
+    return this.movimientoRepository
+      .createQueryBuilder('m')
+      .where('m.inscripcionId IN (:...inscIds)', { inscIds })
+      .andWhere('m.tipo = :tipo', { tipo: TipoMovimiento.INGRESO })
+      .andWhere('m.deletedAt IS NULL')
+      .andWhere('m.concepto != :concepto', {
+        concepto: ConceptoMovimiento.BONIFICACION_RECIBIDA,
+      })
+      .getMany();
+  }
+
+  private buildPersonaDeuda(
+    persona: Persona,
+    allParticipaciones: CampamentoParticipante[],
+    campPayments: Movimiento[],
+    allInscripciones: Inscripcion[],
+    inscPayments: Movimiento[],
+  ): PersonaDeudaDto | null {
+    const esEducador = persona.tipo === PersonaType.EDUCADOR;
+    const rama = esEducador ? null : (persona as Protagonista).rama;
+    const mayorDeEdad = esMayorDeEdad(persona.tipo, rama);
+
+    const campamentos = this.buildCampamentosDeuda(
+      persona.id,
+      allParticipaciones,
+      campPayments,
+    );
+    const inscripcionesGrupo = this.buildInscripcionesDeuda(
+      persona.id,
+      allInscripciones,
+      inscPayments,
+      TipoInscripcion.GRUPO,
+    );
+    const inscripcionesScout = this.buildInscripcionesDeuda(
+      persona.id,
+      allInscripciones,
+      inscPayments,
+      TipoInscripcion.SCOUT_ARGENTINA,
+    );
+    // Los educadores no tienen documentación personal en el modelo (null). Los
+    // protagonistas (incluidos Rovers) sí: solo se exime el DNI de los padres a
+    // los Rovers (ver buildDocPersonal).
+    // Un deshabilitado ya no está en el grupo: sus papeles dejan de importar y
+    // solo figura mientras deba plata.
+    const deshabilitada = persona.estado === EstadoPersona.INACTIVO;
+    const documentacionPersonal =
+      esEducador || deshabilitada
+        ? null
+        : this.buildDocPersonal(persona as Protagonista, mayorDeEdad);
+    const documentacionInscripcion = deshabilitada
+      ? []
+      : this.buildDocInscripcion(persona.id, allInscripciones, mayorDeEdad);
+
+    const deudaTotal =
+      campamentos.reduce((s, c) => s + c.saldo, 0) +
+      inscripcionesGrupo.reduce((s, i) => s + i.saldo, 0) +
+      inscripcionesScout.reduce((s, i) => s + i.saldo, 0);
+
+    const deuda: PersonaDeudaDto = {
+      personaId: persona.id,
+      nombre: persona.nombre,
+      tipo: persona.tipo,
+      estado: persona.estado,
+      rama: esEducador ? RAMA_EDUCADORES : (rama ?? ''),
+      esMayorDeEdad: mayorDeEdad,
+      deudaTotal,
+      campamentos,
+      inscripcionesGrupo,
+      inscripcionesScout,
+      documentacionPersonal,
+      documentacionInscripcion,
+    };
+
+    // Sin deuda de plata ni de papeles, la persona no entra al reporte.
+    if (deudaTotal <= 0 && !this.hasDocDeuda(deuda)) return null;
+
+    return deuda;
+  }
+
+  private buildCampamentosDeuda(
+    personaId: string,
+    participaciones: CampamentoParticipante[],
+    campPayments: Movimiento[],
+  ): CampamentoDeudaDto[] {
+    return participaciones
+      .filter((cp) => cp.personaId === personaId)
+      .map((cp) => {
+        const montoPagado = campPayments
+          .filter(
+            (m) =>
+              m.campamentoId === cp.campamentoId &&
+              m.responsableId === personaId,
+          )
+          .reduce((sum, m) => sum + Number(m.monto), 0);
+
+        const montoTotal = Number(cp.montoAsignado);
+        const montoBonificado = Number(cp.montoBonificado);
+        const saldo = Math.max(0, montoTotal - montoBonificado - montoPagado);
+
+        return {
+          campamentoId: cp.campamentoId,
+          nombre: cp.campamento.nombre,
+          ano: new Date(cp.campamento.fechaInicio).getFullYear(),
+          montoTotal,
+          montoPagado,
+          saldo,
+          autorizacionEntregada: cp.autorizacionEntregada,
+        };
+      })
+      .filter((c) => c.saldo > 0 || !c.autorizacionEntregada);
+  }
+
+  private buildInscripcionesDeuda(
+    personaId: string,
+    inscripciones: Inscripcion[],
+    inscPayments: Movimiento[],
+    tipo: TipoInscripcion,
+  ): InscripcionDeudaDto[] {
+    return inscripciones
+      .filter((i) => i.personaId === personaId && i.tipo === tipo)
+      .map((i) => {
+        const montoPagado = inscPayments
+          .filter((m) => m.inscripcionId === i.id)
+          .reduce((sum, m) => sum + Number(m.monto), 0);
+
+        const montoTotal = Number(i.montoTotal);
+        const montoBonificado = Number(i.montoBonificado);
+        const saldo = montoTotal - montoBonificado - montoPagado;
+
+        return {
+          inscripcionId: i.id,
+          tipo: i.tipo,
+          ano: i.ano,
+          montoTotal,
+          montoBonificado,
+          montoPagado,
+          saldo,
+        };
+      })
+      .filter((i) => i.saldo > 0);
+  }
+
+  private buildDocPersonal(
+    persona: Protagonista,
+    mayorDeEdad: boolean,
+  ): DocumentacionPersonalDto {
+    return {
+      dni: persona.dni,
+      partidaNacimiento: persona.partidaNacimiento,
+      // Los mayores de edad (Rovers) no entregan el DNI de los padres.
+      dniPadres: mayorDeEdad ? true : persona.dniPadres,
+      carnetObraSocial: persona.carnetObraSocial,
+    };
+  }
+
+  private buildDocInscripcion(
+    personaId: string,
+    inscripciones: Inscripcion[],
+    exentoPapeles: boolean,
+  ): DocInscripcionDto[] {
+    return inscripciones
+      .filter(
+        (i) =>
+          i.personaId === personaId &&
+          i.tipo === TipoInscripcion.SCOUT_ARGENTINA,
+      )
+      .map((i) => ({
+        inscripcionId: i.id,
+        ano: i.ano,
+        declaracionDeSalud: i.declaracionDeSalud,
+        // Imagen, ingreso y salidas cercanas no se exigen a mayores de edad:
+        // se reportan como entregados para que no generen deuda.
+        autorizacionDeImagen: exentoPapeles ? true : i.autorizacionDeImagen,
+        salidasCercanas: exentoPapeles ? true : i.salidasCercanas,
+        autorizacionIngreso: exentoPapeles ? true : i.autorizacionIngreso,
+        certificadoAptitudFisica: i.certificadoAptitudFisica,
+      }))
+      .filter(
+        (d) =>
+          !d.declaracionDeSalud ||
+          !d.autorizacionDeImagen ||
+          !d.salidasCercanas ||
+          !d.autorizacionIngreso ||
+          !d.certificadoAptitudFisica,
+      );
+  }
+}

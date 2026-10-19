@@ -1,0 +1,26 @@
+import { Module, forwardRef } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Campamento } from './entities/campamento.entity';
+import { CampamentoParticipante } from './entities/campamento-participante.entity';
+import { CampamentosService } from './campamentos.service';
+import { CampamentosController } from './campamentos.controller';
+import { PersonasModule } from '../personas/personas.module';
+import { CajasModule } from '../cajas/cajas.module';
+import { MovimientosModule } from '../movimientos/movimientos.module';
+import { PagosModule } from '../pagos/pagos.module';
+import { BonificacionesModule } from '../bonificaciones/bonificaciones.module';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([Campamento, CampamentoParticipante]),
+    forwardRef(() => PersonasModule),
+    forwardRef(() => CajasModule),
+    forwardRef(() => MovimientosModule),
+    forwardRef(() => PagosModule),
+    forwardRef(() => BonificacionesModule),
+  ],
+  controllers: [CampamentosController],
+  providers: [CampamentosService],
+  exports: [CampamentosService],
+})
+export class CampamentosModule {}

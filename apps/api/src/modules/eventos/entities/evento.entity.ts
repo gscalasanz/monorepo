@@ -1,0 +1,118 @@
+import { Entity, Column, OneToMany } from 'typeorm';
+import { BaseEntity } from '../../../common/entities/base.entity';
+import {
+  TipoEvento,
+  DestinoGanancia,
+  ModalidadVenta,
+} from '../../../common/enums';
+import { dateOnlyTransformer } from '../../../common/utils/date-only.transformer';
+import { Producto } from './producto.entity';
+
+/**
+ * Evento entity - Events (sales events and group events)
+ *
+ * From PRD §3.4 (F10, F11):
+ * - Eventos de venta: Multiple products, profit goes to personal accounts or group
+ * - Eventos de grupo: All revenue goes to group (cena, kermesse, etc.)
+ */
+@Entity('eventos')
+export class Evento extends BaseEntity {
+  @Column({ length: 100 })
+  nombre!: string;
+
+  @Column({ type: 'date', transformer: dateOnlyTransformer })
+  fecha!: Date;
+
+  @Column({ type: 'text', nullable: true })
+  descripcion!: string | null;
+
+  /**
+   * Type of event: venta or grupo
+   */
+  @Column({ type: 'enum', enum: TipoEvento })
+  tipo!: TipoEvento;
+
+  /**
+   * Default profit destination for this event's ventas (only for VENTA events)
+   * - cuentas_personales: distributed to participants who sold
+   * - caja_grupo: all goes to group
+   *
+   * With modalidadVenta = UNICA this is THE destino: every venta inherits it.
+   * With MIXTA it is only a fallback — each venta declares its own, and the
+   * value that decides the caja is VentaProducto.destinoGanancia.
+   */
+  @Column({ type: 'enum', enum: DestinoGanancia, nullable: true })
+  destinoGanancia!: DestinoGanancia | null;
+
+  /**
+   * Whether every venta of this event shares one destino or each venta picks
+   * its own. Only meaningful for TipoEvento.VENTA events.
+   *
+   * Gastos are event-wide in both modes and are charged entirely to the group,
+   * so netoPersonal is never reduced by them.
+   */
+  @Column({
+    name: 'modalidad_venta',
+    type: 'enum',
+    enum: ModalidadVenta,
+    enumName: 'eventos_modalidad_venta_enum',
+    default: ModalidadVenta.UNICA,
+  })
+  modalidadVenta!: ModalidadVenta;
+
+  /**
+   * Type of group event (cena, kermesse, etc.)
+   * Only for GRUPO events
+   */
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  tipoEvento!: string | null;
+
+  /**
+   * Products for this event (only for VENTA events)
+   * A product belongs to ONE event only
+   */
+  @OneToMany(() => Producto, (producto) => producto.evento)
+  productos!: Producto[];
+
+  /**
+   * Whether the event has been closed/finalized.
+   *
+   * A closed event is immutable: no new ventas, no edits, no deletes
+   * of ventas / movimientos linked to it. The flag is enforced by
+   * EventosService and VentasEventoService via assertEventoModificable.
+   *
+   * Default false; set to true via the (future) "cerrar evento" endpoint.
+   */
+  @Column({ name: 'esta_cerrado', type: 'boolean', default: false })
+  estaCerrado!: boolean;
+
+  /**
+   * Whether the event report is publicly viewable without authentication.
+   *
+   * When true, the report is reachable via the public endpoint
+   * (GET :id/reporte/publico) and the shared link works for anonymous
+   * visitors. When false (default), only authenticated users can see it.
+   * Toggled from the app via UpdateEventoDto.
+   */
+  @Column({ name: 'reporte_publico', type: 'boolean', default: false })
+  reportePublico!: boolean;
+
+  /**
+   * Whether sales of this VENTA event generate income movimientos.
+   *
+   * Starts false: ventas and entregas can be loaded without producing
+   * movimientos (useful when product costs are not yet known, since the
+   * margin would otherwise be 100% of the sale price). Once all productos
+   * have both precioVenta and precioCosto, it can be flipped to true via
+   * the "habilitar movimientos" endpoint, which back-fills the movimientos
+   * for the ventas already loaded. The flag is IRREVERSIBLE (true cannot go
+   * back to false) and only meaningful for TipoEvento.VENTA events.
+   */
+  @Column({ name: 'movimientos_habilitados', type: 'boolean', default: false })
+  movimientosHabilitados!: boolean;
+
+  /**
+   * Incomes, expenses, and sales are tracked via Movimiento entities
+   * with eventoId = this.id
+   */
+}

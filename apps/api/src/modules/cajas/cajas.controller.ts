@@ -1,0 +1,156 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  ParseUUIDPipe,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
+import { CajasService } from './cajas.service';
+import {
+  CreateCajaDto,
+  ConsolidadoSaldosDto,
+  CajaResponseDto,
+  BonificacionHistorialDto,
+} from './dtos';
+import { CajaType } from '../../common/enums';
+
+@ApiTags('Cajas')
+@Controller('cajas')
+export class CajasController {
+  constructor(private readonly cajasService: CajasService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Listar todas las cajas con saldo actual' })
+  @ApiQuery({ name: 'tipo', enum: CajaType, required: false })
+  @ApiQuery({
+    name: 'rama',
+    required: false,
+    description:
+      'Filtro por rama del propietario (solo aplica con tipo=personal). Valores: Manada, Unidad, Caminantes, Rovers, educadores',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de cajas con saldo calculado',
+    type: [CajaResponseDto],
+  })
+  async findAll(
+    @Query('tipo') tipo?: CajaType,
+    @Query('rama') rama?: string,
+  ): Promise<CajaResponseDto[]> {
+    if (tipo === CajaType.PERSONAL) {
+      return this.cajasService.findPersonales(rama);
+    }
+    if (tipo) {
+      return this.cajasService.findByTipo(tipo);
+    }
+    return this.cajasService.findAll();
+  }
+
+  @Get('grupo')
+  @ApiOperation({ summary: 'Obtener la caja del grupo con saldo actual' })
+  @ApiResponse({
+    status: 200,
+    description: 'Caja del grupo con saldo calculado',
+    type: CajaResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Caja del grupo no encontrada' })
+  async findCajaGrupo(): Promise<CajaResponseDto> {
+    return this.cajasService.findCajaGrupo();
+  }
+
+  @Get('consolidado')
+  @ApiOperation({ summary: 'Obtener consolidado de saldos de todas las cajas' })
+  @ApiResponse({
+    status: 200,
+    description: 'Consolidado de saldos',
+    type: ConsolidadoSaldosDto,
+  })
+  async getConsolidadoSaldos(): Promise<ConsolidadoSaldosDto> {
+    return this.cajasService.getConsolidadoSaldos();
+  }
+
+  @Get('personal/:personaId/saldo')
+  @ApiOperation({
+    summary: 'Obtener saldo de cuenta personal por ID de persona',
+  })
+  @ApiParam({ name: 'personaId', type: String, format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Saldo de la cuenta personal (0 si no existe)',
+    schema: { type: 'object', properties: { saldo: { type: 'number' } } },
+  })
+  async getSaldoCuentaPersonal(
+    @Param('personaId', ParseUUIDPipe) personaId: string,
+  ): Promise<{ saldo: number }> {
+    const saldo = await this.cajasService.getSaldoCuentaPersonal(personaId);
+    return { saldo };
+  }
+
+  @Get('fondo-solidario')
+  @ApiOperation({
+    summary: 'Obtener la caja de fondo solidario, su saldo e historial',
+    description:
+      'caja es null si todavía no fue creada. Su saldo NO es parte de la caja grupo.',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Caja de fondo solidario (o null) con historial de bonificaciones',
+  })
+  async findFondoSolidario(): Promise<{
+    caja: CajaResponseDto | null;
+    historial: BonificacionHistorialDto[];
+  }> {
+    const [caja, historial] = await Promise.all([
+      this.cajasService.findCajaFondoSolidario(),
+      this.cajasService.getHistorialBonificaciones(),
+    ]);
+    return { caja, historial };
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Obtener una caja por ID con saldo actual' })
+  @ApiParam({ name: 'id', type: String, format: 'uuid' })
+  @ApiResponse({
+    status: 200,
+    description: 'Caja encontrada con saldo calculado',
+    type: CajaResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Caja no encontrada' })
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CajaResponseDto> {
+    return this.cajasService.findOne(id);
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Crear una caja' })
+  @ApiResponse({ status: 201, description: 'Caja creada' })
+  @ApiResponse({ status: 400, description: 'Error de validación' })
+  async create(@Body() dto: CreateCajaDto) {
+    return this.cajasService.create(dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Eliminar una caja (soft delete)' })
+  @ApiParam({ name: 'id', type: String, format: 'uuid' })
+  @ApiResponse({ status: 200, description: 'Caja eliminada' })
+  @ApiResponse({
+    status: 400,
+    description: 'No se puede eliminar la caja del grupo',
+  })
+  @ApiResponse({ status: 404, description: 'Caja no encontrada' })
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.cajasService.remove(id);
+  }
+}

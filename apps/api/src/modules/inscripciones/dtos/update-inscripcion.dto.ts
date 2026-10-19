@@ -1,0 +1,49 @@
+import { IsBoolean, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
+/**
+ * DTO para actualizar una inscripción existente.
+ * Solo permite actualizar autorizaciones — el monto bonificado se maneja
+ * exclusivamente vía PATCH /inscripciones/:id/bonificacion (fondo solidario).
+ */
+export class UpdateInscripcionDto {
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Declaración de salud presentada',
+  })
+  @IsBoolean()
+  @IsOptional()
+  declaracionDeSalud?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Autorización de uso de imagen',
+  })
+  @IsBoolean()
+  @IsOptional()
+  autorizacionDeImagen?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Autorización para salidas cercanas',
+  })
+  @IsBoolean()
+  @IsOptional()
+  salidasCercanas?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Autorización de ingreso al grupo',
+  })
+  @IsBoolean()
+  @IsOptional()
+  autorizacionIngreso?: boolean;
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Certificado de aptitud física presentado',
+  })
+  @IsBoolean()
+  @IsOptional()
+  certificadoAptitudFisica?: boolean;
+}

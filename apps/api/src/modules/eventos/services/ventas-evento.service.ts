@@ -1,0 +1,315 @@
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import { VentaProducto } from '../entities/venta-producto.entity';
+import { EntregaLinea } from '../entities/entrega-linea.entity';
+import { Evento } from '../entities/evento.entity';
+import { EventosService } from '../eventos.service';
+import { MovimientosService } from '../../movimientos/movimientos.service';
+import { Movimiento } from '../../movimientos/entities/movimiento.entity';
+import {
+  VENTAS_ERROR_MESSAGES,
+  EVENTOS_ERROR_MESSAGES,
+  ENTREGA_INMEDIATA_NOTA,
+} from '../constants';
+import { EstadoCobroVenta, EstadoPago } from '../../../common/enums';
+
+/**
+ * Result of deleting a venta. Returned to the controller so callers can
+ * tell the user honestly what happened (e.g. "we also removed N sibling
+ * ventas from the same lote").
+ */
+export interface DeleteVentaResult {
+  ventaId: string;
+  movimientoIdEliminado: string | null;
+  movimientoRecuperoIdEliminado: string | null;
+  hermanasEliminadas: number;
+}
+
+/**
+ * Result of collecting a venta. `hermanasCobradas` is reported so the operator
+ * knows the whole lote moved, not just the row they clicked.
+ */
+export interface CobrarResult {
+  ventaId: string;
+  hermanasCobradas: number;
+  movimientosActualizados: string[];
+}
+
+/**
+ * Service dedicated to the lifecycle of an individual venta.
+ *
+ * Currently exposes only the delete path. Create paths still live in
+ * EventosService.registrarVenta / registrarVentasLote — they will move
+ * here in a follow-up refactor; this service is the new home that
+ * keeps eventos.service.ts from growing further.
+ */
+@Injectable()
+export class VentasEventoService {
+  constructor(
+    @InjectRepository(VentaProducto)
+    private readonly ventaProductoRepository: Repository<VentaProducto>,
+    @InjectRepository(EntregaLinea)
+    private readonly entregaLineaRepository: Repository<EntregaLinea>,
+    private readonly eventosService: EventosService,
+    private readonly movimientosService: MovimientosService,
+    private readonly dataSource: DataSource,
+  ) {}
+
+  /**
+   * Soft-deletes a venta and, if it was linked to a Movimiento, every
+   * sibling venta that points at the same Movimiento, plus the Movimiento
+   * itself. Atomic: a single transaction wraps the cascade.
+   *
+   * Errors:
+   *  - NotFoundException if the venta does not exist or does not belong
+   *    to the supplied evento (we don't leak existence cross-evento).
+   *  - ConflictException if the venta is already soft-deleted.
+   *  - BadRequestException if the parent evento is closed (raised by
+   *    EventosService.assertEventoModificable).
+   */
+  async deleteVenta(
+    eventoId: string,
+    ventaId: string,
+  ): Promise<DeleteVentaResult> {
+    const evento = await this.eventosService.findOne(eventoId);
+    this.eventosService.assertEventoModificable(evento);
+
+    const venta = await this.loadVentaOrFail(eventoId, ventaId);
+    await this.assertVentaSinEntregas(venta);
+
+    return this.dataSource.transaction((manager) =>
+      this.cascadeDeleteVenta(manager, evento, venta),
+    );
+  }
+
+  /**
+   * Marca una venta como cobrada: la plata efectivamente entró.
+   *
+   * Mueve el estado en dos lugares dentro de una misma transacción — la venta
+   * (fuente de verdad) y sus movimientos (margen y, si existe, recupero) — para
+   * que nunca queden divergentes. Recién cuando los movimientos pasan a PAGADO
+   * el saldo de la caja los cuenta.
+   *
+   * El cobro alcanza a todas las ventas hermanas del lote, porque comparten el
+   * mismo movimiento agregado: cobrar media parte de un movimiento no existe.
+   */
+  async cobrarVenta(eventoId: string, ventaId: string): Promise<CobrarResult> {
+    const evento = await this.eventosService.findOne(eventoId);
+    this.eventosService.assertEventoModificable(evento);
+
+    const venta = await this.loadVentaOrFail(eventoId, ventaId);
+    if (venta.estadoCobro === EstadoCobroVenta.COBRADO) {
+      throw new ConflictException(EVENTOS_ERROR_MESSAGES.VENTA_YA_COBRADA);
+    }
+
+    return this.dataSource.transaction(async (manager) => {
+      const hermanas = venta.movimientoId
+        ? await this.findLiveSiblings(manager, venta.movimientoId, venta.id)
+        : [];
+      const todas = [venta, ...hermanas];
+
+      for (const v of todas) {
+        v.estadoCobro = EstadoCobroVenta.COBRADO;
+      }
+      await manager.save(todas);
+
+      const movimientoIds = [
+        venta.movimientoId,
+        venta.movimientoRecuperoId,
+      ].filter((id): id is string => id !== null);
+
+      for (const id of movimientoIds) {
+        await manager.update(Movimiento, id, {
+          estadoPago: EstadoPago.PAGADO,
+        });
+      }
+
+      return {
+        ventaId: venta.id,
+        hermanasCobradas: hermanas.length,
+        movimientosActualizados: movimientoIds,
+      };
+    });
+  }
+
+  /**
+   * Blocks deletion when any live EntregaLinea exists for the same
+   * (eventoId, productoId, vendedorId) tuple as this venta.
+   *
+   * Why "any" instead of "would the disponible go negative": the operator
+   * already has a clear next action (delete the entregas first), and a
+   * stricter check keeps the invariant "entregado <= vendido" trivial
+   * to reason about.
+   */
+  private async assertVentaSinEntregas(venta: VentaProducto): Promise<void> {
+    const count = await this.entregaLineaRepository
+      .createQueryBuilder('el')
+      .innerJoin('el.entrega', 'e')
+      .where('e.evento_id = :eventoId', { eventoId: venta.eventoId })
+      .andWhere('e.vendedor_id = :vendedorId', { vendedorId: venta.vendedorId })
+      .andWhere('el.producto_id = :productoId', {
+        productoId: venta.productoId,
+      })
+      .andWhere('el."deletedAt" IS NULL')
+      .andWhere('e."deletedAt" IS NULL')
+      // Las entregas creadas junto con la venta ("entregado en el acto") no
+      // bloquean: se borran en cascada más abajo. Exigirle al operador que
+      // borre a mano una entrega que nunca cargó por separado sería absurdo.
+      // Las entregas cargadas aparte sí bloquean, que es el caso que la
+      // validación existe para proteger.
+      .andWhere('e.notas IS DISTINCT FROM :notaInmediata', {
+        notaInmediata: ENTREGA_INMEDIATA_NOTA,
+      })
+      .getCount();
+    if (count > 0) {
+      throw new ConflictException(VENTAS_ERROR_MESSAGES.VENTA_HAS_ENTREGAS);
+    }
+  }
+
+  /**
+   * Borra las entregas inmediatas del mismo (evento, vendedor, producto) que la
+   * venta que se está eliminando. Sólo alcanza a las que se crearon junto con
+   * la venta, nunca a las cargadas por separado.
+   */
+  private async cascadeDeleteEntregasInmediatas(
+    manager: EntityManager,
+    ventas: ReadonlyArray<VentaProducto>,
+  ): Promise<void> {
+    for (const venta of ventas) {
+      const lineas = await manager
+        .createQueryBuilder(EntregaLinea, 'el')
+        .innerJoin('el.entrega', 'e')
+        .where('e.evento_id = :eventoId', { eventoId: venta.eventoId })
+        .andWhere('e.vendedor_id = :vendedorId', {
+          vendedorId: venta.vendedorId,
+        })
+        .andWhere('el.producto_id = :productoId', {
+          productoId: venta.productoId,
+        })
+        .andWhere('e.notas = :notaInmediata', {
+          notaInmediata: ENTREGA_INMEDIATA_NOTA,
+        })
+        .andWhere('el."deletedAt" IS NULL')
+        .andWhere('e."deletedAt" IS NULL')
+        .getMany();
+
+      if (lineas.length > 0) {
+        await manager.softRemove(lineas);
+      }
+    }
+  }
+
+  // ----- private orchestration -----
+
+  private async cascadeDeleteVenta(
+    manager: EntityManager,
+    evento: Evento,
+    venta: VentaProducto,
+  ): Promise<DeleteVentaResult> {
+    if (!venta.movimientoId) {
+      await this.cascadeDeleteEntregasInmediatas(manager, [venta]);
+      await manager.softRemove(venta);
+      return this.buildResult(venta, null, null, 0);
+    }
+
+    const hermanas = await this.findLiveSiblings(
+      manager,
+      venta.movimientoId,
+      venta.id,
+    );
+    const allVentas = [venta, ...hermanas];
+
+    await this.cascadeDeleteEntregasInmediatas(manager, allVentas);
+    await manager.softRemove(allVentas);
+    await this.movimientosService.softRemoveWithManager(
+      manager,
+      venta.movimientoId,
+    );
+
+    // cuentas_personales: each venta also generated a cost-recovery movimiento
+    // into the caja grupo. It is shared by the whole lote (same id on every
+    // sibling), so removing it once here cleans it up for all of them. Without
+    // this the recupero would survive as an orphan, leaving the caja grupo with
+    // income from a venta that no longer exists. Null for caja_grupo / legacy.
+    if (venta.movimientoRecuperoId) {
+      await this.movimientosService.softRemoveWithManager(
+        manager,
+        venta.movimientoRecuperoId,
+      );
+    }
+
+    // Recalculate KPIs implicitly: nothing to do here. The transaction will
+    // commit and EventosService.getKpisEvento(evento.id) is recomputed on
+    // demand from the live rows.
+    void evento;
+
+    return this.buildResult(
+      venta,
+      venta.movimientoId,
+      venta.movimientoRecuperoId ?? null,
+      hermanas.length,
+    );
+  }
+
+  // ----- private loaders -----
+
+  private async loadVentaOrFail(
+    eventoId: string,
+    ventaId: string,
+  ): Promise<VentaProducto> {
+    // `withDeleted: true` so the soft-deleted check below is reachable —
+    // by default TypeORM filters those out and the second DELETE would
+    // return 404 instead of 409.
+    const venta = await this.ventaProductoRepository.findOne({
+      where: { id: ventaId },
+      withDeleted: true,
+    });
+    if (!venta || venta.eventoId !== eventoId) {
+      throw new NotFoundException(
+        VENTAS_ERROR_MESSAGES.VENTA_NOT_FOUND(ventaId),
+      );
+    }
+    if (venta.deletedAt !== null) {
+      throw new ConflictException(VENTAS_ERROR_MESSAGES.VENTA_ALREADY_DELETED);
+    }
+    return venta;
+  }
+
+  /**
+   * Live siblings = other ventas (not soft-deleted) that share the same
+   * movimiento_id but have a different id. Used to compute the cascade size.
+   */
+  private async findLiveSiblings(
+    manager: EntityManager,
+    movimientoId: string,
+    excludeVentaId: string,
+  ): Promise<VentaProducto[]> {
+    return manager
+      .createQueryBuilder(VentaProducto, 'v')
+      .where('v.movimiento_id = :movimientoId', { movimientoId })
+      .andWhere('v.id <> :excludeId', { excludeId: excludeVentaId })
+      .andWhere('v."deletedAt" IS NULL')
+      .getMany();
+  }
+
+  // ----- private builders -----
+
+  private buildResult(
+    venta: VentaProducto,
+    movimientoIdEliminado: string | null,
+    movimientoRecuperoIdEliminado: string | null,
+    hermanasEliminadas: number,
+  ): DeleteVentaResult {
+    return {
+      ventaId: venta.id,
+      movimientoIdEliminado,
+      movimientoRecuperoIdEliminado,
+      hermanasEliminadas,
+    };
+  }
+}

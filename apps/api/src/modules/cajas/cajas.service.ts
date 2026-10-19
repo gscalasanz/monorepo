@@ -1,0 +1,529 @@
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, DataSource } from 'typeorm';
+import { Caja } from './entities/caja.entity';
+import {
+  CreateCajaDto,
+  ConsolidadoSaldosDto,
+  CajaResponseDto,
+  BonificacionHistorialDto,
+} from './dtos';
+import { CajaType, PersonaType, ConceptoMovimiento } from '../../common/enums';
+import { DeletionValidatorService } from '../../common/services/deletion-validator.service';
+import { MovimientosService } from '../movimientos/movimientos.service';
+
+const CAJAS_ERROR_MESSAGES = {
+  AGRUPACION_SIN_CAJA:
+    'Una agrupación no puede tener caja personal: su plata va siempre a la caja del grupo',
+} as const;
+
+@Injectable()
+export class CajasService {
+  constructor(
+    @InjectRepository(Caja)
+    private readonly cajaRepository: Repository<Caja>,
+    private readonly dataSource: DataSource,
+    private readonly deletionValidator: DeletionValidatorService,
+    @Inject(forwardRef(() => MovimientosService))
+    private readonly movimientosService: MovimientosService,
+  ) {}
+
+  async findAll(): Promise<CajaResponseDto[]> {
+    const cajas = await this.cajaRepository.find({
+      relations: ['propietario'],
+      order: { tipo: 'ASC', nombre: 'ASC' },
+    });
+
+    return this.mapCajasWithSaldo(cajas);
+  }
+
+  async findByTipo(tipo: CajaType): Promise<CajaResponseDto[]> {
+    const cajas = await this.cajaRepository.find({
+      where: { tipo },
+      relations: ['propietario'],
+      order: { nombre: 'ASC' },
+    });
+
+    return this.mapCajasWithSaldo(cajas);
+  }
+
+  async findPersonales(ramaFilter?: string): Promise<CajaResponseDto[]> {
+    const qb = this.cajaRepository
+      .createQueryBuilder('caja')
+      .leftJoinAndSelect('caja.propietario', 'propietario')
+      .where('caja.tipo = :tipo', { tipo: CajaType.PERSONAL })
+      .orderBy('propietario.nombre', 'ASC');
+
+    if (ramaFilter === 'educadores') {
+      qb.andWhere('propietario.tipo = :tipoPersona', {
+        tipoPersona: PersonaType.EDUCADOR,
+      });
+    } else if (ramaFilter) {
+      qb.andWhere('propietario.rama = :rama', { rama: ramaFilter });
+    }
+
+    const cajas = await qb.getMany();
+    return this.mapCajasWithSaldo(cajas);
+  }
+
+  async findOne(id: string): Promise<CajaResponseDto> {
+    const caja = await this.findOneEntity(id);
+    const saldo = await this.movimientosService.calcularSaldo(caja.id);
+    return this.mapCajaToResponse(caja, saldo);
+  }
+
+  /**
+   * Internal method to find a Caja entity by ID
+   * Use this for internal operations that need the entity (not the DTO)
+   */
+  private async findOneEntity(id: string): Promise<Caja> {
+    const caja = await this.cajaRepository.findOne({
+      where: { id },
+      relations: ['propietario'],
+    });
+
+    if (!caja) {
+      throw new NotFoundException(`Caja con ID ${id} no encontrada`);
+    }
+
+    return caja;
+  }
+
+  /**
+   * Maps an array of Caja entities to CajaResponseDto with calculated saldo
+   */
+  private async mapCajasWithSaldo(cajas: Caja[]): Promise<CajaResponseDto[]> {
+    if (cajas.length === 0) return [];
+    const cajaIds = cajas.map((caja) => caja.id);
+    const saldoMap = await this.movimientosService.calcularSaldosBatch(cajaIds);
+    return cajas.map((caja) =>
+      this.mapCajaToResponse(caja, saldoMap.get(caja.id) ?? 0),
+    );
+  }
+
+  /**
+   * Maps a single Caja entity to CajaResponseDto
+   */
+  private mapCajaToResponse(caja: Caja, saldo: number): CajaResponseDto {
+    return {
+      id: caja.id,
+      tipo: caja.tipo,
+      nombre: caja.nombre,
+      propietarioId: caja.propietarioId,
+      propietario: caja.propietario
+        ? {
+            id: caja.propietario.id,
+            nombre: caja.propietario.nombre,
+            estado: caja.propietario.estado,
+            rama:
+              'rama' in caja.propietario
+                ? (caja.propietario as { rama: string | null }).rama
+                : null,
+          }
+        : null,
+      saldoActual: saldo,
+      createdAt: caja.createdAt,
+      updatedAt: caja.updatedAt,
+    };
+  }
+
+  async findCajaGrupo(): Promise<CajaResponseDto> {
+    const caja = await this.cajaRepository.findOne({
+      where: { tipo: CajaType.GRUPO },
+    });
+
+    if (!caja) {
+      throw new NotFoundException('Caja del grupo no encontrada');
+    }
+
+    const saldo = await this.movimientosService.calcularSaldo(caja.id);
+    return this.mapCajaToResponse(caja, saldo);
+  }
+
+  /**
+   * Devuelve la caja de fondo solidario con su saldo, o null si todavía no
+   * fue creada. A diferencia de findCajaGrupo, no lanza NotFoundException:
+   * el fondo es opcional y el sistema funciona sin él.
+   */
+  async findCajaFondoSolidario(): Promise<CajaResponseDto | null> {
+    const caja = await this.cajaRepository.findOne({
+      where: { tipo: CajaType.FONDO_SOLIDARIO },
+    });
+
+    if (!caja) {
+      return null;
+    }
+
+    const saldo = await this.movimientosService.calcularSaldo(caja.id);
+    return this.mapCajaToResponse(caja, saldo);
+  }
+
+  /**
+   * Historial de bonificaciones otorgadas por el fondo solidario, más
+   * recientes primero. Lee los egresos con concepto BONIFICACION_OTORGADA
+   * sobre la caja del fondo.
+   */
+  async getHistorialBonificaciones(): Promise<BonificacionHistorialDto[]> {
+    const cajaFondo = await this.cajaRepository.findOne({
+      where: { tipo: CajaType.FONDO_SOLIDARIO },
+    });
+    if (!cajaFondo) {
+      return [];
+    }
+
+    const movimientos = await this.movimientosService.findByCajaAndConcepto(
+      cajaFondo.id,
+      ConceptoMovimiento.BONIFICACION_OTORGADA,
+    );
+
+    const campamentoIds = [
+      ...new Set(
+        movimientos
+          .map((m) => m.campamentoId)
+          .filter((id): id is string => id !== null),
+      ),
+    ];
+    const nombresCampamentos = campamentoIds.length
+      ? await this.getNombresCampamentos(campamentoIds)
+      : new Map<string, string>();
+
+    return movimientos.map((m) => ({
+      movimientoId: m.id,
+      fecha: m.fecha,
+      monto: Number(m.monto),
+      personaId: m.responsableId,
+      personaNombre: m.responsable?.nombre ?? 'Desconocido',
+      destino: m.campamentoId
+        ? `Campamento "${nombresCampamentos.get(m.campamentoId) ?? m.campamentoId}"`
+        : `Inscripción ${m.inscripcionId ?? ''}`.trim(),
+    }));
+  }
+
+  private async getNombresCampamentos(
+    ids: string[],
+  ): Promise<Map<string, string>> {
+    const rows: { id: string; nombre: string }[] = await this.dataSource.query(
+      `SELECT id, nombre FROM campamentos WHERE id = ANY($1)`,
+      [ids],
+    );
+    return new Map(rows.map((r) => [r.id, r.nombre]));
+  }
+
+  async findCajaPersonal(propietarioId: string): Promise<Caja | null> {
+    return this.cajaRepository.findOne({
+      where: { tipo: CajaType.PERSONAL, propietarioId },
+      relations: ['propietario'],
+    });
+  }
+
+  /**
+   * Obtiene el saldo de la cuenta personal de una persona
+   * Retorna 0 si la persona no tiene cuenta personal
+   */
+  async getSaldoCuentaPersonal(personaId: string): Promise<number> {
+    const caja = await this.findCajaPersonal(personaId);
+    if (!caja) {
+      return 0;
+    }
+    return this.movimientosService.calcularSaldo(caja.id);
+  }
+
+  async create(dto: CreateCajaDto): Promise<Caja> {
+    // Validaciones de negocio
+    if (dto.tipo === CajaType.GRUPO) {
+      const existente = await this.cajaRepository.findOne({
+        where: { tipo: CajaType.GRUPO },
+      });
+      if (existente) {
+        throw new BadRequestException('Ya existe una caja de grupo');
+      }
+    }
+
+    if (dto.tipo === CajaType.FONDO_SOLIDARIO) {
+      const existente = await this.cajaRepository.findOne({
+        where: { tipo: CajaType.FONDO_SOLIDARIO },
+      });
+      if (existente) {
+        throw new BadRequestException('Ya existe una caja de fondo solidario');
+      }
+    }
+
+    if (dto.tipo === CajaType.PERSONAL && !dto.propietarioId) {
+      throw new BadRequestException(
+        'Las cajas personales requieren un propietario',
+      );
+    }
+
+    if (dto.tipo === CajaType.PERSONAL && dto.propietarioId) {
+      const existente = await this.findCajaPersonal(dto.propietarioId);
+      if (existente) {
+        throw new BadRequestException(
+          'Esta persona ya tiene una caja personal',
+        );
+      }
+    }
+
+    const caja = this.cajaRepository.create(dto);
+    return this.cajaRepository.save(caja);
+  }
+
+  async remove(id: string): Promise<void> {
+    const caja = await this.findOneEntity(id);
+
+    if (caja.tipo === CajaType.GRUPO) {
+      throw new BadRequestException('No se puede eliminar la caja del grupo');
+    }
+
+    // Validar que no tenga movimientos asociados
+    const check = await this.deletionValidator.canDeleteCaja(id);
+    if (!check.canDelete) {
+      throw new BadRequestException(check.reason);
+    }
+
+    await this.cajaRepository.softRemove(caja);
+  }
+
+  /**
+   * Devuelve la caja personal del propietario, creándola si no existe.
+   *
+   * Rechaza a las AGRUPACION: no son personas, representan al grupo (o a una
+   * rama) vendiendo, y su plata va siempre a la caja del grupo. El guard vive
+   * acá y no en eventos a propósito — es el único punto por el que se crea una
+   * caja personal, así que protege a todos los llamadores del sistema y hace
+   * imposible representar "el grupo vendió a una cuenta personal".
+   */
+  async getOrCreateCajaPersonal(
+    propietarioId: string,
+    nombrePropietario?: string,
+  ): Promise<Caja> {
+    let caja = await this.findCajaPersonal(propietarioId);
+    if (caja) {
+      return caja;
+    }
+
+    await this.assertPuedeTenerCajaPersonal(propietarioId);
+
+    caja = this.cajaRepository.create({
+      tipo: CajaType.PERSONAL,
+      propietarioId,
+      nombre: nombrePropietario
+        ? `Cuenta Personal - ${nombrePropietario}`
+        : undefined,
+    });
+    return this.cajaRepository.save(caja);
+  }
+
+  /**
+   * Consulta el tipo por dataSource en vez de inyectar PersonasService: ese
+   * servicio ya depende de CajasService y la inyección cruzada agregaría otro
+   * forwardRef sólo para leer una columna.
+   */
+  private async assertPuedeTenerCajaPersonal(
+    propietarioId: string,
+  ): Promise<void> {
+    const rows: { tipo: PersonaType }[] = await this.dataSource.query(
+      `SELECT "tipo" FROM "personas" WHERE "id" = $1 AND "deletedAt" IS NULL`,
+      [propietarioId],
+    );
+
+    if (rows[0]?.tipo === PersonaType.AGRUPACION) {
+      throw new BadRequestException(CAJAS_ERROR_MESSAGES.AGRUPACION_SIN_CAJA);
+    }
+  }
+
+  /**
+   * Obtiene el consolidado de saldos de todas las cajas y deudas
+   */
+  async getConsolidadoSaldos(): Promise<ConsolidadoSaldosDto> {
+    // Single CTE query fetches ALL consolidado data in 1 round-trip (~330ms)
+    // instead of 6+ sequential queries (~1500ms+ on high-latency connections)
+    const [raw] = await this.dataSource.query(`
+      WITH saldos AS (
+        SELECT caja_id,
+          SUM(CASE
+            WHEN tipo = 'ingreso' AND "estadoPago" != 'pendiente_cobro' THEN monto
+            WHEN tipo = 'egreso' AND "estadoPago" != 'pendiente_reembolso' THEN -monto
+            ELSE 0
+          END) AS saldo
+        FROM movimientos WHERE "deletedAt" IS NULL
+        GROUP BY caja_id
+      ),
+      reembolsos AS (
+        SELECT COALESCE(SUM(monto), 0) AS total,
+          COUNT(DISTINCT COALESCE(persona_a_reembolsar_id, responsable_id)) AS cantidad
+        FROM movimientos
+        WHERE "estadoPago" = 'pendiente_reembolso'
+          AND "deletedAt" IS NULL
+      ),
+      cobros AS (
+        SELECT COALESCE(SUM(monto), 0) AS total,
+          COUNT(DISTINCT responsable_id) AS cantidad
+        FROM movimientos
+        WHERE "estadoPago" = 'pendiente_cobro'
+          AND "deletedAt" IS NULL
+          AND responsable_id IS NOT NULL
+      ),
+      deuda_inscr AS (
+        SELECT
+          COALESCE(SUM(GREATEST(0, i."montoTotal" - i."montoBonificado" - COALESCE(p.total_pagado, 0))), 0) AS total,
+          COUNT(CASE WHEN i."montoTotal" - i."montoBonificado" - COALESCE(p.total_pagado, 0) > 0 THEN 1 END) AS cantidad
+        FROM inscripciones i
+        LEFT JOIN (
+          SELECT inscripcion_id, SUM(monto) AS total_pagado
+          FROM movimientos
+          WHERE "deletedAt" IS NULL AND tipo = 'ingreso' AND inscripcion_id IS NOT NULL
+            AND concepto != 'bonificacion_recibida'
+          GROUP BY inscripcion_id
+        ) p ON p.inscripcion_id = i.id
+        WHERE i."deletedAt" IS NULL
+      ),
+      deuda_camp AS (
+        SELECT
+          COALESCE(SUM(GREATEST(0, cp."montoAsignado" - cp."montoBonificado" - COALESCE(pagos.total_pagado, 0))), 0) AS total,
+          COUNT(CASE WHEN cp."montoAsignado" - cp."montoBonificado" - COALESCE(pagos.total_pagado, 0) > 0 THEN 1 END) AS cantidad
+        FROM campamentos c
+        INNER JOIN campamento_participante cp ON cp.campamento_id = c.id AND cp."deletedAt" IS NULL
+        LEFT JOIN (
+          SELECT responsable_id, campamento_id, SUM(monto) AS total_pagado
+          FROM movimientos
+          WHERE "deletedAt" IS NULL AND tipo = 'ingreso' AND concepto = 'campamento_pago'
+          GROUP BY responsable_id, campamento_id
+        ) pagos ON pagos.responsable_id = cp.persona_id AND pagos.campamento_id = c.id
+        WHERE c."deletedAt" IS NULL
+      ),
+      bonif_otorgadas AS (
+        SELECT COALESCE(SUM(monto), 0) AS total
+        FROM movimientos
+        WHERE "deletedAt" IS NULL
+          AND tipo = 'egreso'
+          AND concepto = 'bonificacion_otorgada'
+      )
+      SELECT
+        (SELECT json_agg(row_to_json(t)) FROM (
+          SELECT c.id, c.tipo, c.nombre, COALESCE(s.saldo, 0) AS saldo
+          FROM cajas c LEFT JOIN saldos s ON s.caja_id = c.id
+          WHERE c."deletedAt" IS NULL ORDER BY c.tipo, c.nombre
+        ) t) AS cajas,
+        (SELECT row_to_json(r) FROM reembolsos r) AS reembolsos,
+        (SELECT row_to_json(c) FROM cobros c) AS cobros,
+        (SELECT row_to_json(d) FROM deuda_inscr d) AS deuda_inscripciones,
+        (SELECT row_to_json(d) FROM deuda_camp d) AS deuda_campamentos,
+        (SELECT row_to_json(b) FROM bonif_otorgadas b) AS bonificaciones_otorgadas
+    `);
+
+    // Parse the aggregated result
+    const cajas: {
+      id: string;
+      tipo: CajaType;
+      nombre: string | null;
+      saldo: number;
+    }[] = raw.cajas ?? [];
+    const reembolsos = raw.reembolsos ?? { total: 0, cantidad: 0 };
+    const cobros = raw.cobros ?? { total: 0, cantidad: 0 };
+    const deudaInscripciones = raw.deuda_inscripciones ?? {
+      total: 0,
+      cantidad: 0,
+    };
+    const deudaCampamentos = raw.deuda_campamentos ?? { total: 0, cantidad: 0 };
+    const bonificacionesOtorgadas = raw.bonificaciones_otorgadas ?? {
+      total: 0,
+    };
+
+    // Classify cajas by type
+    const cajaGrupo = cajas.find((c) => c.tipo === CajaType.GRUPO) ?? null;
+    const cajaFondoSolidario =
+      cajas.find((c) => c.tipo === CajaType.FONDO_SOLIDARIO) ?? null;
+    const ramaTipos = new Set([
+      CajaType.RAMA_MANADA,
+      CajaType.RAMA_UNIDAD,
+      CajaType.RAMA_CAMINANTES,
+      CajaType.RAMA_ROVERS,
+    ]);
+    const cajasRama = cajas.filter((c) => ramaTipos.has(c.tipo));
+    const cajasPersonales = cajas.filter((c) => c.tipo === CajaType.PERSONAL);
+
+    const saldoGrupo = Number(cajaGrupo?.saldo ?? 0);
+    const saldoFondoSolidario = Number(cajaFondoSolidario?.saldo ?? 0);
+    const saldosRama = cajasRama.map((caja) => ({
+      tipo: caja.tipo,
+      id: caja.id,
+      nombre: caja.nombre || this.getNombreRama(caja.tipo),
+      saldo: Number(caja.saldo),
+    }));
+    const saldosPersonales = cajasPersonales.map((c) => Number(c.saldo));
+
+    const totalRamas = saldosRama.reduce((sum, r) => sum + r.saldo, 0);
+    const totalPersonales = saldosPersonales.reduce((sum, s) => sum + s, 0);
+    const totalReembolsos = Number(reembolsos.total);
+    const totalDeudas =
+      Number(deudaInscripciones.total) + Number(deudaCampamentos.total);
+
+    // El fondo solidario suma al total general (es plata que el grupo
+    // tiene) pero se excluye del disponible: sólo se libera al bonificar.
+    const totalGeneral =
+      saldoGrupo + totalRamas + totalPersonales + saldoFondoSolidario;
+    const totalDisponible =
+      totalGeneral - totalReembolsos - saldoFondoSolidario;
+
+    return {
+      fecha: new Date().toISOString(),
+      resumen: {
+        totalGeneral,
+        totalDisponible,
+        totalPorCobrar: totalDeudas,
+      },
+      cajaGrupo: {
+        id: cajaGrupo?.id ?? '',
+        saldo: saldoGrupo,
+      },
+      fondosRama: {
+        total: totalRamas,
+        detalle: saldosRama,
+      },
+      cuentasPersonales: {
+        total: totalPersonales,
+        cantidad: cajasPersonales.length,
+      },
+      fondoSolidario: {
+        id: cajaFondoSolidario?.id ?? null,
+        saldo: saldoFondoSolidario,
+        bonificacionesOtorgadas: Number(bonificacionesOtorgadas.total),
+      },
+      reembolsosPendientes: {
+        total: totalReembolsos,
+        cantidad: Number(reembolsos.cantidad),
+      },
+      cobrosPendientes: {
+        total: Number(cobros.total),
+        cantidad: Number(cobros.cantidad),
+      },
+      deudasTotales: {
+        total: totalDeudas,
+        inscripciones: {
+          total: Number(deudaInscripciones.total),
+          cantidad: Number(deudaInscripciones.cantidad),
+        },
+        campamentos: {
+          total: Number(deudaCampamentos.total),
+          cantidad: Number(deudaCampamentos.cantidad),
+        },
+      },
+    };
+  }
+
+  private getNombreRama(tipo: CajaType): string {
+    const nombres: Record<string, string> = {
+      [CajaType.RAMA_MANADA]: 'Fondo Manada',
+      [CajaType.RAMA_UNIDAD]: 'Fondo Unidad',
+      [CajaType.RAMA_CAMINANTES]: 'Fondo Caminantes',
+      [CajaType.RAMA_ROVERS]: 'Fondo Rovers',
+    };
+    return nombres[tipo] ?? tipo;
+  }
+}

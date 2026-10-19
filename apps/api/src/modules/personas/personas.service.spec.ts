@@ -1,0 +1,774 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Not, Repository } from 'typeorm';
+import {
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
+jest.mock('bcrypt');
+import { PersonasService } from './personas.service';
+import {
+  Persona,
+  Protagonista,
+  Educador,
+  PersonaExterna,
+} from './entities/persona.entity';
+import { CajasService } from '../cajas/cajas.service';
+import { MovimientosService } from '../movimientos/movimientos.service';
+import { DeletionValidatorService } from '../../common/services/deletion-validator.service';
+import {
+  PersonaType,
+  EstadoPersona,
+  Rama,
+  CajaType,
+  ConceptoMovimiento,
+} from '../../common/enums';
+import { Caja } from '../cajas/entities/caja.entity';
+import { CajaResponseDto } from '../cajas/dtos';
+
+describe('PersonasService', () => {
+  let service: PersonasService;
+  let personaRepository: jest.Mocked<Repository<Persona>>;
+  let protagonistaRepository: jest.Mocked<Repository<Protagonista>>;
+  let educadorRepository: jest.Mocked<Repository<Educador>>;
+  let personaExternaRepository: jest.Mocked<Repository<PersonaExterna>>;
+  let cajasService: jest.Mocked<CajasService>;
+  let movimientosService: jest.Mocked<MovimientosService>;
+  let deletionValidator: jest.Mocked<DeletionValidatorService>;
+
+  const mockProtagonista: Partial<Protagonista> = {
+    id: 'protagonista-uuid',
+    nombre: 'Juan Scout',
+    email: 'juan@scout.com',
+    tipo: PersonaType.PROTAGONISTA,
+    estado: EstadoPersona.ACTIVO,
+    rama: Rama.MANADA,
+    fechaNacimiento: new Date('2010-05-15'),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
+
+  const mockEducador: Partial<Educador> = {
+    id: 'educador-uuid',
+    nombre: 'María Educadora',
+    email: 'maria@scout.com',
+    tipo: PersonaType.EDUCADOR,
+    estado: EstadoPersona.ACTIVO,
+    rama: Rama.MANADA,
+    fechaNacimiento: new Date('1990-03-20'),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
+
+  const mockPersonaExterna: Partial<PersonaExterna> = {
+    id: 'externa-uuid',
+    nombre: 'Pedro Externo',
+    email: 'pedro@external.com',
+    tipo: PersonaType.EXTERNA,
+    estado: EstadoPersona.ACTIVO,
+    relacion: 'Padre',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
+
+  const mockCajaPersonal: Partial<Caja> = {
+    id: 'caja-personal-uuid',
+    nombre: 'Cuenta Personal - Juan Scout',
+    tipo: CajaType.PERSONAL,
+    personaId: 'protagonista-uuid',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
+
+  beforeEach(async () => {
+    const mockPersonaRepository = {
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn(),
+      softRemove: jest.fn(),
+    };
+
+    const mockProtagonistaRepository = {
+      create: jest.fn(),
+      save: jest.fn(),
+    };
+
+    const mockEducadorRepository = {
+      create: jest.fn(),
+      save: jest.fn(),
+    };
+
+    const mockPersonaExternaRepository = {
+      create: jest.fn(),
+      save: jest.fn(),
+    };
+
+    const mockCajasService = {
+      findCajaPersonal: jest.fn(),
+      findCajaGrupo: jest.fn(),
+      remove: jest.fn(),
+      getOrCreateCajaPersonal: jest.fn(),
+    };
+
+    const mockMovimientosService = {
+      calcularSaldo: jest.fn(),
+      create: jest.fn(),
+      crearTransferencia: jest.fn(),
+    };
+
+    const mockDeletionValidator = {
+      canDeletePersona: jest.fn().mockResolvedValue({ canDelete: true }),
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PersonasService,
+        {
+          provide: getRepositoryToken(Persona),
+          useValue: mockPersonaRepository,
+        },
+        {
+          provide: getRepositoryToken(Protagonista),
+          useValue: mockProtagonistaRepository,
+        },
+        {
+          provide: getRepositoryToken(Educador),
+          useValue: mockEducadorRepository,
+        },
+        {
+          provide: getRepositoryToken(PersonaExterna),
+          useValue: mockPersonaExternaRepository,
+        },
+        {
+          provide: CajasService,
+          useValue: mockCajasService,
+        },
+        {
+          provide: MovimientosService,
+          useValue: mockMovimientosService,
+        },
+        {
+          provide: DeletionValidatorService,
+          useValue: mockDeletionValidator,
+        },
+      ],
+    }).compile();
+
+    service = module.get<PersonasService>(PersonasService);
+    personaRepository = module.get(getRepositoryToken(Persona));
+    protagonistaRepository = module.get(getRepositoryToken(Protagonista));
+    educadorRepository = module.get(getRepositoryToken(Educador));
+    personaExternaRepository = module.get(getRepositoryToken(PersonaExterna));
+    cajasService = module.get(CajasService);
+    movimientosService = module.get(MovimientosService);
+    deletionValidator = module.get(DeletionValidatorService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('findOne', () => {
+    it('should return a persona when found', async () => {
+      personaRepository.findOne.mockResolvedValue(
+        mockProtagonista as Protagonista,
+      );
+
+      const result = await service.findOne('protagonista-uuid');
+
+      expect(result).toEqual(mockProtagonista);
+      expect(personaRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'protagonista-uuid' },
+      });
+    });
+
+    it('should throw NotFoundException when persona not found', async () => {
+      personaRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findOne('non-existent-id')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('remove', () => {
+    describe('validation', () => {
+      it('should throw NotFoundException when persona does not exist', async () => {
+        personaRepository.findOne.mockResolvedValue(null);
+
+        await expect(service.remove('non-existent-id')).rejects.toThrow(
+          NotFoundException,
+        );
+        expect(deletionValidator.canDeletePersona).not.toHaveBeenCalled();
+      });
+
+      it('should throw BadRequestException when persona has movements as responsable', async () => {
+        personaRepository.findOne.mockResolvedValue(
+          mockProtagonista as Protagonista,
+        );
+        deletionValidator.canDeletePersona.mockResolvedValue({
+          canDelete: false,
+          reason:
+            'No se puede eliminar: la persona es responsable de 5 movimiento(s)',
+          movementCount: 5,
+        });
+
+        await expect(service.remove('protagonista-uuid')).rejects.toThrow(
+          BadRequestException,
+        );
+        await expect(service.remove('protagonista-uuid')).rejects.toThrow(
+          /responsable de 5 movimiento/,
+        );
+        expect(personaRepository.softRemove).not.toHaveBeenCalled();
+      });
+
+      it('should throw BadRequestException when persona has reimbursements', async () => {
+        personaRepository.findOne.mockResolvedValue(
+          mockPersonaExterna as PersonaExterna,
+        );
+        deletionValidator.canDeletePersona.mockResolvedValue({
+          canDelete: false,
+          reason:
+            'No se puede eliminar: la persona tiene 2 reembolso(s) registrado(s)',
+          movementCount: 2,
+        });
+
+        await expect(service.remove('externa-uuid')).rejects.toThrow(
+          BadRequestException,
+        );
+        expect(personaRepository.softRemove).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Protagonista deletion', () => {
+      it('should soft remove protagonista and cascade delete caja personal', async () => {
+        personaRepository.findOne.mockResolvedValue(
+          mockProtagonista as Protagonista,
+        );
+        deletionValidator.canDeletePersona.mockResolvedValue({
+          canDelete: true,
+        });
+        cajasService.findCajaPersonal.mockResolvedValue(
+          mockCajaPersonal as Caja,
+        );
+        personaRepository.softRemove.mockResolvedValue(
+          mockProtagonista as Protagonista,
+        );
+
+        await service.remove('protagonista-uuid');
+
+        expect(deletionValidator.canDeletePersona).toHaveBeenCalledWith(
+          'protagonista-uuid',
+        );
+        expect(cajasService.findCajaPersonal).toHaveBeenCalledWith(
+          'protagonista-uuid',
+        );
+        expect(cajasService.remove).toHaveBeenCalledWith('caja-personal-uuid');
+        expect(personaRepository.softRemove).toHaveBeenCalledWith(
+          mockProtagonista,
+        );
+      });
+
+      it('should soft remove protagonista without cascade if no caja personal exists', async () => {
+        personaRepository.findOne.mockResolvedValue(
+          mockProtagonista as Protagonista,
+        );
+        deletionValidator.canDeletePersona.mockResolvedValue({
+          canDelete: true,
+        });
+        cajasService.findCajaPersonal.mockResolvedValue(null);
+        personaRepository.softRemove.mockResolvedValue(
+          mockProtagonista as Protagonista,
+        );
+
+        await service.remove('protagonista-uuid');
+
+        expect(cajasService.findCajaPersonal).toHaveBeenCalledWith(
+          'protagonista-uuid',
+        );
+        expect(cajasService.remove).not.toHaveBeenCalled();
+        expect(personaRepository.softRemove).toHaveBeenCalledWith(
+          mockProtagonista,
+        );
+      });
+    });
+
+    describe('Educador deletion', () => {
+      it('should soft remove educador and cascade delete caja personal', async () => {
+        const educadorCaja: Partial<Caja> = {
+          id: 'caja-educador-uuid',
+          nombre: 'Cuenta Personal - María Educadora',
+          tipo: CajaType.PERSONAL,
+          personaId: 'educador-uuid',
+        };
+
+        personaRepository.findOne.mockResolvedValue(mockEducador as Educador);
+        deletionValidator.canDeletePersona.mockResolvedValue({
+          canDelete: true,
+        });
+        cajasService.findCajaPersonal.mockResolvedValue(educadorCaja as Caja);
+        personaRepository.softRemove.mockResolvedValue(
+          mockEducador as Educador,
+        );
+
+        await service.remove('educador-uuid');
+
+        expect(deletionValidator.canDeletePersona).toHaveBeenCalledWith(
+          'educador-uuid',
+        );
+        expect(cajasService.findCajaPersonal).toHaveBeenCalledWith(
+          'educador-uuid',
+        );
+        expect(cajasService.remove).toHaveBeenCalledWith('caja-educador-uuid');
+        expect(personaRepository.softRemove).toHaveBeenCalledWith(mockEducador);
+      });
+
+      it('should soft remove educador without cascade if no caja personal exists', async () => {
+        personaRepository.findOne.mockResolvedValue(mockEducador as Educador);
+        deletionValidator.canDeletePersona.mockResolvedValue({
+          canDelete: true,
+        });
+        cajasService.findCajaPersonal.mockResolvedValue(null);
+        personaRepository.softRemove.mockResolvedValue(
+          mockEducador as Educador,
+        );
+
+        await service.remove('educador-uuid');
+
+        expect(cajasService.findCajaPersonal).toHaveBeenCalledWith(
+          'educador-uuid',
+        );
+        expect(cajasService.remove).not.toHaveBeenCalled();
+        expect(personaRepository.softRemove).toHaveBeenCalledWith(mockEducador);
+      });
+    });
+
+    describe('PersonaExterna deletion', () => {
+      it('should soft remove persona externa without checking for caja personal', async () => {
+        personaRepository.findOne.mockResolvedValue(
+          mockPersonaExterna as PersonaExterna,
+        );
+        deletionValidator.canDeletePersona.mockResolvedValue({
+          canDelete: true,
+        });
+        personaRepository.softRemove.mockResolvedValue(
+          mockPersonaExterna as PersonaExterna,
+        );
+
+        await service.remove('externa-uuid');
+
+        expect(deletionValidator.canDeletePersona).toHaveBeenCalledWith(
+          'externa-uuid',
+        );
+        // PersonaExterna should NOT trigger caja personal lookup
+        expect(cajasService.findCajaPersonal).not.toHaveBeenCalled();
+        expect(cajasService.remove).not.toHaveBeenCalled();
+        expect(personaRepository.softRemove).toHaveBeenCalledWith(
+          mockPersonaExterna,
+        );
+      });
+    });
+  });
+
+  describe('createProtagonista', () => {
+    it('should create a protagonista with correct defaults and personal caja', async () => {
+      const dto = {
+        nombre: 'Nuevo Scout',
+        email: 'nuevo@scout.com',
+        rama: Rama.UNIDAD,
+        fechaNacimiento: new Date('2012-01-15'),
+      };
+
+      const created = {
+        ...dto,
+        id: 'new-uuid',
+        tipo: PersonaType.PROTAGONISTA,
+        estado: EstadoPersona.ACTIVO,
+      };
+
+      protagonistaRepository.create.mockReturnValue(created as Protagonista);
+      protagonistaRepository.save.mockResolvedValue(created as Protagonista);
+      cajasService.getOrCreateCajaPersonal.mockResolvedValue(
+        mockCajaPersonal as Caja,
+      );
+
+      const result = await service.createProtagonista(dto);
+
+      expect(protagonistaRepository.create).toHaveBeenCalledWith({
+        ...dto,
+        tipo: PersonaType.PROTAGONISTA,
+        estado: EstadoPersona.ACTIVO,
+      });
+      expect(cajasService.getOrCreateCajaPersonal).toHaveBeenCalledWith(
+        'new-uuid',
+        'Nuevo Scout',
+      );
+      expect(result.tipo).toBe(PersonaType.PROTAGONISTA);
+      expect(result.estado).toBe(EstadoPersona.ACTIVO);
+    });
+  });
+
+  describe('createEducador', () => {
+    it('should create an educador without password (passwordHash: null)', async () => {
+      const dto = {
+        nombre: 'Nuevo Educador',
+        email: 'educador@scout.com',
+        rama: Rama.CAMINANTES,
+        fechaNacimiento: new Date('1985-06-20'),
+      };
+
+      const created = {
+        ...dto,
+        id: 'new-uuid',
+        tipo: PersonaType.EDUCADOR,
+        estado: EstadoPersona.ACTIVO,
+        passwordHash: null,
+      };
+
+      educadorRepository.create.mockReturnValue(created as Educador);
+      educadorRepository.save.mockResolvedValue(created as Educador);
+      cajasService.getOrCreateCajaPersonal.mockResolvedValue(
+        mockCajaPersonal as Caja,
+      );
+
+      const result = await service.createEducador(dto);
+
+      expect(educadorRepository.create).toHaveBeenCalledWith({
+        nombre: dto.nombre,
+        email: dto.email,
+        rama: dto.rama,
+        fechaNacimiento: dto.fechaNacimiento,
+        passwordHash: null,
+        tipo: PersonaType.EDUCADOR,
+        estado: EstadoPersona.ACTIVO,
+      });
+      expect(cajasService.getOrCreateCajaPersonal).toHaveBeenCalledWith(
+        'new-uuid',
+        'Nuevo Educador',
+      );
+      expect(result.tipo).toBe(PersonaType.EDUCADOR);
+      expect(result.estado).toBe(EstadoPersona.ACTIVO);
+    });
+
+    it('should hash password when provided', async () => {
+      const dto = {
+        nombre: 'Nuevo Educador',
+        email: 'educador@scout.com',
+        rama: Rama.CAMINANTES,
+        fechaNacimiento: new Date('1985-06-20'),
+        password: 'contraseña123',
+      };
+
+      const fakeHash = '$2b$10$fakehashedpassword';
+      (bcrypt.hash as jest.Mock).mockResolvedValue(fakeHash);
+
+      const created = {
+        nombre: dto.nombre,
+        email: dto.email,
+        rama: dto.rama,
+        fechaNacimiento: dto.fechaNacimiento,
+        passwordHash: fakeHash,
+        id: 'new-uuid',
+        tipo: PersonaType.EDUCADOR,
+        estado: EstadoPersona.ACTIVO,
+      };
+
+      educadorRepository.create.mockReturnValue(created as Educador);
+      educadorRepository.save.mockResolvedValue(created as Educador);
+      cajasService.getOrCreateCajaPersonal.mockResolvedValue(
+        mockCajaPersonal as Caja,
+      );
+
+      const result = await service.createEducador(dto);
+
+      expect(bcrypt.hash).toHaveBeenCalledWith('contraseña123', 10);
+      expect(educadorRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ passwordHash: fakeHash }),
+      );
+      expect(result.tipo).toBe(PersonaType.EDUCADOR);
+    });
+
+    it('should throw ConflictException when email is already registered', async () => {
+      const dto = {
+        nombre: 'Nuevo Educador',
+        email: 'duplicado@scout.com',
+        rama: Rama.CAMINANTES,
+        fechaNacimiento: new Date('1985-06-20'),
+      };
+
+      educadorRepository.create.mockReturnValue({} as Educador);
+      const dbError = Object.assign(new Error('unique constraint'), {
+        code: '23505',
+      });
+      educadorRepository.save.mockRejectedValue(dbError);
+
+      await expect(service.createEducador(dto)).rejects.toThrow(
+        ConflictException,
+      );
+      await expect(service.createEducador(dto)).rejects.toThrow(
+        'El email ya está registrado',
+      );
+    });
+  });
+
+  describe('createPersonaExterna', () => {
+    it('should create a persona externa with correct defaults', async () => {
+      const dto = {
+        nombre: 'Nueva Persona Externa',
+        email: 'externo@email.com',
+        relacion: 'Tío',
+      };
+
+      const created = {
+        ...dto,
+        id: 'new-uuid',
+        tipo: PersonaType.EXTERNA,
+        estado: EstadoPersona.ACTIVO,
+      };
+
+      personaExternaRepository.create.mockReturnValue(
+        created as PersonaExterna,
+      );
+      personaExternaRepository.save.mockResolvedValue(
+        created as PersonaExterna,
+      );
+
+      const result = await service.createPersonaExterna(dto);
+
+      expect(personaExternaRepository.create).toHaveBeenCalledWith({
+        ...dto,
+        tipo: PersonaType.EXTERNA,
+        estado: EstadoPersona.ACTIVO,
+      });
+      expect(result.tipo).toBe(PersonaType.EXTERNA);
+      expect(result.estado).toBe(EstadoPersona.ACTIVO);
+    });
+  });
+
+  describe('update', () => {
+    it('should update persona and return updated entity', async () => {
+      const updateDto = { nombre: 'Nombre Actualizado' };
+      const updatedPersona = { ...mockProtagonista, ...updateDto };
+
+      personaRepository.findOne.mockResolvedValue(
+        mockProtagonista as Protagonista,
+      );
+      personaRepository.save.mockResolvedValue(updatedPersona as Protagonista);
+
+      const result = await service.update('protagonista-uuid', updateDto);
+
+      expect(result.nombre).toBe('Nombre Actualizado');
+      expect(personaRepository.save).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException when updating non-existent persona', async () => {
+      personaRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.update('non-existent-id', { nombre: 'Test' }),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return all personas ordered by nombre', async () => {
+      const personas = [mockProtagonista, mockEducador, mockPersonaExterna];
+      personaRepository.find.mockResolvedValue(personas as Persona[]);
+
+      const result = await service.findAll();
+
+      expect(result).toHaveLength(3);
+      expect(personaRepository.find).toHaveBeenCalledWith({
+        where: { tipo: Not(PersonaType.AGRUPACION) },
+        order: { nombre: 'ASC' },
+      });
+    });
+
+    it('excluye a las AGRUPACION: no son miembros del grupo', async () => {
+      personaRepository.find.mockResolvedValue([]);
+
+      await service.findAll();
+
+      const [args] = personaRepository.find.mock.calls[0] as [
+        { where: { tipo: unknown } },
+      ];
+      expect(args.where.tipo).toEqual(Not(PersonaType.AGRUPACION));
+    });
+  });
+
+  describe('findVendedoresElegibles', () => {
+    it('incluye a las agrupaciones: es la única lista donde el grupo figura como vendedor', async () => {
+      personaRepository.find.mockResolvedValue([]);
+
+      await service.findVendedoresElegibles();
+
+      expect(personaRepository.find).toHaveBeenCalledWith({
+        where: { estado: EstadoPersona.ACTIVO },
+        order: { tipo: 'ASC', nombre: 'ASC' },
+      });
+    });
+  });
+
+  describe('findAllByTipo', () => {
+    it('should return personas filtered by tipo', async () => {
+      personaRepository.find.mockResolvedValue([
+        mockProtagonista as Protagonista,
+      ]);
+
+      const result = await service.findAllByTipo(PersonaType.PROTAGONISTA);
+
+      expect(result).toHaveLength(1);
+      expect(personaRepository.find).toHaveBeenCalledWith({
+        where: { tipo: PersonaType.PROTAGONISTA },
+        order: { nombre: 'ASC' },
+      });
+    });
+  });
+
+  describe('findAllActivos', () => {
+    it('should return only active personas', async () => {
+      const activePersonas = [mockProtagonista, mockEducador];
+      personaRepository.find.mockResolvedValue(activePersonas as Persona[]);
+
+      const result = await service.findAllActivos();
+
+      expect(result).toHaveLength(2);
+      expect(personaRepository.find).toHaveBeenCalledWith({
+        where: {
+          estado: EstadoPersona.ACTIVO,
+          tipo: Not(PersonaType.AGRUPACION),
+        },
+        order: { nombre: 'ASC' },
+      });
+    });
+  });
+
+  describe('transferirSaldoAGrupo', () => {
+    const personaProtagonista = {
+      id: 'persona-uuid',
+      tipo: PersonaType.PROTAGONISTA,
+      nombre: 'Juan Perez',
+      estado: EstadoPersona.ACTIVO,
+    } as Persona;
+
+    const cajaPersonal = { id: 'caja-personal-uuid' } as Caja;
+    const cajaGrupo = { id: 'caja-grupo-uuid' } as CajaResponseDto;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.spyOn(service, 'findOne').mockResolvedValue(personaProtagonista);
+      cajasService.findCajaPersonal.mockResolvedValue(cajaPersonal);
+      cajasService.findCajaGrupo.mockResolvedValue(cajaGrupo);
+      movimientosService.calcularSaldo.mockResolvedValue(0);
+      movimientosService.crearTransferencia.mockResolvedValue({
+        egreso: { id: 'egreso-uuid' },
+        ingreso: { id: 'ingreso-uuid' },
+      } as never);
+    });
+
+    it('protagonista con saldo > 0 → llama crearTransferencia con TRANSFERENCIA_SALDO_PERSONAL y retorna saldoTransferido', async () => {
+      movimientosService.calcularSaldo.mockResolvedValue(1500);
+
+      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+
+      expect(movimientosService.crearTransferencia).toHaveBeenCalledTimes(1);
+      expect(movimientosService.crearTransferencia).toHaveBeenCalledWith(
+        {
+          cajaOrigenId: 'caja-personal-uuid',
+          cajaDestinoId: 'caja-grupo-uuid',
+          monto: 1500,
+          responsableId: 'admin-uuid',
+          descripcion:
+            'Transferencia de saldo personal de Juan Perez a caja grupo',
+        },
+        ConceptoMovimiento.TRANSFERENCIA_SALDO_PERSONAL,
+      );
+      expect(result).toEqual({ saldoTransferido: 1500 });
+    });
+
+    it('educador con saldo > 0 → idem protagonista', async () => {
+      jest.spyOn(service, 'findOne').mockResolvedValue({
+        ...personaProtagonista,
+        tipo: PersonaType.EDUCADOR,
+      });
+      movimientosService.calcularSaldo.mockResolvedValue(800);
+
+      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+
+      expect(movimientosService.crearTransferencia).toHaveBeenCalledWith(
+        expect.objectContaining({ monto: 800, responsableId: 'admin-uuid' }),
+        ConceptoMovimiento.TRANSFERENCIA_SALDO_PERSONAL,
+      );
+      expect(result).toEqual({ saldoTransferido: 800 });
+    });
+
+    it('protagonista con saldo === 0 → NO llama crearTransferencia, retorna saldoTransferido 0', async () => {
+      movimientosService.calcularSaldo.mockResolvedValue(0);
+
+      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+
+      expect(movimientosService.crearTransferencia).not.toHaveBeenCalled();
+      expect(result).toEqual({ saldoTransferido: 0 });
+    });
+
+    it('persona externa → NO busca caja, NO transfiere, retorna 0', async () => {
+      jest.spyOn(service, 'findOne').mockResolvedValue({
+        ...personaProtagonista,
+        tipo: PersonaType.EXTERNA,
+      });
+
+      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+
+      expect(cajasService.findCajaPersonal).not.toHaveBeenCalled();
+      expect(movimientosService.crearTransferencia).not.toHaveBeenCalled();
+      expect(result).toEqual({ saldoTransferido: 0 });
+    });
+
+    it('protagonista sin caja personal → retorna 0 sin error', async () => {
+      cajasService.findCajaPersonal.mockResolvedValue(null);
+
+      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+
+      expect(movimientosService.crearTransferencia).not.toHaveBeenCalled();
+      expect(result).toEqual({ saldoTransferido: 0 });
+    });
+
+    it('NO muta persona.estado bajo ninguna circunstancia (saldo > 0)', async () => {
+      const saveSpy = jest.spyOn(personaRepository, 'save');
+      movimientosService.calcularSaldo.mockResolvedValue(1500);
+
+      await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+
+      expect(saveSpy).not.toHaveBeenCalled();
+      expect(personaProtagonista.estado).toBe(EstadoPersona.ACTIVO);
+    });
+
+    it('NO muta persona.estado bajo ninguna circunstancia (saldo === 0)', async () => {
+      const saveSpy = jest.spyOn(personaRepository, 'save');
+      movimientosService.calcularSaldo.mockResolvedValue(0);
+
+      await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+
+      expect(saveSpy).not.toHaveBeenCalled();
+      expect(personaProtagonista.estado).toBe(EstadoPersona.ACTIVO);
+    });
+
+    it('registradoPorId undefined → cae al id de la persona como fallback', async () => {
+      movimientosService.calcularSaldo.mockResolvedValue(1500);
+
+      await service.transferirSaldoAGrupo('persona-uuid');
+
+      expect(movimientosService.crearTransferencia).toHaveBeenCalledWith(
+        expect.objectContaining({ responsableId: 'persona-uuid' }),
+        ConceptoMovimiento.TRANSFERENCIA_SALDO_PERSONAL,
+      );
+    });
+  });
+});
