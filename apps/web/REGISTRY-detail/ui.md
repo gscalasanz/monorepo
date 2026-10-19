@@ -50,8 +50,17 @@ en `localStorage['scout-theme-preference']` (misma clave que Angular) y aplica `
 `AppShell` (sidebar indigo colapsable ≥md; top bar + drawer + bottom-nav con "+" a nuevo
 movimiento en mobile; el bottom-nav se oculta en rutas de formulario, `isFormRoute`),
 `SessionGate` (bootstrap de sesión + guard; lo usa `app/(app)/layout.tsx`), `PageHeader`
-(`title`, `subtitle`, `actions`, `backHref`), `ThemeToggle`, `NAV_GROUPS`, `PAGE_META`,
+(`title`, `subtitle`, `actions`, `backHref` = destino de respaldo del "Volver"), `ThemeToggle`, `NAV_GROUPS`, `PAGE_META`,
 `pageMetaFor(pathname)`, `isActivePath`.
+
+## Navegación — `shared/navigation/`
+
+"Volver" que se comporta como la flecha atrás del navegador (no como una URL fija).
+`NavigationTracker` (montado una vez en `app/(app)/layout.tsx`, dentro de `Suspense`) cuenta la
+profundidad de navegación interna. `useGoBack(fallbackHref)` → `() => void`: `router.back()` si hay
+historial interno, si no `router.push(fallbackHref)` (página abierta directo / recarga).
+`BackLink { fallbackHref, children, className? }` es el `<a>` equivalente (ctrl/cmd-click abre el
+`fallbackHref` en pestaña nueva). Todo "Volver" de la app debe usar uno de los dos.
 
 ## Datos — `shared/components/data/`
 

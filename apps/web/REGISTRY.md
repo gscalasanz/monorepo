@@ -43,6 +43,7 @@
 | `notify` · `AppToaster` | ui (feedback) | `src/shared/notifications/` → [ui](./REGISTRY-detail/ui.md#notificaciones--sharednotifications) |
 | `confirmDialog` · `ConfirmDialogHost` · `errorHintFor` | ui (feedback) | `src/shared/confirm/` → [ui](./REGISTRY-detail/ui.md#confirmación--sharedconfirm) |
 | `AppShell` · `SessionGate` · `PageHeader` · `ThemeToggle` · `NAV_GROUPS` · `pageMetaFor` · `isFormRoute` | ui (layout) | `src/shared/layout/` → [ui](./REGISTRY-detail/ui.md#layout--sharedlayout) |
+| `BackLink` · `useGoBack` · `NavigationTracker` | ui (navegación) | `src/shared/navigation/` → [ui](./REGISTRY-detail/ui.md#navegación--sharednavigation) |
 | `RowActionsMenu` · `RowAction` | ui (datos) | `src/shared/components/data/row-actions-menu.tsx` → [ui](./REGISTRY-detail/ui.md#datos--sharedcomponentsdata) |
 | `AppDataGrid` (`expandable`/`ExpandToggle`) · `ActionsMenu` · `InitialsAvatar` · `sortableHeader` · `Money` · `StatusBadge` · `RamaChip` · `DirectionTile` · `KeyValueList` · `SegmentedTabs`/`ButtonTabs` · `FilterBar` · `ListPanel`/`ListToolbar` · `TotalsBar` · `useMediaQuery` | ui (datos) | `src/shared/components/data/` → [ui](./REGISTRY-detail/ui.md#datos--sharedcomponentsdata) |
 | `BarChartCard` · `DonutChart` · `Sparkline` · `KpiStrip` · `ProgressTrack` · `StatCard` · `DistributionBar` · `ChartLegend` · `SERIES_COLORS` | ui (gráficos) | `src/shared/components/charts/` → [ui](./REGISTRY-detail/ui.md#gráficos--sharedcomponentscharts) |
