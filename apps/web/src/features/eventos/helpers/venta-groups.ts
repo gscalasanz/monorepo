@@ -23,6 +23,7 @@ export function toVentaItemView(venta: VentaListado): VentaItemView {
     ventaId: venta.id,
     productoNombre: producto?.nombre ?? C.producto,
     cantidad: venta.cantidad,
+    montoTotal: producto ? producto.precioVenta * venta.cantidad : 0,
     ganancia,
   };
 }
@@ -35,6 +36,7 @@ function newGroup(venta: VentaListado, key: string): VentaGroup {
     primaryVentaId: venta.id,
     vendedorNombre: venta.vendedor?.nombre ?? C.sinVendedor,
     totalUnidades: item.cantidad,
+    montoTotal: item.montoTotal,
     gananciaTotal: item.ganancia,
     items: [item],
     fecha: venta.createdAt,
@@ -49,6 +51,7 @@ function addToGroup(group: VentaGroup, venta: VentaListado): VentaGroup {
     ...group,
     items: [...group.items, item],
     totalUnidades: group.totalUnidades + item.cantidad,
+    montoTotal: group.montoTotal + item.montoTotal,
     gananciaTotal: group.gananciaTotal + item.ganancia,
     isSingleton: false,
     aCobrar:

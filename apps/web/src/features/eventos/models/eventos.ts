@@ -32,6 +32,8 @@ export interface VentaItemView {
   readonly ventaId: string;
   readonly productoNombre: string;
   readonly cantidad: number;
+  /** Recaudación de la línea: precioVenta × cantidad. */
+  readonly montoTotal: number;
   readonly ganancia: number;
 }
 
@@ -46,6 +48,8 @@ export interface VentaGroup {
   readonly primaryVentaId: string;
   readonly vendedorNombre: string;
   readonly totalUnidades: number;
+  /** Recaudación bruta del lote (distinta de la ganancia). */
+  readonly montoTotal: number;
   readonly gananciaTotal: number;
   readonly items: readonly VentaItemView[];
   readonly fecha: string;
