@@ -1,0 +1,152 @@
+{
+  "CajaType": [
+    "grupo",
+    "rama_manada",
+    "rama_unidad",
+    "rama_caminantes",
+    "rama_rovers",
+    "personal",
+    "fondo_solidario"
+  ],
+  "CargoEducador": [
+    "Educador",
+    "Jefe de Rama",
+    "Jefe de Grupo"
+  ],
+  "CategoriaMovimiento": [
+    "insumos",
+    "comida",
+    "transporte",
+    "alquiler",
+    "servicios",
+    "material_didactico",
+    "mantenimiento",
+    "otros"
+  ],
+  "ConceptoMovimiento": [
+    "inscripcion_grupo",
+    "inscripcion_scout_argentina",
+    "inscripcion_pago_scout_argentina",
+    "campamento_pago",
+    "campamento_gasto",
+    "evento_venta_ingreso",
+    "evento_venta_gasto",
+    "evento_venta_recupero_costo",
+    "evento_grupo_ingreso",
+    "evento_grupo_gasto",
+    "gasto_general",
+    "reembolso",
+    "ajuste_inicial",
+    "asignacion_fondo_rama",
+    "transferencia_saldo_personal",
+    "transferencia_entre_cajas",
+    "uso_saldo_personal",
+    "bonificacion_otorgada",
+    "bonificacion_recibida"
+  ],
+  "DEUDA_RAMA_FILTERS": [
+    "Manada",
+    "Unidad",
+    "Caminantes",
+    "Rovers",
+    "Educadores"
+  ],
+  "DestinoGanancia": [
+    "cuentas_personales",
+    "caja_grupo"
+  ],
+  "EstadoCobroVenta": [
+    "cobrado",
+    "pendiente"
+  ],
+  "EstadoInscripcion": [
+    "pendiente",
+    "parcial",
+    "pagado",
+    "bonificado"
+  ],
+  "EstadoPago": [
+    "pagado",
+    "pendiente_reembolso",
+    "pendiente_cobro"
+  ],
+  "EstadoPagoCampamento": [
+    "pendiente",
+    "parcial",
+    "pagado",
+    "exento"
+  ],
+  "EstadoPersona": [
+    "activo",
+    "inactivo"
+  ],
+  "FiltroMovimientosCampamento": [
+    "todos",
+    "ingresos",
+    "egresos",
+    "gastos"
+  ],
+  "MedioPago": [
+    "efectivo",
+    "transferencia",
+    "saldo_personal",
+    "mixto"
+  ],
+  "ModalidadVenta": [
+    "unica",
+    "mixta"
+  ],
+  "PersonaType": [
+    "protagonista",
+    "educador",
+    "externo",
+    "agrupacion"
+  ],
+  "RAMA_EDUCADORES": "Educadores",
+  "REPORTE_SEVERIDAD": [
+    "alta",
+    "media",
+    "ok"
+  ],
+  "REPORTE_VARIANTE": [
+    "venta_caja_grupo",
+    "venta_cuentas_personales",
+    "venta_mixta",
+    "grupo"
+  ],
+  "Rama": [
+    "Manada",
+    "Unidad",
+    "Caminantes",
+    "Rovers"
+  ],
+  "TipoDeuda": [
+    "documentacion",
+    "dinero",
+    "ambos"
+  ],
+  "TipoDeudaFilter": [
+    "dinero",
+    "campamentos",
+    "inscripcionesScout",
+    "inscripcionesGrupo",
+    "documentacion"
+  ],
+  "TipoEvento": [
+    "venta",
+    "grupo"
+  ],
+  "TipoInscripcion": [
+    "grupo",
+    "scout_argentina"
+  ],
+  "TipoMovimiento": [
+    "ingreso",
+    "egreso"
+  ],
+  "VENTA_DERIVED_CONCEPTOS": [
+    "evento_venta_ingreso",
+    "evento_venta_gasto",
+    "evento_venta_recupero_costo"
+  ]
+}
