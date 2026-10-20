@@ -1,15 +1,15 @@
-/** Enums de campamento — espejo de `backend/src/common/enums/index.ts`. */
+/**
+ * Enums de campamento. La definición vive en `@scout/shared/enums` (única para web y api);
+ * acá se re-exporta con el nombre histórico del front (adaptador). Los `*_LABELS` son copy
+ * de UI y se quedan en web.
+ */
+import {
+  EstadoPagoCampamento as ESTADO_PAGO_CAMPAMENTO,
+  type EstadoPagoCampamento,
+} from '@scout/shared/enums';
 
-export const ESTADO_PAGO_CAMPAMENTO = {
-  PENDIENTE: 'pendiente',
-  PARCIAL: 'parcial',
-  PAGADO: 'pagado',
-  /** Monto asignado 0: no se espera pago (típicamente educadores). */
-  EXENTO: 'exento',
-} as const;
-
-export type EstadoPagoCampamento =
-  (typeof ESTADO_PAGO_CAMPAMENTO)[keyof typeof ESTADO_PAGO_CAMPAMENTO];
+export { ESTADO_PAGO_CAMPAMENTO };
+export type { EstadoPagoCampamento };
 
 export const ESTADO_PAGO_CAMPAMENTO_LABELS: Readonly<
   Record<EstadoPagoCampamento, string>

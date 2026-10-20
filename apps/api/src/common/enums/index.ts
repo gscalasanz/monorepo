@@ -16,6 +16,11 @@ export {
   Rama,
 } from '@scout/shared/enums';
 
+// CAMPAMENTO — definidos en @scout/shared
+export {
+  EstadoPagoCampamento,
+} from '@scout/shared/enums';
+
 // INSCRIPCION — definidos en @scout/shared
 export {
   EstadoInscripcion,
@@ -50,17 +55,6 @@ export {
 // ============================================================================
 // CAMPAMENTOS
 // ============================================================================
-
-/**
- * Estado de pago de participante en campamento
- */
-export enum EstadoPagoCampamento {
-  PENDIENTE = 'pendiente',
-  PARCIAL = 'parcial',
-  PAGADO = 'pagado',
-  /** Monto asignado 0: no se espera pago (típicamente educadores) */
-  EXENTO = 'exento',
-}
 
 // ============================================================================
 // EVENTOS
