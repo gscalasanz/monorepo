@@ -68,6 +68,32 @@ function resolveTabStop<TValue extends string>(
   return (selected ?? items.find((item) => !item.disabled))?.value;
 }
 
+/** Navegación con flechas + activación automática (solo con semántica `tabs`); foco roving. */
+function useArrowNavigation<TValue extends string>(params: {
+  readonly items: readonly SegmentedTabItem<TValue>[];
+  readonly enabled: boolean;
+  readonly onValueChange: (value: TValue) => void;
+}) {
+  const { items, enabled, onValueChange } = params;
+  const refs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const handleKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    const step = NEXT_KEYS[event.key];
+    if (!enabled || step === undefined) return;
+    event.preventDefault();
+    const target = nextEnabledIndex({ items, from: index, step });
+    const item = items[target];
+    if (!item) return;
+    refs.current[target]?.focus();
+    onValueChange(item.value);
+  };
+
+  return { refs, handleKeyDown };
+}
+
 /**
  * Control segmentado (equivale a `button-tabs` de Angular y al `.seg` del mockup).
  * Navegación con flechas + activación automática; foco roving.
@@ -82,23 +108,13 @@ export function SegmentedTabs<TValue extends string = string>({
   variant = 'subtle',
   className,
 }: SegmentedTabsProps<TValue>) {
-  const refs = useRef<Array<HTMLButtonElement | null>>([]);
   const isTabs = semantics === 'tabs';
   const tabStopValue = resolveTabStop(items, value);
-
-  const handleKeyDown = (
-    event: KeyboardEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    const step = NEXT_KEYS[event.key];
-    if (!isTabs || step === undefined) return;
-    event.preventDefault();
-    const target = nextEnabledIndex({ items, from: index, step });
-    const item = items[target];
-    if (!item) return;
-    refs.current[target]?.focus();
-    onValueChange(item.value);
-  };
+  const { refs, handleKeyDown } = useArrowNavigation({
+    items,
+    enabled: isTabs,
+    onValueChange,
+  });
 
   return (
     <div
