@@ -172,6 +172,26 @@ describe('MovimientosService', () => {
       await expect(service.create(dto)).rejects.toThrow(BadRequestException);
       expect(movimientoRepository.save).not.toHaveBeenCalled();
     });
+    describe('clock (characterization)', () => {
+      const FIXED_NOW = new Date('2026-12-31T23:30:00-03:00');
+
+      beforeEach(() => {
+        jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+        jest.setSystemTime(FIXED_NOW);
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('defaults fecha to the current instant when the DTO omits it', async () => {
+        await service.create(baseDto);
+
+        expect(movimientoRepository.create.mock.calls[0][0]).toEqual(
+          expect.objectContaining({ fecha: FIXED_NOW }),
+        );
+      });
+    });
   });
 
   describe('update - persona a reembolsar', () => {
@@ -603,6 +623,30 @@ describe('MovimientosService', () => {
       await expect(service.crearTransferencia(baseTransferDto)).rejects.toThrow(
         'DB failure',
       );
+    });
+    describe('clock (characterization)', () => {
+      const FIXED_NOW = new Date('2026-12-31T23:30:00-03:00');
+
+      beforeEach(() => {
+        jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+        jest.setSystemTime(FIXED_NOW);
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('defaults fecha of both movimientos to the current instant when the DTO omits it', async () => {
+        await service.crearTransferencia(baseTransferDto);
+
+        const payloads = (
+          mockManager.create.mock.calls as Array<[unknown, unknown]>
+        ).map(([, payload]) => payload);
+        expect(payloads).toEqual([
+          expect.objectContaining({ fecha: FIXED_NOW }),
+          expect.objectContaining({ fecha: FIXED_NOW }),
+        ]);
+      });
     });
   });
 

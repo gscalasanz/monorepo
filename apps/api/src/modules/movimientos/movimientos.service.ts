@@ -14,6 +14,7 @@ import {
   EntityManager,
   DataSource,
 } from 'typeorm';
+import { nowDate } from '@scout/shared/time';
 import { Movimiento } from './entities/movimiento.entity';
 import { CreateMovimientoDto } from './dtos/create-movimiento.dto';
 import { UpdateMovimientoDto } from './dtos/update-movimiento.dto';
@@ -513,7 +514,7 @@ export class MovimientosService {
       );
     }
 
-    const fecha = dto.fecha ?? new Date();
+    const fecha = dto.fecha ?? nowDate();
 
     return this.dataSource.transaction(async (manager) => {
       const egresoPayload: Partial<Movimiento> = {
@@ -667,7 +668,7 @@ export class MovimientosService {
   ): Partial<Movimiento> {
     return {
       ...dto,
-      fecha: dto.fecha ?? new Date(),
+      fecha: dto.fecha ?? nowDate(),
       ...(registradoPorId ? { registradoPorId } : {}),
     };
   }
