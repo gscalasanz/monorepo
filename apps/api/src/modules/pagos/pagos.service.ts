@@ -5,6 +5,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { nowDate } from '@scout/shared/time';
 import { CajasService } from '../cajas/cajas.service';
 import { MovimientosService } from '../movimientos/movimientos.service';
 import { Movimiento } from '../movimientos/entities/movimiento.entity';
@@ -72,7 +73,7 @@ export class PagosService {
         inscripcionId,
         campamentoId,
         descripcion: descripcion ?? 'Uso de saldo personal para pago',
-        fecha: new Date(),
+        fecha: nowDate(),
         registradoPorId: registradoPorId ?? null,
       });
 
@@ -112,7 +113,7 @@ export class PagosService {
       inscripcionId,
       campamentoId,
       descripcion: descripcionFinal || undefined,
-      fecha: new Date(),
+      fecha: nowDate(),
       registradoPorId: registradoPorId ?? null,
       // Link to egreso if exists
       movimientoRelacionadoId: movimientoEgresoPersonal?.id ?? null,

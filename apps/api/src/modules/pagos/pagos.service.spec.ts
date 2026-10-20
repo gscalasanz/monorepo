@@ -243,4 +243,36 @@ describe('PagosService', () => {
       expect(egresoActualizado.movimientoRelacionadoId).toBe('mov-id-2');
     });
   });
+
+  describe('clock (characterization)', () => {
+    const FIXED_NOW = new Date('2026-12-31T23:30:00-03:00');
+
+    beforeEach(() => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+      jest.setSystemTime(FIXED_NOW);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('stamps fecha of both EGRESO personal and INGRESO with the current instant', async () => {
+      await service.ejecutarPagoConManager(mockManager, {
+        personaId: 'persona-id',
+        montoTotal: 5000,
+        montoConSaldoPersonal: 3000,
+        concepto: ConceptoMovimiento.INSCRIPCION_GRUPO,
+        inscripcionId: 'inscripcion-id',
+      });
+
+      const payloads = mockManager.create.mock.calls.map(([, data]) => data);
+      expect(payloads).toHaveLength(2);
+      expect(payloads[0]).toEqual(
+        expect.objectContaining({ fecha: FIXED_NOW }),
+      );
+      expect(payloads[1]).toEqual(
+        expect.objectContaining({ fecha: FIXED_NOW }),
+      );
+    });
+  });
 });
