@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
+import { nowInstant } from '@scout/shared/time';
 import { Inscripcion } from './entities/inscripcion.entity';
 import { CreateInscripcionDto } from './dtos/create-inscripcion.dto';
 import { UpdateInscripcionDto } from './dtos/update-inscripcion.dto';
@@ -922,7 +923,7 @@ export class InscripcionesService {
         documentacion: deudoresDocumentacion,
         ambos: deudoresAmbos,
       },
-      fecha: new Date().toISOString(),
+      fecha: nowInstant(),
     };
   }
 }

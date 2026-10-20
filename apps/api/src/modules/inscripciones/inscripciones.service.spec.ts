@@ -1331,4 +1331,23 @@ describe('InscripcionesService', () => {
       );
     });
   });
+
+  describe('clock (characterization)', () => {
+    beforeEach(() => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+      jest.setSystemTime(new Date('2026-12-31T23:30:00-03:00'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('getConsolidado stamps fecha with the current instant in UTC ISO', async () => {
+      repository.find.mockResolvedValue([]);
+
+      const result = await service.getConsolidado();
+
+      expect(result.fecha).toBe('2027-01-01T02:30:00.000Z');
+    });
+  });
 });
