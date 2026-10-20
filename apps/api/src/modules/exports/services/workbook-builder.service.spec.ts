@@ -221,4 +221,27 @@ describe('WorkbookBuilderService', () => {
     const wb = await readBuffer(buffer);
     expect(wb.worksheets[0].name.length).toBeLessThanOrEqual(31);
   });
+
+  describe('clock (characterization)', () => {
+    const FIXED_NOW = new Date('2026-12-31T23:30:00-03:00');
+
+    beforeEach(() => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+      jest.setSystemTime(FIXED_NOW);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('stamps workbook.created with the current instant', async () => {
+      const buffer = await service.build([
+        { name: 'Sheet1', columns: [{ header: 'A', key: 'a' }], rows: [] },
+      ]);
+
+      jest.useRealTimers();
+      const wb = await readBuffer(buffer);
+      expect(wb.created).toEqual(FIXED_NOW);
+    });
+  });
 });

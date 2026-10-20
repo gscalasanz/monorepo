@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
+import { nowDate } from '@scout/shared/time';
 
 export type CellType = 'string' | 'number' | 'currency' | 'date' | 'boolean';
 
@@ -31,7 +32,7 @@ export class WorkbookBuilderService {
   async build(specs: SheetSpec[]): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Scout';
-    workbook.created = new Date();
+    workbook.created = nowDate();
 
     for (const spec of specs) {
       this.addSheet(workbook, spec);
