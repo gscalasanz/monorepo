@@ -21,6 +21,14 @@ export {
 } from './constants';
 export { currentYearBsAs, nowInstant, nowMs, todayBsAs } from './clock';
 export {
+  businessYearOf,
+  dateFromIsoString,
+  dateFromMs,
+  epochMsOf,
+  instantOf,
+  nowDate,
+} from './date-interop';
+export {
   addDays,
   calculateWeekRange,
   dayFilterBounds,
