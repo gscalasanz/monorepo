@@ -30,9 +30,17 @@ describe('BackupsService', () => {
     });
 
     it('pads month, day, hours, minutes and seconds to two digits', () => {
-      const fixed = new Date(2026, 0, 2, 3, 4, 5);
+      const fixed = new Date('2026-01-02T03:04:05-03:00');
       expect(service.generateFilename(fixed)).toBe(
         'scout-backup-20260102-030405.sql.gz',
+      );
+    });
+
+    it('usa la fecha y hora de BsAs aunque en UTC ya sea el día siguiente', () => {
+      // 31/12 23:30 en BsAs = 1/1 02:30 UTC (la zona de Render).
+      const fixed = new Date('2026-12-31T23:30:00-03:00');
+      expect(service.generateFilename(fixed)).toBe(
+        'scout-backup-20261231-233000.sql.gz',
       );
     });
   });
