@@ -66,7 +66,7 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 - [x] Clase C migrada
 - [x] Clase B corregida (test rojo → verde)
 - [x] `no-new-date` en `error` en api; grep en 0
-- [ ] code-reviewer con foco en zonas horarias
+- [x] code-reviewer con foco en zonas horarias (aprobado, sin CRITICAL/HIGH; MEDIUM-2 documentado y fijado con test, MEDIUM-1 → §Deuda)
 
 ### Cierre
 - [ ] `docs/MONOREPO-REPORT.md`
@@ -187,6 +187,8 @@ Los tests previos de exports/backups codificaban la hora local del proceso. Se r
 - Entorno: el Escritorio parece sincronizado con iCloud (`fileproviderd`/`cloudd`/`fseventsd` saturan la CPU con `node_modules`, `.next`, `dist`); load average de 20–100 durante la sesión y timeouts espurios en tests. Recomendado: mover el repo fuera de `~/Desktop` o excluirlo de iCloud.
 - web: `feature-boundaries` resuelve imports con el resolver `node`, así que los imports `@/features/...` (alias) no se chequean; solo los relativos. Igual que antes de la migración. Activar `eslint-import-resolver-typescript` destaparía violaciones existentes: queda como deuda.
 - api: el peer `webpack@^5.112` de `schema-utils` (vía `@nestjs/cli`) queda sin satisfacer (5.106.2). Solo afecta al CLI en dev; existía igual con npm.
+- api: `POST /campamentos/:id/gastos` toma `fecha` con `@Body('fecha')` sin validación; un valor inválido daba 500 (error de pg) y hoy da 500 (`dateFromIsoString` lanza). Lo correcto sería 400 (`@IsDateString`/pipe), pero es cambio de contrato. Review F8, MEDIUM-1.
+- api: el test del dashboard de personas que usa el reloj real depende del año en curso. Los nuevos tests de caracterización sí fijan el reloj.
 
 ## §Pendientes del usuario
 

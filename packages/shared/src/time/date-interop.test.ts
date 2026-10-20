@@ -100,6 +100,12 @@ describe('businessYearOf', () => {
     expect(businessYearOf(NEW_YEAR_BSAS)).toBe(2027);
   });
 
+  it('límite del contrato: un instante en 00:00:00.000Z se lee como fecha calendario', () => {
+    // 2027-01-01T00:00Z es 31/12 21:00 en BsAs, pero no se distingue de un `date` serializado.
+    expect(businessYearOf(new Date('2027-01-01T00:00:00.000Z'))).toBe(2027);
+    expect(businessYearOf(new Date('2027-01-01T00:00:00.001Z'))).toBe(2026);
+  });
+
   it('lanza con un valor inválido', () => {
     expect(() => businessYearOf('no-es-fecha')).toThrow(/Fecha inválida/);
   });

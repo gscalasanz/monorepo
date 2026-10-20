@@ -50,6 +50,9 @@ export function instantOf(date: Date): Instant {
  * Año del día de negocio de un valor. Una fecha calendario (`YYYY-MM-DD`, o la medianoche
  * UTC con la que la serializan los DTOs) es de su propio año, sin pasar por la zona del
  * servidor; cualquier otro instante toma el año del día en BsAs.
+ *
+ * Contrato: pensado para columnas `date`. Un instante real (`timestamptz`) que cae justo en
+ * `00:00:00.000Z` es indistinguible de una fecha calendario y se lee como tal (año UTC).
  */
 export function businessYearOf(value: Date | string): number {
   const iso = typeof value === 'string' ? value : instantOf(value);
