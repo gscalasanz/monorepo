@@ -16,6 +16,17 @@ export {
   Rama,
 } from '@scout/shared/enums';
 
+// MOVIMIENTO — definidos en @scout/shared
+export {
+  CategoriaMovimiento,
+  ConceptoMovimiento,
+  EstadoPago,
+  FiltroMovimientosCampamento,
+  MedioPago,
+  TipoMovimiento,
+  VENTA_DERIVED_CONCEPTOS,
+} from '@scout/shared/enums';
+
 // CAJA — definidos en @scout/shared
 export {
   CajaType,
@@ -24,117 +35,6 @@ export {
 // ============================================================================
 // CAJAS Y MOVIMIENTOS
 // ============================================================================
-
-/**
- * Types of movements (income/expense)
- * From PRD §3.6 (F14): Tipo (ingreso/egreso)
- */
-export enum TipoMovimiento {
-  INGRESO = 'ingreso',
-  EGRESO = 'egreso',
-}
-
-/**
- * Concepts of movements
- * From TRD §4.1 + PRD analysis
- * 15 concepts total covering all financial flows
- */
-export enum ConceptoMovimiento {
-  // Inscripciones
-  INSCRIPCION_GRUPO = 'inscripcion_grupo', // Ingreso: cobro inscripción grupo
-  INSCRIPCION_SCOUT_ARGENTINA = 'inscripcion_scout_argentina', // Ingreso: cobro inscripción SA
-  INSCRIPCION_PAGO_SCOUT_ARGENTINA = 'inscripcion_pago_scout_argentina', // Egreso: pago a Scout Argentina
-
-  // Campamentos
-  CAMPAMENTO_PAGO = 'campamento_pago', // Ingreso: pago de participante
-  CAMPAMENTO_GASTO = 'campamento_gasto', // Egreso: gasto del campamento
-
-  // Eventos de venta
-  EVENTO_VENTA_INGRESO = 'evento_venta_ingreso', // Ingreso: ganancia (margen) de la venta
-  EVENTO_VENTA_GASTO = 'evento_venta_gasto', // Egreso: gastos del evento
-  EVENTO_VENTA_RECUPERO_COSTO = 'evento_venta_recupero_costo', // Ingreso a caja grupo: recupero del costo de lo vendido (solo destino cuentas_personales)
-
-  // Eventos de grupo
-  EVENTO_GRUPO_INGRESO = 'evento_grupo_ingreso', // Ingreso: recaudación evento
-  EVENTO_GRUPO_GASTO = 'evento_grupo_gasto', // Egreso: gastos del evento
-
-  // Gastos generales
-  GASTO_GENERAL = 'gasto_general', // Egreso: gastos no asociados a eventos
-
-  // Reembolsos
-  REEMBOLSO = 'reembolso', // Egreso: devolución a quien adelantó
-
-  // Ajustes
-  AJUSTE_INICIAL = 'ajuste_inicial', // Carga de saldo inicial (migración)
-
-  // Fondos de rama
-  ASIGNACION_FONDO_RAMA = 'asignacion_fondo_rama', // Ingreso a fondo de rama (no egreso de caja)
-
-  // Transferencias internas
-  TRANSFERENCIA_SALDO_PERSONAL = 'transferencia_saldo_personal', // Transferencia total del saldo de una caja personal a la caja grupo
-  TRANSFERENCIA_ENTRE_CAJAS = 'transferencia_entre_cajas', // Movimiento de fondos de una caja a otra (egreso+ingreso linkeados)
-
-  // Uso de saldo personal
-  USO_SALDO_PERSONAL = 'uso_saldo_personal', // Egreso desde caja personal para pago
-
-  // Bonificaciones (fondo solidario)
-  /** Egreso del fondo solidario: ayuda otorgada a una persona */
-  BONIFICACION_OTORGADA = 'bonificacion_otorgada',
-  /**
-   * Ingreso a la caja grupo: contraparte de la bonificación otorgada.
-   * Conserva inscripcionId/campamentoId para trazabilidad, pero DEBE
-   * excluirse explícitamente de todo cálculo de "cuánto pagó esta persona"
-   * — si no, cuenta doble contra montoBonificado.
-   */
-  BONIFICACION_RECIBIDA = 'bonificacion_recibida',
-}
-
-/**
- * Payment methods (Medio de Pago)
- * From PRD §3.3 (F8): "efectivo, transferencia"
- * IMPORTANT: Only 2 methods - NO credit cards, NO debit cards
- * MIXTO: Used when a payment combines physical money (efectivo/transferencia) with personal account balance
- */
-export enum MedioPago {
-  EFECTIVO = 'efectivo',
-  TRANSFERENCIA = 'transferencia',
-  SALDO_PERSONAL = 'saldo_personal',
-  MIXTO = 'mixto',
-}
-
-/**
- * Payment status for movements
- * From TRD §4.1: Estado de pago
- *
- * The two PENDIENTE values are mirror images of each other and both mean
- * "this movement is recorded but the money has not changed hands yet", so
- * neither affects the caja balance (see MovimientosService.calcularSaldo):
- *
- * - PENDIENTE_REEMBOLSO (egresos): a liability. Someone paid a group expense
- *   out of pocket; the group owes them. The money is still in the caja.
- * - PENDIENTE_COBRO (ingresos): a receivable. A sale was recorded but not
- *   collected yet (e.g. a WhatsApp order). The money is not in the caja.
- */
-export enum EstadoPago {
-  PAGADO = 'pagado',
-  PENDIENTE_REEMBOLSO = 'pendiente_reembolso',
-  PENDIENTE_COBRO = 'pendiente_cobro',
-}
-
-/**
- * Category of movement — orthogonal axis to concepto, used for reports.
- * Nullable in DB: legacy rows and non-applicable concepts do not require it.
- */
-export enum CategoriaMovimiento {
-  INSUMOS = 'insumos',
-  COMIDA = 'comida',
-  TRANSPORTE = 'transporte',
-  ALQUILER = 'alquiler',
-  SERVICIOS = 'servicios',
-  MATERIAL_DIDACTICO = 'material_didactico',
-  MANTENIMIENTO = 'mantenimiento',
-  OTROS = 'otros',
-}
 
 // ============================================================================
 // INSCRIPCIONES
@@ -242,35 +142,3 @@ export enum TipoDeuda {
   DINERO = 'dinero', // Only money owed (saldoPendiente > 0)
   AMBOS = 'ambos', // Both money AND documentation debt
 }
-
-/**
- * Filter for campamento movements in detail view
- * Used to filter which movements are returned in the response
- */
-export enum FiltroMovimientosCampamento {
-  TODOS = 'todos', // All movements (INGRESO + EGRESO including USO_SALDO_PERSONAL)
-  INGRESOS = 'ingresos', // Only INGRESO movements (payments received)
-  EGRESOS = 'egresos', // All EGRESO movements (including USO_SALDO_PERSONAL)
-  GASTOS = 'gastos', // Only real expenses (CAMPAMENTO_GASTO, excludes USO_SALDO_PERSONAL)
-}
-
-// ============================================================================
-// CONCEPTO GROUPS
-// ============================================================================
-
-/**
- * Conceptos de movimiento que el sistema genera AUTOMÁTICAMENTE como
- * consecuencia de registrar/borrar una venta de evento.
- *
- * Usar desde:
- *  - DeletionValidator para distinguir movimientos cascadeables de externos.
- *  - VentasEventoService para identificar movimientos a borrar en cascada.
- *  - Migraciones de backfill para parear ventas con su movimiento.
- *
- * Si en el futuro un nuevo concepto nace de una venta, agregarlo acá una vez.
- */
-export const VENTA_DERIVED_CONCEPTOS: readonly ConceptoMovimiento[] = [
-  ConceptoMovimiento.EVENTO_VENTA_INGRESO,
-  ConceptoMovimiento.EVENTO_VENTA_GASTO,
-  ConceptoMovimiento.EVENTO_VENTA_RECUPERO_COSTO,
-] as const;
