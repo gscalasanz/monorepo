@@ -69,8 +69,8 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 - [x] code-reviewer con foco en zonas horarias (aprobado, sin CRITICAL/HIGH; MEDIUM-2 documentado y fijado con test, MEDIUM-1 → §Deuda)
 
 ### Cierre
-- [ ] `docs/MONOREPO-REPORT.md`
-- [ ] Condición de cumplido 1–11 demostrada
+- [x] `docs/MONOREPO-REPORT.md`
+- [x] Condición de cumplido 1–11 demostrada (MONOREPO-REPORT.md §2; condición 7 adaptada en §Bloqueos; e2e de web no corrido, sin credenciales legibles)
 
 ## §Baseline
 
@@ -227,3 +227,4 @@ Consolidado solo lo commiteado en `main` de cada repo. Quedó afuera, sin tocar:
 | 2026-10-20 | 8 | `dd41a36`…`a3e3477` | Fechas del api: 5 fixes B con test rojo, 10 módulos A, 4 C; `no-new-date` en error; 622 tests |
 | 2026-10-20 | 6 | `0429aa9`…`18b91a8` | Gates: audit (overrides dev + ADR 0002), gitleaks, CI, dependabot, lint api 0 (ADR 0003), hooks en raíz; `turbo run typecheck lint test build` 13/13 |
 | 2026-10-20 | 7 | `51618e0` | `docs/deploy.md` (no ejecutado) |
+| 2026-10-20 | Cierre | — | Condición 1–11 desde install limpio: 13/13, FULL TURBO, grep 0, contrato 25/25, OpenAPI idéntico, smoke 3101/4301 OK, `migration:generate` = SQL original |
