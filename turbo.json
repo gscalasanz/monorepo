@@ -33,7 +33,11 @@
       "dependsOn": ["^build"],
       "passThroughEnv": ["CI", "DATABASE_URL", "TEST_DATABASE_URL", "JWT_*", "E2E_*"]
     },
+    // `^build` deja el `dist/` de los packages listo antes de levantar las apps (está
+    // gitignoreado: en un clon limpio no existe); el `dev` de cada package lo recompila en
+    // watch mientras las apps corren.
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true,
       "passThroughEnv": ["PORT", "FRONTEND_URL", "DATABASE_URL", "JWT_*", "API_URL"]
