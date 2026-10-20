@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
+import { nowInstant } from '@scout/shared/time';
 import { Caja } from './entities/caja.entity';
 import {
   CreateCajaDto,
@@ -472,7 +473,7 @@ export class CajasService {
       totalGeneral - totalReembolsos - saldoFondoSolidario;
 
     return {
-      fecha: new Date().toISOString(),
+      fecha: nowInstant(),
       resumen: {
         totalGeneral,
         totalDisponible,

@@ -735,6 +735,32 @@ describe('CajasService', () => {
       expect(deudaCampBlock).toContain('cp."deletedAt" IS NULL');
     });
 
+    describe('clock (characterization)', () => {
+      beforeEach(() => {
+        jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+        jest.setSystemTime(new Date('2026-12-31T23:30:00-03:00'));
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('stamps fecha with the current instant in UTC ISO', async () => {
+        dataSource.query.mockResolvedValue([
+          {
+            cajas: null,
+            reembolsos: { total: 0, cantidad: 0 },
+            deuda_inscripciones: { total: 0, cantidad: 0 },
+            deuda_campamentos: { total: 0, cantidad: 0 },
+          },
+        ]);
+
+        const result = await service.getConsolidadoSaldos();
+
+        expect(result.fecha).toBe('2027-01-01T02:30:00.000Z');
+      });
+    });
+
     it('should handle empty cajas gracefully', async () => {
       dataSource.query.mockResolvedValue([
         {
