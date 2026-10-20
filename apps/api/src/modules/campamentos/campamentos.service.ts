@@ -6,6 +6,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { epochMsOf } from '@scout/shared/time';
 import { Repository, DataSource, IsNull } from 'typeorm';
 import { Campamento } from './entities/campamento.entity';
 import { CampamentoParticipante } from './entities/campamento-participante.entity';
@@ -689,7 +690,7 @@ export class CampamentosService {
         autorizacionEntregada: cp.autorizacionEntregada,
         fechaInscripcion: cp.createdAt,
         pagos: datosPago.pagos.sort(
-          (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
+          (a, b) => epochMsOf(b.fecha) - epochMsOf(a.fecha),
         ),
       };
     });

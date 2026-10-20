@@ -9,6 +9,8 @@ import {
   Query,
   ParseUUIDPipe,
 } from '@nestjs/common';
+import { dateFromIsoString } from '@scout/shared/time';
+
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import {
   ApiTags,
@@ -360,7 +362,7 @@ export class CampamentosController {
       medioPago,
       estadoPago,
       userId,
-      fecha ? new Date(fecha) : undefined,
+      fecha ? dateFromIsoString(fecha) : undefined,
       personaAReembolsarId,
     );
   }

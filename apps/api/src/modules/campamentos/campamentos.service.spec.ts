@@ -1278,6 +1278,27 @@ describe('CampamentosService', () => {
       expect(conceptos).toContain(ConceptoMovimiento.BONIFICACION_RECIBIDA);
     });
 
+    it('ordena los pagos de cada participante del más reciente al más viejo', async () => {
+      const pagoEl = (id: string, fecha: string) => ({
+        ...mockMovimientoPago,
+        id,
+        fecha: new Date(fecha),
+      });
+      movimientosService.findByRelatedEntity.mockResolvedValue([
+        pagoEl('pago-ene-05', '2026-01-05T10:00:00.000Z'),
+        pagoEl('pago-ene-20', '2026-01-20T10:00:00.000Z'),
+        pagoEl('pago-ene-10', '2026-01-10T10:00:00.000Z'),
+      ] as any);
+
+      const result = await service.getDetalle('campamento-uuid');
+
+      expect(result.participantes[0].pagos.map((p) => p.movimientoId)).toEqual([
+        'pago-ene-20',
+        'pago-ene-10',
+        'pago-ene-05',
+      ]);
+    });
+
     it('un educador con montoAsignado 0 aparece EXENTO con saldoPendiente 0', async () => {
       const campamentoConEducadorExento = {
         ...campamentoConParticipante,
