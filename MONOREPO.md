@@ -53,11 +53,11 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 ### Fase 6 — Gates de calidad
 - [ ] husky + lint-staged + commitlint
 - [ ] `.github/workflows/ci.yml` (quality + security) + `dependabot.yml`
-- [ ] Lint del api en verde (fix o ADR)
+- [x] Lint del api en verde (ADR 0003 + fixes mecánicos; `eslint` exit 0, dist byte-idéntico salvo `void runSeeds()` y un alias en sql-data-export)
 - [ ] code-reviewer de la fase
 
 ### Fase 7 — Deploy (preparado, no ejecutado)
-- [ ] `docs/deploy.md` (Vercel, Render, checklist post-cutover, plan de remotos)
+- [x] `docs/deploy.md` (Vercel, Render, checklist post-cutover, plan de remotos)
 
 ### Fase 8 — Fechas en el api
 - [x] Inventario §Fechas
@@ -178,9 +178,9 @@ Los tests previos de exports/backups codificaban la hora local del proceso. Se r
 - api: `CLAUDE.MD` decía que no había auth (falso: `APP_GUARD` JWT).
 - api: `railway.json` / `railpack.json` son restos sin uso (el deploy es Render).
 - api: `package-lock.json` estaba ignorado (versiones no reproducibles). Resuelto: `pnpm-lock.yaml` versionado.
-- api: 51 errores de tipos preexistentes en 7 specs (`tsc -p tsconfig.json`; idéntico en el original). `nest build` y ts-jest no los ven. `typecheck` cubre por ahora la superficie de build (`tsconfig.build.json`); se resuelve en Fase 6.
+- api: 51 errores de tipos preexistentes en 7 specs (`tsc -p tsconfig.json`; idéntico en el original). `nest build` y ts-jest no los ven. `typecheck` cubre por ahora la superficie de build (`tsconfig.build.json`); sigue abierto: hoy son 45 errores de tipos en specs (`tsc -p tsconfig.json`), con jest en verde. Ampliar `typecheck` a specs exige corregir fixtures; queda como deuda.
 - api: scripts con `ts-node` ahora pasan `-P tsconfig.json`. Con pnpm, `node_modules/typeorm/cli.js` es un symlink al store y ts-node (script mode) no encontraba el tsconfig del api; Node 24 cargaba `data-source.ts` como ESM (`__dirname is not defined`). Sin cambio funcional.
-- api lint con las versiones nuevas: 465 errores (baseline 462): +4 `no-unnecessary-type-assertion` (regla nueva del recommended de typescript-eslint 8.71) y −1 `prettier` (prettier 3.9). Se resuelve en Fase 6.
+- api lint con las versiones nuevas: 465 errores (baseline 462): +4 `no-unnecessary-type-assertion` (regla nueva del recommended de typescript-eslint 8.71) y −1 `prettier` (prettier 3.9). **Resuelto en Fase 6:** 0 errores (ADR 0003).
 - api: `password.service.spec.ts` (bcrypt 12 rounds real) pasaba el timeout de 5 s de jest bajo `turbo run test build` en paralelo. Se fijó `jest.setTimeout(30s)` en ese spec (solo test).
 - api: el drift entidades↔esquema (§Bloqueos) existe desde antes; `migration:generate` no sirve como detector de cambios hasta corregirlo.
 - api: `@nestjs/swagger` 11.4.7 agrega `"type":"object"` en 2 schemas `nullable`+`allOf` del OpenAPI (`PersonaDashboardDto`, `PersonaDeudaDto`) respecto del backend corriendo con 11.2.7. Solo documentación Swagger; payloads idénticos.

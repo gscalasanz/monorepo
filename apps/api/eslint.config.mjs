@@ -34,6 +34,20 @@ export default tseslint.config(
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },
+  // Specs: las reglas type-aware `unbound-method` y `no-unsafe-*` dan falsos positivos con
+  // los mocks de Jest (`expect(repo.save)`, `jest.fn()` → any). Acotadas a specs por ADR 0003;
+  // en `src` siguen en `error`.
+  {
+    files: ['**/*.spec.ts', '**/*.e2e-spec.ts'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+    },
+  },
   // Fronteras (@scout/config): api ↛ web.
   apiPreset,
   // Fechas solo vía @scout/shared/time (error desde el cierre de MONOREPO.md Fase 8).
