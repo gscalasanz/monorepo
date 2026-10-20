@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { nowInstant } from '@scout/shared/time';
 import { Evento } from '../../entities/evento.entity';
 import { EventosService } from '../../eventos.service';
 import { ReporteEventoStrategy } from './reporte-evento.strategy';
@@ -47,7 +48,7 @@ export class ReporteGrupoStrategy implements ReporteEventoStrategy {
 
     return {
       variante: REPORTE_VARIANTE.GRUPO,
-      generadoEn: new Date().toISOString(),
+      generadoEn: nowInstant(),
       evento: {
         id: evento.id,
         nombre: evento.nombre,

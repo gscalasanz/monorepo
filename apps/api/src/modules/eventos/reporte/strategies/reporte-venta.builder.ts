@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { nowInstant } from '@scout/shared/time';
 import { Evento } from '../../entities/evento.entity';
 import { EventosService } from '../../eventos.service';
 import { EntregasEventoService } from '../../services/entregas-evento.service';
@@ -72,7 +73,7 @@ export class ReporteVentaBuilder {
     });
 
     return {
-      generadoEn: new Date().toISOString(),
+      generadoEn: nowInstant(),
       evento: {
         id: evento.id,
         nombre: evento.nombre,

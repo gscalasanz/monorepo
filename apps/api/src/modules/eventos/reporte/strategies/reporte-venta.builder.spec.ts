@@ -144,4 +144,20 @@ describe('ReporteVentaBuilder', () => {
     expect(r.integridad.length).toBeGreaterThan(0);
     expect(r.egresos[0].descripcion).toBe('carniceria');
   });
+
+  describe('clock (characterization)', () => {
+    beforeEach(() => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+      jest.setSystemTime(new Date('2026-12-31T23:30:00-03:00'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('stamps generadoEn with the current instant in UTC ISO', async () => {
+      const r = await builder.build(EVENTO);
+      expect(r.generadoEn).toBe('2027-01-01T02:30:00.000Z');
+    });
+  });
 });
