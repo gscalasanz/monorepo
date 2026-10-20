@@ -287,4 +287,35 @@ describe('BonificacionesService', () => {
       ).rejects.toThrow('No se encontró la bonificación a revertir');
     });
   });
+
+  describe('clock (characterization)', () => {
+    const FIXED_NOW = new Date('2026-12-31T23:30:00-03:00');
+
+    beforeEach(() => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+      jest.setSystemTime(FIXED_NOW);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('stamps egreso and ingreso with the same current-instant fecha', async () => {
+      await service.otorgarConManager(mockManager, {
+        personaId: 'persona-id',
+        monto: 5000,
+      });
+
+      const payloads = (
+        (mockManager.create as jest.Mock).mock.calls as Array<
+          [unknown, { tipo: TipoMovimiento; fecha: Date }]
+        >
+      ).map(([, payload]) => payload);
+      const egreso = payloads.find((p) => p.tipo === TipoMovimiento.EGRESO);
+      const ingreso = payloads.find((p) => p.tipo === TipoMovimiento.INGRESO);
+
+      expect(egreso?.fecha).toEqual(FIXED_NOW);
+      expect(ingreso?.fecha).toBe(egreso?.fecha);
+    });
+  });
 });

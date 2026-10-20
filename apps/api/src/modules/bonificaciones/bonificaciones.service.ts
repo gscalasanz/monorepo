@@ -5,6 +5,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { nowDate } from '@scout/shared/time';
 import { CajasService } from '../cajas/cajas.service';
 import { MovimientosService } from '../movimientos/movimientos.service';
 import { CreateMovimientoDto } from '../movimientos/dtos/create-movimiento.dto';
@@ -92,7 +93,7 @@ export class BonificacionesService {
       );
     }
 
-    const fecha = new Date();
+    const fecha = nowDate();
     const textoDescripcion = descripcion ?? 'Bonificación del fondo solidario';
 
     const egreso = await this.movimientosService.createWithManager(
