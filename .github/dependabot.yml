@@ -1,0 +1,37 @@
+version: 2
+updates:
+  # pnpm: workspace único en la raíz (cubre apps/* y packages/*).
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      # Primero a propósito: una dependencia entra en el primer grupo que matchea. `eslint` y
+      # `@eslint/js` son la misma release line; separados salen PRs que se pisan.
+      eslint:
+        patterns: ["eslint", "@eslint/*"]
+      # NestJS se mueve en bloque (core/common/platform/testing comparten versión).
+      nestjs:
+        patterns: ["@nestjs/*"]
+      production-dependencies:
+        dependency-type: "production"
+        update-types: ["minor", "patch"]
+      development-dependencies:
+        dependency-type: "development"
+        update-types: ["minor", "patch"]
+    ignore:
+      # typeorm cruza el esquema de la base (migraciones, nombres de constraints; ver el drift
+      # en MONOREPO.md §Bloqueos): un minor puede cambiar lo que genera `migration:generate`.
+      # Solo patches automáticos; el resto, a mano y revisando el SQL generado.
+      - dependency-name: "typeorm"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-minor"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns: ["*"]

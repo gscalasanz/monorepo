@@ -1,0 +1,102 @@
+# CI — gate de calidad no-baipaseable (palanca L2 de docs/flujo-confiable.md).
+# Corre en cada PR y en push a main. Sin e2e del api: levantan AppModule contra la base de
+# `.env.local` y aplican migraciones (ver CLAUDE.md §9), así que no corren en CI.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancela corridas viejas del mismo ref si llega un push nuevo.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: typecheck · lint · test · build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # pnpm va ANTES de setup-node (su cache lo necesita). Versión: `packageManager`.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      # Sin `API_URL`: el build de web no la necesita para compilar (se inlinea vacía); el
+      # deploy real la define en Vercel. Verifica también `dist/src/main.js` del api (Render).
+      - name: Build
+        run: pnpm build
+
+      - name: Entrada de producción del api
+        run: test -f apps/api/dist/src/main.js
+
+  security:
+    name: dependencias · secretos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # Historial COMPLETO: con el fetch-depth:1 por defecto, gitleaks "pasaría" sin
+          # haber mirado los commits importados de scout-back y scout-front-react.
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Umbral `high`. Excepciones con justificación y fecha de revisión en ADR 0002
+      # (`package.json` → `pnpm.auditConfig.ignoreGhsas`). `--ignore-registry-errors`: una
+      # caída del registry no tiñe de rojo un build ajeno.
+      - name: Auditoría de dependencias
+        run: pnpm audit --audit-level high --ignore-registry-errors
+
+      # Binario oficial (MIT), no la Action (gitleaks-action pide licencia en orgs),
+      # verificado contra el checksum SHA256 que publica el release.
+      - name: Instalar gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          curl -fsSLO "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSLO "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          sha256sum --ignore-missing -c "gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf "gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" gitleaks
+          mv gitleaks "$HOME/.local/bin/gitleaks"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      # `--redact`: un hallazgo real no imprime el secreto en los logs del job.
+      - name: Escaneo de secretos (gitleaks)
+        run: gitleaks detect --source . --config .gitleaks.toml --redact --verbose
