@@ -1,13 +1,13 @@
 import { formatInTimeZone } from 'date-fns-tz';
 import { es } from 'date-fns/locale';
 
-import type { Instant } from '@/shared/time/branded';
+import type { Instant } from './branded';
 import {
   BSAS_TIME_ZONE,
   DATE_FORMATS,
   type DateFormat,
-} from '@/shared/time/constants';
-import { msFromInstant, resolveBackendDate } from '@/shared/time/parse';
+} from './constants';
+import { msFromInstant, resolveBackendDate } from './parse';
 
 const EMPTY = '';
 

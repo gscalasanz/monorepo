@@ -38,8 +38,10 @@ export const PAGINATION = {
  * Used in SQL `AT TIME ZONE` casts so calendar-day grouping aligns with
  * the user's local day instead of UTC (avoids "ventas at 22:00 local
  * jumping to the next day" surprises).
+ *
+ * Única definición en `@scout/shared/time` (`BSAS_TIME_ZONE`), la misma que usa web.
  */
-export const APP_TIMEZONE = 'America/Argentina/Buenos_Aires';
+export { BSAS_TIME_ZONE as APP_TIMEZONE } from '@scout/shared/time';
 
 /**
  * Validation constraints

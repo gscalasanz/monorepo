@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+import { BSAS_TIME_ZONE } from '@scout/shared/time';
 
 // Credenciales E2E_EMAIL/E2E_PASSWORD y API_URL viven en .env.local.
 const ENV_FILE = '.env.local';
@@ -25,7 +26,7 @@ export default defineConfig({
   use: {
     baseURL: WEB_URL,
     locale: 'es-AR',
-    timezoneId: 'America/Argentina/Buenos_Aires',
+    timezoneId: BSAS_TIME_ZONE,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },

@@ -1,5 +1,5 @@
 /** Duraciones entre horas `HH:mm` (port de `shared/utils/time-helpers.ts`). */
-import { MINUTES_PER_DAY, MINUTES_PER_HOUR } from '@/shared/time/constants';
+import { MINUTES_PER_DAY, MINUTES_PER_HOUR } from './constants';
 
 export interface TimeOfDayRange {
   /** `HH:mm` */

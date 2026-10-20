@@ -2,7 +2,7 @@ import {
   dateTimeInputToInstant,
   toDateInputValue,
   toDateTimeInputValue,
-} from '@/shared/time';
+} from './index';
 
 describe('toDateInputValue (<input type="date">)', () => {
   it('deja YYYY-MM-DD tal cual', () => {

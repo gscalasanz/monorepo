@@ -1,4 +1,4 @@
-import { calculateDurationInMinutes, formatDuration } from '@/shared/time';
+import { calculateDurationInMinutes, formatDuration } from './index';
 
 describe('calculateDurationInMinutes', () => {
   it('calcula minutos entre dos horas HH:mm', () => {

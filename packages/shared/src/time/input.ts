@@ -5,17 +5,17 @@
  */
 import { fromZonedTime } from 'date-fns-tz';
 
-import { asInstant, type Instant } from '@/shared/time/branded';
+import { asInstant, type Instant } from './branded';
 import {
   BSAS_TIME_ZONE,
   DATE_TIME_INPUT_PATTERN,
-} from '@/shared/time/constants';
-import { formatInBsAs } from '@/shared/time/format';
+} from './constants';
+import { formatInBsAs } from './format';
 import {
   isLocalDateString,
   localDateOf,
   resolveBackendDate,
-} from '@/shared/time/parse';
+} from './parse';
 
 const EMPTY = '';
 const DATE_TIME_INPUT_REGEX = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})$/;

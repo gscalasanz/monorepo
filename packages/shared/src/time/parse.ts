@@ -15,8 +15,8 @@ import {
   asLocalDate,
   type Instant,
   type LocalDate,
-} from '@/shared/time/branded';
-import { BSAS_TIME_ZONE, LOCAL_DATE_PATTERN } from '@/shared/time/constants';
+} from './branded';
+import { BSAS_TIME_ZONE, LOCAL_DATE_PATTERN } from './constants';
 
 const LOCAL_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const DATE_ONLY_ISO_REGEX = /^(\d{4}-\d{2}-\d{2})T00:00:00(?:\.000)?Z$/;

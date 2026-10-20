@@ -3,7 +3,7 @@ import {
   DATE_FORMATS,
   formatDate,
   formatInBsAs,
-} from '@/shared/time';
+} from './index';
 
 describe('formatDate (paridad con el pipe dateFormat de Angular)', () => {
   it('date: dd/MM/yyyy', () => {

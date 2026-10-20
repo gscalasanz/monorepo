@@ -5,12 +5,12 @@
  */
 import { z } from 'zod';
 
-import type { Instant, LocalDate } from '@/shared/time/branded';
+import type { Instant, LocalDate } from '@scout/shared/time';
 import {
   parseInstant,
   parseLocalDate,
   resolveBackendDate,
-} from '@/shared/time/parse';
+} from '@scout/shared/time';
 
 const INVALID_DATE_MESSAGE = 'Fecha inválida';
 

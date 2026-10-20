@@ -5,7 +5,7 @@
     "moduleResolution": "nodenext",
     "target": "ES2022",
     "lib": ["ES2022"],
-    "types": ["node"],
+    "types": ["node", "vitest/globals"],
     "declaration": true,
     "noEmit": true
   },

@@ -13,7 +13,7 @@ import {
   parseInstant,
   parseLocalDate,
   resolveBackendDate,
-} from '@/shared/time';
+} from './index';
 
 describe('isLocalDateString', () => {
   it.each(['2026-03-13', '2000-01-01'])('acepta %s', (value) => {

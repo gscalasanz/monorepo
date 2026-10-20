@@ -2,8 +2,8 @@
  * Única lectura del reloj de la app (regla ESLint `no-new-date`). Todo lo que
  * necesite "ahora" o "hoy" pasa por acá, anclado a la zona de BsAs.
  */
-import { asInstant, type Instant, type LocalDate } from '@/shared/time/branded';
-import { localDateOf } from '@/shared/time/parse';
+import { asInstant, type Instant, type LocalDate } from './branded';
+import { localDateOf } from './parse';
 
 /** Instante actual en UTC (`...Z`). */
 export function nowInstant(): Instant {
