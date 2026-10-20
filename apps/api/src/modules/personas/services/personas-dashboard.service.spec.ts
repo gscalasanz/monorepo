@@ -644,4 +644,57 @@ describe('PersonasDashboardService', () => {
       expect(autorizaciones?.completas).toBe(true);
     });
   });
+
+  // Los unit tests del api corren con TZ=UTC (jest.global-setup.js), como Render.
+  describe('año de negocio en zona AR (independiente de la zona del servidor)', () => {
+    /** 31/12 23:30 en BsAs: en UTC (Render) ya es 1/1 del año siguiente. */
+    const NEW_YEAR_EVE_BSAS = new Date('2026-12-31T23:30:00-03:00');
+
+    const givenProtagonistaSinMovimientos = (): void => {
+      personasService.findOne.mockResolvedValue(mockProtagonista as any);
+      cajasService.getOrCreateCajaPersonal.mockResolvedValue(
+        mockCajaPersonal as any,
+      );
+      movimientosService.calcularSaldo.mockResolvedValue(0);
+      movimientosService.findByCaja.mockResolvedValue([]);
+    };
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('el 31/12 a las 23:30 de BsAs con el servidor en UTC, el año actual sigue siendo el que termina', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+      jest.setSystemTime(NEW_YEAR_EVE_BSAS);
+      givenProtagonistaSinMovimientos();
+      const sinDeuda = { saldoPendiente: 0, estado: EstadoInscripcion.PAGADO };
+      inscripcionesService.findByPersona.mockResolvedValue([
+        { ...mockInscripcion2026, ...sinDeuda, id: 'insc-2026', ano: 2026 },
+        { ...mockInscripcion2026, ...sinDeuda, id: 'insc-2027', ano: 2027 },
+      ] as any);
+
+      const result = await service.getDashboard('persona-1');
+
+      expect(result.inscripciones.items.map((i) => i.ano)).toEqual([2026]);
+    });
+
+    it('un campamento que empieza el 1/1 es de ese año (fecha calendario, sin zona)', async () => {
+      givenProtagonistaSinMovimientos();
+      inscripcionesService.findByPersona.mockResolvedValue([]);
+      // Columna `date`: el driver la devuelve como string `YYYY-MM-DD` (dateOnlyTransformer).
+      setParticipaciones([
+        {
+          ...mockParticipacion2026,
+          campamento: {
+            ...mockParticipacion2026.campamento,
+            fechaInicio: '2027-01-01',
+          },
+        },
+      ]);
+
+      const result = await service.getDashboard('persona-1');
+
+      expect(result.campamentos.items[0].ano).toBe(2027);
+    });
+  });
 });

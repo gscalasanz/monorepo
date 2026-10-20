@@ -6,6 +6,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { businessYearOf, currentYearBsAs } from '@scout/shared/time';
 import { Repository } from 'typeorm';
 import { PersonasService } from '../personas.service';
 import { CajasService } from '../../cajas/cajas.service';
@@ -96,7 +97,7 @@ export class PersonasDashboardService {
       movimientosCaja,
     );
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = currentYearBsAs();
     const rama = this.getRama(persona);
     const mayorDeEdad = esMayorDeEdad(persona.tipo, rama);
 
@@ -259,7 +260,7 @@ export class PersonasDashboardService {
         return {
           id: cp.campamentoId,
           nombre: cp.campamento.nombre,
-          ano: new Date(cp.campamento.fechaInicio).getFullYear(),
+          ano: businessYearOf(cp.campamento.fechaInicio),
           montoTotal,
           montoPagado,
           saldoPendiente: Math.max(0, montoTotal - montoPagado),
