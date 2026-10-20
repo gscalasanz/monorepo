@@ -46,9 +46,11 @@ jobs:
       - name: Test
         run: pnpm test
 
-      # Sin `API_URL`: el build de web no la necesita para compilar (se inlinea vacía); el
-      # deploy real la define en Vercel. Verifica también `dist/src/main.js` del api (Render).
+      # Web exige `API_URL` en build (`shared/api/env.ts` falla rápido sin ella): se usa el
+      # valor de `apps/web/.env.example`. El deploy real la define en Vercel.
       - name: Build
+        env:
+          API_URL: http://localhost:3001/api/v1
         run: pnpm build
 
       - name: Entrada de producción del api
