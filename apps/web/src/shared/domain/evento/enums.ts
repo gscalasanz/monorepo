@@ -1,25 +1,26 @@
-/** Enums de evento — espejo de `backend/src/common/enums/index.ts`. */
+/**
+ * Enums de evento. La definición vive en `@scout/shared/enums` (única para web y api);
+ * acá se re-exporta con el nombre histórico del front (adaptador). Los `*_LABELS` son copy
+ * de UI y se quedan en web.
+ */
+import {
+  DestinoGanancia as DESTINO_GANANCIA,
+  EstadoCobroVenta as ESTADO_COBRO_VENTA,
+  ModalidadVenta as MODALIDAD_VENTA,
+  TipoEvento as TIPO_EVENTO,
+  type DestinoGanancia,
+  type EstadoCobroVenta,
+  type ModalidadVenta,
+  type TipoEvento,
+} from '@scout/shared/enums';
 
-export const TIPO_EVENTO = {
-  VENTA: 'venta',
-  GRUPO: 'grupo',
-} as const;
-
-export type TipoEvento = (typeof TIPO_EVENTO)[keyof typeof TIPO_EVENTO];
+export { DESTINO_GANANCIA, ESTADO_COBRO_VENTA, MODALIDAD_VENTA, TIPO_EVENTO };
+export type { DestinoGanancia, EstadoCobroVenta, ModalidadVenta, TipoEvento };
 
 export const TIPO_EVENTO_LABELS: Readonly<Record<TipoEvento, string>> = {
   venta: 'Evento de Venta',
   grupo: 'Evento de Grupo',
 };
-
-/** Destino de la ganancia de las ventas. */
-export const DESTINO_GANANCIA = {
-  CUENTAS_PERSONALES: 'cuentas_personales',
-  CAJA_GRUPO: 'caja_grupo',
-} as const;
-
-export type DestinoGanancia =
-  (typeof DESTINO_GANANCIA)[keyof typeof DESTINO_GANANCIA];
 
 export const DESTINO_GANANCIA_LABELS: Readonly<
   Record<DestinoGanancia, string>
@@ -28,32 +29,11 @@ export const DESTINO_GANANCIA_LABELS: Readonly<
   caja_grupo: 'Caja de Grupo',
 };
 
-/**
- * Todas las ventas con un destino (UNICA) o cada una el suyo (MIXTA). En MIXTA los
- * gastos se imputan 100% al grupo.
- */
-export const MODALIDAD_VENTA = {
-  UNICA: 'unica',
-  MIXTA: 'mixta',
-} as const;
-
-export type ModalidadVenta =
-  (typeof MODALIDAD_VENTA)[keyof typeof MODALIDAD_VENTA];
-
 export const MODALIDAD_VENTA_LABELS: Readonly<Record<ModalidadVenta, string>> =
   {
     unica: 'Un solo destino',
     mixta: 'Mixta (destino por venta)',
   };
-
-/** Si la plata de la venta ya entró o queda a cobrar. */
-export const ESTADO_COBRO_VENTA = {
-  COBRADO: 'cobrado',
-  PENDIENTE: 'pendiente',
-} as const;
-
-export type EstadoCobroVenta =
-  (typeof ESTADO_COBRO_VENTA)[keyof typeof ESTADO_COBRO_VENTA];
 
 export const ESTADO_COBRO_VENTA_LABELS: Readonly<
   Record<EstadoCobroVenta, string>
