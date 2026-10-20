@@ -8,24 +8,13 @@
  *   - venta + cuentas_personales  -> VENTA_CUENTAS_PERSONALES
  *   - grupo                       -> GRUPO
  */
-export const REPORTE_VARIANTE = {
-  VENTA_CAJA_GRUPO: 'venta_caja_grupo',
-  VENTA_CUENTAS_PERSONALES: 'venta_cuentas_personales',
-  VENTA_MIXTA: 'venta_mixta',
-  GRUPO: 'grupo',
-} as const;
-
-export type ReporteVariante =
-  (typeof REPORTE_VARIANTE)[keyof typeof REPORTE_VARIANTE];
-
-export const REPORTE_SEVERIDAD = {
-  ALTA: 'alta',
-  MEDIA: 'media',
-  OK: 'ok',
-} as const;
-
-export type ReporteSeveridad =
-  (typeof REPORTE_SEVERIDAD)[keyof typeof REPORTE_SEVERIDAD];
+// Variante y severidad son vocabulario de wire: se definen en @scout/shared.
+export {
+  REPORTE_SEVERIDAD,
+  REPORTE_VARIANTE,
+  type ReporteSeveridad,
+  type ReporteVariante,
+} from '@scout/shared/enums';
 
 export const REPORTE_ROUTE_SEGMENT = 'reporte';
 

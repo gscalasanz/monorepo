@@ -3,6 +3,12 @@
  * discriminada por `variante`. Espejo de `backend/src/modules/eventos/reporte/dtos`.
  * `porcentaje` y `margen` son ratios 0–1, no porcentajes.
  */
+import {
+  REPORTE_SEVERIDAD,
+  REPORTE_VARIANTE,
+  type ReporteSeveridad,
+  type ReporteVariante,
+} from '@scout/shared/enums';
 import { z } from 'zod';
 
 import { nullableField } from '@/shared/domain/common';
@@ -14,23 +20,9 @@ import { personaTypeSchema } from '@/shared/domain/persona';
 import { instantSchema, localDateSchema } from '@/shared/time';
 
 /** Incluye `venta_mixta`, que el Angular y el Swagger omiten en su tipo de variante. */
-export const REPORTE_VARIANTE = {
-  VENTA_CAJA_GRUPO: 'venta_caja_grupo',
-  VENTA_CUENTAS_PERSONALES: 'venta_cuentas_personales',
-  VENTA_MIXTA: 'venta_mixta',
-  GRUPO: 'grupo',
-} as const;
-
-export type ReporteVariante =
-  (typeof REPORTE_VARIANTE)[keyof typeof REPORTE_VARIANTE];
-
-export const REPORTE_SEVERIDAD = {
-  ALTA: 'alta',
-  MEDIA: 'media',
-  OK: 'ok',
-} as const;
-export type ReporteSeveridad =
-  (typeof REPORTE_SEVERIDAD)[keyof typeof REPORTE_SEVERIDAD];
+// Variante y severidad: vocabulario de wire definido en @scout/shared.
+export { REPORTE_SEVERIDAD, REPORTE_VARIANTE };
+export type { ReporteSeveridad, ReporteVariante };
 
 const reporteBaseShape = {
   generadoEn: instantSchema,

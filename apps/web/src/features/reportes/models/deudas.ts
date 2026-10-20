@@ -1,7 +1,18 @@
+import {
+  DEUDA_RAMA_FILTERS,
+  RAMA_EDUCADORES,
+  TipoDeudaFilter as TIPO_DEUDA_FILTER,
+  type DeudaRamaFilter,
+  type TipoDeudaFilter,
+} from '@scout/shared/enums';
 import { z } from 'zod';
 
-/** Filtros y constantes de `GET /reportes/deudas`; el contrato (schema) vive en `@/shared/domain`. */
-import { RAMAS, type Rama } from '@/shared/domain';
+/**
+ * Filtros y constantes de `GET /reportes/deudas`; el contrato (schema) vive en `@/shared/domain`.
+ * Los valores de los filtros son vocabulario de wire y se definen en `@scout/shared`.
+ */
+export { DEUDA_RAMA_FILTERS, RAMA_EDUCADORES, TIPO_DEUDA_FILTER };
+export type { DeudaRamaFilter, TipoDeudaFilter };
 
 export {
   personaDeudaSchema,
@@ -10,20 +21,6 @@ export {
   type PersonaDeuda,
 } from '@/shared/domain';
 
-/** Valor de dominio del backend (`RAMA_EDUCADORES`): agrupa a todos los educadores. */
-export const RAMA_EDUCADORES = 'Educadores';
-export const DEUDA_RAMA_FILTERS: readonly (Rama | typeof RAMA_EDUCADORES)[] = [...RAMAS, RAMA_EDUCADORES];
-export type DeudaRamaFilter = (typeof DEUDA_RAMA_FILTERS)[number];
-
-/** Backend `TipoDeudaFilter`. */
-export const TIPO_DEUDA_FILTER = {
-  DINERO: 'dinero',
-  CAMPAMENTOS: 'campamentos',
-  INSCRIPCIONES_SCOUT: 'inscripcionesScout',
-  INSCRIPCIONES_GRUPO: 'inscripcionesGrupo',
-  DOCUMENTACION: 'documentacion',
-} as const;
-export type TipoDeudaFilter = (typeof TIPO_DEUDA_FILTER)[keyof typeof TIPO_DEUDA_FILTER];
 export const tipoDeudaFilterSchema = z.nativeEnum(TIPO_DEUDA_FILTER);
 
 const TIPO_VALUES: readonly string[] = Object.values(TIPO_DEUDA_FILTER);
