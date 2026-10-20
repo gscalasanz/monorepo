@@ -8,98 +8,41 @@
 // ENUMS
 // ============================================================================
 
-export enum PersonaType {
-  PROTAGONISTA = 'protagonista',
-  EDUCADOR = 'educador',
-  EXTERNA = 'externo',
-}
+// Fuente única: `@scout/shared/enums` (ADR 0001). Antes era una copia a mano que había
+// quedado desactualizada; se re-exporta para que la guía no vuelva a divergir.
+import {
+  PersonaType,
+  EstadoPersona,
+  Rama,
+  CargoEducador,
+  CajaType,
+  TipoMovimiento,
+  ConceptoMovimiento,
+  MedioPago,
+  EstadoPago,
+  EstadoInscripcion,
+  TipoInscripcion,
+  EstadoPagoCampamento,
+  TipoEvento,
+  DestinoGanancia,
+} from '@scout/shared/enums';
 
-export enum EstadoPersona {
-  ACTIVO = 'activo',
-  INACTIVO = 'inactivo',
-}
-
-export enum Rama {
-  MANADA = 'Manada',
-  UNIDAD = 'Unidad',
-  CAMINANTES = 'Caminantes',
-  ROVERS = 'Rovers',
-}
-
-export enum CargoEducador {
-  EDUCADOR = 'Educador',
-  JEFE_DE_RAMA = 'Jefe de Rama',
-  JEFE_DE_GRUPO = 'Jefe de Grupo',
-}
-
-export enum CajaType {
-  GRUPO = 'grupo',
-  RAMA_MANADA = 'rama_manada',
-  RAMA_UNIDAD = 'rama_unidad',
-  RAMA_CAMINANTES = 'rama_caminantes',
-  RAMA_ROVERS = 'rama_rovers',
-  PERSONAL = 'personal',
-}
-
-export enum TipoMovimiento {
-  INGRESO = 'ingreso',
-  EGRESO = 'egreso',
-}
-
-export enum ConceptoMovimiento {
-  INSCRIPCION_GRUPO = 'inscripcion_grupo',
-  INSCRIPCION_SCOUT_ARGENTINA = 'inscripcion_scout_argentina',
-  INSCRIPCION_PAGO_SCOUT_ARGENTINA = 'inscripcion_pago_scout_argentina',
-  CAMPAMENTO_PAGO = 'campamento_pago',
-  CAMPAMENTO_GASTO = 'campamento_gasto',
-  EVENTO_VENTA_INGRESO = 'evento_venta_ingreso',
-  EVENTO_VENTA_GASTO = 'evento_venta_gasto',
-  EVENTO_GRUPO_INGRESO = 'evento_grupo_ingreso',
-  EVENTO_GRUPO_GASTO = 'evento_grupo_gasto',
-  GASTO_GENERAL = 'gasto_general',
-  REEMBOLSO = 'reembolso',
-  AJUSTE_INICIAL = 'ajuste_inicial',
-  ASIGNACION_FONDO_RAMA = 'asignacion_fondo_rama',
-  TRANSFERENCIA_SALDO_PERSONAL = 'transferencia_saldo_personal',
-}
-
-export enum MedioPago {
-  EFECTIVO = 'efectivo',
-  TRANSFERENCIA = 'transferencia',
-}
-
-export enum EstadoPago {
-  PAGADO = 'pagado',
-  PENDIENTE_REEMBOLSO = 'pendiente_reembolso',
-}
-
-export enum EstadoInscripcion {
-  PENDIENTE = 'pendiente',
-  PARCIAL = 'parcial',
-  PAGADO = 'pagado',
-  BONIFICADO = 'bonificado',
-}
-
-export enum TipoInscripcion {
-  GRUPO = 'grupo',
-  SCOUT_ARGENTINA = 'scout_argentina',
-}
-
-export enum EstadoPagoCampamento {
-  PENDIENTE = 'pendiente',
-  PARCIAL = 'parcial',
-  PAGADO = 'pagado',
-}
-
-export enum TipoEvento {
-  VENTA = 'venta',
-  GRUPO = 'grupo',
-}
-
-export enum DestinoGanancia {
-  CUENTAS_PERSONALES = 'cuentas_personales',
-  CAJA_GRUPO = 'caja_grupo',
-}
+export {
+  PersonaType,
+  EstadoPersona,
+  Rama,
+  CargoEducador,
+  CajaType,
+  TipoMovimiento,
+  ConceptoMovimiento,
+  MedioPago,
+  EstadoPago,
+  EstadoInscripcion,
+  TipoInscripcion,
+  EstadoPagoCampamento,
+  TipoEvento,
+  DestinoGanancia,
+};
 
 // ============================================================================
 // BASE ENTITY
@@ -123,18 +66,18 @@ export interface Persona extends BaseEntity {
 }
 
 export interface Protagonista extends Persona {
-  tipo: PersonaType.PROTAGONISTA;
+  tipo: typeof PersonaType.PROTAGONISTA;
   rama: Rama;
 }
 
 export interface Educador extends Persona {
-  tipo: PersonaType.EDUCADOR;
+  tipo: typeof PersonaType.EDUCADOR;
   rama: Rama | null;
   cargo: CargoEducador;
 }
 
 export interface PersonaExterna extends Persona {
-  tipo: PersonaType.EXTERNA;
+  tipo: typeof PersonaType.EXTERNA;
   contacto: string | null;
   notas: string | null;
 }
