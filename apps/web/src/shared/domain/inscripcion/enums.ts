@@ -1,12 +1,19 @@
-/** Enums de inscripción — espejo de `backend/src/common/enums/index.ts`. */
+/**
+ * Enums de inscripcion. La definición vive en `@scout/shared/enums` (única para web y api);
+ * acá se re-exporta con el nombre histórico del front (adaptador). Los `*_LABELS` son copy
+ * de UI y se quedan en web.
+ */
+import {
+  EstadoInscripcion as ESTADO_INSCRIPCION,
+  TipoDeuda as TIPO_DEUDA,
+  TipoInscripcion as TIPO_INSCRIPCION,
+  type EstadoInscripcion,
+  type TipoDeuda,
+  type TipoInscripcion,
+} from '@scout/shared/enums';
 
-export const TIPO_INSCRIPCION = {
-  GRUPO: 'grupo',
-  SCOUT_ARGENTINA: 'scout_argentina',
-} as const;
-
-export type TipoInscripcion =
-  (typeof TIPO_INSCRIPCION)[keyof typeof TIPO_INSCRIPCION];
+export { ESTADO_INSCRIPCION, TIPO_DEUDA, TIPO_INSCRIPCION };
+export type { EstadoInscripcion, TipoDeuda, TipoInscripcion };
 
 export const TIPO_INSCRIPCION_LABELS: Readonly<
   Record<TipoInscripcion, string>
@@ -14,20 +21,6 @@ export const TIPO_INSCRIPCION_LABELS: Readonly<
   grupo: 'Grupo',
   scout_argentina: 'Scout Argentina',
 };
-
-/**
- * Estado calculado por el backend. Ojo: hoy el backend nunca emite `bonificado`
- * (una inscripción 100% bonificada o con monto 0 vuelve como `pagado`).
- */
-export const ESTADO_INSCRIPCION = {
-  PENDIENTE: 'pendiente',
-  PARCIAL: 'parcial',
-  PAGADO: 'pagado',
-  BONIFICADO: 'bonificado',
-} as const;
-
-export type EstadoInscripcion =
-  (typeof ESTADO_INSCRIPCION)[keyof typeof ESTADO_INSCRIPCION];
 
 export const ESTADO_INSCRIPCION_LABELS: Readonly<
   Record<EstadoInscripcion, string>
@@ -37,15 +30,6 @@ export const ESTADO_INSCRIPCION_LABELS: Readonly<
   pagado: 'Pagado',
   bonificado: 'Bonificado',
 };
-
-/** Filtro de deudores: dinero, documentación (solo Scout Argentina) o ambos. */
-export const TIPO_DEUDA = {
-  DOCUMENTACION: 'documentacion',
-  DINERO: 'dinero',
-  AMBOS: 'ambos',
-} as const;
-
-export type TipoDeuda = (typeof TIPO_DEUDA)[keyof typeof TIPO_DEUDA];
 
 /** Valor de `rama` en `/inscripciones` para filtrar educadores (singular acá). */
 export const INSCRIPCIONES_RAMA_EDUCADOR = 'educador';

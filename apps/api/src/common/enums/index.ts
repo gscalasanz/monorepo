@@ -16,6 +16,13 @@ export {
   Rama,
 } from '@scout/shared/enums';
 
+// INSCRIPCION — definidos en @scout/shared
+export {
+  EstadoInscripcion,
+  TipoDeuda,
+  TipoInscripcion,
+} from '@scout/shared/enums';
+
 // MOVIMIENTO — definidos en @scout/shared
 export {
   CategoriaMovimiento,
@@ -39,26 +46,6 @@ export {
 // ============================================================================
 // INSCRIPCIONES
 // ============================================================================
-
-/**
- * Inscription states
- * From TRD §4.1: Estados de inscripción
- */
-export enum EstadoInscripcion {
-  PENDIENTE = 'pendiente',
-  PARCIAL = 'parcial',
-  PAGADO = 'pagado',
-  BONIFICADO = 'bonificado',
-}
-
-/**
- * Tipos de inscripción
- * From Design Doc: GRUPO (grupo local) y SCOUT_ARGENTINA (nacional)
- */
-export enum TipoInscripcion {
-  GRUPO = 'grupo',
-  SCOUT_ARGENTINA = 'scout_argentina',
-}
 
 // ============================================================================
 // CAMPAMENTOS
@@ -132,13 +119,3 @@ export enum EstadoCobroVenta {
 // FILTROS
 // ============================================================================
 
-/**
- * Types of debt for filtering debtors in inscripciones
- * Used to filter by what they owe: documentation, money, or both
- * If not specified, returns any debtor (documentation OR money)
- */
-export enum TipoDeuda {
-  DOCUMENTACION = 'documentacion', // Only missing documents (SCOUT_ARGENTINA only)
-  DINERO = 'dinero', // Only money owed (saldoPendiente > 0)
-  AMBOS = 'ambos', // Both money AND documentation debt
-}
