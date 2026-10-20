@@ -61,4 +61,4 @@ async function runSeeds(): Promise<void> {
   }
 }
 
-runSeeds();
+void runSeeds();

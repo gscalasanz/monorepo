@@ -24,6 +24,29 @@ const CAJAS_ERROR_MESSAGES = {
     'Una agrupación no puede tener caja personal: su plata va siempre a la caja del grupo',
 } as const;
 
+/** Aggregate row (total + count) produced by `row_to_json` in the consolidado query. */
+interface ConsolidadoAggregateRow {
+  total: number | string;
+  cantidad: number | string;
+}
+
+interface ConsolidadoCajaRow {
+  id: string;
+  tipo: CajaType;
+  nombre: string | null;
+  saldo: number;
+}
+
+/** Shape of the single row returned by the consolidado CTE query. */
+interface ConsolidadoRawRow {
+  cajas: ConsolidadoCajaRow[] | null;
+  reembolsos: ConsolidadoAggregateRow | null;
+  cobros: ConsolidadoAggregateRow | null;
+  deuda_inscripciones: ConsolidadoAggregateRow | null;
+  deuda_campamentos: ConsolidadoAggregateRow | null;
+  bonificaciones_otorgadas: Pick<ConsolidadoAggregateRow, 'total'> | null;
+}
+
 @Injectable()
 export class CajasService {
   constructor(
@@ -344,7 +367,7 @@ export class CajasService {
   async getConsolidadoSaldos(): Promise<ConsolidadoSaldosDto> {
     // Single CTE query fetches ALL consolidado data in 1 round-trip (~330ms)
     // instead of 6+ sequential queries (~1500ms+ on high-latency connections)
-    const [raw] = await this.dataSource.query(`
+    const [raw]: ConsolidadoRawRow[] = await this.dataSource.query(`
       WITH saldos AS (
         SELECT caja_id,
           SUM(CASE
@@ -419,12 +442,7 @@ export class CajasService {
     `);
 
     // Parse the aggregated result
-    const cajas: {
-      id: string;
-      tipo: CajaType;
-      nombre: string | null;
-      saldo: number;
-    }[] = raw.cajas ?? [];
+    const cajas: ConsolidadoCajaRow[] = raw.cajas ?? [];
     const reembolsos = raw.reembolsos ?? { total: 0, cantidad: 0 };
     const cobros = raw.cobros ?? { total: 0, cantidad: 0 };
     const deudaInscripciones = raw.deuda_inscripciones ?? {

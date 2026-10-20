@@ -8,7 +8,6 @@ import { EntityManager } from 'typeorm';
 import { nowDate } from '@scout/shared/time';
 import { CajasService } from '../cajas/cajas.service';
 import { MovimientosService } from '../movimientos/movimientos.service';
-import { CreateMovimientoDto } from '../movimientos/dtos/create-movimiento.dto';
 import { Movimiento } from '../movimientos/entities/movimiento.entity';
 import { OtorgarBonificacionParams } from './interfaces/otorgar-bonificacion.interface';
 import { ResultadoBonificacionDto } from './dtos/resultado-bonificacion.dto';
@@ -111,7 +110,7 @@ export class BonificacionesService {
         fecha,
         ...(campamentoId ? { campamentoId } : {}),
         ...(inscripcionId ? { inscripcionId } : {}),
-      } as CreateMovimientoDto,
+      },
       registradoPorId,
     );
 
@@ -130,7 +129,7 @@ export class BonificacionesService {
         fecha,
         ...(campamentoId ? { campamentoId } : {}),
         ...(inscripcionId ? { inscripcionId } : {}),
-      } as CreateMovimientoDto,
+      },
       registradoPorId,
     );
 

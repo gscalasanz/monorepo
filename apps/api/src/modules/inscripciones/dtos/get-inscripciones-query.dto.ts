@@ -48,7 +48,7 @@ export class GetInscripcionesQueryDto {
     example: TipoDeuda.DINERO,
   })
   @IsOptional()
-  @Transform(({ value }) => {
+  @Transform(({ value }: { value: unknown }) => {
     if (typeof value === 'string') {
       return value.toLowerCase() as TipoDeuda;
     }

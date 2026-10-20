@@ -19,6 +19,12 @@ interface ColumnInfoRow {
   column_name: string;
 }
 
+/**
+ * Runtime types left for `formatValue` after the null/undefined, boolean,
+ * number, bigint and object branches (Date and Buffer are objects).
+ */
+type RemainingPrimitive = string | symbol | ((...args: never[]) => unknown);
+
 @Injectable()
 export class SqlDataExportService {
   private readonly logger = new Logger(SqlDataExportService.name);
@@ -120,6 +126,8 @@ export class SqlDataExportService {
     if (typeof value === 'object') {
       return `'${JSON.stringify(value).replace(/'/g, "''")}'`;
     }
-    return `'${String(value).replace(/'/g, "''")}'`;
+    // Every other `typeof` was handled above, so only these remain.
+    const remaining = value as RemainingPrimitive;
+    return `'${String(remaining).replace(/'/g, "''")}'`;
   }
 }

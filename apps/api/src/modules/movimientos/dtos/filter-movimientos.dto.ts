@@ -30,10 +30,10 @@ export class FilterMovimientosDto extends PaginationQueryDto {
     isArray: true,
     example: 'rama_manada,rama_unidad',
   })
-  @Transform(({ value }) => {
+  @Transform(({ value }: { value: unknown }) => {
     if (!value) return undefined;
-    if (Array.isArray(value)) return value;
-    return value.split(',').map((v: string) => v.trim());
+    if (Array.isArray(value)) return value as unknown[];
+    return (value as string).split(',').map((v) => v.trim());
   })
   @IsEnum(CajaType, { each: true })
   @IsOptional()

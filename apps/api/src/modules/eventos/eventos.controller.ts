@@ -21,6 +21,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { IsBoolean } from 'class-validator';
+import { ConceptoMovimiento, TipoMovimiento } from '../../common/enums';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { EventosService } from './eventos.service';
@@ -453,8 +454,8 @@ export class EventosController {
     @Query(EVENTOS_QUERY_NAMES.CONCEPTO) concepto?: string,
   ) {
     return this.eventosService.findMovimientosByEvento(eventoId, {
-      tipo: tipo as any,
-      concepto: concepto as any,
+      tipo: tipo as TipoMovimiento | undefined,
+      concepto: concepto as ConceptoMovimiento | undefined,
     });
   }
 
