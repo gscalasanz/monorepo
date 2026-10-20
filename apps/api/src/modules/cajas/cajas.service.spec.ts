@@ -20,9 +20,7 @@ describe('CajasService', () => {
   let cajaRepository: jest.Mocked<Repository<Caja>>;
   let deletionValidator: jest.Mocked<DeletionValidatorService>;
   let movimientosService: jest.Mocked<MovimientosService>;
-  let inscripcionesService: jest.Mocked<InscripcionesService>;
   let dataSource: jest.Mocked<DataSource>;
-  let campamentosService: jest.Mocked<CampamentosService>;
 
   const mockCajaGrupo: Partial<Caja> = {
     id: 'caja-grupo-uuid',
@@ -134,8 +132,6 @@ describe('CajasService', () => {
     dataSource = module.get(DataSource);
     deletionValidator = module.get(DeletionValidatorService);
     movimientosService = module.get(MovimientosService);
-    inscripcionesService = module.get(InscripcionesService);
-    campamentosService = module.get(CampamentosService);
   });
 
   it('should be defined', () => {
@@ -577,18 +573,6 @@ describe('CajasService', () => {
   });
 
   describe('getConsolidadoSaldos', () => {
-    const mockCajaRamaManada = {
-      id: 'caja-rama-manada-uuid',
-      tipo: CajaType.RAMA_MANADA,
-      nombre: 'Fondo Manada',
-    } as Caja;
-
-    const mockCajaRamaUnidad = {
-      id: 'caja-rama-unidad-uuid',
-      tipo: CajaType.RAMA_UNIDAD,
-      nombre: 'Fondo Unidad',
-    } as Caja;
-
     beforeEach(() => {
       // Reset mocks for consolidado tests
       cajaRepository.findOne.mockReset();

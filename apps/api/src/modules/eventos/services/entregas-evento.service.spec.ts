@@ -153,8 +153,8 @@ describe('EntregasEventoService', () => {
     };
 
     dataSource = {
-      transaction: jest.fn(async (cb: (m: EntityManager) => unknown) =>
-        cb(fakeManager as unknown as EntityManager),
+      transaction: jest.fn((cb: (m: EntityManager) => unknown) =>
+        Promise.resolve(cb(fakeManager as unknown as EntityManager)),
       ),
       getRepository: jest.fn().mockReturnValue({
         find: jest.fn().mockResolvedValue([]),

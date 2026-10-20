@@ -155,9 +155,9 @@ describe('ExportsService', () => {
   beforeEach(async () => {
     capturedSpecs = [];
     workbookBuilder = {
-      build: jest.fn().mockImplementation(async (specs: SheetSpec[]) => {
+      build: jest.fn().mockImplementation((specs: SheetSpec[]) => {
         capturedSpecs = specs;
-        return Buffer.from('fake-xlsx');
+        return Promise.resolve(Buffer.from('fake-xlsx'));
       }),
     } as unknown as jest.Mocked<WorkbookBuilderService>;
 

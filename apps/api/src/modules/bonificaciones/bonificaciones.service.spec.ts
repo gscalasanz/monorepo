@@ -65,9 +65,7 @@ describe('BonificacionesService', () => {
         .fn()
         .mockImplementation(
           (manager: EntityManager, dto: Record<string, unknown>) =>
-            Promise.resolve(
-              manager.create('Movimiento' as never, dto as never),
-            ),
+            Promise.resolve(manager.create('Movimiento', dto as never)),
         ),
       softRemoveWithManager: jest.fn().mockResolvedValue(undefined),
     };

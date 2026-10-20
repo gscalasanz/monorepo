@@ -178,8 +178,8 @@ describe('EventosService', () => {
     };
 
     const mockDataSource = {
-      transaction: jest.fn(async (cb: (m: typeof fakeManager) => unknown) =>
-        cb(fakeManager),
+      transaction: jest.fn((cb: (m: typeof fakeManager) => unknown) =>
+        Promise.resolve(cb(fakeManager)),
       ),
     };
 
@@ -312,10 +312,10 @@ describe('EventosService', () => {
         deletionValidator.canDeleteEvento.mockResolvedValue({
           canDelete: true,
         });
-        fakeManager.find.mockImplementation(async (entity: unknown) => {
-          if (entity === VentaProducto) return ventas;
-          if (entity === Producto) return productos;
-          return [];
+        fakeManager.find.mockImplementation((entity: unknown) => {
+          if (entity === VentaProducto) return Promise.resolve(ventas);
+          if (entity === Producto) return Promise.resolve(productos);
+          return Promise.resolve([]);
         });
 
         await service.remove('evento-uuid');
@@ -345,18 +345,18 @@ describe('EventosService', () => {
           getMany: jest.fn().mockResolvedValue(movimientos),
         });
 
-        fakeManager.find.mockImplementation(async (entity: unknown) => {
-          if (entity === VentaProducto) return ventas;
-          if (entity === Producto) return productos;
-          return [];
+        fakeManager.find.mockImplementation((entity: unknown) => {
+          if (entity === VentaProducto) return Promise.resolve(ventas);
+          if (entity === Producto) return Promise.resolve(productos);
+          return Promise.resolve([]);
         });
 
-        fakeManager.softRemove.mockImplementation(async (arg: unknown) => {
+        fakeManager.softRemove.mockImplementation((arg: unknown) => {
           if (arg === movimientos) callOrder.push('movimientos');
           else if (arg === ventas) callOrder.push('ventas');
           else if (arg === productos) callOrder.push('productos');
           else callOrder.push('evento');
-          return undefined;
+          return Promise.resolve(undefined);
         });
 
         await service.remove('evento-uuid');
@@ -793,18 +793,20 @@ describe('EventosService', () => {
       });
       // The fakeManager.save returns whatever it receives, so to count items
       // we hand it back an array of two ventas after the bulk save.
-      fakeManager.save.mockImplementationOnce(async () => [
-        {
-          ...dto.items[0],
-          eventoId: 'evento-uuid',
-          vendedorId: 'persona-uuid',
-        },
-        {
-          ...dto.items[1],
-          eventoId: 'evento-uuid',
-          vendedorId: 'persona-uuid',
-        },
-      ]);
+      fakeManager.save.mockImplementationOnce(() =>
+        Promise.resolve([
+          {
+            ...dto.items[0],
+            eventoId: 'evento-uuid',
+            vendedorId: 'persona-uuid',
+          },
+          {
+            ...dto.items[1],
+            eventoId: 'evento-uuid',
+            vendedorId: 'persona-uuid',
+          },
+        ]),
+      );
 
       const result = await service.registrarVentasLote('evento-uuid', dto);
 
@@ -879,7 +881,7 @@ describe('EventosService', () => {
       });
       // First save = bulk array of ventas, returns empty list (we don't care
       // about the response shape here, only that the bulk call happened).
-      fakeManager.save.mockImplementationOnce(async () => []);
+      fakeManager.save.mockImplementationOnce(() => Promise.resolve([]));
 
       await service.registrarVentasLote('evento-uuid', dto);
 

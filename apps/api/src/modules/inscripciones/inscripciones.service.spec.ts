@@ -65,11 +65,11 @@ describe('InscripcionesService', () => {
     };
 
     const mockDataSource = {
-      transaction: jest.fn().mockImplementation(async (cb) => {
+      transaction: jest.fn().mockImplementation((cb) => {
         const mockManager = createMockManager(
           mockRepository as jest.Mocked<Repository<Inscripcion>>,
         );
-        return cb(mockManager);
+        return Promise.resolve(cb(mockManager));
       }),
     };
 
@@ -466,13 +466,13 @@ describe('InscripcionesService', () => {
       repository.findOne.mockResolvedValueOnce(null); // Check for existing
       movimientosService.findByRelatedEntity.mockResolvedValue([]);
 
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
         const mockManager = {
           create: jest.fn().mockReturnValue(mockInscripcion),
           save: jest.fn().mockResolvedValue(mockInscripcion),
           findOne: jest.fn().mockResolvedValue(mockInscripcion),
         };
-        return cb(mockManager);
+        return Promise.resolve(cb(mockManager));
       });
 
       const result = await service.registrarInscripcion({
@@ -514,7 +514,7 @@ describe('InscripcionesService', () => {
 
       let capturedCreateData: any;
       let capturedUpdateArgs: any;
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
         const mockManager = {
           create: jest.fn().mockImplementation((_, data) => {
             capturedCreateData = data;
@@ -527,7 +527,7 @@ describe('InscripcionesService', () => {
           }),
           findOne: jest.fn().mockResolvedValue(savedInscripcion),
         };
-        return cb(mockManager);
+        return Promise.resolve(cb(mockManager));
       });
 
       await service.registrarInscripcion({
@@ -536,7 +536,7 @@ describe('InscripcionesService', () => {
         ano: 2026,
         montoTotal: 10000,
         montoBonificado: 4000,
-      } as never);
+      });
 
       expect(capturedCreateData).toEqual(
         expect.objectContaining({ montoBonificado: 0 }),
@@ -602,13 +602,13 @@ describe('InscripcionesService', () => {
       ] as any);
 
       // Mock the transaction to simulate what happens inside
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
         const mockManager = {
           create: jest.fn().mockReturnValue(savedInscripcion),
           save: jest.fn().mockResolvedValue(savedInscripcion),
           findOne: jest.fn().mockResolvedValue(savedInscripcion),
         };
-        return cb(mockManager);
+        return Promise.resolve(cb(mockManager));
       });
 
       const result = await service.registrarInscripcion({
@@ -643,13 +643,13 @@ describe('InscripcionesService', () => {
         { tipo: TipoMovimiento.INGRESO, monto: 5000 } as any,
       ]);
 
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
         const mockManager = {
           create: jest.fn().mockReturnValue(savedInscripcion),
           save: jest.fn().mockResolvedValue(savedInscripcion),
           findOne: jest.fn().mockResolvedValue(savedInscripcion),
         };
-        return cb(mockManager);
+        return Promise.resolve(cb(mockManager));
       });
 
       const result = await service.registrarInscripcion({
@@ -676,13 +676,13 @@ describe('InscripcionesService', () => {
       repository.findOne.mockResolvedValueOnce(null);
       movimientosService.findByRelatedEntity.mockResolvedValue([]);
 
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
         const mockManager = {
           create: jest.fn().mockReturnValue(mockInscripcion),
           save: jest.fn().mockResolvedValue(mockInscripcion),
           findOne: jest.fn().mockResolvedValue(mockInscripcion),
         };
-        return cb(mockManager);
+        return Promise.resolve(cb(mockManager));
       });
 
       await service.registrarInscripcion({
@@ -1124,9 +1124,9 @@ describe('InscripcionesService', () => {
           { tipo: TipoMovimiento.INGRESO, monto: 5000 },
         ] as any); // For toResponseDto
 
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
         const mockManager = {};
-        return cb(mockManager);
+        return Promise.resolve(cb(mockManager));
       });
 
       const result = await service.pagar('inscripcion-uuid', {
@@ -1193,8 +1193,8 @@ describe('InscripcionesService', () => {
       repository.findOne.mockResolvedValue(mockInscripcion as Inscripcion);
       movimientosService.findByRelatedEntity.mockResolvedValue([]);
 
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
-        return cb({});
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
+        return Promise.resolve(cb({}));
       });
 
       // montoConSaldoPersonal (6000) > montoPagado (3000), but total (9000) < saldoPendiente (10000)
@@ -1220,8 +1220,8 @@ describe('InscripcionesService', () => {
       repository.findOne.mockResolvedValue(scoutInscripcion as Inscripcion);
       movimientosService.findByRelatedEntity.mockResolvedValue([]);
 
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
-        return cb({});
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
+        return Promise.resolve(cb({}));
       });
 
       await service.pagar('inscripcion-uuid', { montoPagado: 5000 });
@@ -1238,8 +1238,8 @@ describe('InscripcionesService', () => {
       repository.findOne.mockResolvedValue(mockInscripcion as Inscripcion);
       movimientosService.findByRelatedEntity.mockResolvedValue([]);
 
-      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) => {
-        return cb({});
+      (dataSource.transaction as jest.Mock).mockImplementation((cb) => {
+        return Promise.resolve(cb({}));
       });
 
       await service.pagar('inscripcion-uuid', {

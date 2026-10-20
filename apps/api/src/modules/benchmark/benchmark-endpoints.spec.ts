@@ -1,9 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  ExecutionContext,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const request = require('supertest') as typeof import('supertest');
 import { AppModule } from '../../app.module';

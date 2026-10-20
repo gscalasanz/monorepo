@@ -676,7 +676,10 @@ describe('PersonasService', () => {
     it('protagonista con saldo > 0 → llama crearTransferencia con TRANSFERENCIA_SALDO_PERSONAL y retorna saldoTransferido', async () => {
       movimientosService.calcularSaldo.mockResolvedValue(1500);
 
-      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+      const result = await service.transferirSaldoAGrupo(
+        'persona-uuid',
+        'admin-uuid',
+      );
 
       expect(movimientosService.crearTransferencia).toHaveBeenCalledTimes(1);
       expect(movimientosService.crearTransferencia).toHaveBeenCalledWith(
@@ -700,7 +703,10 @@ describe('PersonasService', () => {
       });
       movimientosService.calcularSaldo.mockResolvedValue(800);
 
-      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+      const result = await service.transferirSaldoAGrupo(
+        'persona-uuid',
+        'admin-uuid',
+      );
 
       expect(movimientosService.crearTransferencia).toHaveBeenCalledWith(
         expect.objectContaining({ monto: 800, responsableId: 'admin-uuid' }),
@@ -712,7 +718,10 @@ describe('PersonasService', () => {
     it('protagonista con saldo === 0 → NO llama crearTransferencia, retorna saldoTransferido 0', async () => {
       movimientosService.calcularSaldo.mockResolvedValue(0);
 
-      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+      const result = await service.transferirSaldoAGrupo(
+        'persona-uuid',
+        'admin-uuid',
+      );
 
       expect(movimientosService.crearTransferencia).not.toHaveBeenCalled();
       expect(result).toEqual({ saldoTransferido: 0 });
@@ -724,7 +733,10 @@ describe('PersonasService', () => {
         tipo: PersonaType.EXTERNA,
       });
 
-      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+      const result = await service.transferirSaldoAGrupo(
+        'persona-uuid',
+        'admin-uuid',
+      );
 
       expect(cajasService.findCajaPersonal).not.toHaveBeenCalled();
       expect(movimientosService.crearTransferencia).not.toHaveBeenCalled();
@@ -734,7 +746,10 @@ describe('PersonasService', () => {
     it('protagonista sin caja personal → retorna 0 sin error', async () => {
       cajasService.findCajaPersonal.mockResolvedValue(null);
 
-      const result = await service.transferirSaldoAGrupo('persona-uuid', 'admin-uuid');
+      const result = await service.transferirSaldoAGrupo(
+        'persona-uuid',
+        'admin-uuid',
+      );
 
       expect(movimientosService.crearTransferencia).not.toHaveBeenCalled();
       expect(result).toEqual({ saldoTransferido: 0 });

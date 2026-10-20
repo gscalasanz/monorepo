@@ -10,21 +10,29 @@ interface TableFixture {
 
 type Schema = Record<string, TableFixture>;
 
+function resolveQueryRows(
+  schema: Schema,
+  sql: string,
+  params?: unknown[],
+): unknown[] {
+  if (sql.includes('information_schema.columns')) {
+    const tableName = params?.[0] as string;
+    const table = schema[tableName];
+    if (!table) return [];
+    return table.columns.map((c) => ({ column_name: c }));
+  }
+  for (const [tableName, table] of Object.entries(schema)) {
+    if (sql.includes(`FROM "${tableName}"`)) {
+      return table.rows;
+    }
+  }
+  return [];
+}
+
 function buildQueryMock(schema: Schema): jest.Mock {
-  return jest.fn(async (sql: string, params?: unknown[]) => {
-    if (sql.includes('information_schema.columns')) {
-      const tableName = params?.[0] as string;
-      const table = schema[tableName];
-      if (!table) return [];
-      return table.columns.map((c) => ({ column_name: c }));
-    }
-    for (const [tableName, table] of Object.entries(schema)) {
-      if (sql.includes(`FROM "${tableName}"`)) {
-        return table.rows;
-      }
-    }
-    return [];
-  });
+  return jest.fn((sql: string, params?: unknown[]) =>
+    Promise.resolve(resolveQueryRows(schema, sql, params)),
+  );
 }
 
 describe('SqlDataExportService', () => {

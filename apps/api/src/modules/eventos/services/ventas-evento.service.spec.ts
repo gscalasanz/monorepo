@@ -121,8 +121,8 @@ describe('VentasEventoService', () => {
     };
 
     const mockDataSource = {
-      transaction: jest.fn(async (cb: (m: typeof fakeManager) => unknown) =>
-        cb(fakeManager),
+      transaction: jest.fn((cb: (m: typeof fakeManager) => unknown) =>
+        Promise.resolve(cb(fakeManager)),
       ),
     };
 

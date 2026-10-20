@@ -36,7 +36,6 @@ describe('CampamentosService', () => {
     Repository<CampamentoParticipante>
   >;
   let personasService: jest.Mocked<PersonasService>;
-  let cajasService: jest.Mocked<CajasService>;
   let movimientosService: jest.Mocked<MovimientosService>;
   let pagosService: jest.Mocked<PagosService>;
   let bonificacionesService: jest.Mocked<BonificacionesService>;
@@ -195,7 +194,6 @@ describe('CampamentosService', () => {
       getRepositoryToken(CampamentoParticipante),
     );
     personasService = module.get(PersonasService);
-    cajasService = module.get(CajasService);
     movimientosService = module.get(MovimientosService);
     pagosService = module.get(PagosService);
     bonificacionesService = module.get(BonificacionesService);
