@@ -333,6 +333,43 @@ describe('EntregasEventoService', () => {
       expect(result.lineas[1].productoNombre).toBe('Empanada');
     });
 
+    describe('fecha de la entrega (caracterización del parseo)', () => {
+      const crearConFecha = (fecha?: string) =>
+        service.crearEntrega(eventoId, {
+          vendedorId,
+          ...(fecha === undefined ? {} : { fecha }),
+          items: [{ productoId: productoLocroId, cantidad: 1 }],
+        });
+      const fechaCreada = (): unknown =>
+        (fakeManager.create as jest.Mock).mock.calls.find(
+          ([entity]) => entity === Entrega,
+        )?.[1]?.fecha;
+
+      beforeEach(() => {
+        setupHappyPath([{ productoId: productoLocroId, cantidadVendida: '10' }]);
+      });
+
+      it('un ISO con Z se guarda como ese instante', async () => {
+        await crearConFecha('2026-05-22T18:30:00.000Z');
+        expect(fechaCreada()).toEqual(new Date('2026-05-22T18:30:00.000Z'));
+      });
+
+      it('un ISO con offset -03:00 se guarda como su instante UTC', async () => {
+        await crearConFecha('2026-12-31T23:30:00-03:00');
+        expect(fechaCreada()).toEqual(new Date('2027-01-01T02:30:00.000Z'));
+      });
+
+      it('un YYYY-MM-DD se guarda como medianoche UTC (comportamiento histórico)', async () => {
+        await crearConFecha('2026-05-22');
+        expect(fechaCreada()).toEqual(new Date('2026-05-22T00:00:00.000Z'));
+      });
+
+      it('sin fecha queda null', async () => {
+        await crearConFecha();
+        expect(fechaCreada()).toBeNull();
+      });
+    });
+
     it('allows exact-stock delivery (cantidad == disponible)', async () => {
       setupHappyPath(
         [{ productoId: productoLocroId, cantidadVendida: '10' }],

@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { dateFromIsoString } from '@scout/shared/time';
 import { DataSource, EntityManager, Repository, In } from 'typeorm';
 import { Entrega } from '../entities/entrega.entity';
 import { EntregaLinea } from '../entities/entrega-linea.entity';
@@ -436,7 +437,7 @@ export class EntregasEventoService {
     const entrega = manager.create(Entrega, {
       eventoId: evento.id,
       vendedorId: vendedor.id,
-      fecha: dto.fecha ? new Date(dto.fecha) : null,
+      fecha: dto.fecha ? dateFromIsoString(dto.fecha) : null,
       notas: dto.notas ?? null,
       registradoPorId,
     });
