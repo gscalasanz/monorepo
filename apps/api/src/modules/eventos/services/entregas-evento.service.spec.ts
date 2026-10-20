@@ -340,13 +340,21 @@ describe('EntregasEventoService', () => {
           ...(fecha === undefined ? {} : { fecha }),
           items: [{ productoId: productoLocroId, cantidad: 1 }],
         });
-      const fechaCreada = (): unknown =>
-        (fakeManager.create as jest.Mock).mock.calls.find(
+      const fechaCreada = (): unknown => {
+        const createMock = fakeManager.create as jest.Mock<
+          unknown,
+          [unknown, { fecha?: unknown }]
+        >;
+        const call = createMock.mock.calls.find(
           ([entity]) => entity === Entrega,
-        )?.[1]?.fecha;
+        );
+        return call?.[1].fecha;
+      };
 
       beforeEach(() => {
-        setupHappyPath([{ productoId: productoLocroId, cantidadVendida: '10' }]);
+        setupHappyPath([
+          { productoId: productoLocroId, cantidadVendida: '10' },
+        ]);
       });
 
       it('un ISO con Z se guarda como ese instante', async () => {
