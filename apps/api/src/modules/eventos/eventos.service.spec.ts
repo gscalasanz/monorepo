@@ -6,6 +6,7 @@ import { EventosService } from './eventos.service';
 import { Evento } from './entities/evento.entity';
 import { Producto } from './entities/producto.entity';
 import { VentaProducto } from './entities/venta-producto.entity';
+import { Entrega } from './entities/entrega.entity';
 import { PersonasService } from '../personas/personas.service';
 import { CajasService } from '../cajas/cajas.service';
 import { MovimientosService } from '../movimientos/movimientos.service';
@@ -955,6 +956,47 @@ describe('EventosService', () => {
       await service.registrarVentasLote('evento-uuid', dto);
 
       expect(movimientosService.createWithManager).not.toHaveBeenCalled();
+    });
+    describe('clock (characterization)', () => {
+      const FIXED_NOW = new Date('2026-12-31T23:30:00-03:00');
+
+      beforeEach(() => {
+        jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+        jest.setSystemTime(FIXED_NOW);
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('entregaInmediata: stamps the Entrega fecha with the current instant', async () => {
+        eventoRepository.findOne.mockResolvedValue({
+          ...mockEvento,
+          movimientosHabilitados: false,
+        } as Evento);
+        productoRepository.find.mockResolvedValue([mockProducto as Producto]);
+
+        await service.registrarVentasLote('evento-uuid', {
+          vendedorId: 'persona-uuid',
+          medioPago: MedioPago.EFECTIVO,
+          entregaInmediata: true,
+          items: [{ productoId: 'producto-uuid', cantidad: 2 }],
+        });
+
+        const createCalls = fakeManager.create.mock.calls as Array<
+          [unknown, unknown]
+        >;
+        const entregaPayload = createCalls.find(
+          ([entity]) => entity === Entrega,
+        )?.[1];
+        expect(entregaPayload).toEqual(
+          expect.objectContaining({
+            eventoId: mockEvento.id,
+            vendedorId: 'persona-uuid',
+            fecha: FIXED_NOW,
+          }),
+        );
+      });
     });
   });
 

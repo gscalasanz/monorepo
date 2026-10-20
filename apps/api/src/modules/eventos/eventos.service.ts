@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, IsNull, Repository } from 'typeorm';
+import { nowDate } from '@scout/shared/time';
 import { Evento } from './entities/evento.entity';
 import { Producto } from './entities/producto.entity';
 import { VentaProducto } from './entities/venta-producto.entity';
@@ -736,7 +737,7 @@ export class EventosService {
       manager.create(Entrega, {
         eventoId: evento.id,
         vendedorId: dto.vendedorId,
-        fecha: new Date(),
+        fecha: nowDate(),
         notas: ENTREGA_INMEDIATA_NOTA,
       }),
     );
