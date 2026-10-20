@@ -171,8 +171,8 @@ Detalle en [`flujo-confiable.md`](./flujo-confiable.md). Resumen:
 - **ESLint de arquitectura** (`@scout/config`): fronteras del monorepo, fronteras entre features
   de web, `no-new-date`, límites de tamaño en web.
 - **REGISTRY** + codebase-memory → "¿qué ya existe?" en segundos.
-- **Gates de commit/CI** (husky + lint-staged + commitlint, CI quality + security): planificados
-  en MONOREPO.md Fase 6.
+- **Gates de commit/CI:** husky + lint-staged (typecheck + lint) + commitlint en cada commit;
+  CI `quality` (typecheck/lint/test/build) + `security` (audit + gitleaks) en cada PR.
 
 ---
 

@@ -44,13 +44,13 @@ Los hooks de `.claude/` son por desarrollador: la garantía durable **vive en el
 | --- | --- | --- |
 | ESLint `monorepo-boundaries`: `packages/*` ↛ `apps/*`, `web` ↛ `api`, `api` ↛ `web` | ✅ | `packages/config/eslint/monorepo-boundaries.mjs` (con tests `node --test`) |
 | ESLint `feature-boundaries` en web (las 3 reglas) | 🟡 | `packages/config/eslint/feature-boundaries.mjs`. Solo chequea imports **relativos**: los `@/features/...` no se resuelven (MONOREPO.md §Deuda) |
-| ESLint `no-new-date` | 🟡 | web `error`; api `warn` hasta MONOREPO.md Fase 8; packages `error` |
+| ESLint `no-new-date` | ✅ | `error` en web, api y packages (exentos: `shared/time`, migraciones del api) |
 | Límites de tamaño (`max-params` 2, funciones 50, archivos 400) | 🟡 | Solo web (`apps/web/eslint.config.mjs`); el api no los enforza |
 | `no-explicit-any` | 🟡 | web `error`; api `off` |
-| husky + lint-staged + commitlint (`feat\|fix\|refactor\|docs\|test\|chore\|perf\|ci`) | ⏳ | MONOREPO.md Fase 6. Hoy existen `apps/web/.husky`, `.lintstagedrc.mjs` y `commitlint.config.mjs` heredados del repo de web, pero **no corren** en el monorepo (los hooks de git no apuntan ahí) |
-| CI en el PR (quality: typecheck/lint/test/build · security) + dependabot | ⏳ | MONOREPO.md Fase 6 (`.github/workflows/ci.yml`) |
-| Lint del api en verde | ⏳ | Hoy ~465 errores preexistentes (MONOREPO.md §Baseline/§Deuda) |
-| Hooks locales de `.claude` (formato) | ✅ | `apps/web/.claude/settings.json` + `hooks/format-edited-file.sh` (acelerador, no garantía) |
+| husky + lint-staged + commitlint (`feat\|fix\|refactor\|docs\|test\|chore\|perf\|ci`) | ✅ | Raíz: `.husky/`, `.lintstagedrc.mjs` (`pnpm -w typecheck` + `pnpm -w lint` si el commit toca TS), `commitlint.config.mjs`. Se activan con `pnpm install` (`prepare: husky`) |
+| CI en el PR (quality: typecheck/lint/test/build · security) + dependabot | ✅ | `.github/workflows/ci.yml` (audit `high` con excepciones de ADR 0002; gitleaks sobre todo el historial con `.gitleaks.toml`) + `.github/dependabot.yml` |
+| Lint del api en verde | ✅ | 0 errores; `unbound-method`/`no-unsafe-*` apagadas solo en specs (ADR 0003) |
+| Hooks locales de `.claude` (formato) | ✅ | `.claude/settings.json` + `.claude/hooks/format-edited-file.sh` de la raíz (acelerador, no garantía) |
 
 ### L3 — Scaffolding y comandos — 💤 diferido
 
