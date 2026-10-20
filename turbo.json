@@ -15,6 +15,15 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    // `next build` regenera `.next/types/**`, que el `tsc` del web incluye: si corren en
+    // paralelo, `typecheck` lee archivos a medio escribir (`Cannot find module './routes.js'`).
+    // Se serializan: el build del web espera a su typecheck.
+    "@scout/web#build": {
+      "dependsOn": ["^build", "@scout/web#typecheck"],
+      "env": ["API_URL", "NEXT_PUBLIC_*"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
     "lint": { "dependsOn": ["^build"] },
     "typecheck": { "dependsOn": ["^build"] },
     // Variables de RUNTIME (no cambian el artefacto, quedan fuera del hash): sin
