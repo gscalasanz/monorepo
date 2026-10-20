@@ -1,3 +1,4 @@
+import { dateFromIsoString } from '@scout/shared/time';
 import { DataSource } from 'typeorm';
 import { Movimiento } from '../../modules/movimientos/entities/movimiento.entity';
 import { Caja } from '../../modules/cajas/entities/caja.entity';
@@ -224,7 +225,7 @@ const AJUSTES_INICIALES: Array<{
 const RESPONSABLE_ID = '9933f7bc-a44a-4764-9868-3f892b1fc65e';
 
 // Movement date
-const FECHA_MOVIMIENTO = new Date('2026-03-13T18:00:00-03:00');
+const FECHA_MOVIMIENTO = dateFromIsoString('2026-03-13T18:00:00-03:00');
 
 export async function seedMovimientosAjusteInicial(
   dataSource: DataSource,
