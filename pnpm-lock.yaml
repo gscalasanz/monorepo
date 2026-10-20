@@ -5,8 +5,8 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  handlebars@>=3.0.0 <=4.7.9: '>=4.7.10'
-  tinypool@<2.1.2: '>=2.1.2'
+  handlebars@>=3.0.0 <=4.7.9: ^4.7.10
+  tinypool@<2.1.2: ^2.1.2
 
 importers:
 

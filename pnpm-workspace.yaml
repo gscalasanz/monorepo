@@ -7,5 +7,5 @@ packages:
 # al runtime de apps/web ni de apps/api. La clave es el rango EXACTO que reporta
 # el advisory (`vulnerable_versions` de `pnpm audit --json`).
 overrides:
-  "handlebars@>=3.0.0 <=4.7.9": ">=4.7.10" # packages/config > eslint-plugin-boundaries > @boundaries/elements
-  "tinypool@<2.1.2": ">=2.1.2" # apps/web > vitest
+  "handlebars@>=3.0.0 <=4.7.9": "^4.7.10" # packages/config > eslint-plugin-boundaries > @boundaries/elements
+  "tinypool@<2.1.2": "^2.1.2" # apps/web > vitest

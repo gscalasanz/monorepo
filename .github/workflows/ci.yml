@@ -11,7 +11,8 @@ on:
 # Cancela corridas viejas del mismo ref si llega un push nuevo.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # En main no se cancela: cada commit de main tiene que quedar con resultado.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
@@ -20,6 +21,7 @@ jobs:
   quality:
     name: typecheck · lint · test · build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -59,6 +61,7 @@ jobs:
   security:
     name: dependencias · secretos
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -80,10 +83,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # Umbral `high`. Excepciones con justificación y fecha de revisión en ADR 0002
-      # (`package.json` → `pnpm.auditConfig.ignoreGhsas`). `--ignore-registry-errors`: una
-      # caída del registry no tiñe de rojo un build ajeno.
+      # (`package.json` → `pnpm.auditConfig.ignoreGhsas`). Sin `--ignore-registry-errors`:
+      # si el registry falla, el job falla (se re-corre); nunca un verde sin auditar.
       - name: Auditoría de dependencias
-        run: pnpm audit --audit-level high --ignore-registry-errors
+        run: pnpm audit --audit-level high
 
       # Binario oficial (MIT), no la Action (gitleaks-action pide licencia en orgs),
       # verificado contra el checksum SHA256 que publica el release.

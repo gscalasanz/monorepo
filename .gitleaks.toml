@@ -8,14 +8,16 @@ useDefault = true
 # monorepo (299 commits, incluidos los importados de scout-back y scout-front-react) con
 # `git show` del hallazgo. Todas son falsos positivos, nunca secretos reales. Agregar una
 # entrada nueva exige el mismo chequeo.
-[allowlist]
-description = "Falsos positivos revisados — ninguno es un secreto real."
+[[allowlists]]
+description = "Header JWT de ejemplo sin payload ni firma (falso positivo revisado)."
+# Header JWT estándar ({"alg":"HS256","typ":"JWT"}) seguido de "..." en los ejemplos de
+# respuesta de apps/api/docs/AUTH_FRONTEND_GUIDE.md: no hay payload ni firma.
+regexes = ['''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.\.\.''']
 
-regexes = [
-  # Header JWT estándar ({"alg":"HS256","typ":"JWT"}) seguido de "..." en los ejemplos de
-  # respuesta de apps/api/docs/AUTH_FRONTEND_GUIDE.md: no hay payload ni firma.
-  '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.\.\.''',
-  # Token de ejemplo del badge de CircleCI que trae el boilerplate de `nest new` en
-  # apps/api/README.md (mismo caso que mi-tienda).
-  '''abc123def456''',
-]
+[[allowlists]]
+description = "Token de ejemplo del badge del boilerplate de Nest (falso positivo revisado)."
+# Solo en apps/api/README.md (badge de CircleCI de `nest new`, mismo caso que mi-tienda).
+# `condition = AND`: el valor y el archivo tienen que coincidir los dos.
+condition = "AND"
+paths = ['''^apps/api/README\.md$''']
+regexes = ['''^abc123def456$''']
