@@ -707,4 +707,38 @@ describe('ReportesService', () => {
       ]);
     });
   });
+
+  // Columna `date`: el driver devuelve `fechaInicio` como string `YYYY-MM-DD`
+  // (dateOnlyTransformer). Su año no puede depender de la zona del servidor.
+  it('un campamento que empieza el 1/1 cuenta para el año de esa fecha (filtro y dato)', async () => {
+    const service = await buildService({
+      protagonistas: [
+        {
+          id: 'p-1',
+          nombre: 'Beto',
+          tipo: PersonaType.PROTAGONISTA,
+          rama: Rama.UNIDAD,
+        },
+      ],
+      participaciones: [
+        {
+          campamentoId: 'camp-ano-nuevo',
+          personaId: 'p-1',
+          autorizacionEntregada: true,
+          montoAsignado: 1000,
+          montoBonificado: 0,
+          campamento: {
+            nombre: 'Campamento de Año Nuevo',
+            fechaInicio: '2027-01-01',
+            costoPorPersona: 1000,
+          },
+        },
+      ],
+    });
+
+    const result = await service.getDeudas({ ano: 2027 });
+
+    const campamentos = result.find((d) => d.personaId === 'p-1')?.campamentos;
+    expect(campamentos?.map((c) => c.ano)).toEqual([2027]);
+  });
 });

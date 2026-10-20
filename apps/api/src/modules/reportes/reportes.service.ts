@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { businessYearOf } from '@scout/shared/time';
 import { Repository } from 'typeorm';
 import {
   Protagonista,
@@ -204,7 +205,7 @@ export class ReportesService {
     if (!ano) return participaciones;
 
     return participaciones.filter(
-      (cp) => new Date(cp.campamento.fechaInicio).getFullYear() === ano,
+      (cp) => businessYearOf(cp.campamento.fechaInicio) === ano,
     );
   }
 
@@ -351,7 +352,7 @@ export class ReportesService {
         return {
           campamentoId: cp.campamentoId,
           nombre: cp.campamento.nombre,
-          ano: new Date(cp.campamento.fechaInicio).getFullYear(),
+          ano: businessYearOf(cp.campamento.fechaInicio),
           montoTotal,
           montoPagado,
           saldo,
