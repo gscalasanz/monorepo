@@ -58,8 +58,9 @@ Módulos: `auth`, `personas`, `cajas`, `movimientos`, `pagos`, `bonificaciones`,
   se agrega en `packages/shared/src/enums/<dominio>.ts`, nunca acá. En posición de tipo:
   `typeof CajaType.GRUPO`.
 - **Fechas:** `@scout/shared/time` (`APP_TIMEZONE` en `common/constants` es alias de
-  `BSAS_TIME_ZONE`). Columnas `date` con `dateOnlyTransformer`. `no-new-date` está en `warn`
-  hasta cerrar MONOREPO.md Fase 8; código nuevo no suma warnings.
+  `BSAS_TIME_ZONE`). Columnas `date` con `dateOnlyTransformer`. `no-new-date` en `error`:
+  "ahora" es `nowDate()`/`nowInstant()`, parseo `dateFromIsoString`, año de negocio
+  `businessYearOf`/`currentYearBsAs`. Jest corre con `TZ=UTC` (como Render).
 - **DTOs:** class-validator en `modules/<m>/dtos/`; el `ValidationPipe` global hace
   `whitelist` + `forbidNonWhitelisted` + `transform` (conversión implícita activada).
 - **Services:** lógica de negocio + repositorios TypeORM / query builders. Filtros `ILIKE` con

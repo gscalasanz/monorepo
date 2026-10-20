@@ -57,7 +57,7 @@ público) y **reportes** (deudas). Usuarios: 1-3 administradores. Copy en españ
 | `pnpm --filter @scout/api <script>` | Script del api (`test:e2e`, `migration:run`, `seed`, `start:prod`…) |
 | `pnpm --filter @scout/web <script>` | Script de web (`test:e2e`, `design:apply`…) |
 | `pnpm --filter @scout/shared test` | Test de contrato de wire + tests de `time` |
-| `pnpm setup:worktree` | **Pendiente** (`scripts/setup-worktree.sh`, MONOREPO.md Fase 5): todavía no existe |
+| `pnpm setup:worktree` | En un worktree nuevo: symlinkea los `.env.local` del checkout principal y buildea `packages/*` |
 
 `@scout/shared` compila a CJS (`dist/`): las apps lo consumen ya buildeado (turbo lo hace solo
 con `^build`). Si lo editás y corrés una app aislada: `pnpm --filter @scout/shared build`.
@@ -129,7 +129,7 @@ Detalle y ejemplos en [`docs/principios-ingenieria.md`](./docs/principios-ingeni
 - **Fechas — regla innegociable:** todo "ahora/hoy/día" pasa por `@scout/shared/time` (api) o
   `@/shared/time` (web, que lo re-exporta + schemas zod). Zona `America/Argentina/Buenos_Aires`
   (`BSAS_TIME_ZONE`, una sola definición). **Prohibido `new Date()` / `Date.now()` pelado**:
-  regla ESLint `no-new-date` (web: `error`; api: `warn` hasta cerrar MONOREPO.md Fase 8).
+  regla ESLint `no-new-date` en `error` en web, api y packages.
   Branded `Instant` (ISO UTC) y `LocalDate` (`YYYY-MM-DD`).
 - **Contrato HTTP:** respuestas crudas (sin envelope), prefijo `/api/v1`, errores de NestJS
   (`message` string o array). El api **no** cambia su contrato sin acordarlo: el test de
