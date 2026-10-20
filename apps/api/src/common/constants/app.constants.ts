@@ -44,6 +44,12 @@ export const PAGINATION = {
 export { BSAS_TIME_ZONE as APP_TIMEZONE } from '@scout/shared/time';
 
 /**
+ * Sello de fecha y hora (en BsAs) de los archivos descargables: exports y backups.
+ * Patrón de date-fns → `20261231-233000`.
+ */
+export const FILENAME_TIMESTAMP_PATTERN = 'yyyyMMdd-HHmmss';
+
+/**
  * Validation constraints
  */
 export const VALIDATION = {

@@ -321,10 +321,18 @@ describe('ExportsService', () => {
   });
 
   describe('generateFilename', () => {
-    it('builds a timestamped .xlsx filename', () => {
-      const fixed = new Date(2026, 3, 14, 12, 5, 30);
+    it('builds a timestamped .xlsx filename in BsAs time', () => {
+      const fixed = new Date('2026-04-14T12:05:30-03:00');
       expect(service.generateFilename(fixed)).toBe(
         'scout-export-20260414-120530.xlsx',
+      );
+    });
+
+    it('usa la fecha y hora de BsAs aunque en UTC ya sea el día siguiente', () => {
+      // 31/12 23:30 en BsAs = 1/1 02:30 UTC (la zona de Render).
+      const fixed = new Date('2026-12-31T23:30:00-03:00');
+      expect(service.generateFilename(fixed)).toBe(
+        'scout-export-20261231-233000.xlsx',
       );
     });
   });

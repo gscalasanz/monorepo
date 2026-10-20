@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { formatInBsAs, instantOf, nowDate } from '@scout/shared/time';
 import { Repository } from 'typeorm';
 
 import {
@@ -8,6 +9,7 @@ import {
   WorkbookBuilderService,
 } from './workbook-builder.service';
 
+import { FILENAME_TIMESTAMP_PATTERN } from '../../../common/constants';
 import { Persona } from '../../personas/entities/persona.entity';
 import { Caja } from '../../cajas/entities/caja.entity';
 import { Movimiento } from '../../movimientos/entities/movimiento.entity';
@@ -40,11 +42,10 @@ export class ExportsService {
     private readonly ventaProductoRepo: Repository<VentaProducto>,
   ) {}
 
-  generateFilename(now: Date = new Date()): string {
-    const pad = (n: number): string => n.toString().padStart(2, '0');
-    const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
-    const timePart = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    return `scout-export-${datePart}-${timePart}.xlsx`;
+  /** Nombre con fecha y hora de BsAs (no de la zona del servidor). */
+  generateFilename(now: Date = nowDate()): string {
+    const stamp = formatInBsAs(instantOf(now), FILENAME_TIMESTAMP_PATTERN);
+    return `scout-export-${stamp}.xlsx`;
   }
 
   async generateXlsx(): Promise<Buffer> {
