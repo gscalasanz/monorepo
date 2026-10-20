@@ -514,4 +514,116 @@ describe('AuthService', () => {
       ).rejects.toThrow('La nueva contraseña debe ser diferente a la actual');
     });
   });
+
+  describe('clock (characterization)', () => {
+    const FIXED_NOW = new Date('2026-12-31T23:30:00-03:00');
+    const TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+    beforeEach(() => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+      jest.setSystemTime(FIXED_NOW);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    const arrangeRefresh = (expiresAt: Date) => {
+      tokenService.verifyRefreshToken.mockReturnValue({
+        sub: mockPersona.id!,
+        email: mockPersona.email!,
+        tipo: mockPersona.tipo!,
+        tokenId: 'token-uuid-456',
+      });
+      passwordService.hashToken.mockReturnValue('hashed-token');
+      refreshTokenRepository.findOne.mockResolvedValue({
+        ...mockRefreshToken,
+        expiresAt,
+      } as RefreshToken);
+      refreshTokenRepository.update.mockResolvedValue({ affected: 1 } as never);
+      tokenService.getRefreshTokenExpirationMs.mockReturnValue(TTL_MS);
+      refreshTokenRepository.create.mockReturnValue({
+        id: 'new-token-id',
+      } as RefreshToken);
+      refreshTokenRepository.save.mockResolvedValue({
+        id: 'new-token-id',
+      } as RefreshToken);
+      tokenService.generateAccessToken.mockReturnValue('new-access-token');
+      tokenService.generateRefreshToken.mockReturnValue('new-refresh-token');
+    };
+
+    it('refresh stamps revokedAt with now and new token expiresAt with now + TTL', async () => {
+      arrangeRefresh(new Date(FIXED_NOW.getTime() + 1000));
+
+      await service.refresh('valid-refresh-token');
+
+      expect(refreshTokenRepository.update.mock.calls[0]).toEqual([
+        mockRefreshToken.id,
+        { revoked: true, revokedAt: FIXED_NOW },
+      ]);
+      expect(refreshTokenRepository.create.mock.calls[0][0]).toEqual(
+        expect.objectContaining({
+          expiresAt: new Date(FIXED_NOW.getTime() + TTL_MS),
+        }),
+      );
+    });
+
+    it('refresh accepts a token expiring exactly now and rejects one expired 1ms ago', async () => {
+      arrangeRefresh(new Date(FIXED_NOW.getTime()));
+      await expect(service.refresh('valid-refresh-token')).resolves.toEqual(
+        expect.objectContaining({ accessToken: 'new-access-token' }),
+      );
+
+      arrangeRefresh(new Date(FIXED_NOW.getTime() - 1));
+      await expect(service.refresh('valid-refresh-token')).rejects.toThrow(
+        'Token de refresco expirado',
+      );
+    });
+
+    it('logout stamps revokedAt with now in both branches', async () => {
+      passwordService.hashToken.mockReturnValue('hashed-token');
+      refreshTokenRepository.update.mockResolvedValue({ affected: 1 } as never);
+
+      await service.logout('user-id', 'refresh-token');
+      await service.logout('user-id');
+
+      expect(refreshTokenRepository.update.mock.calls).toEqual([
+        [
+          { tokenHash: 'hashed-token', personaId: 'user-id' },
+          { revoked: true, revokedAt: FIXED_NOW },
+        ],
+        [
+          { personaId: 'user-id', revoked: false },
+          { revoked: true, revokedAt: FIXED_NOW },
+        ],
+      ]);
+    });
+
+    it('changePassword stamps revokedAt with now', async () => {
+      personaRepository.createQueryBuilder.mockReturnValue({
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(mockPersona),
+      } as never);
+      passwordService.compare
+        .mockResolvedValueOnce(true)
+        .mockResolvedValueOnce(false);
+      passwordService.hash.mockResolvedValue('new-hashed-password');
+      personaRepository.update.mockResolvedValue({ affected: 1 } as never);
+      refreshTokenRepository.update.mockResolvedValue({ affected: 2 } as never);
+
+      await service.changePassword('persona-uuid-123', {
+        currentPassword: 'OldPassword123!',
+        newPassword: 'NewPassword456!',
+      });
+
+      expect(refreshTokenRepository.update.mock.calls).toEqual([
+        [
+          { personaId: 'persona-uuid-123', revoked: false },
+          { revoked: true, revokedAt: FIXED_NOW },
+        ],
+      ]);
+    });
+  });
 });

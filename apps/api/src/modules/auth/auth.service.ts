@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
+import { dateFromMs, nowDate, nowMs } from '@scout/shared/time';
 import { Persona } from '../personas/entities/persona.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { PasswordService } from './services/password.service';
@@ -141,14 +142,14 @@ export class AuthService {
       throw new UnauthorizedException('Token de refresco no válido');
     }
 
-    if (storedToken.expiresAt < new Date()) {
+    if (storedToken.expiresAt.getTime() < nowMs()) {
       throw new UnauthorizedException('Token de refresco expirado');
     }
 
     // 3. Revoke old token (rotation)
     await this.refreshTokenRepository.update(storedToken.id, {
       revoked: true,
-      revokedAt: new Date(),
+      revokedAt: nowDate(),
     });
 
     // 4. Generate new tokens
@@ -164,13 +165,13 @@ export class AuthService {
       const tokenHash = this.passwordService.hashToken(refreshToken);
       await this.refreshTokenRepository.update(
         { tokenHash, personaId: userId },
-        { revoked: true, revokedAt: new Date() },
+        { revoked: true, revokedAt: nowDate() },
       );
     } else {
       // Revoke all tokens for user
       await this.refreshTokenRepository.update(
         { personaId: userId, revoked: false },
-        { revoked: true, revokedAt: new Date() },
+        { revoked: true, revokedAt: nowDate() },
       );
     }
   }
@@ -224,7 +225,7 @@ export class AuthService {
     // 5. Revoke all refresh tokens for security
     await this.refreshTokenRepository.update(
       { personaId: userId, revoked: false },
-      { revoked: true, revokedAt: new Date() },
+      { revoked: true, revokedAt: nowDate() },
     );
   }
 
@@ -284,8 +285,8 @@ export class AuthService {
     userAgent?: string,
   ): Promise<AuthResponseDto> {
     // 1. Create refresh token entity (need ID for JWT payload)
-    const expiresAt = new Date(
-      Date.now() + this.tokenService.getRefreshTokenExpirationMs(),
+    const expiresAt = dateFromMs(
+      nowMs() + this.tokenService.getRefreshTokenExpirationMs(),
     );
 
     const refreshTokenEntity = this.refreshTokenRepository.create({
