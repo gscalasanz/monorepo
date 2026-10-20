@@ -35,12 +35,12 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 - [x] `apps/api` adopta `monorepo-boundaries` + `no-new-date` (warn) + tsconfig `nestjs` con `dist/src/main.js` intacto — `dist/` byte a byte idéntico (`diff -rq`, sin contar tsbuildinfo); `--print-config`: solo se suman `no-restricted-imports` y `no-restricted-syntax` (warn en src, off en specs/e2e/migraciones); 30 warnings de no-new-date
 
 ### Fase 4 — `packages/shared`
-- [ ] Paquete CJS con `exports` `.`, `./enums`, `./time`
-- [ ] Test de contrato contra el snapshot (primero, en rojo)
-- [ ] Spike de paridad Nest (`@IsEnum`, Swagger, TypeORM) + ADR de representación
-- [ ] Dominios: persona · caja · movimiento · inscripción · campamento · evento · reporte
-- [ ] `migration:generate` sin archivo
-- [ ] `time` movido; `APP_TIMEZONE` única
+- [x] Paquete CJS con `exports` `.`, `./enums`, `./time` (`./enums` y `./time` sin zod)
+- [x] Test de contrato contra el snapshot (primero, en rojo: 25/25 fallando → 25/25 verde al cerrar reporte)
+- [x] Spike de paridad Nest (`@IsEnum`, Swagger, TypeORM) + ADR de representación — `docs/adr/0001-representacion-enums.md`; OpenAPI (`/api/docs-json`, 79 paths/114 schemas) byte a byte idéntico tras cada dominio
+- [x] Dominios: persona · caja · movimiento · inscripción · campamento · evento · reporte (un commit por dominio; inscripción/campamento/evento verificados con typecheck api+specs+web y contrato, y suite completa + OpenAPI al cerrar reporte: api 593 ✓, web 1033 ✓)
+- [x] `migration:generate` sin archivo — **adaptado** (ver §Bloqueos): genera el mismo SQL que el backend original (drift preexistente); el archivo se movió fuera del repo, nunca se ejecutó
+- [x] `time` movido; `APP_TIMEZONE` única — `git mv` (renames); web re-exporta `@/shared/time` con la misma API; `grep` del literal de zona: 1 definición (`packages/shared/src/time/constants.ts`)
 - [ ] code-reviewer de la fase
 
 ### Fase 5 — Gobierno
@@ -128,7 +128,7 @@ _(Solo Fase 8.)_
 
 ## §Bloqueos
 
-_(ninguno por ahora)_
+- **Condición 7 (`migration:generate` sin archivo) no se puede cumplir tal como está escrita.** Evidencia: contra el Neon de dev, `migration:generate` del **backend original** (`c77ee54`, clon en scratchpad) ya genera una migración de 64 sentencias (FKs/índices/constraints de `entregas`, `entregas_lineas`, `ventas_productos` creados a mano en migraciones con nombres distintos a los que derivaría TypeORM, y recreación de 3 tipos enum con `enumName`). El monorepo genera **exactamente el mismo SQL** (`diff` vacío) antes y después de unificar los enums. Corregirlo exige una migración de esquema (cambio de comportamiento + escritura en DB, prohibido). Criterio adoptado: *SQL idéntico al del original*. Opciones para el usuario: (a) alinear las entidades con los nombres reales (`@Index({ name })`, `@ForeignKey`/`foreignKeyConstraintName`) — cambio solo de código, sin migración; (b) aceptar el drift.
 
 ## §Deuda
 
@@ -141,6 +141,10 @@ _(ninguno por ahora)_
 - api: scripts con `ts-node` ahora pasan `-P tsconfig.json`. Con pnpm, `node_modules/typeorm/cli.js` es un symlink al store y ts-node (script mode) no encontraba el tsconfig del api; Node 24 cargaba `data-source.ts` como ESM (`__dirname is not defined`). Sin cambio funcional.
 - api lint con las versiones nuevas: 465 errores (baseline 462): +4 `no-unnecessary-type-assertion` (regla nueva del recommended de typescript-eslint 8.71) y −1 `prettier` (prettier 3.9). Se resuelve en Fase 6.
 - api: `password.service.spec.ts` (bcrypt 12 rounds real) pasaba el timeout de 5 s de jest bajo `turbo run test build` en paralelo. Se fijó `jest.setTimeout(30s)` en ese spec (solo test).
+- api: el drift entidades↔esquema (§Bloqueos) existe desde antes; `migration:generate` no sirve como detector de cambios hasta corregirlo.
+- api: `@nestjs/swagger` 11.4.7 agrega `"type":"object"` en 2 schemas `nullable`+`allOf` del OpenAPI (`PersonaDashboardDto`, `PersonaDeudaDto`) respecto del backend corriendo con 11.2.7. Solo documentación Swagger; payloads idénticos.
+- Pérdida de nominalidad de los enums (ADR 0001): requirió `new Set<CajaType>(…)` explícito en `cajas.service.ts`.
+- Entorno: el Escritorio parece sincronizado con iCloud (`fileproviderd`/`cloudd`/`fseventsd` saturan la CPU con `node_modules`, `.next`, `dist`); load average de 20–100 durante la sesión y timeouts espurios en tests. Recomendado: mover el repo fuera de `~/Desktop` o excluirlo de iCloud.
 - web: `feature-boundaries` resuelve imports con el resolver `node`, así que los imports `@/features/...` (alias) no se chequean; solo los relativos. Igual que antes de la migración. Activar `eslint-import-resolver-typescript` destaparía violaciones existentes: queda como deuda.
 - api: el peer `webpack@^5.112` de `schema-utils` (vía `@nestjs/cli`) queda sin satisfacer (5.106.2). Solo afecta al CLI en dev; existía igual con npm.
 
@@ -157,3 +161,4 @@ Consolidado solo lo commiteado en `main` de cada repo. Quedó afuera, sin tocar:
 |---|---|---|---|
 | 2026-10-19 | 0 | `0229a4f` | Baseline, inventario y snapshot de wire |
 | 2026-10-19 | 1 | `4cbf312` | Historial importado con filter-repo desde clones frescos; cero cambios de código |
+| 2026-10-20 | 4 | `73f3671` | `@scout/shared` (enums ×7 dominios + time). Contrato 25/25, OpenAPI idéntico, SQL de migration:generate idéntico al original. Nota: `campamento.ts`/`evento.ts` de shared entraron (sin exportar) en el commit de inscripción |
