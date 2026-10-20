@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { nowInstant } from '@scout/shared/time';
 
 const EXPORTED_TABLES_IN_FK_ORDER = [
   'personas',
@@ -28,7 +29,7 @@ export class SqlDataExportService {
     const parts: string[] = [];
 
     parts.push('-- Scout database data export');
-    parts.push(`-- Generated: ${new Date().toISOString()}`);
+    parts.push(`-- Generated: ${nowInstant()}`);
     parts.push(
       '-- Only data (INSERTs). Destination database must already have the schema.',
     );

@@ -205,4 +205,21 @@ describe('SqlDataExportService', () => {
       expect(sql).toMatch(/-- TRUNCATE /);
     });
   });
+
+  describe('clock (characterization)', () => {
+    beforeEach(() => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+      jest.setSystemTime(new Date('2026-12-31T23:30:00-03:00'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('stamps the Generated header with the current instant in UTC ISO', async () => {
+      await bootstrap({});
+      const sql = await service.generateDump();
+      expect(sql).toContain('-- Generated: 2027-01-01T02:30:00.000Z\n');
+    });
+  });
 });
