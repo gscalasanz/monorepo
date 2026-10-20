@@ -1,8 +1,44 @@
 # REGISTRY-detail — api
 
+Dos lados: **backend** (`apps/api/src/common` + auth) y **cliente HTTP de web**
+(`apps/web/src/shared/{api,auth,cache,queries}`). Solo lo que existe y se reusa.
+
+## Backend: common
+
+`apps/api/src/common/` (barrel `src/common/index.ts`; `CommonModule` es `@Global`).
+
+| Símbolo | Ubicación | Para qué | Consumidores |
+| --- | --- | --- | --- |
+| `BaseEntity` | `entities/base.entity.ts` | `id` UUID, `createdAt`/`updatedAt` `timestamptz`, `deletedAt` (soft delete). Toda entidad la extiende. | 12 entidades |
+| `DeletionValidatorService` · `DeletionCheckResult` | `services/deletion-validator.service.ts` (+ `deletion-validator.messages.ts`) | `canDeletePersona/Inscripcion/Campamento/Caja/Evento/Movimiento`, `canRemoveParticipanteCampamento` → `{ canDelete, reason?, movementCount? }`. Regla: lo que tiene movimientos no se borra (libro contable); excepción: movimientos derivados de ventas de un evento. | personas, cajas, movimientos, inscripciones, campamentos, eventos |
+| `escapeLikePattern(input)` | `utils/sql-like.utils.ts` | Escapa `% _ \` para `LIKE`/`ILIKE`. Usarlo en todo filtro por nombre. | eventos, entregas |
+| `dateOnlyTransformer` | `utils/date-only.transformer.ts` | `ValueTransformer` de columnas `date`: guarda el día calendario UTC (no depende de la zona del proceso). | `Evento`, `Campamento` |
+| `esMayorDeEdad(tipo, rama)` | `utils/papeles.util.ts` | Educador o Rovers → exento de documentación personal. | reportes, personas-dashboard |
+| `APP_TIMEZONE` | `constants/app.constants.ts` | Alias de `BSAS_TIME_ZONE` (`@scout/shared/time`). | reportes, eventos/reporte |
+| Enums (`CajaType`, `ConceptoMovimiento`…) | `enums/index.ts` | Re-export de `@scout/shared/enums` → [domain](./domain.md#scoutsharedenums). | todo el api |
+
+Existe con **un solo consumidor** (reusar antes de crear otro): `PaginationQueryDto` ·
+`PaginatedResponseDto<T>` · `PaginationMeta` (`dtos/`, hoy solo `movimientos`) y
+`resolveAllowedOrigins` · `DEFAULT_ALLOWED_ORIGINS` (`utils/cors-origins.util.ts`, `main.ts`).
+
+## Backend: auth
+
+`apps/api/src/modules/auth/`.
+
+- **`JwtAuthGuard`** (`guards/jwt-auth.guard.ts`) está registrado como `APP_GUARD` en
+  `src/app.module.ts`: **todo endpoint es privado por defecto**.
+- **`@Public()`** · `IS_PUBLIC_KEY` (`decorators/public.decorator.ts`): abre un endpoint. Hoy:
+  `GET /` (keep-alive), `auth/register|login|refresh`, reporte público de un evento y
+  `GET /reportes/deudas`.
+- **`@CurrentUser()`** (`decorators/current-user.decorator.ts`): inyecta la `Persona` autenticada
+  (hoy solo en `auth.controller.ts`).
+- `JwtRefreshGuard` (`guards/jwt-refresh.guard.ts`) existe pero hoy no se usa en ningún
+  controller (el refresh valida el token en `AuthService`).
+- `TokenService` / `PasswordService` (`services/`) son internos del módulo.
+
 ## cliente
 
-`src/shared/api/` — `import { apiClient, API_ENDPOINTS } from '@/shared/api'`.
+`apps/web/src/shared/api/` — `import { apiClient, API_ENDPOINTS } from '@/shared/api'`.
 
 ```ts
 const cajas = await apiClient.get(API_ENDPOINTS.CAJAS, { schema: cajasResponseSchema, params: { tipo } });
