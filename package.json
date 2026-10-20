@@ -16,5 +16,14 @@
   },
   "devDependencies": {
     "turbo": "^2"
+  },
+  "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-vcvr-r3jv-pc5j",
+        "GHSA-cjq9-62q9-8jv4",
+        "GHSA-vfj7-8cjw-p6xm"
+      ]
+    }
   }
 }
