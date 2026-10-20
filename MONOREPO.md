@@ -51,10 +51,10 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 - [x] `.claude/settings.json` + hooks; skills evaluadas
 
 ### Fase 6 — Gates de calidad
-- [ ] husky + lint-staged + commitlint
-- [ ] `.github/workflows/ci.yml` (quality + security) + `dependabot.yml`
+- [x] husky + lint-staged + commitlint (raíz, `c0b9e51`; `style:` rechazado por el hook)
+- [x] `.github/workflows/ci.yml` (quality + security) + `dependabot.yml` (audit exit 0 con ADR 0002; gitleaks 322 commits sin leaks)
 - [x] Lint del api en verde (ADR 0003 + fixes mecánicos; `eslint` exit 0, dist byte-idéntico salvo `void runSeeds()` y un alias en sql-data-export)
-- [ ] code-reviewer de la fase
+- [x] code-reviewer de la fase (sin CRITICAL/HIGH; endurecimiento en `18b91a8`)
 
 ### Fase 7 — Deploy (preparado, no ejecutado)
 - [x] `docs/deploy.md` (Vercel, Render, checklist post-cutover, plan de remotos)
@@ -190,6 +190,9 @@ Los tests previos de exports/backups codificaban la hora local del proceso. Se r
 - api: el peer `webpack@^5.112` de `schema-utils` (vía `@nestjs/cli`) queda sin satisfacer (5.106.2). Solo afecta al CLI en dev; existía igual con npm.
 - api: `POST /campamentos/:id/gastos` toma `fecha` con `@Body('fecha')` sin validación; un valor inválido daba 500 (error de pg) y hoy da 500 (`dateFromIsoString` lanza). Lo correcto sería 400 (`@IsDateString`/pipe), pero es cambio de contrato. Review F8, MEDIUM-1.
 - api: el test del dashboard de personas que usa el reloj real depende del año en curso. Los nuevos tests de caracterización sí fijan el reloj.
+- Gate de pre-commit: lint-staged solo dispara `typecheck` + `lint` si el commit toca `.ts/.tsx/.mts/.cts`. Un commit de solo `.mjs`/JSON/YAML lo saltea; CI es el respaldo.
+- La revisión del ADR 0002 (2026-11-20) no está automatizada.
+- `apps/web/.claude/` (heredado del repo de web) convive con `.claude/` de la raíz; consolidar cuando se use.
 
 ## §Pendientes del usuario
 
@@ -222,3 +225,5 @@ Consolidado solo lo commiteado en `main` de cada repo. Quedó afuera, sin tocar:
 | 2026-10-20 | 3 | `d417be7` | `@scout/config`; configs efectivas (tsconfig/eslint) diffeadas antes/después, dist del api byte-idéntico |
 | 2026-10-20 | 5 | `c8edb0e`…`3a0bd1d` | Hub, REGISTRY, docs, setup-worktree (probado en worktree real), `.claude` |
 | 2026-10-20 | 8 | `dd41a36`…`a3e3477` | Fechas del api: 5 fixes B con test rojo, 10 módulos A, 4 C; `no-new-date` en error; 622 tests |
+| 2026-10-20 | 6 | `0429aa9`…`18b91a8` | Gates: audit (overrides dev + ADR 0002), gitleaks, CI, dependabot, lint api 0 (ADR 0003), hooks en raíz; `turbo run typecheck lint test build` 13/13 |
+| 2026-10-20 | 7 | `51618e0` | `docs/deploy.md` (no ejecutado) |
