@@ -1,0 +1,12 @@
+# Contexto de la imagen del api (apps/api/Dockerfile.vercel). Nunca secretos ni artefactos locales.
+**/.env*
+!**/.env.example
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/coverage
+.git
+.vercel
+.claude
+**/.claude

@@ -1,0 +1,22 @@
+# Imagen del api para Vercel (servicio `api`, runtime container). Contexto: la raíz del
+# monorepo (vercel.json → services.api.root = "."), porque el build necesita packages/*,
+# pnpm-workspace.yaml y el lockfile. Corre igual que en Render: `node dist/src/main.js`.
+
+FROM node:24.19.0-alpine AS build
+RUN corepack enable
+WORKDIR /repo
+COPY . .
+RUN pnpm install --frozen-lockfile --filter "@scout/api..."
+RUN pnpm turbo run build --filter=@scout/api
+# node_modules de producción reales (sin symlinks al store) + @scout/shared con su dist.
+RUN pnpm --filter @scout/api deploy --prod --legacy /app \
+ && cp -R apps/api/dist /app/dist
+
+FROM node:24.19.0-alpine
+WORKDIR /app
+COPY --from=build /app .
+ENV NODE_ENV=production
+# Vercel le manda el tráfico al puerto 80 del contenedor (si no se define PORT en el proyecto).
+ENV PORT=80
+EXPOSE 80
+CMD ["node", "dist/src/main.js"]

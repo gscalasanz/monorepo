@@ -2,10 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
     "api": {
-      "root": "apps/api",
-      "framework": "nestjs",
-      "installCommand": "pnpm install --frozen-lockfile",
-      "buildCommand": "cd ../.. && pnpm turbo run build --filter=@scout/api"
+      "root": ".",
+      "runtime": "container",
+      "entrypoint": "apps/api/Dockerfile.vercel"
     },
     "web": {
       "root": "apps/web",

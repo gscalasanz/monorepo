@@ -21,11 +21,17 @@
 
 | Servicio | Root | Framework | Público en | Build |
 | --- | --- | --- | --- | --- |
-| `api` | `apps/api` | `nestjs` (una Vercel Function) | `/api/*` (incluye `/api/v1/*` y Swagger en `/api/docs`) | `cd ../.. && pnpm turbo run build --filter=@scout/api` |
+| `api` | `.` (contexto de la imagen) | contenedor (`apps/api/Dockerfile.vercel`) | `/api/*` (incluye `/api/v1/*` y Swagger en `/api/docs`) | `docker build`: `pnpm install` + `turbo build` + `pnpm deploy --prod`; corre `node dist/src/main.js` en el puerto 80 |
 | `web` | `apps/web` | `nextjs` | todo lo demás (`/(.*)`) | `cd ../.. && pnpm turbo run build --filter=@scout/web` |
 
-- Los dos instalan con `pnpm install --frozen-lockfile` (pnpm instala el workspace entero; turbo
-  buildea `@scout/shared` primero por `^build`).
+- **Por qué el api va en contenedor:** como función Node (`framework: nestjs`) Vercel traza los
+  archivos a incluir y con el layout de pnpm (symlinks a `node_modules/.pnpm`) se pierde
+  dependencias (`Cannot find module '@nestjs/core'`); además empaqueta a `.cjs` y los globs de
+  TypeORM (`*.entity{.ts,.js}`, `migrations/*`) dejan de encontrar archivos. El contenedor
+  corre **exactamente** lo mismo que Render: `dist/` compilado + `node_modules` de producción
+  reales (`pnpm deploy`). `.dockerignore` deja afuera todo `.env*`, `node_modules` y builds.
+- web instala con `pnpm install --frozen-lockfile` y buildea con turbo (`@scout/shared` primero
+  por `^build`).
 - Vercel le pasa al servicio la **ruta original**: `GET /api/v1/personas` llega al api como
   `/api/v1/personas`, que es el prefijo global de Nest. No hubo que tocar rutas.
 - **Sin bindings:** web llama al api **solo desde el navegador** (tokens en `localStorage`); el
@@ -51,20 +57,21 @@ Como web y api comparten origen, el navegador no hace requests cross-origin: COR
 
 Las mismas que tenía el servicio de Render, sin cambios: `DATABASE_URL` (en Neon, preferir la
 URL **con pooling**: cada instancia de la función abre su pool), `JWT_*` y el resto. `PORT` no
-hace falta. `FRONTEND_URL` es opcional (mismo origen). `API_URL` **no** hace falta (§1).
+hace falta (la imagen usa 80). `FRONTEND_URL` es opcional (mismo origen). `API_URL` **no** hace falta (§1).
 
 > ⚠️ **Preview no debe escribir en la base de producción.** Cargá `DATABASE_URL` de producción
 > solo en *Production* y una base aparte (o ninguna) en *Preview*.
 
 ### Riesgos a validar en el primer deploy (api como función serverless)
 
-- **Migraciones:** `DatabaseModule` corre con `migrationsRun: true`. En serverless eso ocurre en
-  **cada arranque en frío**, potencialmente en paralelo. Además TypeORM busca migraciones por
-  glob (`__dirname + '/migrations/*{.ts,.js}'`) y nadie las importa: el empaquetado de Vercel
-  puede no incluirlas y `migrationsRun` quedaría en no-op silencioso. Hoy la base tiene las 15
-  aplicadas, así que no rompe; para migraciones futuras, correrlas a mano antes del deploy.
-- **Entidades** también se cargan por glob: si el primer request falla con
-  `No metadata for "X" was found`, hay que pasar a `autoLoadEntities` (cambio de código del api).
+- **Migraciones:** `DatabaseModule` corre con `migrationsRun: true`. El contenedor escala a cero
+  (5 min sin tráfico en producción, 30 s en preview), así que corre en **cada arranque en frío**,
+  y con varias instancias puede correr en paralelo. Sin migraciones pendientes es un no-op; con
+  una migración nueva, conviene correrla a mano antes del deploy.
+- **Puerto:** Vercel le manda tráfico al **80** del contenedor; la imagen fija `PORT=80`. No
+  cargar `PORT` en el proyecto.
+- **Arranque en frío:** después de escalar a cero, el primer request espera el arranque de Nest
+  + la conexión a la base (segundos).
 - **Duración:** export a Excel y backup corren dentro del límite de duración de la función.
 - **Keep-alive** de web (ping cada 14 min, pensado para Render free) ya no hace falta; no molesta.
 
