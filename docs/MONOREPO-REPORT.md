@@ -120,7 +120,7 @@ doc), tres spellings del filtro de educadores en el wire.
    Pushear a una rama nueva y abrir PR. **No hice ningún push.**
 2. **Ver el CI en el PR.** Primera corrida real de `ci.yml` (quality + security).
 3. **Cutover de Render y después de Vercel**, siguiendo `docs/deploy.md`. Ojo con
-   `apps/web/vercel.json`: el `buildCommand` cambia **el día del cutover**.
+   la configuración de Vercel Services (`vercel.json` de la raíz, `docs/deploy.md` §1-2).
 4. **Checklist `curl`** de `docs/deploy.md` §3 y prueba manual (login, dashboard, export).
 5. **Archivar** `scout-front-react` y `gscalasanz/front` (este último es de otra cuenta:
    acordalo con su dueño) cuando web esté verificado.

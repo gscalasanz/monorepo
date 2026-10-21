@@ -20,7 +20,8 @@
     // Se serializan: el build del web espera a su typecheck.
     "@scout/web#build": {
       "dependsOn": ["^build", "@scout/web#typecheck"],
-      "env": ["API_URL", "NEXT_PUBLIC_*"],
+      // `VERCEL` cambia el artefacto: sin `API_URL`, en Vercel se inlinea `/api/v1` (next.config.ts).
+      "env": ["API_URL", "NEXT_PUBLIC_*", "VERCEL"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },

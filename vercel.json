@@ -1,0 +1,32 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "api": {
+      "root": "apps/api",
+      "framework": "nestjs",
+      "installCommand": "pnpm install --frozen-lockfile",
+      "buildCommand": "cd ../.. && pnpm turbo run build --filter=@scout/api"
+    },
+    "web": {
+      "root": "apps/web",
+      "framework": "nextjs",
+      "installCommand": "pnpm install --frozen-lockfile",
+      "buildCommand": "cd ../.. && pnpm turbo run build --filter=@scout/web",
+      "headers": [
+        {
+          "source": "/(.*)",
+          "headers": [
+            { "key": "X-Content-Type-Options", "value": "nosniff" },
+            { "key": "X-Frame-Options", "value": "DENY" },
+            { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+            { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+          ]
+        }
+      ]
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
+}

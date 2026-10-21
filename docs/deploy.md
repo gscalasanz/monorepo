@@ -1,103 +1,81 @@
 # Deploy — Scout monorepo
 
-> **Estado:** preparado, **no ejecutado**. Hoy producción sigue saliendo de los repos viejos
-> (`MartinOfi/scout-back` → Render, `MartinOfi/scout-front-react` → Vercel). Este documento
-> dice qué cambiar en cada plataforma **el día del cutover**. Hasta entonces no se toca
-> ninguna configuración remota.
+> **Estado:** el monorepo vive en `gscalasanz/monorepo` y se deploya como **un proyecto de
+> Vercel con dos servicios** (`api` + `web`, `vercel.json` de la raíz). Los repos viejos
+> (`MartinOfi/scout-back` → Render, `MartinOfi/scout-front-react` → Vercel) siguen como estaban
+> y son el rollback hasta verificar el nuevo deploy.
 
 ## 0. Antes de empezar
 
 - [ ] `main` del monorepo en verde en CI (`quality` + `security`).
-- [ ] Remoto del monorepo decidido y pusheado (ver §4). Sin eso no hay nada que conectar.
-- [ ] Variables de entorno de producción a mano (se cargan en cada dashboard; **nunca** en el repo).
-- [ ] Ventana tranquila: el cutover de cada app es independiente; conviene hacer primero el
-      api (Render) y después web (Vercel).
+- [ ] Proyecto de Vercel conectado a `gscalasanz/monorepo` con **Root Directory vacío** (raíz del
+      repo): el `vercel.json` de la raíz define los servicios.
+- [ ] Variables de entorno del api cargadas en Vercel (§2) **antes** del primer deploy: sin
+      `DATABASE_URL` el api no arranca.
 
 ---
 
-## 1. Web → Vercel (`apps/web`, `@scout/web`)
+## 1. Un proyecto, dos servicios (Vercel Services)
 
-### Configuración del proyecto (dashboard de Vercel → Settings)
+`vercel.json` (raíz) declara dos servicios en el **mismo dominio**:
 
-| Campo | Valor |
-| --- | --- |
-| Git repository | el repo del monorepo (§4) |
-| Root Directory | `apps/web` |
-| "Include files outside the Root Directory" | **activado** (necesita `packages/*` y el lockfile de la raíz) |
-| Framework | Next.js |
-| Node.js version | 24.x (`.nvmrc` = 24.19) |
-| Install Command | lo toma de `apps/web/vercel.json`: `pnpm install --frozen-lockfile` (pnpm instala el workspace entero desde la raíz) |
-| Build Command | lo toma de `apps/web/vercel.json` (ver abajo) |
-| Output | por defecto (`.next` dentro de `apps/web`) |
-| Ignored Build Step | `npx turbo-ignore @scout/web` (no redeploya si el commit no toca web ni sus dependencias de workspace) |
+| Servicio | Root | Framework | Público en | Build |
+| --- | --- | --- | --- | --- |
+| `api` | `apps/api` | `nestjs` (una Vercel Function) | `/api/*` (incluye `/api/v1/*` y Swagger en `/api/docs`) | `cd ../.. && pnpm turbo run build --filter=@scout/api` |
+| `web` | `apps/web` | `nextjs` | todo lo demás (`/(.*)`) | `cd ../.. && pnpm turbo run build --filter=@scout/web` |
 
-**Cambio de repo necesario:** `apps/web/vercel.json` hoy dice `"buildCommand": "pnpm build"`.
-Eso corre solo `next build` y **falla** en el monorepo, porque `@scout/shared` se consume
-compilado (`dist/`) y nadie lo buildea antes. Al cutover tiene que quedar así:
+- Los dos instalan con `pnpm install --frozen-lockfile` (pnpm instala el workspace entero; turbo
+  buildea `@scout/shared` primero por `^build`).
+- Vercel le pasa al servicio la **ruta original**: `GET /api/v1/personas` llega al api como
+  `/api/v1/personas`, que es el prefijo global de Nest. No hubo que tocar rutas.
+- **Sin bindings:** web llama al api **solo desde el navegador** (tokens en `localStorage`); el
+  servidor de Next no le hace requests. Un binding solo sirve para llamadas server-side.
+- Los headers de seguridad (`nosniff`, `DENY`, `Referrer-Policy`, `Permissions-Policy`) están en
+  el servicio `web`, como antes en `apps/web/vercel.json` (que se eliminó: en modo services
+  `framework`/`buildCommand`/`installCommand` no van a nivel raíz).
+- Node: 24.x (`.nvmrc` = 24.19). pnpm: el de `packageManager`.
 
-```json
-"buildCommand": "cd ../.. && pnpm turbo run build --filter=@scout/web"
-```
+### Cómo encuentra web al api
 
-(turbo buildea `@scout/shared` primero por `^build`). Este cambio se commitea **el mismo día**
-del cutover, no antes: el `vercel.json` de `scout-front-react` sigue siendo el que deploya.
+`apps/web/next.config.ts` inlinea `API_URL` en build. En Vercel (`VERCEL=1`), si no se cargó
+`API_URL`, usa **`/api/v1`**: el api del mismo deploy (producción y cada preview apuntan a su
+propio api, sin configurar nada). Si alguna vez se carga `API_URL` en Vercel, esa gana. Fuera de
+Vercel no hay default: sin `API_URL` el build falla rápido (`shared/api/env.ts`).
 
-### Variables de entorno (Production y Preview)
-
-| Variable | Notas |
-| --- | --- |
-| `API_URL` | URL pública del api de Render, con `/api/v1`. Se **inlinea en build** (`next.config.ts` → `env`), así que cambiarla exige redeploy. turbo la incluye en el hash de cache (`turbo.json` → `build.env`). |
-| `NEXT_PUBLIC_*` | Las que tenga hoy el proyecto, mismas que en `scout-front-react`. |
-
-Nunca apuntar Preview a la API de producción si Preview escribe datos. Mantener el criterio actual del proyecto.
-
-### Qué remoto usa hoy Vercel
-
-**No se pudo determinar localmente.** `scout/frontend` no tiene `.vercel/`; el único
-`.vercel/project.json` está en `frontend-deprecated` (proyecto `frontend`). Verificalo en el
-dashboard (Settings → Git): puede ser `MartinOfi/scout-front-react` o `gscalasanz/front`.
+Como web y api comparten origen, el navegador no hace requests cross-origin: CORS
+(`FRONTEND_URL`) deja de intervenir en producción. Se mantiene para dev (`localhost:4201`).
 
 ---
 
-## 2. API → Render (`apps/api`, `@scout/api`)
+## 2. Variables de entorno (Vercel → Settings → Environment Variables)
 
-No hay `render.yaml`: todo vive en el dashboard (Web Service). `apps/api/railway.json` y
-`railpack.json` son restos de Railway, sin uso (§Deuda), y no afectan a Render.
+Las mismas que tenía el servicio de Render, sin cambios: `DATABASE_URL` (en Neon, preferir la
+URL **con pooling**: cada instancia de la función abre su pool), `JWT_*` y el resto. `PORT` no
+hace falta. `FRONTEND_URL` es opcional (mismo origen). `API_URL` **no** hace falta (§1).
 
-| Campo | Valor |
-| --- | --- |
-| Repository / Branch | el repo del monorepo (§4) / `main` |
-| Root Directory | *(vacío = raíz del repo)*: el build necesita `packages/*`, `pnpm-workspace.yaml` y el lockfile |
-| Runtime | Node |
-| Build Command | `corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm turbo run build --filter=@scout/api` |
-| Start Command | `pnpm --filter @scout/api start:prod` (→ `node dist/src/main.js`, **mismo entrypoint que hoy**) |
-| Build Filters → Included paths | `apps/api/**`, `packages/**`, `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `turbo.json`, `.nvmrc` |
-| Health check path | `/api/v1` (público, devuelve `Hello World!`) |
+> ⚠️ **Preview no debe escribir en la base de producción.** Cargá `DATABASE_URL` de producción
+> solo en *Production* y una base aparte (o ninguna) en *Preview*.
 
-Notas:
+### Riesgos a validar en el primer deploy (api como función serverless)
 
-- **`--prod=false`:** si el servicio tiene `NODE_ENV=production`, pnpm saltea las
-  devDependencies y el build se rompe, porque faltan `@nestjs/cli`, `typescript` y `@scout/config`.
-- **Node:** Render lee `.nvmrc` de la raíz (24.19). Si el servicio tiene `NODE_VERSION`
-  fijado a mano, actualizalo a `24.19.0` o borralo. El api se probó en Node 24 (baseline y tests).
-- **pnpm:** `corepack enable` usa la versión de `packageManager` (`pnpm@10.33.0`).
-- **Migraciones:** `DatabaseModule` corre con `migrationsRun: true`. El primer arranque
-  aplica las migraciones pendientes a la base de producción, **igual que hoy**. El monorepo no
-  agrega migraciones (las 15 son las mismas de `scout-back`).
-- **TZ:** Render corre en UTC. Desde la Fase 8 el api ya no depende de la zona del proceso
-  (todo pasa por `@scout/shared/time` con `America/Argentina/Buenos_Aires`).
+- **Migraciones:** `DatabaseModule` corre con `migrationsRun: true`. En serverless eso ocurre en
+  **cada arranque en frío**, potencialmente en paralelo. Además TypeORM busca migraciones por
+  glob (`__dirname + '/migrations/*{.ts,.js}'`) y nadie las importa: el empaquetado de Vercel
+  puede no incluirlas y `migrationsRun` quedaría en no-op silencioso. Hoy la base tiene las 15
+  aplicadas, así que no rompe; para migraciones futuras, correrlas a mano antes del deploy.
+- **Entidades** también se cargan por glob: si el primer request falla con
+  `No metadata for "X" was found`, hay que pasar a `autoLoadEntities` (cambio de código del api).
+- **Duración:** export a Excel y backup corren dentro del límite de duración de la función.
+- **Keep-alive** de web (ping cada 14 min, pensado para Render free) ya no hace falta; no molesta.
 
-### Variables de entorno
-
-Las mismas que tiene hoy el servicio, sin cambios: `DATABASE_URL`, `JWT_*`, `FRONTEND_URL`
-(lista separada por comas para CORS), `PORT` (lo pone Render) y el resto. El monorepo no
-agrega variables nuevas.
+Render sigue como estaba (no se tocó): hasta que el api en Vercel esté verificado, es el
+rollback.
 
 ---
 
 ## 3. Checklist post-cutover (`curl`)
 
-Reemplazar `$API` (p. ej. `https://<servicio>.onrender.com`) y `$WEB` (dominio de Vercel).
+Con Vercel Services `$API` y `$WEB` son el mismo dominio del deploy.
 
 ```bash
 # API viva y con el mismo bootstrap
@@ -105,12 +83,12 @@ curl -fsS "$API/api/v1"                                  # → Hello World!
 curl -fsS -o /dev/null -w '%{http_code}\n' "$API/api/docs-json"   # → 200
 # Ruta protegida sigue protegida (guard JWT global)
 curl -s -o /dev/null -w '%{http_code}\n' "$API/api/v1/personas"   # → 401
-# CORS para el dominio de web
+# CORS (solo si web vive en otro dominio; con Services es mismo origen)
 curl -s -o /dev/null -D - -X OPTIONS "$API/api/v1/auth/login" \
   -H "Origin: $WEB" -H 'Access-Control-Request-Method: POST' | grep -i access-control-allow-origin
 # Web
 curl -s -o /dev/null -w '%{http_code}\n' "$WEB/login"     # → 200
-curl -sI "$WEB/login" | grep -iE 'x-frame-options|x-content-type-options'   # headers de vercel.json
+curl -sI "$WEB/login" | grep -iE 'x-frame-options|x-content-type-options'   # headers del servicio web
 ```
 
 Y a mano: login con un usuario real, abrir dashboard, una caja, el reporte de deudas, y
