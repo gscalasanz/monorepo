@@ -45,6 +45,32 @@ describe('buildUrl (port de HttpService.buildParams)', () => {
   });
 });
 
+describe('buildUrl con base relativa (mismo origen)', () => {
+  const RELATIVE_BASE = '/api/v1';
+
+  it('arma la ruta relativa con query params', () => {
+    expect(
+      buildUrl({
+        baseUrl: RELATIVE_BASE,
+        endpoint: API_ENDPOINTS.PERSONAS,
+        params: { tipo: 'protagonista' },
+      }),
+    ).toBe('/api/v1/personas?tipo=protagonista');
+  });
+
+  it('endpoint vacío apunta a la base', () => {
+    expect(buildUrl({ baseUrl: RELATIVE_BASE, endpoint: '' })).toBe(
+      RELATIVE_BASE,
+    );
+  });
+
+  it('sigue rechazando endpoints que salen de la base', () => {
+    expect(() =>
+      buildUrl({ baseUrl: RELATIVE_BASE, endpoint: '../../otro' }),
+    ).toThrow();
+  });
+});
+
 describe('API_ENDPOINTS', () => {
   it('builders de rutas con id', () => {
     expect(API_ENDPOINTS.saldoPersonal('p1')).toBe('cajas/personal/p1/saldo');

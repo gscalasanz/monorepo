@@ -21,14 +21,18 @@ const OUTSIDE_BASE_ERROR =
 
 const DOT_SEGMENTS: readonly string[] = ['.', '..'];
 
+/** Origen ficticio para validar una base relativa (`/api/v1`); se ignora si la base es absoluta. */
+const SAME_ORIGIN_PLACEHOLDER = 'http://same-origin.invalid';
+
 /**
  * Defensa en profundidad (además de `pathSegment`): el endpoint no puede tener
  * segmentos `.`/`..` y la URL resuelta debe seguir bajo la base.
  */
 function assertUnderBase(baseUrl: string, endpoint: string): void {
-  const base = new URL(baseUrl);
+  const base = new URL(baseUrl, SAME_ORIGIN_PLACEHOLDER);
   const resolved = new URL(
     endpoint === '' ? baseUrl : `${baseUrl}/${endpoint}`,
+    SAME_ORIGIN_PLACEHOLDER,
   );
   const basePath = base.pathname.replace(/\/+$/, '');
   const hasDotSegment = endpoint

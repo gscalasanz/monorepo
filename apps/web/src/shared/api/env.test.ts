@@ -7,12 +7,21 @@ describe('parseApiBaseUrl', () => {
     );
   });
 
-  it.each([undefined, '', 'localhost:3001', 'ftp://x'])(
-    'falla rápido con %s',
-    (value) => {
-      expect(() => parseApiBaseUrl(value)).toThrow(/API_URL/);
-    },
-  );
+  it('acepta una ruta del mismo origen (Vercel Services: /api → api)', () => {
+    expect(parseApiBaseUrl('/api/v1/')).toBe('/api/v1');
+  });
+
+  it.each([
+    undefined,
+    '',
+    'localhost:3001',
+    'ftp://x',
+    'api/v1',
+    '//evil.test/api/v1',
+    '/\\evil.test/api/v1',
+  ])('falla rápido con %s', (value) => {
+    expect(() => parseApiBaseUrl(value)).toThrow(/API_URL/);
+  });
 });
 
 describe('API_BASE_URL', () => {
