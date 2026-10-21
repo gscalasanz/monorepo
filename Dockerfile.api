@@ -1,6 +1,8 @@
-# Imagen del api para Vercel (servicio `api`, runtime container). Contexto: la raíz del
-# monorepo (vercel.json → services.api.root = "."), porque el build necesita packages/*,
-# pnpm-workspace.yaml y el lockfile. Corre igual que en Render: `node dist/src/main.js`.
+# Imagen del api para Vercel (servicio `api`, runtime container). Vercel usa como contexto la
+# carpeta del Dockerfile: por eso vive en la raíz (el build necesita packages/*,
+# pnpm-workspace.yaml, el lockfile y el packageManager del package.json). No se llama
+# `Dockerfile.vercel`: en la raíz Vercel lo detecta solo y le manda todo el tráfico.
+# Corre igual que en Render: `node dist/src/main.js`.
 
 FROM node:24.19.0-alpine AS build
 RUN corepack enable

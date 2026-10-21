@@ -21,7 +21,7 @@
 
 | Servicio | Root | Framework | Público en | Build |
 | --- | --- | --- | --- | --- |
-| `api` | `.` (contexto de la imagen) | contenedor (`apps/api/Dockerfile.vercel`) | `/api/*` (incluye `/api/v1/*` y Swagger en `/api/docs`) | `docker build`: `pnpm install` + `turbo build` + `pnpm deploy --prod`; corre `node dist/src/main.js` en el puerto 80 |
+| `api` | `.` (contexto de la imagen) | contenedor (`Dockerfile.api` en la raíz: Vercel usa la carpeta del Dockerfile como contexto) | `/api/*` (incluye `/api/v1/*` y Swagger en `/api/docs`) | `docker build`: `pnpm install` + `turbo build` + `pnpm deploy --prod`; corre `node dist/src/main.js` en el puerto 80 |
 | `web` | `apps/web` | `nextjs` | todo lo demás (`/(.*)`) | `cd ../.. && pnpm turbo run build --filter=@scout/web` |
 
 - **Por qué el api va en contenedor:** como función Node (`framework: nestjs`) Vercel traza los
