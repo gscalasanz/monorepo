@@ -14,6 +14,9 @@ function resolveApiUrl(): string | undefined {
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Vercel Services no expone el optimizador de Next (`/_next/image` → 404): las imágenes
+  // (hoy solo el logo, en `public/`) se sirven tal cual como estáticos.
+  images: { unoptimized: true },
   // Inlinea `API_URL` en el bundle del cliente en build time (sin prefijo NEXT_PUBLIC_).
   env: {
     API_URL: resolveApiUrl(),
