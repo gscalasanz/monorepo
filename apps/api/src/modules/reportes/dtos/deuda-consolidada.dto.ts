@@ -110,6 +110,12 @@ export class PersonaDeudaDto {
   deudaTotal!: number;
 
   @ApiProperty({
+    description:
+      'Saldo de la cuenta personal (movimientos); 0 si no tiene cuenta o no tiene saldo',
+  })
+  saldoCuentaPersonal!: number;
+
+  @ApiProperty({
     enum: EstadoPersona,
     description: 'inactivo = deshabilitado: solo figura por deuda de dinero',
   })

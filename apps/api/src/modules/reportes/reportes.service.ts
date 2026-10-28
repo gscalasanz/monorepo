@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { businessYearOf } from '@scout/shared/time';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { Caja } from '../cajas/entities/caja.entity';
+import { MovimientosService } from '../movimientos/movimientos.service';
 import {
   Protagonista,
   Educador,
@@ -17,6 +19,7 @@ import {
   ConceptoMovimiento,
   Rama,
   EstadoPersona,
+  CajaType,
 } from '../../common/enums';
 import { esMayorDeEdad } from '../../common/utils';
 import { DeudaQueryDto } from './dtos/deuda-query.dto';
@@ -46,6 +49,9 @@ export class ReportesService {
     private readonly movimientoRepository: Repository<Movimiento>,
     @InjectRepository(Inscripcion)
     private readonly inscripcionRepository: Repository<Inscripcion>,
+    @InjectRepository(Caja)
+    private readonly cajaRepository: Repository<Caja>,
+    private readonly movimientosService: MovimientosService,
   ) {}
 
   /**
@@ -54,11 +60,34 @@ export class ReportesService {
    */
   async getDeudas(query: DeudaQueryDto): Promise<PersonaDeudaDto[]> {
     const deudas = await this.calcularDeudas(query);
-    return deudas
+    const filtradas = deudas
       .filter((d) => coincideConBusqueda(d.nombre, query.q))
       .map((d) => acotarAOrigen(d, query))
       .filter((d): d is PersonaDeudaDto => d !== null)
       .filter((d) => this.matchesTipo(d, query.tipo));
+    return this.conSaldoCuentaPersonal(filtradas);
+  }
+
+  /** Suma el saldo de la cuenta personal a cada deudor (una consulta por lote). */
+  private async conSaldoCuentaPersonal(
+    deudas: PersonaDeudaDto[],
+  ): Promise<PersonaDeudaDto[]> {
+    if (!deudas.length) return deudas;
+    const cajas = await this.cajaRepository.find({
+      where: {
+        tipo: CajaType.PERSONAL,
+        propietarioId: In(deudas.map((d) => d.personaId)),
+      },
+    });
+    const saldos = await this.movimientosService.calcularSaldosBatch(
+      cajas.map((c) => c.id),
+    );
+    const cajaPorPersona = new Map(cajas.map((c) => [c.propietarioId, c.id]));
+    return deudas.map((d) => {
+      const cajaId = cajaPorPersona.get(d.personaId);
+      const saldo = cajaId ? (saldos.get(cajaId) ?? 0) : 0;
+      return { ...d, saldoCuentaPersonal: Math.max(0, saldo) };
+    });
   }
 
   /**
@@ -316,6 +345,7 @@ export class ReportesService {
       rama: esEducador ? RAMA_EDUCADORES : (rama ?? ''),
       esMayorDeEdad: mayorDeEdad,
       deudaTotal,
+      saldoCuentaPersonal: 0,
       campamentos,
       inscripcionesGrupo,
       inscripcionesScout,

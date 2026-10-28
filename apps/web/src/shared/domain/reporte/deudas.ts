@@ -48,6 +48,8 @@ export const personaDeudaSchema = z.object({
   rama: z.string(),
   esMayorDeEdad: z.boolean(),
   deudaTotal: z.number(),
+  /** Saldo a favor en su cuenta personal (0 si no tiene). */
+  saldoCuentaPersonal: z.number(),
   campamentos: z.array(campamentoDeudaSchema),
   inscripcionesGrupo: z.array(inscripcionDeudaSchema),
   inscripcionesScout: z.array(inscripcionDeudaSchema),

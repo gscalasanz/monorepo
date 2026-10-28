@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import {
   countDocsFaltantes,
   docGroups,
+  missingDocGroups,
   debtCards,
   hasDocDeuda,
   personalDocItems,
@@ -39,6 +40,7 @@ function persona(overrides: Partial<PersonaDeuda> = {}): PersonaDeuda {
     rama: 'Manada',
     esMayorDeEdad: false,
     deudaTotal: 0,
+    saldoCuentaPersonal: 0,
     campamentos: [],
     inscripcionesGrupo: [],
     inscripcionesScout: [],
@@ -117,6 +119,21 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
       }),
     );
     expect(card).toMatchObject({ aPagar: 900, pagado: 300, saldo: 600 });
+  });
+
+  it('missingDocGroups: solo lo faltante, sin documentos entregados ni grupos completos', () => {
+    const groups = missingDocGroups(
+      persona({
+        documentacionPersonal: { ...DOCS_OK, dni: false },
+        documentacionInscripcion: [docInsc],
+      }),
+    );
+    expect(groups[0]).toEqual({
+      title: 'Personal',
+      items: [{ ok: false, label: 'DNI' }],
+    });
+    expect(groups.flatMap((g) => g.items).every((i) => !i.ok)).toBe(true);
+    expect(missingDocGroups(persona())).toEqual([]);
   });
 
   it('docGroups: personal, una por inscripción y autorizaciones de campamento', () => {
@@ -260,6 +277,30 @@ describe('<DeudasView>', () => {
         expect.anything(),
       ),
     );
+  });
+
+  it('muestra el saldo de la cuenta personal a la derecha de la deuda, solo si tiene', async () => {
+    mocks.fetchDeudas.mockResolvedValue([
+      persona({
+        deudaTotal: 500,
+        saldoCuentaPersonal: 1200,
+        campamentos: [camp(2026, 500, true)],
+      }),
+      persona({
+        personaId: 'p3',
+        nombre: 'Caro Sosa',
+        deudaTotal: 300,
+        campamentos: [camp(2026, 300, true)],
+      }),
+    ]);
+    render(<DeudasView />);
+    const table = await screen.findByRole('region', {
+      name: 'Personas con deuda',
+    });
+    expect(within(table).getByText('Saldo a favor')).toBeInTheDocument();
+    const favor = table.querySelectorAll('[data-direction="in"]');
+    expect(favor.length).toBeGreaterThan(0);
+    favor.forEach((el) => expect(el.textContent).toMatch(/\+\$\s?1\.200/));
   });
 
   it('tabla con nombre y chevron a la ficha, chips neutros y filas expandibles', async () => {

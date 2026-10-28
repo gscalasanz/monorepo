@@ -13,6 +13,7 @@ export const REPORTES_COPY = {
   COL_ACCIONES: 'Acciones',
   COL_DEUDAS: 'Deudas',
   COL_TOTAL: 'Total',
+  COL_SALDO: 'Saldo a favor',
   VER_FICHA: (nombre: string): string => `Ver ficha de ${nombre}`,
   DOCS: (n: number): string => `${n} docs`,
   SIN_DEUDA_MONETARIA: 'Solo documentación',

@@ -18,7 +18,7 @@ import { DeudaDetail } from '@/features/reportes/components/deuda-detail';
 import { countDocsFaltantes } from '@/features/reportes/helpers/deudas';
 import type { PersonaDeuda } from '@/features/reportes/models/deudas';
 
-const WIDTHS = { persona: 260, total: 130, acciones: 56 } as const;
+const WIDTHS = { persona: 260, total: 130, saldo: 130, acciones: 56 } as const;
 const MONEY_META = {
   cellClassName: MONEY_CELL_CLASS,
   headerClassName: MONEY_CELL_CLASS,
@@ -71,6 +71,11 @@ const total = (p: Row) =>
     <Money amount={p.deudaTotal} tone="debt" className="font-semibold" />
   ) : null;
 
+const saldoFavor = (p: Row) =>
+  p.saldoCuentaPersonal > 0 ? (
+    <Money amount={p.saldoCuentaPersonal} sign="in" />
+  ) : null;
+
 const COLUMNS: readonly AppColumnDef<Row>[] = [
   {
     id: 'persona',
@@ -91,6 +96,13 @@ const COLUMNS: readonly AppColumnDef<Row>[] = [
     cell: ({ row }) => total(row.original),
   },
   {
+    id: 'saldo',
+    header: C.COL_SALDO,
+    size: WIDTHS.saldo,
+    meta: MONEY_META,
+    cell: ({ row }) => saldoFavor(row.original),
+  },
+  {
     id: 'actions',
     size: WIDTHS.acciones,
     header: () => <span className="sr-only">{C.COL_ACCIONES}</span>,
@@ -103,13 +115,14 @@ const docsDetail = (p: Row): string | undefined => {
   return docs > 0 ? C.DOCS(docs) : undefined;
 };
 
-/** Mobile: nombre (link) + rama · total en rojo + chevron a la ficha; chips en el detalle. */
+/** Mobile: nombre (link) + rama · total en rojo · saldo a favor + chevron a la ficha; chips en el detalle. */
 function MobileRow({ persona: p }: { readonly persona: Row }) {
   return (
     <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
       <PersonaCell persona={p} detail={docsDetail(p)} />
       <div className="flex shrink-0 items-center gap-1">
         {total(p)}
+        {saldoFavor(p)}
         <FichaLink persona={p} />
       </div>
     </div>

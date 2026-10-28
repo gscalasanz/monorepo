@@ -1,6 +1,5 @@
-import { Check, Minus } from 'lucide-react';
+import { Minus } from 'lucide-react';
 
-import { cn } from '@/shared/lib/utils';
 import { REPORTES_COPY as C } from '@/features/reportes/constants/copy';
 import type { DocGroup, DocItem } from '@/features/reportes/helpers/deudas';
 import type { PersonaDeuda } from '@/features/reportes/models/deudas';
@@ -10,35 +9,23 @@ const CARD =
 const TITLE =
   'border-b border-border px-4 py-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase';
 
-/** Documento: ✓ entregado (texto solo para lectores) o "Falta" visible; nunca solo color. */
+/** Documento faltante: ícono + "Falta" visible; nunca solo color. */
 function DocRow({ doc }: { readonly doc: DocItem }) {
-  const Icon = doc.ok ? Check : Minus;
   return (
     <li className="flex min-h-9 items-center gap-2 text-sm text-ink">
       <span
         aria-hidden
-        className={cn(
-          'grid size-5 shrink-0 place-items-center rounded-full',
-          doc.ok
-            ? 'bg-success-soft text-success'
-            : 'bg-warning-soft text-warning',
-        )}
+        className="grid size-5 shrink-0 place-items-center rounded-full bg-warning-soft text-warning"
       >
-        <Icon className="size-3" strokeWidth={2.5} />
+        <Minus className="size-3" strokeWidth={2.5} />
       </span>
-      <span className={cn('flex-1', doc.ok && 'text-ink-muted')}>
-        {doc.label}
-      </span>
-      {doc.ok ? (
-        <span className="sr-only">{C.DOC_OK}</span>
-      ) : (
-        <span className="text-xs text-warning">{C.DOC_FALTA}</span>
-      )}
+      <span className="flex-1">{doc.label}</span>
+      <span className="text-xs text-warning">{C.DOC_FALTA}</span>
     </li>
   );
 }
 
-/** "Documentación": un bloque por grupo (personal, cada inscripción, autorizaciones de campamento). */
+/** "Documentación": solo lo faltante, un bloque por grupo (personal, cada inscripción, autorizaciones). */
 export function DocumentacionGroups({
   persona,
   groups,
@@ -46,11 +33,10 @@ export function DocumentacionGroups({
   readonly persona: PersonaDeuda;
   readonly groups: readonly DocGroup[];
 }) {
-  const faltantes = groups.some((g) => g.items.some((i) => !i.ok));
   return (
     <section aria-label={C.docsDe(persona.nombre)} className={CARD}>
       <h3 className={TITLE}>{C.SECTION_DOCUMENTACION}</h3>
-      {faltantes ? (
+      {groups.length > 0 ? (
         <div className="grid gap-x-6 gap-y-3 px-4 py-3 sm:grid-cols-2">
           {groups.map((group) => (
             <div key={group.title} className="flex flex-col gap-0.5">

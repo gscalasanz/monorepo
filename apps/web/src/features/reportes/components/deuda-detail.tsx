@@ -1,13 +1,16 @@
 import { cn } from '@/shared/lib/utils';
 import { DeudasMonetarias } from '@/features/reportes/components/deudas-monetarias';
 import { DocumentacionGroups } from '@/features/reportes/components/documentacion-groups';
-import { debtCards, docGroups } from '@/features/reportes/helpers/deudas';
+import {
+  debtCards,
+  missingDocGroups,
+} from '@/features/reportes/helpers/deudas';
 import type { PersonaDeuda } from '@/features/reportes/models/deudas';
 
 /** Desglose de la fila: deudas de dinero (si hay) y documentación agrupada. */
 export function DeudaDetail({ persona }: { readonly persona: PersonaDeuda }) {
   const cards = debtCards(persona);
-  const groups = docGroups(persona);
+  const groups = missingDocGroups(persona);
   return (
     <div
       className={cn(

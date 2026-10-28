@@ -37,6 +37,7 @@ const DEUDOR: PersonaDeuda = personaDeudaSchema.parse({
   rama: 'Unidad',
   esMayorDeEdad: false,
   deudaTotal: 96000,
+  saldoCuentaPersonal: 0,
   campamentos: [
     { campamentoId: 'c', nombre: 'Verano', ano: 2026, montoTotal: 96000, montoPagado: 0, saldo: 96000, autorizacionEntregada: true },
   ],

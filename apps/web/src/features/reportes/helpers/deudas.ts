@@ -125,6 +125,13 @@ export function docGroups(p: PersonaDeuda): readonly DocGroup[] {
   ];
 }
 
+/** Solo lo que falta entregar: sin los documentos entregados ni los grupos completos. */
+export function missingDocGroups(p: PersonaDeuda): readonly DocGroup[] {
+  return docGroups(p)
+    .map((g) => ({ ...g, items: g.items.filter((i) => !i.ok) }))
+    .filter((g) => g.items.length > 0);
+}
+
 export function hasDocDeuda(p: PersonaDeuda): boolean {
   return (
     personalDocItems(p).some((d) => !d.ok) ||

@@ -11,6 +11,7 @@ function deuda(overrides: Partial<PersonaDeuda> & { readonly personaId: string }
     rama: 'Unidad',
     esMayorDeEdad: false,
     deudaTotal: 0,
+    saldoCuentaPersonal: 0,
     campamentos: [],
     inscripcionesGrupo: [],
     inscripcionesScout: [],

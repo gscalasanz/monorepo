@@ -36,6 +36,7 @@ const persona = (over: Partial<PersonaDeudaDto> = {}): PersonaDeudaDto => ({
   rama: 'Unidad',
   esMayorDeEdad: false,
   deudaTotal: 0,
+  saldoCuentaPersonal: 0,
   campamentos: [],
   inscripcionesGrupo: [],
   inscripcionesScout: [],
