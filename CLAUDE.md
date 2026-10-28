@@ -38,7 +38,7 @@ público) y **reportes** (deudas). Usuarios: 1-3 administradores. Copy en españ
 
 | Capa | Elección |
 | --- | --- |
-| Monorepo | **pnpm 10 + Turborepo**, Node `>=24.15` (`.nvmrc` 24.19). `pnpm` obligatorio |
+| Monorepo | **pnpm 10 + Turborepo**, Node `>=24.22.1` (`.nvmrc` 24.22.1). `pnpm` obligatorio |
 | Web (`apps/web`, `@scout/web`) | **Next.js 16 (App Router) + React 19 + TS strict**, ReUI (shadcn), Tailwind 4, zod, zustand, Vitest + Playwright |
 | API (`apps/api`, `@scout/api`) | **NestJS 11 + TS**, TypeORM 0.3 (PostgreSQL), class-validator, Swagger, Jest |
 | Auth | **JWT propio** (access + refresh) emitido por el api; `JwtAuthGuard` global + `@Public()` |

@@ -4,7 +4,7 @@
 # `Dockerfile.vercel`: en la raíz Vercel lo detecta solo y le manda todo el tráfico.
 # Corre igual que en Render: `node dist/src/main.js`.
 
-FROM node:24.19.0-alpine AS build
+FROM node:24.22.1-alpine AS build
 RUN corepack enable
 WORKDIR /repo
 COPY . .
@@ -14,7 +14,7 @@ RUN pnpm turbo run build --filter=@scout/api
 RUN pnpm --filter @scout/api deploy --prod --legacy /app \
  && cp -R apps/api/dist /app/dist
 
-FROM node:24.19.0-alpine
+FROM node:24.22.1-alpine
 WORKDIR /app
 COPY --from=build /app .
 ENV NODE_ENV=production

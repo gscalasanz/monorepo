@@ -39,7 +39,7 @@
 - Los headers de seguridad (`nosniff`, `DENY`, `Referrer-Policy`, `Permissions-Policy`) están en
   el servicio `web`, como antes en `apps/web/vercel.json` (que se eliminó: en modo services
   `framework`/`buildCommand`/`installCommand` no van a nivel raíz).
-- Node: 24.x (`.nvmrc` = 24.19). pnpm: el de `packageManager`.
+- Node: 24.x (`.nvmrc` = 24.22.1). pnpm: el de `packageManager`.
 
 ### Cómo encuentra web al api
 

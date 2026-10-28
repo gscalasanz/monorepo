@@ -20,7 +20,7 @@ Plan: `~/.claude/plans/validated-questing-cat.md` · Objetivo: `scout/docs/monor
 - [x] Verificación: conteo de commits, `log --follow`, `blame` — `rev-list --count` de cada padre importado: api **175**, web **110** (= originales). `git log -- apps/api` muestra 168 por simplificación de historial (merges TREESAME); con `--full-history` da 177 (175 + 2 merges de importación). `log --follow apps/api/src/main.ts` llega a `0b52d45 first commit`; `blame` conserva autor y fecha originales.
 
 ### Fase 2 — Workspace pnpm + Turborepo
-- [x] Raíz: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.nvmrc` 24.19
+- [x] Raíz: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.nvmrc` 24.22.1
 - [x] Paquetes renombrados `@scout/api`, `@scout/web`
 - [x] `apps/api` de npm a pnpm (versiones efectivas anotadas en §Baseline, sin `shamefully-hoist`; ninguna dependencia fantasma)
 - [x] Scripts uniformes (`dev`, `build`, `lint`, `lint:fix`, `typecheck`, `test`, `test:e2e`)
