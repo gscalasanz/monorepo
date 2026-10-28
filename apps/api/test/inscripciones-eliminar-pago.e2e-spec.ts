@@ -11,7 +11,7 @@
  * Igual que movimientos-saldo.e2e-spec.ts, NO levanta AppModule (que apunta
  * a .env.local y corre migraciones): usa su propia conexión al docker de test.
  *
- * Pre-requisitos: `npm run db:test:start`
+ * Pre-requisitos: `pnpm db:test:start`
  */
 
 import { BadRequestException } from '@nestjs/common';

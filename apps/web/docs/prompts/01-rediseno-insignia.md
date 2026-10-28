@@ -54,7 +54,7 @@ Hacé estas 3 pantallas, **de a una**, mostrándome el resultado antes de pasar 
 3. **Ficha de persona** (`/personas/protagonistas/[id]`) contra el mockup "Persona".
 
 Para cada una:
-1. Levantá `pnpm dev` (puerto 4201) y el backend (`cd ../backend && npm run start:dev`, puerto
+1. Levantá `pnpm dev` (puerto 4201) y el backend (`cd ../backend && pnpm start:dev`, puerto
    3001) si no están corriendo. Usuario: `E2E_EMAIL` / `E2E_PASSWORD` de `.env.local`.
 2. Sacá capturas de la pantalla actual y del mockup a **1440×900** y **390×844**, en claro y
    oscuro. Antes de tocar código, listame las diferencias de composición más importantes.

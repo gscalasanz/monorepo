@@ -3,7 +3,7 @@
  *
  * Pre-requisites
  * --------------
- * - Test database running (`npm run db:test:start`)
+ * - Test database running (`pnpm db:test:start`)
  * - Migrations applied (the new `movimiento_id` and `esta_cerrado` columns
  *   come from migrations 1713000000000 and 1713000001000).
  *

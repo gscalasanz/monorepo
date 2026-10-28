@@ -24,7 +24,7 @@
   <img src="https://img.shields.io/badge/Jest-30-C21325?style=flat-square&logo=jest&logoColor=white" />
   <img src="https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?style=flat-square&logo=swagger&logoColor=black" />
   <img src="https://img.shields.io/badge/JWT-Auth-000000?style=flat-square&logo=jsonwebtokens&logoColor=white" />
-  <img src="https://img.shields.io/badge/deploy-Railway-0B0D0E?style=flat-square&logo=railway&logoColor=white" />
+  <img src="https://img.shields.io/badge/deploy-Vercel-000000?style=flat-square&logo=vercel&logoColor=white" />
   <img src="https://img.shields.io/badge/status-active-success?style=flat-square" />
   <img src="https://img.shields.io/badge/AI%20assisted-Claude%20Code-8A2BE2?style=flat-square" />
 </p>
@@ -130,7 +130,7 @@
 <tr><td>📖 API Docs</td><td>Swagger / OpenAPI</td><td><img src="https://img.shields.io/badge/latest-85EA2D?style=flat-square" /></td></tr>
 <tr><td>📊 Exports</td><td>ExcelJS</td><td><img src="https://img.shields.io/badge/4.4-217346?style=flat-square" /></td></tr>
 <tr><td>🧪 Testing</td><td>Jest + Supertest</td><td><img src="https://img.shields.io/badge/30-C21325?style=flat-square" /></td></tr>
-<tr><td>🚢 Deploy</td><td>Railway</td><td><img src="https://img.shields.io/badge/prod-0B0D0E?style=flat-square&logo=railway" /></td></tr>
+<tr><td>🚢 Deploy</td><td>Vercel</td><td><img src="https://img.shields.io/badge/prod-000000?style=flat-square&logo=vercel" /></td></tr>
 </table>
 
 </div>
@@ -334,11 +334,11 @@ export abstract class BaseEntity {
 <th>Instalar dependencias</th>
 </tr>
 <tr>
-<td align="center"><kbd>npm</kbd></td>
+<td align="center"><kbd>pnpm</kbd></td>
 <td>
 
 ```bash
-npm install
+pnpm install
 ```
 
 </td>
@@ -381,7 +381,7 @@ docker-compose up -d
 <td>
 
 ```bash
-npm run start:dev
+pnpm start:dev
 ```
 
 </td>
@@ -404,22 +404,22 @@ npm run start:dev
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run start:dev` | 🔥 Servidor en watch mode |
-| `npm run start:debug` | 🐞 Servidor con debugger adjuntable |
-| `npm run build` | 📦 Compila a `dist/` |
-| `npm run start:prod` | 🚀 Corre el build de producción |
-| `npm run lint` | 🧹 ESLint con auto-fix |
-| `npm run format` | 💅 Prettier sobre `src/` y `test/` |
-| `npm run seed` | 🌱 Ejecuta los seeders |
+| `pnpm start:dev` | 🔥 Servidor en watch mode |
+| `pnpm start:debug` | 🐞 Servidor con debugger adjuntable |
+| `pnpm build` | 📦 Compila a `dist/` |
+| `pnpm start:prod` | 🚀 Corre el build de producción |
+| `pnpm lint` | 🧹 ESLint con auto-fix |
+| `pnpm format` | 💅 Prettier sobre `src/` y `test/` |
+| `pnpm seed` | 🌱 Ejecuta los seeders |
 
 ### 🐳 Base de datos (Docker)
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run db:test:start` | ▶️ Levanta la base de testing |
-| `npm run db:test:stop` | ⏹ Baja la base de testing |
-| `npm run db:test:logs` | 📜 Sigue los logs de la base |
-| `npm run db:test:reset` | 🔄 Destruye volúmenes y recrea |
+| `pnpm db:test:start` | ▶️ Levanta la base de testing |
+| `pnpm db:test:stop` | ⏹ Baja la base de testing |
+| `pnpm db:test:logs` | 📜 Sigue los logs de la base |
+| `pnpm db:test:reset` | 🔄 Destruye volúmenes y recrea |
 
 ---
 
@@ -453,10 +453,10 @@ JWT_EXPIRES_IN=1d
 ## 🧪 Testing
 
 ```bash
-npm test                 # Unit tests
-npm run test:watch       # Watch mode
-npm run test:cov         # Coverage
-npm run test:e2e         # End-to-end
+pnpm test                 # Unit tests
+pnpm test:watch       # Watch mode
+pnpm test:cov         # Coverage
+pnpm test:e2e         # End-to-end
 ```
 
 <div align="center">
@@ -469,7 +469,7 @@ npm run test:e2e         # End-to-end
 </div>
 
 > [!NOTE]
-> Los tests E2E usan una **base Postgres dedicada** vía `docker-compose.test.yml`. Correr `npm run db:test:start` antes.
+> Los tests E2E usan una **base Postgres dedicada** vía `docker-compose.test.yml`. Correr `pnpm db:test:start` antes.
 
 ---
 
@@ -632,16 +632,16 @@ Cada controlador documenta sus endpoints con `@ApiTags`, `@ApiOperation` y `@Api
 
 <div align="center">
 
-[![Deploy on Railway](https://img.shields.io/badge/Deployed_on-Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app)
+[![Deploy on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
 
 </div>
 
-Producción corre en **Railway** (ver `railway.json` y `railpack.json`). El pipeline típico:
+Producción corre en **Vercel** como contenedor (ver `Dockerfile.api` y [`docs/deploy.md`](../../docs/deploy.md)). El pipeline típico:
 
 ```bash
-npm ci
-npm run build
-npm run start:prod
+pnpm install --frozen-lockfile
+pnpm build
+pnpm start:prod
 ```
 
 ---

@@ -176,7 +176,6 @@ Los tests previos de exports/backups codificaban la hora local del proceso. Se r
 - Tres spellings del filtro de educadores en el wire: `'Educadores'` (`RAMA_EDUCADORES`), `'educadores'` (literal en `cajas.service.ts:63`, `CAJAS_RAMA_EDUCADORES` en web), `'educador'` (`PersonaType.EDUCADOR`). No se unifican porque cambiaría el contrato.
 - Web: `TIPO_DEUDA_LABELS` (features/reportes/constants/copy.ts) cubre los valores de `TipoDeudaFilter`, pero el nombre colisiona con el `TIPO_DEUDA` del dominio.
 - api: `CLAUDE.MD` decía que no había auth (falso: `APP_GUARD` JWT).
-- api: `railway.json` / `railpack.json` son restos sin uso (el deploy es Render).
 - api: `package-lock.json` estaba ignorado (versiones no reproducibles). Resuelto: `pnpm-lock.yaml` versionado.
 - api: 51 errores de tipos preexistentes en 7 specs (`tsc -p tsconfig.json`; idéntico en el original). `nest build` y ts-jest no los ven. `typecheck` cubre por ahora la superficie de build (`tsconfig.build.json`); sigue abierto: hoy son 45 errores de tipos en specs (`tsc -p tsconfig.json`), con jest en verde. Ampliar `typecheck` a specs exige corregir fixtures; queda como deuda.
 - api: scripts con `ts-node` ahora pasan `-P tsconfig.json`. Con pnpm, `node_modules/typeorm/cli.js` es un symlink al store y ts-node (script mode) no encontraba el tsconfig del api; Node 24 cargaba `data-source.ts` como ESM (`__dirname is not defined`). Sin cambio funcional.
