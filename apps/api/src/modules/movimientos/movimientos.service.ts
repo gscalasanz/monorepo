@@ -28,6 +28,7 @@ import {
   ConceptoMovimiento,
   EstadoPago,
   MedioPago,
+  CajaType,
 } from '../../common/enums';
 import { DeletionValidatorService } from '../../common/services/deletion-validator.service';
 import {
@@ -727,6 +728,36 @@ export class MovimientosService {
       saldoMap.set(row.caja_id, Number(row.saldo ?? 0));
     }
 
+    return saldoMap;
+  }
+
+  /**
+   * Saldo de la cuenta personal de varias personas en una sola consulta
+   * (mismo criterio de saldo que `calcularSaldo`). Quien no tiene cuenta
+   * personal o no tiene movimientos figura con 0.
+   */
+  async calcularSaldosCuentaPersonal(
+    personaIds: string[],
+  ): Promise<Map<string, number>> {
+    const saldoMap = new Map<string, number>(personaIds.map((id) => [id, 0]));
+    if (personaIds.length === 0) return saldoMap;
+
+    const rows: { persona_id: string; saldo: string | null }[] =
+      await this.movimientoRepository
+        .createQueryBuilder('m')
+        .innerJoin('m.caja', 'c')
+        .select('c.propietarioId', 'persona_id')
+        .addSelect(SALDO_SUM_EXPRESSION, 'saldo')
+        .where('c.propietarioId IN (:...personaIds)', { personaIds })
+        .andWhere('c.tipo = :tipoPersonal', { tipoPersonal: CajaType.PERSONAL })
+        .andWhere('m.deletedAt IS NULL')
+        .groupBy('c.propietarioId')
+        .setParameters(SALDO_PARAMS)
+        .getRawMany();
+
+    for (const row of rows) {
+      saldoMap.set(row.persona_id, Number(row.saldo ?? 0));
+    }
     return saldoMap;
   }
 

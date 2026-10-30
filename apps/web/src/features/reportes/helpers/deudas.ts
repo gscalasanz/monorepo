@@ -104,30 +104,20 @@ export function missingAutorizaciones(
   return p.campamentos.filter((c) => !c.autorizacionEntregada);
 }
 
-/** Documentación agrupada para el desglose: personal · una por inscripción · autorizaciones de campamento. */
-export function docGroups(p: PersonaDeuda): readonly DocGroup[] {
-  const personal = personalDocItems(p);
+/** Documentación faltante para el desglose, agrupada: personal · una por inscripción · autorizaciones de campamento. */
+export function missingDocGroups(p: PersonaDeuda): readonly DocGroup[] {
   const autorizaciones = missingAutorizaciones(p).map((c) => ({
     ok: false,
     label: `${c.nombre} ${c.ano}`,
   }));
   return [
-    ...(personal.length > 0
-      ? [{ title: D.GROUP_PERSONAL, items: personal }]
-      : []),
+    { title: D.GROUP_PERSONAL, items: personalDocItems(p) },
     ...p.documentacionInscripcion.map((doc) => ({
       title: D.groupInscripcion(doc.ano),
       items: inscripcionDocItems(doc),
     })),
-    ...(autorizaciones.length > 0
-      ? [{ title: D.GROUP_AUTORIZACIONES, items: autorizaciones }]
-      : []),
-  ];
-}
-
-/** Solo lo que falta entregar: sin los documentos entregados ni los grupos completos. */
-export function missingDocGroups(p: PersonaDeuda): readonly DocGroup[] {
-  return docGroups(p)
+    { title: D.GROUP_AUTORIZACIONES, items: autorizaciones },
+  ]
     .map((g) => ({ ...g, items: g.items.filter((i) => !i.ok) }))
     .filter((g) => g.items.length > 0);
 }

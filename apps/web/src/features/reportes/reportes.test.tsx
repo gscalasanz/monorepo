@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event';
 
 import {
   countDocsFaltantes,
-  docGroups,
   missingDocGroups,
   debtCards,
   hasDocDeuda,
@@ -134,23 +133,6 @@ describe('helpers de deudas (paridad ReporteDeudasComponent)', () => {
     });
     expect(groups.flatMap((g) => g.items).every((i) => !i.ok)).toBe(true);
     expect(missingDocGroups(persona())).toEqual([]);
-  });
-
-  it('docGroups: personal, una por inscripción y autorizaciones de campamento', () => {
-    const groups = docGroups(
-      persona({
-        documentacionPersonal: { ...DOCS_OK, dni: false },
-        documentacionInscripcion: [docInsc],
-        campamentos: [camp(2026, 0, false)],
-      }),
-    );
-    expect(groups.map((g) => g.title)).toEqual([
-      'Personal',
-      'Inscripción 2026',
-      'Autorizaciones de campamento',
-    ]);
-    expect(groups[0]?.items.find((i) => i.label === 'DNI')?.ok).toBe(false);
-    expect(groups[2]?.items).toEqual([{ ok: false, label: 'Camp 2026 2026' }]);
   });
 
   it('personalDocItems: sin doc → []; mayor de edad sin "DNI padres"', () => {

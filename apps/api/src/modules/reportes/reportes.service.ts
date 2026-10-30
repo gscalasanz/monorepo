@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { businessYearOf } from '@scout/shared/time';
-import { In, Repository } from 'typeorm';
-import { Caja } from '../cajas/entities/caja.entity';
+import { Repository } from 'typeorm';
 import { MovimientosService } from '../movimientos/movimientos.service';
 import {
   Protagonista,
@@ -19,12 +18,12 @@ import {
   ConceptoMovimiento,
   Rama,
   EstadoPersona,
-  CajaType,
 } from '../../common/enums';
 import { esMayorDeEdad } from '../../common/utils';
 import { DeudaQueryDto } from './dtos/deuda-query.dto';
 import {
   PersonaDeudaDto,
+  DeudaCalculada,
   CampamentoDeudaDto,
   InscripcionDeudaDto,
   DocumentacionPersonalDto,
@@ -49,8 +48,6 @@ export class ReportesService {
     private readonly movimientoRepository: Repository<Movimiento>,
     @InjectRepository(Inscripcion)
     private readonly inscripcionRepository: Repository<Inscripcion>,
-    @InjectRepository(Caja)
-    private readonly cajaRepository: Repository<Caja>,
     private readonly movimientosService: MovimientosService,
   ) {}
 
@@ -63,31 +60,22 @@ export class ReportesService {
     const filtradas = deudas
       .filter((d) => coincideConBusqueda(d.nombre, query.q))
       .map((d) => acotarAOrigen(d, query))
-      .filter((d): d is PersonaDeudaDto => d !== null)
+      .filter((d): d is DeudaCalculada => d !== null)
       .filter((d) => this.matchesTipo(d, query.tipo));
     return this.conSaldoCuentaPersonal(filtradas);
   }
 
-  /** Suma el saldo de la cuenta personal a cada deudor (una consulta por lote). */
+  /** Suma el saldo de la cuenta personal a cada deudor (una sola consulta por lote). */
   private async conSaldoCuentaPersonal(
-    deudas: PersonaDeudaDto[],
+    deudas: DeudaCalculada[],
   ): Promise<PersonaDeudaDto[]> {
-    if (!deudas.length) return deudas;
-    const cajas = await this.cajaRepository.find({
-      where: {
-        tipo: CajaType.PERSONAL,
-        propietarioId: In(deudas.map((d) => d.personaId)),
-      },
-    });
-    const saldos = await this.movimientosService.calcularSaldosBatch(
-      cajas.map((c) => c.id),
+    const saldos = await this.movimientosService.calcularSaldosCuentaPersonal(
+      deudas.map((d) => d.personaId),
     );
-    const cajaPorPersona = new Map(cajas.map((c) => [c.propietarioId, c.id]));
-    return deudas.map((d) => {
-      const cajaId = cajaPorPersona.get(d.personaId);
-      const saldo = cajaId ? (saldos.get(cajaId) ?? 0) : 0;
-      return { ...d, saldoCuentaPersonal: Math.max(0, saldo) };
-    });
+    return deudas.map((d) => ({
+      ...d,
+      saldoCuentaPersonal: saldos.get(d.personaId) ?? 0,
+    }));
   }
 
   /**
@@ -104,7 +92,7 @@ export class ReportesService {
   /** Deuda (plata y papeles) de todas las personas que cumplen rama/año. */
   private async calcularDeudas(
     query: DeudaConsolidadoQueryDto,
-  ): Promise<PersonaDeudaDto[]> {
+  ): Promise<DeudaCalculada[]> {
     const personas = await this.loadPersonas(query);
     if (!personas.length) return [];
 
@@ -130,11 +118,11 @@ export class ReportesService {
           inscPayments,
         ),
       )
-      .filter((d): d is PersonaDeudaDto => d !== null);
+      .filter((d): d is DeudaCalculada => d !== null);
   }
 
   /** Sin tipo indicado, se devuelven todas las deudas. */
-  private matchesTipo(deuda: PersonaDeudaDto, tipo?: TipoDeudaFilter): boolean {
+  private matchesTipo(deuda: DeudaCalculada, tipo?: TipoDeudaFilter): boolean {
     switch (tipo) {
       // Unifica toda la deuda monetaria: campamentos e inscripciones.
       case TipoDeudaFilter.DINERO:
@@ -157,7 +145,7 @@ export class ReportesService {
    * inscripción faltante o autorizaciones de campamento sin entregar.
    * Un deshabilitado nunca debe papeles, ni siquiera autorizaciones.
    */
-  private hasDocDeuda(deuda: PersonaDeudaDto): boolean {
+  private hasDocDeuda(deuda: DeudaCalculada): boolean {
     if (deuda.estado === EstadoPersona.INACTIVO) return false;
 
     const doc = deuda.documentacionPersonal;
@@ -296,7 +284,7 @@ export class ReportesService {
     campPayments: Movimiento[],
     allInscripciones: Inscripcion[],
     inscPayments: Movimiento[],
-  ): PersonaDeudaDto | null {
+  ): DeudaCalculada | null {
     const esEducador = persona.tipo === PersonaType.EDUCADOR;
     const rama = esEducador ? null : (persona as Protagonista).rama;
     const mayorDeEdad = esMayorDeEdad(persona.tipo, rama);
@@ -337,7 +325,7 @@ export class ReportesService {
       inscripcionesGrupo.reduce((s, i) => s + i.saldo, 0) +
       inscripcionesScout.reduce((s, i) => s + i.saldo, 0);
 
-    const deuda: PersonaDeudaDto = {
+    const deuda: DeudaCalculada = {
       personaId: persona.id,
       nombre: persona.nombre,
       tipo: persona.tipo,
@@ -345,7 +333,6 @@ export class ReportesService {
       rama: esEducador ? RAMA_EDUCADORES : (rama ?? ''),
       esMayorDeEdad: mayorDeEdad,
       deudaTotal,
-      saldoCuentaPersonal: 0,
       campamentos,
       inscripcionesGrupo,
       inscripcionesScout,

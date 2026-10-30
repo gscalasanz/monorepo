@@ -348,6 +348,37 @@ describe('MovimientosService', () => {
     });
   });
 
+  describe('calcularSaldosCuentaPersonal', () => {
+    it('devuelve personaId -> saldo en una consulta, con 0 para quien no tiene cuenta', async () => {
+      const mockQb = {
+        innerJoin: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        setParameters: jest.fn().mockReturnThis(),
+        getRawMany: jest
+          .fn()
+          .mockResolvedValue([{ persona_id: 'p-1', saldo: '1200' }]),
+      };
+      movimientoRepository.createQueryBuilder.mockReturnValue(mockQb as any);
+
+      const result = await service.calcularSaldosCuentaPersonal(['p-1', 'p-2']);
+
+      expect(result.get('p-1')).toBe(1200);
+      expect(result.get('p-2')).toBe(0);
+      expect(movimientoRepository.createQueryBuilder).toHaveBeenCalledTimes(1);
+    });
+
+    it('no consulta si no hay personas', async () => {
+      const result = await service.calcularSaldosCuentaPersonal([]);
+
+      expect(result.size).toBe(0);
+      expect(movimientoRepository.createQueryBuilder).not.toHaveBeenCalled();
+    });
+  });
+
   describe('calcularSaldosBatch', () => {
     it('should return a map of cajaId -> saldo for multiple cajas', async () => {
       const cajaIds = ['caja-1', 'caja-2', 'caja-3'];

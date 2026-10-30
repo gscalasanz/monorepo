@@ -1,5 +1,5 @@
 import { TipoDeudaFilter } from '../constants/deuda.constants';
-import { PersonaDeudaDto } from '../dtos/deuda-consolidada.dto';
+import { DeudaCalculada } from '../dtos/deuda-consolidada.dto';
 import {
   CampamentoConsolidadoDto,
   ConsolidadoDeudasDto,
@@ -29,7 +29,7 @@ function acumular(
 }
 
 function agruparCampamentos(
-  deudas: PersonaDeudaDto[],
+  deudas: DeudaCalculada[],
 ): CampamentoConsolidadoDto[] {
   const datos = new Map<string, { nombre: string; ano: number }>();
   const totales = deudas.reduce(
@@ -55,11 +55,11 @@ function agruparCampamentos(
 }
 
 function agruparInscripciones(
-  deudas: PersonaDeudaDto[],
+  deudas: DeudaCalculada[],
 ): InscripcionConsolidadaDto[] {
   const grupos: {
     tipo: TipoDeudaFilter;
-    items: (d: PersonaDeudaDto) => PersonaDeudaDto['inscripcionesScout'];
+    items: (d: DeudaCalculada) => DeudaCalculada['inscripcionesScout'];
   }[] = [
     {
       tipo: TipoDeudaFilter.INSCRIPCIONES_SCOUT,
@@ -97,7 +97,7 @@ function agruparInscripciones(
  * pendiente: apenas uno se salda deja de aparecer (y de ofrecerse como filtro).
  */
 export function buildConsolidado(
-  deudas: PersonaDeudaDto[],
+  deudas: DeudaCalculada[],
 ): ConsolidadoDeudasDto {
   const deudaCampamentos = deudas.reduce((s, d) => s + sumar(d.campamentos), 0);
   const deudaInscripcionesScout = deudas.reduce(

@@ -5,7 +5,6 @@ import { Protagonista, Educador } from '../personas/entities/persona.entity';
 import { CampamentoParticipante } from '../campamentos/entities/campamento-participante.entity';
 import { Movimiento } from '../movimientos/entities/movimiento.entity';
 import { Inscripcion } from '../inscripciones/entities/inscripcion.entity';
-import { Caja } from '../cajas/entities/caja.entity';
 import { MovimientosService } from '../movimientos/movimientos.service';
 import {
   PersonaType,
@@ -26,7 +25,6 @@ interface SetupData {
   inscripciones?: unknown[];
   participaciones?: unknown[];
   movimientos?: unknown[];
-  cajasPersonales?: { id: string; propietarioId: string }[];
   saldos?: Record<string, number>;
 }
 
@@ -88,15 +86,9 @@ async function buildService(data: SetupData): Promise<ReportesService> {
         useValue: makeRepo(data.inscripciones ?? []),
       },
       {
-        provide: getRepositoryToken(Caja),
-        useValue: {
-          find: jest.fn().mockResolvedValue(data.cajasPersonales ?? []),
-        },
-      },
-      {
         provide: MovimientosService,
         useValue: {
-          calcularSaldosBatch: jest
+          calcularSaldosCuentaPersonal: jest
             .fn()
             .mockResolvedValue(new Map(Object.entries(data.saldos ?? {}))),
         },
@@ -143,8 +135,7 @@ describe('ReportesService', () => {
         inscripcionScout({ id: 'i-1', personaId: 'p-1' }),
         inscripcionScout({ id: 'i-2', personaId: 'p-2' }),
       ],
-      cajasPersonales: [{ id: 'caja-1', propietarioId: 'p-1' }],
-      saldos: { 'caja-1': 1200 },
+      saldos: { 'p-1': 1200 },
     });
 
     const result = await service.getDeudas({});

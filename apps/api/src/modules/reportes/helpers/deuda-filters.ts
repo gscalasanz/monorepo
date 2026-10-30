@@ -1,5 +1,5 @@
 import { TipoDeudaFilter } from '../constants/deuda.constants';
-import { PersonaDeudaDto } from '../dtos/deuda-consolidada.dto';
+import { DeudaCalculada } from '../dtos/deuda-consolidada.dto';
 
 /** Origen de deuda por el que se acota el reporte (todos opcionales). */
 export interface OrigenDeuda {
@@ -30,9 +30,9 @@ const sumarSaldos = (items: { saldo: number }[]): number =>
  * se devuelve tal cual. No muta la entrada.
  */
 export function acotarAOrigen(
-  deuda: PersonaDeudaDto,
+  deuda: DeudaCalculada,
   { tipo, campamentoId }: OrigenDeuda,
-): PersonaDeudaDto | null {
+): DeudaCalculada | null {
   const porCampamento = campamentoId !== undefined;
   const acota =
     porCampamento ||

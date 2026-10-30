@@ -140,3 +140,6 @@ export class PersonaDeudaDto {
   @ApiPropertyOptional({ type: [DocInscripcionDto] })
   documentacionInscripcion!: DocInscripcionDto[];
 }
+
+/** Deuda calculada, todavía sin el saldo de la cuenta personal (se agrega solo en `getDeudas`). */
+export type DeudaCalculada = Omit<PersonaDeudaDto, 'saldoCuentaPersonal'>;
