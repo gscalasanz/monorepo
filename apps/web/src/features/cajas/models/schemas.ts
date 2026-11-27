@@ -17,9 +17,7 @@ import {
 import {
   DESCRIPCION_MAX_LENGTH,
   MONTO_MAX_DECIMALS,
-  TRANSFER_MIN_MONTO,
 } from '@/features/cajas/constants/cajas';
-import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
 
 const REQUIRED = VALIDATION_MESSAGES.REQUIRED;
 
@@ -77,18 +75,3 @@ export const quickMovimientoSchema = z.object({
 });
 
 export type QuickMovimientoFormValues = z.input<typeof quickMovimientoSchema>;
-
-export const transferenciaSchema = z.object({
-  cajaDestinoId: requiredId(C.DESTINO_REQUIRED),
-  monto: z
-    .number()
-    .nullable()
-    .refine(
-      (value) => value !== null && value >= TRANSFER_MIN_MONTO,
-      C.MONTO_INVALIDO,
-    ),
-  fecha: z.string().min(1, C.FECHA_REQUIRED),
-  descripcion: z.string(),
-});
-
-export type TransferenciaFormValues = z.input<typeof transferenciaSchema>;

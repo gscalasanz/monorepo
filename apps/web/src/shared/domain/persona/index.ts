@@ -31,13 +31,11 @@ export {
   personaTypeSchema,
   protagonistaSchema,
   ramaSchema,
-  transferirSaldoResultSchema,
   type Agrupacion,
   type Educador,
   type Persona,
   type PersonaExterna,
   type Protagonista,
-  type TransferirSaldoResult,
 } from './schemas';
 export { isPersonaDisabled, onlyEnabled, type WithEstado } from './helpers';
 export type {

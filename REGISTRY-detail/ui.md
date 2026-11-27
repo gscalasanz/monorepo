@@ -184,6 +184,20 @@ Piezas de dinero que comparten campamentos y eventos (port de los componentes co
 - Schemas: `gastoFormSchema` e `ingresoFormSchema`, más las listas de opciones de medio y estado de pago.
 - `FormDialogShell({ …, footerExtra?, submitDisabled? })` + `useDialogSubmit`: el armazón de diálogo de formulario que usan los diálogos de gasto e ingreso. Muestra el error inline y no se cierra mientras guarda. Lo reutilizan los diálogos de pago y bonificación de inscripciones y campamentos.
 
+## Transferencia — `shared/components/transferencia`
+
+Diálogo "Transferir entre Cajas" (`POST /movimientos/transferencia`). Lo usan Caja de Grupo, Fondo Solidario y la ficha de Personas ("Transferir fondos").
+
+- `TransferenciaDialog({ open, onOpenChange, origen, title?, incluirPersonales?, onSuccess })`:
+  - `origen: TransferenciaOrigen` (`{ id, saldo, nombre }`) es la caja fija de donde sale la plata. `nombre` se muestra como "Origen".
+  - Destinos: todas las cajas menos el origen. Las cuentas personales solo aparecen con `incluirPersonales`.
+  - `title` reemplaza el título por defecto ("Transferir entre Cajas"); la ficha usa "Transferir fondos".
+  - Botón "Todo el saldo" bajo el monto: completa con `origen.saldo` (`fillMax`); deshabilitado si el saldo es ≤ 0.
+  - Responsable = usuario logueado; fecha = hoy (BsAs). Valida el saldo en el cliente antes del POST.
+  - `onSuccess` se llama con el diálogo ya cerrado: el caller recarga los datos y decide si muestra un toast.
+- Lógica pura: `destinoOptions({ cajas, origenId, incluirPersonales? })`, `transferenciaPrecheck`, `buildTransferenciaDto`.
+- `DialogActions` / `FormError` / `ReadonlyInfo` viven en `shared/components/ui/form` y los reutiliza el movimiento rápido de cajas.
+
 ### `ActionsMenu` — `shared/components/data/actions-menu.tsx`
 - `{ label, items: { key, label, href, icon? }[], variant?: 'primary' | 'secondary', className? }`: botón (`primary` = CTA de la vista) con etiqueta + chevron que abre un menú de **links reales** (Base UI Menu, `render={<Link/>}`). Para accesos directos a rutas; para acciones por fila usar `RowActionsMenu`.
 

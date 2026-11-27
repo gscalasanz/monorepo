@@ -1,8 +1,9 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { personasSchema } from '@/shared/domain';
+import { cajaResponseSchema, personasSchema } from '@/shared/domain';
 import {
+  CAJA_RESPONSE_FIXTURE,
   EDUCADOR_FIXTURE,
   EXTERNO_FIXTURE,
   PROTAGONISTA_FIXTURE,
@@ -45,8 +46,26 @@ vi.mock('@/features/personas/services/personas-api', () => ({
   createPersonaExterna: vi.fn(),
   setPersonaEstado: vi.fn(),
   deletePersona: vi.fn(),
-  transferirSaldoAGrupo: vi.fn(),
 }));
+
+const fetchCajas = vi.fn();
+vi.mock('@/shared/queries', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/shared/queries')>();
+  return { ...actual, fetchCajas: () => fetchCajas() };
+});
+
+vi.mock('@/shared/auth', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/shared/auth')>();
+  return {
+    ...actual,
+    useSession: () => ({
+      user: { id: 'u-1', nombre: 'Tesorera', email: 't@x', tipo: 'educador' },
+      isAuthenticated: true,
+      isLoading: false,
+      initialized: true,
+    }),
+  };
+});
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -278,7 +297,7 @@ const CAMPAMENTO_ITEM = {
 };
 
 describe('<PersonaFichaView>', () => {
-  it('muestra saldo, deuda, obligaciones, documentación y "Transferir a caja grupo"', async () => {
+  it('muestra saldo, deuda, obligaciones, documentación y "Transferir fondos"', async () => {
     api.fetchPersonaDashboard.mockResolvedValue(
       personaDashboardSchema.parse({
         persona: {
@@ -321,7 +340,7 @@ describe('<PersonaFichaView>', () => {
       await screen.findByRole('heading', { level: 1, name: 'Juan Pérez' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Transferir a caja grupo' }),
+      screen.getByRole('button', { name: 'Transferir fondos' }),
     ).toBeInTheDocument();
     expect(screen.getByText('Pago Parcial')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Grupo/ })).toHaveAttribute(
@@ -340,6 +359,51 @@ describe('<PersonaFichaView>', () => {
     expect(screen.getByText('Sin movimientos recientes')).toBeInTheDocument();
     expect(screen.getByText('3 de 4')).toBeInTheDocument();
     expect(screen.getByText('Falta')).toBeInTheDocument();
+  });
+
+  it('"Transferir fondos" abre el modal con la cuenta personal como origen y otras cuentas como destino', async () => {
+    const user = userEvent.setup();
+    const base = cajaResponseSchema.parse(CAJA_RESPONSE_FIXTURE);
+    fetchCajas.mockResolvedValue([
+      { ...base, id: 'c1', saldoActual: 1500 },
+      {
+        ...base,
+        id: 'c2',
+        propietario: { ...base.propietario!, id: 'per-2', nombre: 'Ana' },
+      },
+      { ...base, id: 'g', tipo: 'grupo', propietario: null },
+    ]);
+    api.fetchPersonaDashboard.mockResolvedValue(
+      personaDashboardSchema.parse({
+        ...DASHBOARD_BASE,
+        cuentaPersonal: { id: 'c1', saldo: 1500 },
+      }),
+    );
+    render(<PersonaFichaView id="per-1" />);
+    await user.click(
+      await screen.findByRole('button', { name: 'Transferir fondos' }),
+    );
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Transferir fondos',
+    });
+    expect(
+      await within(dialog).findByText('Cuenta de Juan Pérez'),
+    ).toBeInTheDocument();
+    await user.click(within(dialog).getByRole('combobox'));
+    expect(
+      await screen.findByRole('option', { name: 'Cuenta de Ana' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: 'Caja de Grupo' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: 'Cuenta de Juan' }),
+    ).not.toBeInTheDocument();
+    await user.keyboard('{Escape}');
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Todo el saldo' }),
+    );
+    expect(within(dialog).getByLabelText(/Monto/)).toHaveValue('1.500');
   });
 
   it('inscripciones y campamentos conviven en Obligaciones; el año se elige solo si hay más de uno', async () => {

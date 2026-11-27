@@ -3,13 +3,11 @@ import { API_ENDPOINTS, apiClient } from '@/shared/api';
 import {
   personaSchema,
   personasSchema,
-  transferirSaldoResultSchema,
   type CreateEducadorDto,
   type CreatePersonaExternaDto,
   type CreateProtagonistaDto,
   type EstadoPersona,
   type Persona,
-  type TransferirSaldoResult,
   type UpdatePersonaDto,
 } from '@/shared/domain';
 import {
@@ -96,13 +94,4 @@ export function setPersonaEstado(params: {
 /** Soft delete. El 400 del backend ("es responsable de N movimiento(s)") se muestra en el diálogo. */
 export function deletePersona(id: string): Promise<void> {
   return apiClient.delete(API_ENDPOINTS.persona(id), { skipGlobalError: true });
-}
-
-export function transferirSaldoAGrupo(
-  id: string,
-): Promise<TransferirSaldoResult> {
-  return apiClient.post(API_ENDPOINTS.personaTransferirSaldo(id), {
-    schema: transferirSaldoResultSchema,
-    skipGlobalError: true,
-  });
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
-import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
+import { FORM_COPY } from '@/shared/components/ui/form/copy';
 
 export interface DialogActionsProps {
   readonly onCancel: () => void;
@@ -27,7 +27,7 @@ export function DialogActions({
         onClick={onCancel}
         disabled={saving}
       >
-        {C.CANCELAR}
+        {FORM_COPY.cancel}
       </Button>
       <Button
         type="submit"

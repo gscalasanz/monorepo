@@ -104,7 +104,6 @@ describe('pathSegment (seguridad: ids crudos en el path)', () => {
     expect(API_ENDPOINTS.eventoReporte(evil)).toContain('..%2F');
     expect(API_ENDPOINTS.persona(evil)).toContain('..%2F');
     expect(API_ENDPOINTS.personaDashboard(evil)).toContain('..%2F');
-    expect(API_ENDPOINTS.personaTransferirSaldo(evil)).toContain('..%2F');
     expect(API_ENDPOINTS.caja(evil)).toContain('..%2F');
     expect(API_ENDPOINTS.saldoPersonal(evil)).toContain('..%2F');
     expect(API_ENDPOINTS.movimiento(evil)).toContain('..%2F');

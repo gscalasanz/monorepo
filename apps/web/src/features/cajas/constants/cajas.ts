@@ -21,9 +21,6 @@ export const FONDO_SOLIDARIO_NOMBRE = 'Fondo Solidario';
 
 export const FONDO_SOLIDARIO_TIPO = CAJA_TYPE.FONDO_SOLIDARIO;
 
-/** Monto mínimo de una transferencia. */
-export const TRANSFER_MIN_MONTO = 0.01;
-
 export const MONTO_MAX_DECIMALS = 2;
 export const DESCRIPCION_MAX_LENGTH = 500;
 

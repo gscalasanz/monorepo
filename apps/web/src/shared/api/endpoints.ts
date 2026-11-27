@@ -28,8 +28,6 @@ export const API_ENDPOINTS = {
   persona: (id: string): string => `personas/${pathSegment(id)}`,
   personaDashboard: (id: string): string =>
     `personas/${pathSegment(id)}/dashboard`,
-  personaTransferirSaldo: (id: string): string =>
-    `personas/${pathSegment(id)}/transferir-saldo-a-grupo`,
 
   CAJAS: 'cajas',
   CAJAS_GRUPO: 'cajas/grupo',

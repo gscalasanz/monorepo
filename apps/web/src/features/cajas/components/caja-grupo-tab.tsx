@@ -8,7 +8,7 @@ import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
 import { CajaDrawer } from '@/features/cajas/components/caja-drawer';
 import { CajaGrupoActions } from '@/features/cajas/components/caja-grupo-actions';
 import { UltimosMovimientosPanel } from '@/features/cajas/components/ultimos-movimientos-panel';
-import { TransferenciaDialog } from '@/features/cajas/components/transferencia-dialog';
+import { TransferenciaDialog } from '@/shared/components/transferencia';
 import { useCajaGrupo } from '@/features/cajas/hooks/use-caja-grupo';
 
 /**
@@ -53,7 +53,11 @@ export function CajaGrupoTab() {
       <TransferenciaDialog
         open={transferOpen}
         onOpenChange={setTransferOpen}
-        origen={{ id: caja.id, saldo: caja.saldoActual }}
+        origen={{
+          id: caja.id,
+          saldo: caja.saldoActual,
+          nombre: C.ORIGEN_NOMBRE,
+        }}
         onSuccess={() => void reload()}
       />
       <CajaDrawer

@@ -40,11 +40,6 @@ import {
   withTipo,
 } from '@/features/cajas/helpers/quick-movimiento';
 import { parseCajasTab } from '@/features/cajas/helpers/tabs';
-import {
-  buildTransferenciaDto,
-  destinoOptions,
-  transferenciaPrecheck,
-} from '@/features/cajas/helpers/transferencia';
 
 const caja = (patch: Partial<CajaConSaldo> = {}): CajaConSaldo => ({
   ...cajaResponseSchema.parse(CAJA_RESPONSE_FIXTURE),
@@ -235,61 +230,6 @@ describe('fondo solidario', () => {
       movimientos: [],
     });
     expect(con).toMatchObject({ cajaId: 'fs', saldo: 90 });
-  });
-});
-
-describe('transferencia', () => {
-  it('destinos sin el origen ni cuentas personales', () => {
-    const options = destinoOptions(
-      [
-        caja({ id: 'g', tipo: 'grupo', nombre: null }),
-        caja({ id: 'm', tipo: 'rama_manada', nombre: null }),
-        caja({ id: 'p' }),
-        caja({ id: 'fs', tipo: 'fondo_solidario', nombre: 'Fondo Solidario' }),
-      ],
-      'g',
-    );
-    expect(options).toEqual([
-      { value: 'm', label: 'Fondo Manada' },
-      { value: 'fs', label: 'Fondo Solidario' },
-    ]);
-  });
-
-  it('chequeos de cliente: usuario y saldo', () => {
-    expect(transferenciaPrecheck({ userId: null, monto: 1, saldo: 10 })).toBe(
-      'No se pudo identificar al usuario autenticado',
-    );
-    expect(
-      transferenciaPrecheck({ userId: 'u', monto: 11, saldo: 10 }),
-    ).toMatch(/^Saldo insuficiente en caja de grupo \(disponible: /);
-    expect(
-      transferenciaPrecheck({ userId: 'u', monto: 10, saldo: 10 }),
-    ).toBeNull();
-  });
-
-  it('DTO omite descripción vacía', () => {
-    const values = {
-      cajaDestinoId: 'm',
-      monto: 5,
-      fecha: '2026-10-06',
-      descripcion: '  ',
-    };
-    expect(
-      buildTransferenciaDto({ origenId: 'g', responsableId: 'u', values }),
-    ).toEqual({
-      cajaOrigenId: 'g',
-      cajaDestinoId: 'm',
-      monto: 5,
-      responsableId: 'u',
-      fecha: '2026-10-06',
-    });
-    expect(
-      buildTransferenciaDto({
-        origenId: 'g',
-        responsableId: 'u',
-        values: { ...values, monto: null },
-      }),
-    ).toBeNull();
   });
 });
 

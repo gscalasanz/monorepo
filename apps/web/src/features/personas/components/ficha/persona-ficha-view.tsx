@@ -3,6 +3,7 @@
 import { ArrowLeft, CircleAlert, UserX } from 'lucide-react';
 
 import { LoadingState } from '@/shared/components/feedback';
+import { TransferenciaDialog } from '@/shared/components/transferencia';
 import { BackLink } from '@/shared/navigation';
 import { FICHA_COPY as C } from '@/features/personas/constants/copy';
 import { PERSONA_ROUTES } from '@/features/personas/constants/personas';
@@ -12,7 +13,8 @@ import { PersonaFichaContent } from '@/features/personas/components/ficha/person
 
 /** Ficha de protagonista/educador (`/personas/{protagonistas|educadores}/:id`). */
 export function PersonaFichaView({ id }: { readonly id: string }) {
-  const { dashboard, error, isLoading, transfer } = usePersonaFicha(id);
+  const ficha = usePersonaFicha(id);
+  const { dashboard, error, isLoading } = ficha;
   const settled = !isLoading && !dashboard;
   return (
     <div className="flex flex-col gap-4 md:gap-6">
@@ -44,7 +46,17 @@ export function PersonaFichaView({ id }: { readonly id: string }) {
       {dashboard ? (
         <PersonaFichaContent
           dashboard={dashboard}
-          onTransfer={() => void transfer()}
+          onTransfer={ficha.openTransfer}
+        />
+      ) : null}
+      {ficha.transferOrigen ? (
+        <TransferenciaDialog
+          open={ficha.transferOpen}
+          onOpenChange={ficha.setTransferOpen}
+          origen={ficha.transferOrigen}
+          title={C.TRANSFER}
+          incluirPersonales
+          onSuccess={ficha.onTransferSuccess}
         />
       ) : null}
     </div>

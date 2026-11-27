@@ -2,10 +2,13 @@
 
 import { User } from 'lucide-react';
 
-import { DateField, TextareaField } from '@/shared/components/ui/form';
-import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
-import { ReadonlyInfo } from '@/features/cajas/components/readonly-info';
-import type { useTransferenciaForm } from '@/features/cajas/hooks/use-transferencia-form';
+import {
+  DateField,
+  ReadonlyInfo,
+  TextareaField,
+} from '@/shared/components/ui/form';
+import { TRANSFERENCIA_COPY as C } from '@/shared/components/transferencia/copy';
+import type { useTransferenciaForm } from '@/shared/components/transferencia/use-transferencia-form';
 
 export interface TransferenciaDetalleFieldsProps {
   readonly form: ReturnType<typeof useTransferenciaForm>;

@@ -10,16 +10,13 @@ import {
   movimientoSchema,
   movimientosPaginatedSchema,
   movimientosSchema,
-  transferenciaResultSchema,
   type CajaConSaldo,
   type CajasQuery,
   type ConsolidadoSaldos,
   type CreateMovimientoDto,
-  type CreateTransferenciaDto,
   type FondoRamaType,
   type FondoSolidario,
   type Movimiento,
-  type TransferenciaResult,
 } from '@/shared/domain';
 import { fetchFondoSolidario } from '@/shared/queries';
 import { FONDO_SOLIDARIO_NOMBRE } from '@/features/cajas/constants/cajas';
@@ -140,16 +137,6 @@ export function createMovimiento(
   return apiClient.post(API_ENDPOINTS.MOVIMIENTOS, {
     body: dto,
     schema: movimientoSchema,
-  });
-}
-
-/** `POST /movimientos/transferencia` → `{ egreso, ingreso }`. */
-export function createTransferencia(
-  dto: CreateTransferenciaDto,
-): Promise<TransferenciaResult> {
-  return apiClient.post(API_ENDPOINTS.MOVIMIENTOS_TRANSFERENCIA, {
-    body: dto,
-    schema: transferenciaResultSchema,
   });
 }
 

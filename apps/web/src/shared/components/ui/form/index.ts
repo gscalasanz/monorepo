@@ -12,6 +12,7 @@ export {
   type ControlStatusIconProps,
 } from './control-status-icon';
 export { FORM_COPY } from './copy';
+export { DialogActions, type DialogActionsProps } from './dialog-actions';
 export { DateField, type DateFieldProps } from './date-field';
 export { DateTimeField, type DateTimeFieldProps } from './date-time-field';
 export {
@@ -25,6 +26,7 @@ export {
   CONTROL_SURFACE,
   type ControlSize,
 } from './field-styles';
+export { FormError } from './form-error';
 export { FormCard, type FormCardProps } from './form-card';
 export { FormActions, type FormActionsProps } from './form-actions';
 export { FormField, type FormFieldProps } from './form-field';
@@ -34,6 +36,7 @@ export { NumberField, type NumberFieldProps } from './number-field';
 export { PasswordField, type PasswordFieldProps } from './password-field';
 export { PasswordToggle, type PasswordToggleProps } from './password-toggle';
 export { PhoneField, type PhoneFieldProps } from './phone-field';
+export { ReadonlyInfo, type ReadonlyInfoProps } from './readonly-info';
 export {
   RadioCardsField,
   type RadioCardsFieldProps,

@@ -73,8 +73,3 @@ export type PersonaExterna = z.infer<typeof personaExternaSchema>;
 export type Agrupacion = z.infer<typeof agrupacionSchema>;
 export type Persona = z.infer<typeof personaSchema>;
 
-/** `POST /personas/:id/transferir-saldo-a-grupo` */
-export const transferirSaldoResultSchema = z.object({
-  saldoTransferido: z.number(),
-});
-export type TransferirSaldoResult = z.infer<typeof transferirSaldoResultSchema>;

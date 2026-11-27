@@ -3,11 +3,10 @@
 import { Save, Wallet } from 'lucide-react';
 
 import { LoadingState } from '@/shared/components/feedback';
-import { TextareaField } from '@/shared/components/ui/form';
+import { DialogActions, TextareaField } from '@/shared/components/ui/form';
 import type { CajaConSaldo } from '@/shared/domain';
 import { DESCRIPCION_MAX_LENGTH } from '@/features/cajas/constants/cajas';
 import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
-import { DialogActions } from '@/features/cajas/components/dialog-actions';
 import { QuickMovimientoMainFields } from '@/features/cajas/components/quick-movimiento-main-fields';
 import { QuickMovimientoPagoFields } from '@/features/cajas/components/quick-movimiento-pago-fields';
 import { cajaDisplayName } from '@/features/cajas/helpers/quick-movimiento';

@@ -8,18 +8,18 @@ import { useFieldValidation, useFormState } from '@/shared/forms';
 import { useAsyncData } from '@/shared/hooks';
 import { fetchCajas } from '@/shared/queries';
 import { todayBsAs } from '@/shared/time';
-import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
+import { TRANSFERENCIA_COPY as C } from '@/shared/components/transferencia/copy';
 import {
   buildTransferenciaDto,
   destinoOptions,
   transferenciaPrecheck,
   type TransferenciaOrigen,
-} from '@/features/cajas/helpers/transferencia';
+} from '@/shared/components/transferencia/transferencia';
 import {
   transferenciaSchema,
   type TransferenciaFormValues,
-} from '@/features/cajas/models/schemas';
-import { createTransferencia } from '@/features/cajas/services/cajas-api';
+} from '@/shared/components/transferencia/schema';
+import { createTransferencia } from '@/shared/components/transferencia/transferencia-api';
 
 const CAJAS_KEY = 'cajas:transferencia:destinos';
 
@@ -28,9 +28,13 @@ type Values = TransferenciaFormValues;
 export interface UseTransferenciaFormOptions {
   readonly origen: TransferenciaOrigen;
   readonly onSuccess: () => void;
+  /** Ofrece cuentas personales como destino (default `false`). */
+  readonly incluirPersonales?: boolean;
 }
 
-interface SubmitDeps extends UseTransferenciaFormOptions {
+interface SubmitDeps {
+  readonly origen: TransferenciaOrigen;
+  readonly onSuccess: () => void;
   readonly userId: string | null;
 }
 
@@ -74,12 +78,18 @@ function useTransferenciaSubmit({ origen, onSuccess, userId }: SubmitDeps) {
 export function useTransferenciaForm({
   origen,
   onSuccess,
+  incluirPersonales = false,
 }: UseTransferenciaFormOptions) {
   const { user } = useSession();
   const cajas = useAsyncData({ key: CAJAS_KEY, load: fetchCajas });
   const destinos = useMemo(
-    () => destinoOptions(cajas.data ?? [], origen.id),
-    [cajas.data, origen.id],
+    () =>
+      destinoOptions({
+        cajas: cajas.data ?? [],
+        origenId: origen.id,
+        incluirPersonales,
+      }),
+    [cajas.data, origen.id, incluirPersonales],
   );
   const form = useFormState<Values>({
     cajaDestinoId: null,
@@ -94,13 +104,18 @@ export function useTransferenciaForm({
     userId: user?.id ?? null,
   });
 
+  const update = <K extends keyof Values>(name: K, value: Values[K]): void => {
+    form.setField(name, value);
+    validation.onChange(name, value);
+  };
+
   return {
     values: form.values,
     validation,
-    update: <K extends keyof Values>(name: K, value: Values[K]): void => {
-      form.setField(name, value);
-      validation.onChange(name, value);
-    },
+    update,
+    /** Completa el monto con todo el saldo disponible del origen. */
+    fillMax: (): void => update('monto', origen.saldo),
+    canFillMax: origen.saldo > 0,
     submit: async (event: FormEvent<HTMLFormElement>): Promise<void> => {
       event.preventDefault();
       if (validation.validateAll(form.values)) await send(form.values);

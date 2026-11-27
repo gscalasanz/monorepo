@@ -1,7 +1,8 @@
 /** Lógica pura de la tab "Fondo Solidario" (port de `FondoSolidarioComponent` + state). */
 import { CONCEPTO_MOVIMIENTO, type Movimiento } from '@/shared/domain';
 import type { FondoSolidarioData } from '@/features/cajas/services/cajas-api';
-import type { TransferenciaOrigen } from '@/features/cajas/helpers/transferencia';
+import type { TransferenciaOrigen } from '@/shared/components/transferencia';
+import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
 
 export interface TransferenciaRow {
   readonly id: string;
@@ -47,7 +48,7 @@ export function buildFondoSolidarioView(
     saldo: fondo.caja?.saldoActual ?? fondoSolidario.saldo,
     bonificado: fondoSolidario.bonificacionesOtorgadas,
     cajaGrupo: cajaGrupo.id
-      ? { id: cajaGrupo.id, saldo: cajaGrupo.saldo }
+      ? { id: cajaGrupo.id, saldo: cajaGrupo.saldo, nombre: C.ORIGEN_NOMBRE }
       : null,
     transferencias: transferenciasRecibidas(movimientos),
   };

@@ -74,34 +74,13 @@ export const CAJAS_COPY = {
   PERSONA_REEMBOLSAR_PLACEHOLDER: 'Seleccionar persona que adelantó el dinero',
   DESCRIPCION_OPCIONAL: 'Descripción (opcional)',
   DESCRIPCION_PLACEHOLDER: 'Notas adicionales...',
-  CANCELAR: 'Cancelar',
   QUICK_SUCCESS: 'Movimiento registrado exitosamente',
   QUICK_ERROR: 'Error al registrar el movimiento',
   NO_RESULTS: 'Sin resultados',
-
-  // Transferencia
-  TRANSFER_TITLE: 'Transferir entre Cajas',
-  TRANSFER_LOADING: 'Cargando cajas y responsables...',
-  TRANSFER_SAVING: 'Registrando transferencia...',
-  ORIGEN: 'Origen',
-  ORIGEN_NOMBRE: 'Caja de Grupo',
-  saldoDisponible: (saldo: string): string => `Saldo disponible: ${saldo}`,
-  DESTINO: 'Destino',
-  DESTINO_PLACEHOLDER: 'Seleccionar caja destino',
-  DESTINO_REQUIRED: 'Debe seleccionar una caja destino',
-  MONTO_INVALIDO: 'Ingresá un monto válido mayor a cero',
-  RESPONSABLE_AUTO: 'Se registra automáticamente con tu usuario',
-  USUARIO_ACTUAL: 'Usuario actual',
   FECHA: 'Fecha',
-  FECHA_REQUIRED: 'La fecha es requerida',
-  DESCRIPCION: 'Descripción',
-  TRANSFER_DESCRIPCION_PLACEHOLDER: 'Motivo de la transferencia (opcional)',
-  TRANSFERIR: 'Transferir',
-  NO_USER: 'No se pudo identificar al usuario autenticado',
-  saldoInsuficiente: (saldo: string): string =>
-    `Saldo insuficiente en caja de grupo (disponible: ${saldo})`,
-  TRANSFER_ERROR: 'Error al crear la transferencia',
-  CAJAS_LOAD_ERROR: 'No se pudieron cargar las cajas',
+
+  // Transferencia (origen de la caja de grupo; el resto vive en shared/components/transferencia)
+  ORIGEN_NOMBRE: 'Caja de Grupo',
 
   // Fondos de Rama
   LOADING_FONDOS: 'Cargando fondos...',

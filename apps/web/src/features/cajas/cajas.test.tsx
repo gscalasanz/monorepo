@@ -53,11 +53,13 @@ const api = {
   createTransferencia: vi.fn(),
   deleteMovimiento: vi.fn(),
 };
+vi.mock('@/shared/components/transferencia/transferencia-api', () => ({
+  createTransferencia: (dto: unknown) => api.createTransferencia(dto),
+}));
 vi.mock('@/features/cajas/services/cajas-api', () => ({
   fetchCajaGrupoData: () => api.fetchCajaGrupoData(),
   fetchMovimientosCaja: () => api.fetchMovimientosCaja(),
   fetchFondoSolidarioData: () => api.fetchFondoSolidarioData(),
-  createTransferencia: (dto: unknown) => api.createTransferencia(dto),
   deleteMovimiento: (id: string) => api.deleteMovimiento(id),
   fetchFondosRama: vi.fn(),
   fetchMovimientosFiltrados: vi.fn(),

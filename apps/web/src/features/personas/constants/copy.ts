@@ -67,19 +67,9 @@ export const FICHA_COPY = {
   NOT_FOUND: 'Persona no encontrada',
   BACK_TO_LIST: 'Volver al listado',
   EDIT: 'Editar',
-  TRANSFER: 'Transferir a caja grupo',
-  TRANSFER_TITLE: (saldo: string): string => `Transferir ${saldo} a caja grupo`,
-  TRANSFER_MESSAGE: (params: {
-    readonly saldo: string;
-    readonly nombre: string;
-  }): string =>
-    `Se transferirá el saldo de ${params.saldo} de la cuenta personal de ${params.nombre} ` +
-    'a la caja del grupo. ¿Confirmás?',
-  TRANSFER_CONFIRM: 'Transferir',
-  TRANSFER_CANCEL: 'Cancelar',
-  TRANSFER_OK: (saldo: string): string =>
-    `Se transfirieron ${saldo} a la caja del grupo`,
-  TRANSFER_ERROR: 'Error al transferir saldo',
+  TRANSFER: 'Transferir fondos',
+  TRANSFER_ORIGEN: (nombre: string): string => `Cuenta de ${nombre}`,
+  TRANSFER_OK: 'Transferencia registrada',
   FALLBACK_NAME: 'esta persona',
   ESTADO_LABEL: (estado: string): string => `Estado: ${estado}`,
   SALDO: 'Saldo cuenta personal',

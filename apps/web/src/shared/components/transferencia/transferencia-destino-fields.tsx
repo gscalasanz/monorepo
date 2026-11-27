@@ -1,14 +1,15 @@
 'use client';
 
+import { Button } from '@/shared/components/ui/button';
 import { ComboboxField, MoneyField } from '@/shared/components/ui/form';
-import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
-import type { useTransferenciaForm } from '@/features/cajas/hooks/use-transferencia-form';
+import { TRANSFERENCIA_COPY as C } from '@/shared/components/transferencia/copy';
+import type { useTransferenciaForm } from '@/shared/components/transferencia/use-transferencia-form';
 
 export interface TransferenciaDestinoFieldsProps {
   readonly form: ReturnType<typeof useTransferenciaForm>;
 }
 
-/** Destino (cajas no personales, buscable) y monto de la transferencia. */
+/** Destino (buscable), monto y atajo "Todo el saldo" de la transferencia. */
 export function TransferenciaDestinoFields({
   form,
 }: TransferenciaDestinoFieldsProps) {
@@ -36,6 +37,17 @@ export function TransferenciaDestinoFields({
         onChange={(value) => form.update('monto', value)}
         onBlur={() => validation.onBlur('monto', values.monto)}
       />
+      <div className="-mt-2 flex justify-end">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={!form.canFillMax}
+          onClick={form.fillMax}
+        >
+          {C.MONTO_TODO}
+        </Button>
+      </div>
     </>
   );
 }

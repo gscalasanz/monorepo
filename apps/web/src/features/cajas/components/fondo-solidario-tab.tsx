@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
 import { ErrorState, LoadingState } from '@/shared/components/feedback';
 import { CAJAS_COPY as C } from '@/features/cajas/constants/copy';
 import { FondoSolidarioSummary } from '@/features/cajas/components/fondo-solidario-summary';
-import { TransferenciaDialog } from '@/features/cajas/components/transferencia-dialog';
+import { TransferenciaDialog } from '@/shared/components/transferencia';
 import { TransferenciasPanel } from '@/features/cajas/components/transferencias-panel';
 import type { TransferenciaRow } from '@/features/cajas/helpers/fondo-solidario';
 import { useFondoSolidario } from '@/features/cajas/hooks/use-fondo-solidario';
